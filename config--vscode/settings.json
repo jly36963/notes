@@ -1,0 +1,28 @@
+{
+    "workbench.colorTheme": "Atomize",
+    "atomKeymap.promptV3Features": true,
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.formatOnPaste": true,
+    "editor.minimap.enabled": false,
+    "window.zoomLevel": -1,
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact"
+    },
+    "editor.detectIndentation": false,
+    "editor.insertSpaces": true,
+    "[javascript]": {
+        "editor.tabSize": 2
+    },
+    "[python]": {
+        "editor.tabSize": 4
+    },
+    "[json]": {
+        "editor.tabSize": 2
+    },
+    "[c++]": {
+        "editor.tabSize": 2
+    },
+    "editor.tabSize": 4,
+    "editor.fontFamily": "IBM Plex Mono",
+    "editor.fontLigatures": true,
+}

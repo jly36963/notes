@@ -1,0 +1,50 @@
+#app {
+    // uigradients.com
+        // 2 color, horizontal
+
+    // aqua marine
+    background: #1a2980; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #1a2980, #26d0ce); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #1a2980, #26d0ce); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+    // scooter
+    background: #36d1dc; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #36d1dc, #5b86e5); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #36d1dc, #5b86e5); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+    // atlas
+    background: #feac5e; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #feac5e, #c779d0, #4bc0c8); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, #feac5e, #c779d0, #4bc0c8); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+    // https://digitalsynopsis.com/design/beautiful-color-gradients-backgrounds/
+        // 2 color, diagonal
+
+    // winter neva
+    background: #c2e9fb; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to bottom right, #a1c4fd, #c2e9fb); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to bottom right, #a1c4fd, #c2e9fb); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+    // plum plate
+    background: #667eea; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to bottom right, #667eea, #764ba2); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to bottom right, #667eea, #764ba2); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+    // cochiti lake
+    background: #93a5cf; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to bottom right, #93a5cf, #e4efe9); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to bottom right, #93a5cf, #e4efe9); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+    // gentle care
+    background: #ffc3a0 ; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to bottom right, #ffc3a0, #ffafbd); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to bottom right, #ffc3a0, #ffafbd); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+    // https://mycolor.space/gradient3?ori=to+right+top&hex=%23D16BA5&hex2=%2386A8E7&hex3=%235FFBF1&submit=submit
+        // multi-color, diagonal
+
+    // purple, dull blue, light blue
+    background: #79b3f4;
+    background: linear-gradient(to right top, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);
+
+}

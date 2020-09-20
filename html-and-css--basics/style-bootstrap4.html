@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>BOOTSTRAP 4 NOTES</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  </head>
+  <body>
+
+
+    <!--
+    FONT AWESOME CDN:
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+
+    bootstrap CDN:
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+    alternative themes: https://bootswatch.com/
+    litera: https://bootswatch.com/4/litera/bootstrap.min.css
+    cerulean: https://bootswatch.com/4/cerulean/bootstrap.min.css
+    darkly: https://bootswatch.com/4/darkly/bootstrap.min.css
+    -->
+
+
+    <!-- CONTENTS -->
+    <!-- typography -->
+    <!-- lists -->
+    <!-- alignment/justify -->
+    <!-- floats -->
+    <!-- colors -->
+    <!-- margin/padding -->
+    <!-- buttons -->
+    <!-- navbar -->
+    <!-- list group -->
+    <!-- badges -->
+    <!-- forms -->
+    <!-- input -->
+    <!-- alerts -->
+    <!-- tables -->
+    <!-- pagination -->
+    <!-- cards -->
+    <!-- media objects -->
+    <!-- jumbotrons -->
+    <!-- grid system -->
+    <!-- flexbox -->
+
+
+    <!-- container for bootstrap examples -->
+    <div class="container">
+
+      <!-- BASIC TYPOGRAPHY -->
+
+      <!-- HEADINGS -->
+      <h5 class="h1">appears like h1 tag.</h5>
+
+      <!-- DISPLAY CLASSES  -->
+      <h1 class="display-1">super-large text (6em).</h1>
+
+      <!-- PARAGRAPHS -->
+      <p class="lead">increases font-size/font-weight</p>
+      <p class="text-monospace">monospace text</p>
+      <p class="font-weight-bold">bold text</p>
+      <p class="font-weight-normal">keep nested strong tags, appears normal</p>
+      <p class="font-italic">italic text</p>
+
+      <!-- TEXT TRANSFORM -->
+      <p class="text-lowercase">makes text lowercase</p>
+      <p class="text-uppercase">makes text uppercase</p>
+      <p class="text-capitalize">makes text capitalized (1st letter - upper)</p>
+
+      <!-- BLOCKQUOTES -->
+      <blockquote class="blockquote">
+        <p>blockquote<p>
+      </blockquote>
+
+      <!-- BLOCKQUOTE RIGHT ALIGNED -->
+      <blockquote class="blockquote text-right">
+        <p>right aligned blockquote.</p>
+      </blockquote>
+
+      <!-- BLOCKQUOTE WITH FOOTER  -->
+      <blockquote class="blockquote text-right">
+        <p>blockquote with footer.</p>
+        <footer class="blockquote-footer">
+          Someone famous in <cite title="Source Title">Source Title</cite>
+        </footer>
+      </blockquote>
+
+      <!-- TEXT TRUNCATE -->
+      <div class="text-truncate">
+        Really long quote that gets truncated to one line (with ellipses).
+      </div>
+
+      <!-- LISTS -->
+      <ul class="list-unstyled">
+        <li>removed</li>
+        <li>padding</li>
+        <li>and bullet points</li>
+      </ul>
+
+      <!-- INLINE LISTS -->
+      <ul class="list-inline">
+        <li class="list-inline-item">list</li>
+        <li class="list-inline-item">displayed</li>
+        <li class="list-inline-item">horizontally</li>
+      </ul>
+
+      <!-- TEXT ALIGNMENT AND DISPLAY -->
+
+      <!-- JUSTIFY -->
+      <p class="text-justify">justified long quote</p>
+
+      <!-- ALIGNMENT (horizontal) -->
+      <p class="text-left">left aligned text</p>
+      <p class="text-center">center aligned text</p>
+      <p class="text-right">right aligned text</p>
+
+      <!-- RESPONSIVE ALIGNMENT (extra small not needed)-->
+      <p class="text-sm-right">right aligned, small or larger (screen)</p>
+      <p class="text-md-right">right aligned, medium or larger</p>
+      <p class="text-lg-right">right aligned, large or larger</p>
+      <p class="text-xl-right">right aligned, extra large (or larger?).</p>
+
+      <!-- ALIGNMENT (vertical) -->
+      <span class="align-baseline">baseline</span>
+      <span class="align-top">top</span>
+      <span class="align-bottom">bottom</span>
+      <span class="align-middle">middle</span>
+      <span class="align-text-top">text-top</span>
+      <span class="align-text-bottom">text-bottom</span>
+
+      <!-- BLOCK INTO INLINE ELEMENT -->
+      <h1 class="d-inline">block element as inline element.</h1>
+
+      <!-- INLINE INTO BLOCK -->
+      <span class="d-block">inline element as block element.</span>
+
+      <!-- BLOCK INTO INLINE BLOCK  -->
+      <div class="d-inline-block">
+        <h3> I am a div element</h3>
+        that is inline.
+      </div>
+
+      <!-- FLOATS AND FIXED POSITIONING -->
+
+      <!-- FLOATS -->
+      <div class="float-left">float left</div>
+      <div class="float-right">float right</div>
+      <div class="float-none">float none</div>
+
+      <!-- RESPONSIVE FLOATS -->
+      <div class="float-sm-left">float left (small or larger)</div>
+      <div class="float-md-left">float left (med or larger)</div>
+      <div class="float-lg-left">float left (large or larger)</div>
+      <div class="float-xl-left">float left (xl or larger)</div>
+
+      <!-- CLEARFIX -->
+      <div class="clearfix">
+        <div class="float-left">float left</div>
+        <div class="float-right">float right</div>
+      </div>
+      <!-- keeps divs separated (when using floats) -->
+      <div>This div won't overlap with the previous one.</div>
+
+      <!-- FIXED TOP (keeps element at top) -->
+      <h3 style="display:none;" class="fixed-top">fixed top header</h3>
+
+      <!-- STICKY -->
+      <h3 style="display:none;" class="sticky-top">sticky header</h3>
+
+      <!-- FIXED BOTTOM -->
+      <h3 style="display:none;" class="fixed-bottom">fixed bottom</h3>
+
+      <!-- COLORS AND BACKGROUNDS -->
+
+      <!-- TEXT COLORS -->
+      <p class="text-primary">blue</p>
+      <p class="text-secondary">lighter gray</p>
+      <p class="text-success">green</p>
+      <p class="text-info">light green/blue</p>
+      <p class="text-warning">yellow</p>
+      <p class="text-danger">red</p>
+      <!-- exists as of bootstrap 4 -->
+      <p class="text-light">really light gray</p>
+      <p class="text-dark">black (kind of default)</p>
+      <p class="text-white">white</p>
+      <p class="text-muted">lighter gray (similar to text-secondary)</p>
+      <p class="text-black-50">half opaque black</p>
+      <p class="text-white-50">half opaque white</p>
+      <!-- works for links as well -->
+      <a href="#" class="text-success">green link</a>
+
+      <!-- BACKGROUND COLORS -->
+      <div class="bg-primary text-white">blue (white text)</div>
+      <div class="bg-secondary">gray</div>
+      <div class="bg-success">green</div>
+      <div class="bg-info">light green/blue</div>
+      <div class="bg-warning">yellow</div>
+      <div class="bg-danger">red</div>
+      <div class="bg-light">white/gray</div>
+      <div class="bg-dark text-light">black (white text)</div>
+      <div class="bg-white">white (default)</div>
+      <div class="bg-transparent">transparent (in case of img beneath)</div>
+
+      <!-- INVISIBLE -->
+      <p class="invisible">taking up space but invisible!</p>
+
+      <!-- SPACING -->
+
+      <!--
+
+      PROPERTY
+      m - margin
+      p - padding
+
+      SIDES
+      t - top
+      b - bottom
+      l - left
+      r - right
+      x - left and right
+      y - top and bottom
+
+      SIZE (rem)
+      0 - x*0
+      1 - x*.25
+      2 - x*.5
+      3 - x
+      4 - x*1.5
+      5 - x*3
+
+      -->
+
+      <!-- MARGIN (t, b, l, r, x, y)-->
+      <h1 class="bg-success mb-4">margin bottom 4</h1>
+      <h1 class="bg-success mt-3">margin top 3</h1>
+      <p>
+        there will be <span class="mr-5">margin-5 on the right</span>
+        and <span class="ml-5">margin-5 on the left</span>.
+      </p>
+      <p>
+        there will be <span class="mx-5">margin-5 on both sides</span>.
+      </p>
+      <p>hello pt1.</p>
+      <p class="my-5">hello pt2. (margin-5 on top and bottom)</p>
+      <p>hello pt3.</p>
+      <h1 class="m-5">Margin-5 on all sides.</h1>
+
+      <!-- PADDING -->
+      <h1 class="p-5">padding-5 all around</h1>
+      <h1 class="pb-1">padding bottom 1</h1>
+      <h1 class="pt-2">padding top 2</h1>
+      <h1 class="py-3">padding top/bottom 3</h1>
+      <p>
+        there will be <span class="pr-5">padding after</span>
+        and <span class="pl-5">padding before</span>.
+      </p>
+      <p>
+        there is <span class="px-5">padding</span> on both sides.
+      </p>
+
+      <!-- HORIZONTAL CENTERING -->
+      <div class="mx-auto" style="width: 300px;">
+        Horizontally centered.
+      </div>
+
+      <!-- SIZING AND BORDERS -->
+
+      <!-- WIDTH -->
+      <div class="bg-success w-25">width 25%</div>
+      <div class="bg-success w-50">width 50%</div>
+      <div class="bg-success w-75">width 75%</div>
+      <div class="bg-success w-100">width 100%</div>
+      <div class="bg-success w-auto">width auto</div>
+
+      <!-- HEIGHT -->
+      <div style="height:300px;">  <!-- container must have height -->
+        <div class="h-25">height 25%</div>
+        <div class="h-50">height 50%</div>
+        <div class="h-75">height 75%</div>
+        <div class="h-100">height 100%</div>
+        <div class="h-auto">height auto</div>
+      </div>
+
+      <!-- BORDER -->
+      <div class="border p-3 m-2 bg-light">border on all sides</div>
+      <div class="border-top">border only on top.</div>
+
+      <!-- BORDER COLOR  -->
+      <!-- works for primary, secondary, success, info, warning, danger, light, dark, white -->
+      <div class="border border-primary p-3 m-2 bg-light">blue border</div>
+
+      <!-- BORDER RADIUS -->
+      <div class="p-3 m-2 bg-light border rounded border-success">
+        rounded, border all sides, green border, padding 3, margin 2, background-light.
+      </div>
+
+      <!-- CSS BREAKPOINTS -->
+
+      <!--
+      SMALL
+      @media (min-width: 576px) {}
+      MEDIUM
+      @media (min-width: 768px) {}
+      LARGE
+      @media (min-width: 992px) {}
+      EXTRA LARGE
+      @media (min-width: 1200px) {}
+      -->
+
+      <!-- BUTTONS AND BUTTON GROUPS -->
+
+      <!-- BUTTONS -->
+      <!-- btn affects: display, font-weight, text-align, vertical-align, border, padding, border (radius), transition -->
+      <!-- primary, secondary, success, info, warning, danger, light, dark, link -->
+      <!-- btn class works on buttons and input (type: button, submit, reset) -->
+      <button class="btn btn-primary" type="button">solid blue button</button>
+
+      <!-- OUTLINE BUTTONS -->
+      <!-- primary, secondary, success, info, waring, danger, light, dark -->
+      <button class="btn btn-outline-primary" type="button">outline blue button</button>
+
+      <!-- BUTTON SIZES -->
+      <button class="btn btn-primary btn-lg" type="button">large button</button>
+      <button class="btn btn-primary btn-sm" type="button">small button</button>
+      <button class="btn btn-primary btn-block" type="button">block button</button>
+
+      <!-- BUTTONS W/ FONT AWESOME -->
+      <button class="btn btn-primary btn-lg" type="button">
+        <i class="fas fa-user"></i> button w/ icon
+      </button>
+
+      <!-- BUTTON STATES -->
+      <button class="btn btn-primary" type="button">regular button</button>
+      <button class="btn btn-primary active" type="button">active button</button>
+      <button class="btn btn-primary disabled" type="button">disabled button</button>
+      <button class="btn btn-primary" type="button" data-toggle="button">toggle-state button</button>
+
+      <!-- BUTTON GROUPS -->
+      <div class="btn-group">
+        <button class="btn btn-primary" type="button">left button</button>
+        <button class="btn btn-secondary" type="button">middle button</button>
+        <button class="btn btn-info" type="button">right button</button>
+      </div>
+
+      <!-- BUTTON TOOLBAR -->
+      <div class="btn-toolbar">
+        <div class="btn-group mx-1">
+          <button class="btn btn-info" type="button">1</button>
+          <button class="btn btn-info" type="button">2</button>
+          <button class="btn btn-info" type="button">3</button>
+        </div>
+        <div class="btn-group mx-1">
+          <button class="btn btn-info" type="button">4</button>
+          <button class="btn btn-info" type="button">5</button>
+          <button class="btn btn-info" type="button">6</button>
+        </div>
+        <div class="btn-group mx-1">
+          <button class="btn btn-info" type="button">7</button>
+          <button class="btn btn-info" type="button">8</button>
+          <button class="btn btn-info" type="button">9</button>
+        </div>
+      </div>
+
+      <!-- VERTICAL BUTTON GROUP  -->
+      <div class="btn-group-vertical mx-1">
+        <button class="btn btn-info" type="button">top</button>
+        <button class="btn btn-info" type="button">middle</button>
+        <button class="btn btn-info" type="button">bottom</button>
+      </div>
+
+      <!-- BUTTON DROPDOWNS -->
+      <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button">
+          dropdown
+        </button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#">link 1</a>
+          <a class="dropdown-item" href="#">link 2</a>
+          <a class="dropdown-item" href="#">link 3</a>
+        </div>
+      </div>
+
+      <!-- SPLIT DROPDOWNS (with dropdown divider) -->
+      <div class="btn-group">
+        <button class="btn btn-primary" type="button">button</button>
+        <button class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" type="button">
+          button
+        </button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#">link 1</a>
+          <a class="dropdown-item" href="#">link 2</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">link 3</a>
+        </div>
+      </div>
+
+      <!-- NAVBAR -->
+      <!-- it's good practice to have a container around the navbar's contents. -->
+      <!-- navbar will switch to vertical <li> at small screen -->
+      <nav class="navbar navbar-expand-sm navbar-light bg-light">
+        <div class="container">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="#">home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">about</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">contact</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- NAVBAR WITH RESPONSIVE TOGGLE -->
+      <!-- navbar will switch to collapsible button at medium screen. -->
+      <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <div class="container">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <!-- collapse button (with data-target) -->
+          <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav" type="button">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <!-- div specifies what will be collapsed -->
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- ml-auto will push element to the right. -->
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="#">home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">about</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">services</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">contact</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- NAVBAR (with search/form) -->
+      <!-- navbar will switch to vertical <li> at small screen -->
+      <nav class="navbar navbar-expand-sm navbar-light bg-light">
+        <div class="container">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="#">home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">about</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">contact</a>
+            </li>
+          </ul>
+          <!-- search form -->
+          <form class="form-inline ml-auto">
+            <input type="text" class="form-control" placeholder="Search">
+            <button class="btn btn-outline-success" type="button">Search</button>
+          </form>
+        </div>
+      </nav>
+
+      <!-- NAVBAR (with dropdown) -->
+      <!-- navbar will switch to vertical <li> at small screen -->
+      <nav class="navbar navbar-expand-sm navbar-light bg-light">
+        <div class="container">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="#">home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">about</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">services</a>
+            </li>
+            <!-- dropdown -->
+            <li class="nav-item dropdown">
+              <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">dropdown</a>
+              <div class="dropdown-menu">
+                <a class ="dropdown-item" href="#">link 1</a>
+                <a class ="dropdown-item" href="#">link 2</a>
+                <a class ="dropdown-item" href="#">link 3</a>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">contact</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- COLORS -->
+      <!-- if using bg-dark, use navbar-dark (prevent black letters on black bg) -->
+
+      <!-- FIXED TOP NAVBAR -->
+      <!-- class="fixed-bottom" also works -->
+      <!-- class="sticky-top" also works -->
+      <nav class="navbar fixed-top navbar-expand-sm navbar-light bg-light">
+        <div class="container">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="#">home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">about</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">contact</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- INLINE NAV -->
+      <!-- add class="justify-content-center" to <ul> to center it. -->
+      <!-- add class="justify-content-end" to <ul> to right-align it. -->
+      <!-- add class="nav-fill" to <ul> to expand <li>s to fill space -->
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link" href="#">link 1</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">link 2</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">link 3</a>
+        </li>
+      </ul>
+
+
+      <!-- LIST GROUPS AND BADGES -->
+
+      <!-- LIST GROUP (unordered list) -->
+      <ul class="list-group">
+        <li class="list-group-item">li 1</li>
+        <li class="list-group-item">li 2</li>
+        <li class="list-group-item">li 3</li>
+      </ul>
+
+      <!-- LIST GROUP (links) -->
+      <ul class="list-group">
+        <a class="list-group-item" href="#">link 1</a>
+        <a class="list-group-item" href="#">link 2</a>
+        <a class="list-group-item" href="#">link 3</a>
+      </ul>
+
+      <!-- CONTEXTUAL CLASSES -->
+      <!-- primary, secondary, success, info, warning, danger, light, dark -->
+      <ul class="list-group">
+        <li class="list-group-item list-group-item-primary">li 1</li>
+        <li class="list-group-item list-group-item-secondary">li 2</li>
+        <li class="list-group-item list-group-item-info">li 3</li>
+      </ul>
+
+      <!-- FLUSH LIST GROUP -->
+      <!-- add class="list-group-flush" (to <ul>) to remove x-borders (keep y-borders). -->
+
+      <!-- BADGES -->
+      <!-- LIST GROUP (unordered list) -->
+      <ul class="list-group">
+        <li class="list-group-item">li 1</li>
+        <li class="list-group-item">
+          li 2 <span class="badge badge-primary">ITEM</span>
+        </li>
+        <li class="list-group-item">li 3</li>
+      </ul>
+
+      <!-- BREADCRUMBS -->
+      <!-- I don't plan on using this -->
+
+      <!-- FORM AND INPUT -->
+
+      <!-- FORM (text field groups) -->
+      <!-- larger input: add class="form-control-lg" (to input) -->
+      <!-- subtext: use <small class="form-text text-muted"></small>  -->
+      <form>
+        <div class="form-group">
+          <label for="name">name</label>
+          <input class="form-control" type="text" id="name" placeholder="Enter name">
+        </div>
+        <div class="form-group">
+          <label for="email">email address</label>
+          <input class="form-control" type="email" id="email" placeholder="Enter email">
+          <small class="form-text text-muted">
+            **Your email will not be shared**
+          </small>
+        </div>
+        <div class="form-group">
+          <label for="company">Company</label>
+          <input class="form-control" type="text" id="company" placeholder="Enter company name">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input class="form-control" type="password" id="password" placeholder="Password">
+          <small class="form-text text-muted">
+            **must contain >6 characters, a lowercase letter, an uppercase letter, and a number**
+          </small>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+
+      <!-- FORM -->
+      <form>
+        <!-- select -->
+        <div class="form-group">
+          <label for="gender">gender</label>
+          <select class="form-control" id="gender">
+            <option>male</option>
+            <option>female</option>
+            <option>prefer not to specify</option>
+          </select>
+        </div>
+        <!-- textarea -->
+        <div class="form-group">
+          <label for="message">message</label>
+          <textarea class="form-control" id="message" rows="8" cols="80"></textarea>
+        </div>
+        <!-- file input -->
+        <div class="form-group">
+          <label for="file">File input</label>
+          <input class="form-control-file" type="file" id="file">
+          <small class="form-text text-muted" id="fileHelp">Max 3mb size</small>
+        </div>
+        <!-- custom file input (looks better, not working???) -->
+        <div class="custom-file">
+          <input class="custom-file-input" type="file" id="myfile">
+          <label class="custom-file-label" for="myfile">Choose file</label>
+        </div>
+        <!-- range -->
+        <div class="form-group">
+          <label for="membership">membership level</label>
+          <input class="custom-range" id="membership" min="1" max="10" step="1" value="1" type="range">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+
+      <!-- INLINE FORM -->
+      <form class="form-inline">
+        <input class="form-control mr-2" type="text" id="username" placeholder="username">
+        <input class="form-control mr-2" type="password" id="password" placeholder="password">
+        <div class="form-check mr-2">
+          <label class="form-check-label">
+            <input class="form-check-input " type="checkbox"> remember me
+          </label>
+        </div>
+        <button class="btn btn-light" type="submit">submit</button>
+      </form>
+
+      <!-- FORM ROW -->
+      <form>
+        <div class="form-row">
+          <div class="col">
+            <input type="text" class="form-control" placeholder="First Name">
+          </div>
+          <div class="col">
+            <input type="text" class="form-control" placeholder="Last Name">
+          </div>
+        </div>
+      </form>
+
+      <!-- VALIDATION -->
+      <!-- use js to check if input data is valid -->
+      <!-- then add class="is-valid" or class="is-invalid" to <input> -->
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input class="form-control" type="text" id="username">
+      </div>
+      <div class="form-group">
+        <label for="password">password</label>
+        <input class="form-control" type="text" id="password">
+        <!-- the following div will only show up if <input class="is-invalid"> -->
+        <div class="invalid-feedback">password is not strong enough</div>
+      </div>
+      <div class="form-group">
+        <label for="password2">confirm password</label>
+        <input class="form-control" type="text" id="password2">
+        <!-- the following div will only show up if <input class="is-invalid"> -->
+        <div class="invalid-feedback">passwords do not match</div>
+      </div>
+
+      <!-- INPUT GROUPS AND ADD ONS -->
+
+      <!-- BASIC INPUT GROUPS -->
+      <!-- prepend symbol -->
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text">@</span>
+        </div>
+        <input class="form-control" type="text" placeholder="username">
+      </div>
+
+      <!-- prepend url -->
+      <label for="basic-url">Custom URL</label>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text">https://something.com/member/</span>
+        </div>
+        <input type="text" class="form-control">
+      </div>
+
+
+      <!-- append symbol -->
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="username">
+        <div class="input-group-append">
+          <span class="input-group-text">@gmail.com</span>
+        </div>
+      </div>
+
+      <!-- append & prepend ($ ... 00) -->
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text">$</span>
+        </div>
+        <input class='form-control' type="text">
+        <div class="input-group-append">
+          <span class="input-group-text">.00</span>
+        </div>
+      </div>
+
+      <!-- prepend checkbox -->
+      <!-- prepend radio: replace "checkbox" with "radio" -->
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <div class="input-group-text">
+            <input type="checkbox">
+          </div>
+        </div>
+        <input type="text" class="form-control">
+      </div>
+
+      <!-- prepend multiple (name and email) -->
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Name and Email</span>
+        </div>
+        <input class="form-control" type="text" placeholder="Full Name">
+        <input class="form-control" type="email" placeholder="Email">
+      </div>
+
+      <!-- button add-ons (append cool button)-->
+      <div class="input-group mb-3">
+        <input class="form-control" type="text" placeholder="Find By Name">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="button">Search</button>
+        </div>
+      </div>
+
+      <!-- ALERTS AND PROGRESS BARS -->
+
+      <!-- ALERTS -->
+      <div class="alert alert-primary">
+        <strong>Primary</strong> Blog post added!
+      </div>
+      <div class="alert alert-secondary">
+        <strong>Secondary</strong> Blog post added!
+      </div>
+      <div class="alert alert-success">
+        <strong>Success</strong> Blog post added!
+      </div>
+      <div class="alert alert-danger">
+        <strong>Danger</strong> Please check log files!
+      </div>
+      <div class="alert alert-info">
+        <strong>Info</strong> New message received!
+      </div>
+      <div class="alert alert-warning">
+        <strong>Warning</strong> Please check log files!
+      </div>
+      <div class="alert alert-light">
+        <strong>Light</strong> Please check log files!
+      </div>
+      <div class="alert alert-dark">
+        <strong>Dark</strong> Please check log files!
+      </div>
+
+      <!-- DISMISSABLE ALERTS ('x' in alert, removes itself onclick.)-->
+      <div class="alert alert-success alert-dismissable">
+        <button class="close" type="button" data-dismiss="alert">
+          <span>&times;</span>
+        </button>
+        <strong>Success</strong> Blog post added!
+      </div>
+
+      <!-- ALERT (extra content) -->
+      <div class="alert alert-success">
+        <h4 class="alert-heading">Congrats!</h4>
+        <p>You have been a member of our website for over 3 years!</p>
+        <hr>
+        <p>Thank you for making our website a better place!</p>
+      </div>
+
+      <!-- PROGRESS BARS -->
+      <!-- dynamic: use js to change width and text for div.progress-bar  -->
+      <!-- color: add class="bg-info" or some other color to div.progress-bar -->
+      <!-- height: add style="height:1px;" to div.progress to change height -->
+      <div class="progress">
+        <div class="progress-bar" style="width:35%;">35%</div>
+      </div>
+
+      <!-- ANIMATED PROGRESS BARS -->
+      <div class="progress" style="width:300px; height:30px;">
+        <div class="progress-bar bg-info progress-bar-striped progress-bar-animated"
+        style="width:35%;">35%</div>
+      </div>
+
+      <!-- TABLES AND PAGINATION -->
+
+      <!-- TABLES -->
+      <!-- dark theme: add class="table-dark" to <table> -->
+      <!-- dark theme thead: add class="thead-dark" to <thead> -->
+      <!-- striped table: add class="table-striped" to <table> (every other row is shaded) -->
+      <!-- bordered table: add class="table-bordered" to <table> -->
+      <!-- borderless table: add class="table-borderless" to <table> -->
+      <!-- hoverable: add class="table-hover" to <table> (highlights hovered row) -->
+      <!-- contextual colors: add class="table-success" to <tr> to color row green. -->
+      <!-- small table: add class="table-sm" to <table> to make it compact-->
+      <!-- responsive: surround table with <div class="table-responsive"> ... </div> -->
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>first name</th>
+            <th>last name</th>
+            <th>email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <th>John</th>
+            <th>Doe</th>
+            <th>jdoe@gmail.com</th>
+          </tr>
+          <tr>
+            <th scope="row">2</th>
+            <th>James</th>
+            <th>Kennedy</th>
+            <th>jibsoaa@gmail.com</th>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- PAGINATION -->
+      <!-- active: add class="active" to <li> to make it active. -->
+      <!-- disabled: add class="disabled" to <li> to make it disabled. -->
+      <!-- centered: add class="justify-content-center" to <ul>. -->
+      <!-- large/small: add class="pagination-lg" or "pagination-sm" to <ul> -->
+
+      <nav>
+        <ul class="pagination">
+          <li class="page-item">
+            <a class="page-link" href="#">Previous</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="#">1</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="#">2</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="#">3</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- PAGINATION (arrows instead of previous/next) -->
+      <nav>
+        <ul class="pagination">
+          <li class="page-item">
+            <a class="page-link" href="#">
+              <span>&laquo;</span>
+              <span class="sr-only">Previous</span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="#">
+              <span>&raquo;</span>
+              <span class="sr-only">Next</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- CARDS -->
+      <!-- bg-color: add class="bg-primary" to <div class="card"></div> -->
+      <!-- border-color: add class="border-primary" to <div class="card"></div> -->
+
+
+      <!-- text block -->
+      <div class="card">
+        <div class="card-body">
+          I have padding and a border!
+        </div>
+      </div>
+
+      <!-- simple card (with header, nav, img, body, footer) -->
+      <div class="card text-center" style="width: 20rem;">
+        <img class="card-img-top" src="https://source.unsplash.com/random/300x200" alt="img not found">
+        <div class="card-header">Card Header</div>
+        <ul class="nav nav-tabs card-header-tabs">
+          <li class="nav-item"><a class="nav-link" href="#">nav-link</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">nav-link</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">nav-link</a></li>
+        </ul>
+        <div class="card-body">
+          <h4 class="card-title">Card Title</h4>
+          <h6 class="card-subtitle text-muted">Card Subtitle</h6>
+          <p class="card-text">I am the main text of the card.</p>
+          <a class="btn btn-outline-primary" href="#">Read More</a>
+          <div class="card-footer text-muted">Footer</div>
+        </div>
+      </div>
+
+      <!-- img overlay -->
+      <div class="card text-white">
+        <img class="card-img-" src="https://source.unsplash.com/random/1000x300" alt="">
+        <div class="card-img-overlay">
+          <h4 class="card-title">Card Title</h4>
+          <p class="card-text">Text for img overlay.</p>
+          <p class="card-text">
+            <small class="text-muted">Updated 3 mins ago.</small>
+          </p>
+        </div>
+      </div>
+
+      <!-- card-columns (responsive columns)-->
+      <!-- I don't plan on using this -->
+
+      <!-- MEDIA OBJECTS -->
+      <!-- align-img: add class="align-self-center" (or top/bottom) to <img>. -->
+      <div class="media">
+        <img class="mr-3" src="https://source.unsplash.com/random/90x90" alt="">
+        <div class="media-body">
+          <h5>Media Heading</h5>
+          Media text.
+        </div>
+      </div>
+
+      <!-- media list  -->
+      <ul class="list-unstyled">
+        <li class="media">
+          <img class="mr-3" src="http://source.unsplash.com/random/90x90">
+          <div class="media-body">
+            <h5>list item -- media object</h5>
+            <p>text about the media item.</p>
+          </div>
+        </li>
+        <li class="media">
+          <img class="mr-3" src="http://source.unsplash.com/random/90x90">
+          <div class="media-body">
+            <h5>list item -- media object</h5>
+            <p>text about the media item.</p>
+          </div>
+        </li>
+        <li class="media">
+          <img class="mr-3" src="http://source.unsplash.com/random/90x90">
+          <div class="media-body">
+            <h5>list item -- media object</h5>
+            <p>text about the media item.</p>
+          </div>
+        </li>
+      </ul>
+
+      <!-- JUMBOTRONS -->
+      <!-- fluid jumbotron (100% width of window):  -->
+        <!-- add class="jumbotron-fluid" to div.jumbotron  -->
+        <!-- add/wrap div.container around contents inside -->
+      <div class="jumbotron text-center">
+        <h1 class="display-4">jumbotron header</h1>
+        <p class="lead">jumbotron paragraph 1</p>
+        <p>jumbotron paragraph 2</p>
+        <hr>
+        <a class="btn btn-primary btn-lg" href="#">Read More</a>
+      </div>
+
+      <!-- GRID SYSTEM -->
+      <!-- 12 block grid system -->
+      <!-- vertical alignment:  -->
+        <!-- by row: add class="align-items-center" (or start/end) to div.row -->
+        <!-- by col: add class="align-self-center" (or start/end) to div.col -->
+      <!-- horizonal alignment: -->
+        <!-- by row: add class="justify-content-center" to div.row -->
+        <!-- justify: start/center/end/around/between are options -->
+      <!-- column wrapping: -->
+        <!-- if columns add up to greater than 12, they will wrap. -->
+        <!-- remove spacing: add class="no-gutters" to div.row -->
+
+
+
+      <!-- columns add to 12 -->
+      <div class="row">
+        <div class="col-sm-6 col-md-8 col-lg-9 col-xl-10 border border-dark">
+          <ul class="list-unstyled px-3">
+            <li>6 column on small screen</li>
+            <li>8 column on medium screen</li>
+            <li>9 column on large screen</li>
+            <li>10 column on xlarge screen</li>
+          </ul>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-3 col-xl-2 border border-dark">
+          <ul class="list-unstyled px-3">
+            <li>6 column on small screen</li>
+            <li>4 column on medium screen</li>
+            <li>3 column on large screen</li>
+            <li>2 column on xlarge screen</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- equal width columns -->
+      <!-- add <div class="w-100"></div> between columns to create separate rows -->
+      <div class="row">
+        <div class="col border border-dark">1</div>
+        <div class="col border border-dark">2</div>
+        <div class="col border border-dark">3</div>
+        <div class="col border border-dark">4</div>
+      </div>
+
+      <!-- auto layout -->
+      <!-- 4 + 4 + 2 + x = 12, x = 2 -->
+      <div class="row">
+        <div class="col-4 border border-dark">1</div>
+        <div class="col-4 border border-dark">2</div>
+        <div class="col-2 border border-dark">3</div>
+        <div class="col border border-dark">4</div>
+      </div>
+
+      <!-- equal width (stackable for xs screen) -->
+      <div class="row">
+        <div class="col-sm border border-dark">1</div>
+        <div class="col-sm border border-dark">2</div>
+        <div class="col-sm border border-dark">3</div>
+        <div class="col-sm border border-dark">4</div>
+      </div>
+
+      <!-- offset -->
+      <div class="row">
+        <div class="col-sm-6 offset-sm-3 border border-dark text-center">6 wide, centered</div>
+      </div>
+      <div class="row">
+        <div class="col-sm-3 offset-sm-3 border border-dark text-center">3 wide, centered</div>
+        <div class="col-sm-3 border border-dark text-center">3 wide, centered</div>
+      </div>
+
+      <!-- nested grids -->
+      <div class="row">
+        <div class="col-sm-6 offset-sm-3">
+          <div class="row">
+            <div class="col-6 btn btn-outline-primary text-center">1</div>
+            <div class="col-6 btn btn-outline-primary text-center">2</div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- FLEXBOX -->
+      <!-- regular -->
+      <div>
+        <div class="p-4 item-h1">Item 1</div>
+        <div class="p-4 item-h1">Item 2</div>
+        <div class="p-4 item-h1">Item 3</div>
+      </div>
+      <!-- flex row/items -->
+        <!-- direction: 'flex-row', 'flex-column', 'flex-row-reverse', 'flex-column-reverse' -->
+      <div class="d-flex flex-row">
+        <div class="p-4 item-h1">Item 1</div>
+        <div class="p-4 item-h1">Item 2</div>
+        <div class="p-4 item-h1">Item 3</div>
+      </div>
+      <!-- justify -->
+        <!-- 'justify-content-start', 'justify-content-center', 'justify-content-end' -->
+        <!-- 'justify-content-around', 'justify-content-between' -->
+      <div class="d-flex justify-content-around">
+        <div class="p-4 item-h1">Item 1</div>
+        <div class="p-4 item-h1">Item 2</div>
+        <div class="p-4 item-h1">Item 3</div>
+      </div>
+      <!-- vertical alignment -->
+        <!-- 'align-items-start', 'align-items-center', 'align-items-end' -->
+        <!-- 'align-items-stretch' -->
+        <!-- 'align-self-': 'start', center', 'end', 'baseline', 'stretch' -->
+      <div class="d-flex align-items-center">
+        <div class="p-4 item-h1">Item 1</div>
+        <div class="p-4 item-h1">Item 2</div>
+        <div class="p-4 item-h1">Item 3</div>
+      </div>
+      <!-- m-auto -->
+      <div class="d-flex flex-row">
+        <div class="p-4 mr-auto ">Item 1</div>
+        <div class="p-4 ">Item 2</div>
+        <div class="p-4 ">Item 3</div>
+      </div>
+      <div class="d-flex flex-row">
+        <div class="p-4 ">Item 1</div>
+        <div class="p-4 ">Item 2</div>
+        <div class="p-4 ml-auto ">Item 3</div>
+      </div>
+      <div class="d-flex flex-column">
+        <div class="p-4 mb-auto ">Item 1</div>
+        <div class="p-4 ">Item 2</div>
+        <div class="p-4 ">Item 3</div>
+      </div>
+      <div class="d-flex flex-column">
+        <div class="p-4 ">Item 1</div>
+        <div class="p-4 ">Item 2</div>
+        <div class="p-4 mt-auto ">Item 3</div>
+      </div>
+      <!-- wrap -->
+        <!-- 'flex-wrap', 'flex-nowrap' -->
+      <div class="d-flex flex-row flex-nowrap">
+        <div class="p-4 ">Item 1</div>
+        <div class="p-4 ">Item 2</div>
+        <div class="p-4 ">Item 3</div>
+      </div>
+      <!-- ordering -->
+      <div class="d-flex flex-row">
+        <div class="p-4 order-3">Item 1</div>
+        <div class="p-4 order-2">Item 2</div>
+        <div class="p-4 order-1">Item 3</div>
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+    <script>
+    </script>
+
+  </body>
+</html>

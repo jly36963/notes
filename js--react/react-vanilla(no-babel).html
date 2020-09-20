@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>React -- Vanilla Example</title>
+  </head>
+  <body>
+    <!-- app -->
+    <div id="root"></div>
+    <!-- react cdn -->
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <!-- js -->
+    <script>
+      // functional component
+      const Person = (props) => {
+        return (
+          React.createElement(
+            'div',
+            {},
+            React.createElement(
+              'h3', // element
+              {}, // attributes (ie -- { id: "App" })
+              props.name // children
+            )
+          )
+        )
+      }
+      // functional component
+      const App = () => {
+        return (
+          React.createElement(
+            "div",
+            {},
+            [
+              React.createElement(
+                'h1',
+                {},
+                'Jonin'
+              ),
+              React.createElement(
+                Person,
+                { name: 'Itachi' }
+              ),
+              React.createElement(
+                Person,
+                { name: 'Kakashi' }
+              ),
+              React.createElement(
+                Person,
+                { name: 'Yamato' }
+              ),
+            ]
+          )
+        )
+      }
+      // render App
+      ReactDOM.render(
+        React.createElement(App), // component to render
+        document.getElementById('root') // DOM node to render in
+      )
+    </script>
+  </body>
+</html>

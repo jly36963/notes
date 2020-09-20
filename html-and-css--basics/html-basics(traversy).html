@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="website description (used for SEO)">
+  <meta name="keywords" content="html, css, javascript, node.js, express, react">
+  <!-- to keep website off of search engines (use the following meta tag) -->
+  <meta name="robots" content="NOINDEX, NOFOLLOW">
+  <title>HTML &amp; CSS</title>
+</head>
+<body>
+
+  <!-- autocomplete html document (! + tab) -->
+
+  <!-- basic elements -->
+
+  <!-- headings -->
+  <h1>heading 1</h1>
+  <h2>heading 2</h2>
+  <h3>heading 3</h3>
+  <h4>heading 4</h4>
+  <h5>heading 5</h5>
+  <h6>heading 6</h6>
+  <!-- paragraph and semantic tags -->
+  <p>
+    I am a paragraph.
+    Use an 'em' tag for <em>italics</em>.
+    Use 'strong' tag for <strong>bold</strong>.
+    use 'del' tag for <del>striked-through text</del>
+  </p>
+  <!-- line break -->
+  <br>
+  <!-- horizontal rule -->
+  <hr>
+  <!-- external link  -->
+  <div>
+    <a href="http://google.com" target="_blank">Google</a>
+  </div>
+  <!-- internal link -->
+  <div>
+    <a href="/index.html">Home</a>
+  </div>
+  <!-- local image -->
+  <img src="/images/image.jpg" alt="replacement text">
+  <!-- remote image -->
+  <img
+    src="https://images.unsplash.com/photo-1549945676-4fdf5f18a9fa?ixlib=rb-1.2.1&amp;auto=format&amp;fit=crop&amp;w=1000&amp;q=80"
+    alt="Zion National Park"
+  >
+  <!-- div -->
+  <div id="main-header" class="header">
+    <h1>My Website</h1>
+  </div>
+  <!-- span -->
+  <div>
+    <span class="fa fa-address-book" id="contacts"></span>
+    Contacts
+  </div>
+
+  <!-- lists -->
+
+  <!-- unordered list -->
+  <ul>
+    <li>a</li>
+    <li>b</li>
+    <li>c</li>
+  </ul>
+  <!-- ordered list -->
+  <!-- change to letters/numerals (<ol type="I"></ol>) (<ol type="a"></ol>) (<ol type="A"></ol>) -->
+  <ol>
+    <li>a</li>
+    <li>b</li>
+    <li>c</li>
+  </ol>
+  <!-- tables -->
+  <table>
+    <thead>
+      <tr>
+        <th>name</th>
+        <th>email</th>
+        <th>phone</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>landon</th>
+        <th>landon@gmail.com</th>
+        <th>555-555-5555</th>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- forms elements -->
+
+  <form>
+    <div>
+      <!-- text input (id should match label, name is used for form submission)-->
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" placeholder="Name">
+    </div>
+    <div>
+      <!-- text input (email) -->
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email">
+    </div>
+    <div>
+      <!-- textarea -->
+      <label for="message">Message</label>
+      <textarea name="message" id="message" cols="30" rows="10"></textarea>
+    </div>
+    <div>
+      <!-- select -->
+      <label for="gender">Gender</label>
+      <select name="gender" id="gender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+    </div>
+    <div>
+      <!-- number -->
+      <label for="age">Age</label>
+      <input type="number" name="age" id="age">
+    </div>
+    <div>
+      <!-- date -->
+      <label for="birthdate">Birthdate</label>
+      <input type="date" name="birthdate" id="birthdate">
+    </div>
+    <div>
+      <!-- radio -->
+      <label for="membership">Membership</label>
+      <input type="radio" name="membership" value="simple" id="membership"> Simple
+      <input type="radio" name="membership" value="standard" id="membership" checked> Standard
+      <input type="radio" name="membership" value="super" id="membership"> Super
+    </div>
+    <div>
+      <!-- checkbox -->
+      <label for="hobbies">Hobbies</label>
+      <input type="checkbox" name="hobbies" id="hobbies" value="sports"> Sports
+      <input type="checkbox" name="hobbies" id="hobbies" value="coding"> Coding
+      <input type="checkbox" name="hobbies" id="hobbies" value="food and drink"> Food &amp; Drink
+      <input type="checkbox" name="hobbies" id="hobbies" value="music"> Music
+      <input type="checkbox" name="hobbies" id="hobbies" value="reading"> Reading
+      <input type="checkbox" name="hobbies" id="hobbies" value="crafting"> Crafting
+      <input type="checkbox" name="hobbies" id="hobbies" value="movies and tv"> Movies &amp; TV
+    </div>
+    <div>
+      <!-- submit -->
+      <input type="submit" value="Submit">
+      <button type="submit">Submit</button>
+      <button type="reset">Reset</button>
+    </div>
+  </form>
+
+  <!-- html entities -->
+
+  <!-- non-breaking space -->
+  <p>Hello, my name is &nbsp; Brad</p>
+  <!-- brackets -->
+  <p>5 &gt; 3.</p>
+  <p>4 &lt; 6.</p>
+  <!-- copyright -->
+  <p>&copy;</p>
+  <p>&reg;</p>
+  <!-- currency -->
+  <p>&cent;</p>
+  <p>&pound;</p>
+  <p>&yen;</p>
+  <p>&euro;</p>
+  <!-- suits -->
+  <p>&spades;</p>
+  <p>&clubs;</p>
+  <p>&hearts;</p>
+  <p>&diams;</p>
+  <!-- code -->
+  <code>
+    const printer = (term) => console.log(term);
+    <br>
+    printer('hello!');
+  </code>
+  <!-- keyboard -->
+  <p>Save the file by pressing <kbd>Ctrl + S</kbd></p>
+
+  <!-- html5 semantic tags -->
+  <header>Header Content</header>
+  <footer>Footer Content</footer>
+  <nav>Navbar Content</nav>
+  <main>Main Section Content</main>
+  <section>Section Content</section>
+  <article>Article Content</article>
+  <aside>Aside Content</aside>
+
+
+</body>
+</html>

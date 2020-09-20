@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- MATERIALIZE CSS  -->
+    <meta charset="utf-8">
+    <title>Materialize CSS</title>
+
+    <!-- CDN -->
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- CDN (MATERIAL ICONS) -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  </head>
+  <body>
+    <!-- TABLE OF CONTENTS -->
+
+    <!-- container -->
+    <!-- typography -->
+    <!-- alignment -->
+    <!-- colors -->
+    <!-- icons -->
+    <!-- buttons -->
+    <!-- navbars -->
+    <!-- collections -->
+    <!-- grid system -->
+    <!-- cards, panels, shadow -->
+    <!-- footer -->
+    <!-- input -->
+    <!-- tables -->
+    <!-- media -->
+
+
+    <!-- CONTAINER -->
+    <div class="container">
+      <p>I am a container div. Width/margin are automated</p>
+    </div>
+
+    <!-- TYPOGRAPHY -->
+
+    <!-- headings -->
+    <h1>heading1</h1>
+    <h2>heading2</h2>
+    <h3>heading3</h3>
+    <h4>heading4</h4>
+    <h5>heading5</h5>
+    <h6>heading6</h6>
+
+    <!-- paragraph -->
+    <p>default "p" is styled in materialize-css.</p>
+    <blockquote>default "blockquote" is styled in materialize-css.</blockquote>
+    <p class="flow-text">
+      flow text is slightly bigger and sizes with the applicaton.
+    </p>
+
+    <!-- ALIGNMENT -->
+
+    <!-- horizontal alignment -->
+    <div class="left-align">left align</div>
+    <div class="right-align">right align</div>
+    <div class="center-align">center align</div>
+
+    <!-- vertical alignment -->
+    <div class="valign-wrapper">
+      <div>
+        I am center aligned vertically
+      </div>
+    </div>
+
+    <!-- quickfloats -->
+    <!-- floats need a clearfix -->
+    <p class="left">left float</p>
+    <div class="clearfix"></div>
+    <p class="right">right float</p>
+    <div class="clearfix"></div>
+
+    <!-- COLORS -->
+
+    <!-- text colors -->
+    <!-- default (black-text) -->
+    <div class="red-text">red</div>
+    <div class="blue-text">blue</div>
+    <div class="orange-text">orange</div>
+    <div class="green-text">green</div>
+    <div class="yellow-text">yellow</div>
+    <div class="purple-text">purple</div>
+    <div class="pink-text">pink</div>
+    <div class="grey-text">grey</div>
+    <div class="brown-text">brown</div>
+    <div class="white-text">white</div>
+
+    <!-- text colors (less common) -->
+    <div class="deep-purple-text">deep-purple</div>
+    <div class="indigo-text">indigo</div>
+    <div class="cyan-text">cyan</div>
+    <div class="teal-text">teal</div>
+    <div class="lime-text">lime</div>
+    <div class="amber-text">amber</div>
+    <div class="light-green-text">light-green</div>
+    <div class="deep-orange-text">deep-orange</div>
+    <div class="blue-grey-text">blue-grey</div>
+
+    <!-- background colors -->
+    <div class="red">red</div>
+    <div class="blue">blue</div>
+    <div class="orange">orange</div>
+    <div class="green">green</div>
+    <div class="yellow">yellow</div>
+    <div class="purple">purple</div>
+    <div class="pink">pink</div>
+    <div class="grey">grey</div>
+    <div class="brown">brown</div>
+    <div class="white">white</div>
+
+    <!-- background colors (less common) -->
+    <div class="deep-purple">deep-purple</div>
+    <div class="indigo">indigo</div>
+    <div class="cyan">cyan</div>
+    <div class="teal">teal</div>
+    <div class="lime">lime</div>
+    <div class="amber">amber</div>
+    <div class="light-green">light-green</div>
+    <div class="deep-orange">deep-orange</div>
+    <div class="blue-grey">blue-grey</div>
+
+    <!-- darken -->
+    <div class="blue">blue</div>
+    <div class="blue darken-1">blue1</div>
+    <div class="blue darken-2">blue2</div>
+    <div class="blue darken-3">blue3</div>
+    <div class="blue darken-4">blue4</div>
+
+    <!-- lighten -->
+    <div class="blue">blue</div>
+    <div class="blue lighten-1">blue1</div>
+    <div class="blue lighten-2">blue2</div>
+    <div class="blue lighten-3">blue3</div>
+    <div class="blue lighten-4">blue4</div>
+
+    <!-- MATERIAL ICONS -->
+
+    <!-- icon size -->
+    <i class="material-icons">stars</i>
+    <i class="tiny material-icons">stars</i>
+    <i class="small material-icons">stars</i>
+    <i class="medium material-icons">stars</i>
+    <i class="large material-icons">stars</i>
+
+    <!-- icon color  -->
+    <i class="material-icons red blue-text">stars</i>
+
+    <!-- icon in button (with alignment)  -->
+    <a href="#" class="btn waves-effect waves-light">
+      <i class="material-icons right">shopping_cart</i>
+      Check Out
+    </a>
+
+    <!-- fa icon in button (with alignment) -->
+    <a href="#" class="btn waves-effect waves-light">
+      <div class="fa fa-shopping-cart right"></div>
+      Check Out
+    </a>
+
+    <!-- BUTTONS -->
+
+    <!-- standard button -->
+    <button class="btn">button</button>
+    <a class="btn">a</a>
+    <div class="btn">div</div>
+
+    <!-- large button -->
+    <button class="btn-large">large button</button>
+
+    <!-- disabled button -->
+    <button class="btn disabled">disabled button</button>
+
+    <!-- waves effect -->
+    <button class="btn waves-effect waves-light">button</button>
+    <button class="btn white indigo-text waves-effect waves-indigo">button</button>
+
+    <!-- colored buttons (uses all colors) -->
+    <button class="btn red"></button>
+    <button class="btn purple"></button>
+    <button class="btn teal"></button>
+    <button class="btn black"></button>
+
+    <!-- floating buttons -->
+    <button class="btn-floating btn-large waves-effect waves-light red">
+      <i class="material-icons">add</i>
+    </button>
+    <button class="btn-floating btn-large waves-effect waves-light blue">
+      <i class="material-icons">edit</i>
+    </button>
+
+    <!-- pulsing button -->
+    <button class="btn-floating btn-large waves-effect waves-light green pulse">
+      <i class="material-icons">publish</i>
+    </button>
+
+    <!-- simple fixed action button -->
+    <div class="fixed-action-btn">
+      <button class="btn-floating btn-large red">
+        <i class="material-icons">add</i>
+      </button>
+    </div>
+
+    <!-- fixed action button (initialized with vanilla js) -->
+    <!-- to make horizontal (<div class="fixed-action-btn horiontal"></div>) -->
+    <!-- to enforce click/toggle (<div class="fixed-action-btn click-to-toggle"></div>) -->
+    <div class="fixed-action-btn">
+      <a class="btn-floating btn-large red">
+        <i class="large material-icons">mode_edit</i>
+      </a>
+      <ul>
+        <li><a class="btn-floating red"><i class="material-icons">insert_chart</i></a></li>
+        <li><a class="btn-floating yellow darken-1"><i class="material-icons">format_quote</i></a></li>
+        <li><a class="btn-floating green"><i class="material-icons">publish</i></a></li>
+        <li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>
+      </ul>
+    </div>
+
+    <script>
+    	document.addEventListener('DOMContentLoaded', function() {
+    		 const elems = document.querySelectorAll('.fixed-action-btn');
+    		 const instances = M.FloatingActionButton.init(elems);
+    	 });
+    </script>
+
+    <!-- fixed action button toolbar -->
+    <div class="fixed-action-btn toolbar">
+      <a href="#" class="btn-floating btn-large indigo">
+        <i class="material-icons">edit</i>
+      </a>
+      <ul>
+        <li class="waves-effect waves-light">
+          <a href="#">
+            <i class="material-icons">edit</i>
+          </a>
+        </li>
+        <li class="waves-effect waves-light">
+          <a href="#">
+            <i class="material-icons">delete</i>
+          </a>
+        </li>
+        <li class="waves-effect waves-light">
+          <a href="#">
+            <i class="material-icons">publish</i>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- NAVBAR -->
+    <!-- to make link 'active', (<li class="active"></li>) -->
+
+    <!-- navbar (li disappears) -->
+    <nav>
+      <div class="nav-wrapper">
+        <div class="container">
+          <a href="#" class="brand-logo">MySite</a>
+          <ul id="nav-mobile" class="right hide-on-small-and-down">
+            <li>
+              <a href="#">Home</a>
+            </li>
+            <li>
+              <a href="#">About</a>
+            </li>
+            <li>
+              <a href="#">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- fixed navbar -->
+    <div class="navbar-fixed">
+      <nav class="amber">
+        <div class="nav-wrapper">
+          <div class="container">
+            <a href="#!" class="brand-logo">MySite</a>
+            <ul class="right">
+              <li>
+                <a href="#!">
+                  <i class="material-icons">home</i>
+                </a>
+              </li>
+              <li>
+                <a href="#!">
+                  <i class="material-icons">person</i>
+                </a>
+              </li>
+              <li>
+                <a href="#!">
+                  <i class="material-icons">lock_outline</i>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <!-- navbar with dropdown (initialized in vanilla js) -->
+    <ul id="dropdown1" class="dropdown-content">
+      <li><a href="#!">one</a></li>
+      <li><a href="#!">two</a></li>
+      <li class="divider"></li>
+      <li><a href="#!">three</a></li>
+    </ul>
+    <nav>
+      <div class="nav-wrapper">
+        <a href="#!" class="brand-logo">Logo</a>
+        <ul class="right hide-on-med-and-down">
+          <li><a href="sass.html">Sass</a></li>
+          <li><a href="badges.html">Components</a></li>
+          <!-- Dropdown Trigger -->
+          <li><a class="dropdown-trigger" href="#!" data-target="dropdown1">Dropdown<i class="material-icons right">arrow_drop_down</i></a></li>
+        </ul>
+      </div>
+    </nav>
+
+
+    <script>
+    	const dropdowns = document.querySelectorAll('.dropdown-trigger');
+    	dropdowns.forEach(dropdown => M.Dropdown.init(dropdown));
+    </script>
+
+    <!-- COLLECTION -->
+
+    <!-- simple collection -->
+    <ul class="collection">
+      <li class="collection-item">1</li>
+      <li class="collection-item">2</li>
+      <li class="collection-item">3</li>
+    </ul>
+
+    <!-- collection (links) -->
+    <div class="collection">
+      <a class="collection-item">1</a>
+      <a class="collection-item">2</a>
+      <a class="collection-item">3</a>
+    </div>
+
+    <!-- collection (header) -->
+    <ul class="collection with-header">
+      <li class="collection-header">
+        <h3>Items</h3>
+      </li>
+      <li class="collection-item">1</li>
+      <li class="collection-item">2</li>
+      <li class="collection-item">3</li>
+    </ul>
+
+    <!-- collection (secondary content) -->
+    <ul class="collection with-header">
+      <li class="collection-header">
+        <h3>Items</h3>
+      </li>
+      <li class="collection-item">
+        <div>
+          1
+          <a class="secondary-content">
+            <i class="material-icons">close</i>
+          </a>
+        </div>
+      </li>
+      <li class="collection-item">
+        <div>
+          2
+          <a class="secondary-content">
+            <i class="material-icons">close</i>
+          </a>
+        </div>
+      </li>
+    </ul>
+
+    <!-- badges -->
+
+    <div class="collection">
+      <a class="collection-item">
+        1
+        <span class="badge">badge1</span>
+      </a>
+      <a class="collection-item">
+        2
+        <span class="badge">badge2</span>
+      </a>
+    </div>
+
+    <!-- avatar content -->
+    <ul class="collection">
+      <li class="collection-item avatar">
+        <i class="material-icons blue circle">contacts</i>
+        <div class="title">Person1</div>
+        <div>person1@gmail.com</div>
+        <div>555-555-5555</div>
+        <a class="secondary-content">
+          <i class="material-icons">grade</i>
+        </a>
+      </li>
+      <li class="collection-item avatar">
+        <i class="material-icons blue circle">contacts</i>
+        <div class="title">Person2</div>
+        <div>person2@gmail.com</div>
+        <div>555-555-5555</div>
+        <a class="secondary-content">
+          <i class="material-icons">grade</i>
+        </a>
+      </li>
+    </ul>
+
+    <!-- GRID SYSTEM -->
+    <!-- s, m, l, xl (propogates upward)-->
+    <!-- 12 column rows -->
+
+    <div class="row">
+      <div class="col s4">4 wide (out of 12)</div>
+      <div class="col s4">4 wide (out of 12)</div>
+      <div class="col s4">4 wide (out of 12)</div>
+    </div>
+
+    <div class="row">
+      <div class="col s6">6 wide (out of 12)</div>
+      <div class="col s6">6 wide (out of 12)</div>
+    </div>
+
+    <div class="row">
+      <div class="col s4">4 wide (out of 12)</div>
+      <div class="col s8">8 wide (out of 12)</div>
+    </div>
+
+    <div class="row">
+      <div class="col l6 m4 s12">responsive</div>
+      <div class="col l3 m4 s12">responsive</div>
+      <div class="col l3 m4 s12">responsive</div>
+    </div>
+
+    <!-- grid (offset) -->
+    <div class="row">
+      <div class="col s6 offset-s3">
+        Log In
+      </div>
+    </div>
+
+    <!-- CARDS -->
+    <!-- make small/medium/large (<div class="card small"></div>) -->
+
+    <!-- simple card -->
+    <div class="card">
+      <div class="card-content">
+        Hello there!
+      </div>
+    </div>
+    <!-- card with color -->
+    <div class="card deep-purple darken-2">
+      <div class="card-content white-text">
+        Hello there!
+      </div>
+    </div>
+    <!-- card with title -->
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">Title</span>
+        <p>Hello there, I am the body text.</p>
+      </div>
+      <div class="card-action">
+        <a>Original Post</a>
+        <a>Author's profile</a>
+      </div>
+    </div>
+
+    <!-- card with image -->
+    <div class="card">
+      <div class="card-image">
+        <img
+          src="https://images.unsplash.com/photo-1531604250646-2f0e818c4f06?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=332&amp;q=80"
+          alt="sunset"
+          height="600"
+          width="400"
+        >
+      </div>
+      <div class="card-content">
+        <span class="card-title">card title</span>
+        <p>card content</p>
+      </div>
+      <div class="card-action">
+        <a>read more</a>
+      </div>
+    </div>
+    <!-- card with image/button -->
+    <div class="card">
+      <div class="card-image">
+        <img
+          src="https://images.unsplash.com/photo-1531604250646-2f0e818c4f06?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=332&amp;q=80"
+          alt="sunset"
+          height="600"
+          width="400"
+        >
+        <a class="btn-floating waves-effect halfway-fab waves-light black">
+          <i class="material-icons">add</i>
+        </a>
+      </div>
+      <div class="card-content">
+        <span class="card-title">card title</span>
+        <p>card content</p>
+      </div>
+      <div class="card-action">
+        <a class="purple-text">read more</a>
+      </div>
+    </div>
+    <!-- horizontal card (w/ image) -->
+    <div class="card horizontal">
+      <div class="card-image">
+        <img
+          src="https://images.unsplash.com/photo-1531604250646-2f0e818c4f06?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=332&amp;q=80"
+          alt="sunset"
+          height="600"
+          width="400"
+        >
+      </div>
+      <div class="card-stacked">
+        <div class="card-content">
+          <span class="card-title">Title (Horizontal Card)</span>
+          <p>Text Body</p>
+        </div>
+      </div>
+    </div>
+    <!-- card with tabs (initialized with vanilla js) -->
+    <div class="card">
+    	 <div class="card-content">
+    		 <p>I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.</p>
+    	 </div>
+    	 <div class="card-tabs">
+    		 <ul class="tabs tabs-fixed-width">
+    			 <li class="tab"><a href="#test4">Test 1</a></li>
+    			 <li class="tab"><a class="active" href="#test5">Test 2</a></li>
+    			 <li class="tab"><a href="#test6">Test 3</a></li>
+    		 </ul>
+    	 </div>
+    	 <div class="card-content grey lighten-4">
+    		 <div id="test4">Test 1</div>
+    		 <div id="test5">Test 2</div>
+    		 <div id="test6">Test 3</div>
+    	 </div>
+     </div>
+
+    <script>
+    	const tabs = document.querySelectorAll('.tabs');
+    	tabs.forEach(tab => M.Tabs.init(tab));
+    </script>
+
+    <!-- panel -->
+    <div class="card-panel">
+      <p>content</p>
+    </div>
+    <!-- colored panel -->
+    <div class="card-panel cyan">
+      <p class="white-text">content</p>
+    </div>
+
+    <!-- shadow -->
+    <!-- z-depth-1 through z-depth-4 -->
+    <div class="card-panel indigo z-depth-4">
+      <p class="white-text">content</p>
+    </div>
+
+
+    <!-- FOOTER -->
+    <footer class="page-footer grey darken-3 z-depth-4">
+      <div class="container">
+        <div class="row">
+          <div class="col s12 l6">
+            <h5 class="grey-text text-lighten-3">About Us</h5>
+            <p>Hi, i'm some footer text!</p>
+          </div>
+          <div class="col s12 m4 offset-m2">
+            <h5 class="grey-text text-lighten-3">
+              Links
+            </h5>
+            <ul>
+              <li>
+                <a class="white-text">Link 1</a>
+              </li>
+              <li>
+                <a class="white-text">Link 2</a>
+              </li>
+              <li>
+                <a class="white-text">Link 3</a>
+              </li>
+              <li>
+                <a class="white-text">Link 4</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    	<div class="footer-copyright grey darken-2">
+    		<div class="container">
+    			Copyright &copy; 2019
+    			<a class="grey-text text-lighten-3 right"> Terms and Conditions</a>
+    		</div>
+    	</div>
+    </footer>
+
+    <!-- INPUT -->
+    <form>
+      <!-- text field -->
+      <div class="input-field">
+        <input type="text" placeholder="Name" id="name">
+        <label for="name">Name</label>
+      </div>
+      <!-- value & disabled -->
+      <div class="input-field">
+        <input
+          type="text"
+          disabled
+          placeholder="Email"
+          id="email"
+          value="my_value@gmail.com"
+        >
+        <label for="email">Email</label>
+      </div>
+      <!-- textarea -->
+      <div class="input-field">
+        <textarea
+          id="message"
+          class="materialize-textarea"
+          placeholder="Details"
+        ></textarea>
+        <label for="message">Details</label>
+      </div>
+      <!-- inline field -->
+      Number of Users:
+      <div class="input-field inline">
+        <input type="text" id="users">
+        <label for="users">#</label>
+      </div>
+      <!-- icon prefix -->
+      <div class="input-field">
+        <i class="material-icons prefix">phone</i>
+        <input type="tel" id="phone">
+        <label for="phone">Phone Number</label>
+      </div>
+      <!-- validation and errors (ui on submit) -->
+      <div class="input-field">
+    		<input type="email" id="email" class="validate" placeholder="Email">
+    		<label
+    			for="email"
+    			data-error="Invalid"
+    			data-success="Valid"
+    		>Email</label>
+    	</div>
+    </form>
+
+    <!-- select (initialized with vanilla js) -->
+    <!-- multiple select (<select multiple>) -->
+    <form>
+      <div class="input-field">
+        <select>
+          <option value="" disabled selected>Select Option</option>
+          <option value="1">Option 1</option>
+          <option value="2">Option 2</option>
+          <option value="3">Option 3</option>
+        </select>
+      </div>
+      <!-- select with optgroup -->
+      <div class="input-field">
+        <select>
+          <optgroup label="Option Group 1">
+            <option value="1">Option 1</option>
+            <option value="2">Option 2</option>
+          </optgroup>
+          <optgroup label="Option Group 2">
+            <option value="3">Option 3</option>
+            <option value="4">Option 4</option>
+          </optgroup>
+        </select>
+        <label>Option Group Select</label>
+      </div>
+      <!-- radio buttons -->
+    	<!-- dot-fill (<input type="radio" class="with-gap">) -->
+    	<p>
+    		<label>
+    			<input name="group1" type="radio" />
+    			<span>Red</span>
+    		</label>
+    	</p>
+    	<p>
+    		<label>
+    			<input name="group1" type="radio" />
+    			<span>Yellow</span>
+    		</label>
+    	</p>
+    	<p>
+    		<label>
+    			<input name="group1" type="radio" />
+    			<span>Blue</span>
+    		</label>
+    	</p>
+    	<!-- checkboxes -->
+    	<!-- fill-box (<input type="checkbox" class="filled-in">) -->
+    	<p>
+        <label>
+          <input type="checkbox" />
+          <span>Red</span>
+        </label>
+      </p>
+      <p>
+        <label>
+          <input type="checkbox" />
+          <span>Yellow</span>
+        </label>
+      </p>
+      <p>
+        <label>
+          <input type="checkbox" />
+          <span>Blue</span>
+        </label>
+      </p>
+
+    </form>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('select');
+        var instances = M.FormSelect.init(elems);
+      });
+    </script>
+
+    <!-- switch -->
+    <form>
+      <div class="switch">
+        <label>
+          Off
+          <input type="checkbox" checked>
+          <span class="lever"></span>
+          On
+        </label>
+      </div>
+    </form>
+
+    <!-- file input -->
+    <form>
+      <div class="file-field input-field">
+        <div class="btn purple">
+          <span>Upload File</span>
+          <input type="file">
+        </div>
+        <div class="file-path-wrapper">
+          <input type="text" class="file-path">
+        </div>
+      </div>
+    </form>
+
+    <!-- range slider -->
+    <p class="range-field">
+      <input type="range" min="0" max="100">
+    </p>
+
+    <!-- date picker -->
+    <form>
+    	<div class="input-field">
+    		<input type="text" id="date" class="datepicker">
+    		<label for="date">Choose a Date</label>
+    	</div>
+    </form>
+
+    <script>
+    	document.addEventListener('DOMContentLoaded', () => {
+    		const elems = document.querySelectorAll('.datepicker');
+    		const instances = M.Datepicker.init(elems);
+    	});
+    </script>
+
+    <!-- time picker -->
+    <form>
+    	<div class="input-field">
+    		<input type="text" id="time" class="timepicker">
+    		<label for="time">Choose a Time</label>
+    	</div>
+    </form>
+
+    <script>
+    	document.addEventListener('DOMContentLoaded', function() {
+    		var elems = document.querySelectorAll('.timepicker');
+    		var instances = M.Timepicker.init(elems);
+    	});
+    </script>
+
+    <!-- character counter -->
+    <div class="input-field">
+    	<input type="text" class="counted" data-length="40">
+    	<label for="post">Post</label>
+    </div>
+
+    <script>
+    	document.addEventListener('DOMContentLoaded', function() {
+    		var elems = document.querySelectorAll('.counted');
+    		var instances = M.CharacterCounter.init(elems);
+    	});
+    </script>
+
+    <!-- tables -->
+    <!-- striped (<table class="striped"></table>) -->
+    <!-- centered (<table class="centered"></table>) -->
+    <!-- highlight hover (<table class="highlight"></table>) -->
+    <!-- responsive/horizontal (<table class="responsive-table"></table>) -->
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Location</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Kakashi</th>
+          <th>Kakashi1@gmail.com</th>
+          <th>Virginia</th>
+        </tr>
+        <tr>
+          <th>Yamato</th>
+          <th>Yamato1@gmail.com</th>
+          <th>New Mexico</th>
+        </tr>
+        <tr>
+          <th>Itachi</th>
+          <th>Itachi1@gmail.com</th>
+          <th>New Mexico</th>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- MEDIA -->
+
+    <!-- responsive image -->
+    <!-- circular (<img src="" alt="" class="responsive-image circle">) -->
+    <div class="row">
+      <div class="col s6">
+        <img
+        src="https://images.unsplash.com/photo-1531604250646-2f0e818c4f06?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=332&amp;q=80"
+        alt="sunset"
+        class="responsive-img">
+      </div>
+    </div>
+
+    <!-- responsive video embed -->
+    <div class="video-container">
+      <iframe width="560" height="315"
+        src="https://www.youtube.com/embed/7pVOSKFoq6w" frameborder="0"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+
+    <!-- responsive video element -->
+    <video class="responsive-video" controls>
+      <source src="somevideo.mp4" type="video/mp4">
+    </video>
+
+    <!-- chips -->
+    <div class="chip">
+      Node.js
+    </div>
+    <div class="chip">
+      React
+    </div>
+    <!-- chips with images -->
+    <div class="chip">
+      <img
+        src="https://images.unsplash.com/photo-1531604250646-2f0e818c4f06?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=332&amp;q=80"
+        alt="sunset"
+      >
+      Sunset
+    </div>
+
+    <!-- determinate progress bar (width controls fill) -->
+    <div class="progress">
+      <div class="determinate" style="width:50%;"></div>
+    </div>
+    <!-- indeterminate progress bar (spinner like progress bar) -->
+    <div class="progress">
+      <div class="indeterminate"></div>
+    </div>
+    <!-- small blue spinner -->
+    <div class="preloader-wrapper small active">
+    	<div class="spinner-layer spinner-blue-only">
+    		<div class="circle-clipper left">
+    			<div class="circle"></div>
+    		</div>
+    		<div class="gap-patch">
+    			<div class="circle"></div>
+    		</div>
+    		<div class="circle-clipper right">
+    			<div class="circle"></div>
+    		</div>
+    	</div>
+    </div>
+
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+
+  </body>
+</html>
