@@ -1,0 +1,24 @@
+{
+  "name": "playground",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tensorflow/tfjs-node": "^2.0.0",
+    "dataframe-js": "^1.4.3",
+    "escape-html": "^1.0.3",
+    "mathjs": "^7.0.1",
+    "ml": "^5.0.0",
+    "ml-hclust": "^3.0.0",
+    "ml-kmeans": "^5.0.0",
+    "ml-pca": "^4.0.1",
+    "ml-regression-simple-linear": "^2.0.2",
+    "papaparse": "^5.2.0",
+    "sharp": "^0.25.3"
+  }
+}
