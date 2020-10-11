@@ -13,10 +13,11 @@ package main
 // ---
 
 import (
+	"encoding/json" // json
 	"fmt"
+	"math"
+	"reflect"
 	"strings"
-	// "encoding/json" // json
-	// "math"
 	// "math/rand"
 	// "os"
 	// "os/exec" // exec
@@ -33,12 +34,17 @@ import (
 
 func main() {
 
+	// pointers
+	print(upper("pointers"))
+	usePointer()
+
 	// strings
 	print(upper("strings"))
 	useStringFunctions()
 
 	// maps
 	print(upper("maps"))
+	iterateMap()
 
 	// slices
 	print(upper("slice"))
@@ -64,8 +70,18 @@ func main() {
 	print(upper("structs"))
 	createNinja()
 
+	print(upper("interfaces"))
+	useInterface()
+
+	print(upper("json"))
+	useJson()
+
 	print(upper(""))
+
 	print(upper(""))
+
+	print(upper(""))
+
 	print(upper(""))
 }
 
@@ -76,6 +92,40 @@ func main() {
 var print = fmt.Println
 var upper = strings.ToUpper
 var format = fmt.Sprintf
+var typeOf = reflect.TypeOf
+
+// ---
+// pointers
+// ---
+
+/*
+
+// * -- pointer, dereferencer
+// & -- address
+
+var x = 100 // set value
+var p *int = &x // pointer to value's address
+fmt.Println(a) // value
+fmt.Println(&a) // address
+fmt.Println(p) // address
+fmt.Println(*p) // value (dereferenced)
+
+*/
+
+func usePointer() {
+	// value
+	a := 3
+	// function to change value at location in memory
+	changePointerValue := func(p *int) {
+		print(*p) // dereferenced value
+		print(p)  // address
+		*p = 4    // change value
+		print(*p) // new value
+		print(p)  // address
+	}
+	// change value at location in memory
+	changePointerValue(&a)
+}
 
 // ---
 // strings
@@ -109,6 +159,22 @@ func useStringFunctions() {
 // ---
 // maps
 // ---
+
+/*
+if initializing an empty map: do it like this
+m := make(map[string]string) // use 'make'
+*/
+
+func iterateMap() {
+	names := map[string]string{
+		"Kakashi":    "Hatake",
+		"Konohamaru": "Sarutobi",
+		"Iruka":      "Umino",
+	}
+	for k, v := range names {
+		fmt.Println(fmt.Sprintf("%s %s", k, v))
+	}
+}
 
 // ---
 // slice
@@ -230,44 +296,107 @@ func createNinja() {
 }
 
 // ---
-//
+// interfaces
 // ---
 
-// ---
-//
-// ---
+// interface
+type geometry interface {
+	area() float64
+	perim() float64
+}
+
+// structs
+type rect struct {
+	width, height float64
+}
+type circle struct {
+	radius float64
+}
+
+// methods for struct (rect)
+func (r rect) area() float64 {
+	return r.width * r.height
+}
+func (r rect) perim() float64 {
+	return 2*r.width + 2*r.height
+}
+
+// methods for struct (circle)
+func (c circle) area() float64 {
+	return math.Pi * c.radius * c.radius
+}
+func (c circle) perim() float64 {
+	return 2 * math.Pi * c.radius
+}
+
+// interface method
+func measure(g geometry) {
+	print(typeOf(g))
+	print(format("area: %.1f", g.area()))
+	print(format("perimeter: %.1f", g.perim()))
+}
+func useInterface() {
+	// use interface method
+	r := rect{width: 3, height: 4}
+	c := circle{radius: 5}
+	measure(r)
+	measure(c)
+}
 
 // ---
-//
+// json
 // ---
 
-// ---
-//
-// ---
+// json.Marshal -- input: interface{}; output: []byte, error
+// json.Unmarshal -- input: []byte, interface{}; output: error
 
-// ---
-//
-// ---
+// struct
+type jonin struct {
+	Fn  string `json:"fn"`
+	Ln  string `json:"ln"`
+	Age int    `json:"age"`
+}
 
-// ---
-//
-// ---
+func useJson() {
+	// struct instance
+	kakashi := jonin{
+		Fn:  "Kakashi",
+		Ln:  "Hatake",
+		Age: 46,
+	}
+	// marshal
+	bytes, err1 := json.Marshal(kakashi)
+	if err1 != nil {
+		print(format("error: %s", err1))
+	}
+	// unmarshal
+	var kakashi2 jonin
+	err2 := json.Unmarshal(bytes, &kakashi2) // src (bytes), destination (struct)
+	if err2 != nil {
+		print(format("error: %s", err2))
+	}
 
-// ---
-//
-// ---
+	// re-marshal (check work)
+	bytes2, err3 := json.Marshal(kakashi2)
+	if err3 != nil {
+		print(format("error: %s", err3))
+	}
 
-// ---
-//
-// ---
+	// unmarshal (again)
+	var kakashi3 jonin
+	err4 := json.Unmarshal(bytes2, &kakashi3)
+	if err4 != nil {
+		print(format("error: %s", err4))
+	}
 
-// ---
-//
-// ---
-
-// ---
-//
-// ---
+	print(kakashi)
+	print(string(bytes))
+	print("")
+	print(kakashi2)
+	print(string(bytes2))
+	print("")
+	print(kakashi3)
+}
 
 // ---
 //
