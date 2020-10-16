@@ -2,6 +2,16 @@
 // golang
 // ---------
 
+/*
+
+# in `.zprofile`
+
+# set $GOPATH and add to PATH
+export GOPATH="$HOME/go"
+PATH="$GOPATH/bin:$PATH"
+
+*/
+
 // ---
 // terms
 // ---
@@ -126,16 +136,6 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
-	// "encoding/json" // json
-	// "math"
-	// "math/rand"
-	// "os"
-	// "os/exec" // exec
-	// "sort"
-	// "sync"
-	// "sync/atomic"
-	// "time"
-	// "context"
 )
 
 // ---

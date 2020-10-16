@@ -4,58 +4,87 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 	"time"
 )
 
+// ---
+// main
+// ---
+
 func main() {
 	// runtime
-	fmt.Println(strings.ToUpper("runtime details"))
 	getRuntimeDetails()
-
 	// fmt
-	fmt.Println(strings.ToUpper("fmt"))
 	useFmt()
-
 	// log
-	fmt.Println(strings.ToUpper("log"))
 	useLog()
-
 	// strings
-	fmt.Println(strings.ToUpper("strings"))
 	useStrings()
-
 	// json
-	fmt.Println(strings.ToUpper("json"))
 	useJson()
-
 	// time
-	fmt.Println(strings.ToUpper("time"))
 	useTime()
-
-	// path
-	fmt.Println(strings.ToUpper("path"))
-	usePath()
+	// filepath
+	useFilepath()
+	// sort
+	useSort()
+	// os
+	useOs()
+	// os (os.File)
+	useOsFile()
+	// os (os/exec)
+	useExec()
+	// math
+	useMath()
 }
+
+// ---
+// helper func
+// ---
+
+func bulkPrint(args ...interface{}) {
+	for _, a := range args {
+		fmt.Println(a)
+	}
+}
+
+func printSectionTitle(title string) {
+	fmt.Println("")
+	fmt.Println(strings.ToUpper(title))
+	fmt.Println("")
+}
+
+// ---------
+// notes
+// ---------
 
 // ---
 // runtime details
 // ---
 
+type RuntimeDetails struct {
+	Os      string `json:"os"`
+	Arch    string `json:"arch"`
+	CPUs    int    `json:"cpus"`
+	Version string `json:"version"`
+}
+
 func getRuntimeDetails() {
-	// get runtime details (string slice)
-	details := []string{
-		fmt.Sprintf("os: %v", runtime.GOOS),
-		fmt.Sprintf("arch: %v", runtime.GOARCH),
-		fmt.Sprintf("CPUs: %v", runtime.NumCPU()),
-		fmt.Sprintf("GR: %v", runtime.NumGoroutine()),
-		fmt.Sprintf("v: %v", runtime.Version()),
-	}
-	// print each detail (for loop)
-	for _, d := range details {
-		fmt.Println(d)
-	}
+	printSectionTitle("runtime")
+
+	fmt.Printf("%+v\n", RuntimeDetails{
+		Os:      runtime.GOOS,
+		Arch:    runtime.GOARCH,
+		CPUs:    runtime.NumCPU(),
+		Version: runtime.Version(),
+	})
 }
 
 // ---
@@ -75,6 +104,8 @@ func getRuntimeDetails() {
 // %e -- floating point (decimal notation)
 
 func useFmt() {
+	printSectionTitle("fmt")
+
 	// Println
 	fmt.Println("Hello world!") // print string
 	// Sprintf
@@ -105,6 +136,8 @@ log.Fatalln("Error!")
 */
 
 func useLog() {
+	printSectionTitle("log")
+
 	// Println
 	log.Println("Hello World!")
 	// Printf
@@ -117,6 +150,7 @@ func useLog() {
 // ---
 
 func useStrings() {
+	printSectionTitle("strings")
 
 	// Compare -- just use comparison operators (==, <, >, etc)
 	comparison := strings.Compare("Kakashi", "Obito") // -1, 0, or 1
@@ -149,7 +183,8 @@ func useStrings() {
 	// Trim (also TrimLeft, TrimRight)
 	trimmed := strings.Trim("   Kakashi   ", " ") // string
 
-	fmt.Println(
+	// print results
+	bulkPrint(
 		"comparison", comparison,
 		"containsSubstring", containsSubstring,
 		"containsAnyChars", containsAnyChars,
@@ -178,6 +213,7 @@ type Person struct {
 }
 
 func useJson() {
+	printSectionTitle("json")
 
 	// struct -> []byte
 	bytes, _ := json.Marshal(Person{
@@ -208,6 +244,8 @@ func useJson() {
 // ---
 
 func useTime() {
+	printSectionTitle("time")
+
 	// Date
 	date := time.Date(2020, 10, 11, 12, 0, 0, 0, time.UTC)
 	// Now
@@ -245,7 +283,8 @@ func useTime() {
 	pd, _ := time.ParseDuration("1h15m10s")
 	roundedDuration := pd.Round(time.Minute)
 
-	fmt.Println(
+	// print results
+	bulkPrint(
 		"date", date,
 		"now", now,
 		"hour", hour,
@@ -266,9 +305,341 @@ func useTime() {
 }
 
 // ---
-// path
+// path/filepath
 // ---
 
-func usePath() {
+// for os specific slash patterns, use `path/filepath` instead of `path`
 
+func printFilePaths(path string) {
+	fmt.Println("filepath.Walk()")
+	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		fmt.Println(path) // recursively print fp
+		return nil
+	})
 }
+
+func useFilepath() {
+	printSectionTitle("filepath")
+
+	fp := "client/build/index.html"
+	// Base
+	base := filepath.Base(fp) // string
+	// Dir
+	dir := filepath.Dir(fp) // string
+	// Ext
+	ext := filepath.Ext(fp) // string
+	// IsAbs
+	isAbs := filepath.IsAbs(fp) // boolean
+	// Join
+	cwd, _ := os.Getwd()                        // string, error
+	joinedPath := filepath.Join(cwd, "main.go") // string
+	// Match
+	match, _ := filepath.Match("*.html", "index.html") // boolean, error
+	// Split
+	d, fn := filepath.Split(fp)
+
+	// print results
+	bulkPrint(
+		"base", base,
+		"dir", dir,
+		"ext", ext,
+		"isAbs", isAbs,
+		"joinedPath", joinedPath,
+		"match", match,
+		"splitPath", d, fn,
+	)
+
+	// Walk
+	printFilePaths("../")
+}
+
+// ---
+// sort
+// ---
+
+func useSort() {
+	printSectionTitle("sort")
+
+	// Float64s
+	floats := []float64{5.2, -1.3, 0.7, -3.8, 2.6}
+	sort.Float64s(floats)
+	// Ints
+	ints := []int{3, 2, 5, 4, 1}
+	sort.Ints(ints)
+	// Strings (case sensitive)
+	strings := []string{"Kakashi", "Obito", "Itachi", "Hashirama"}
+	sort.Strings(strings)
+
+	// SliceStable
+	s := []int{3, 2, 5, 4, 1}
+	sort.SliceStable(s, func(i, j int) bool { return s[i] < s[j] })
+
+	// Reverse
+	letters := []string{"b", "c", "e", "a", "d"}
+	sort.Sort(sort.Reverse(sort.StringSlice(letters)))
+
+	// Search
+	// *** will do later ***
+
+	// print results
+	bulkPrint(
+		"floats", floats,
+		"ints", ints,
+		"strings", strings,
+		"letters", letters,
+		"s", s,
+	)
+}
+
+// ---
+// os
+// ---
+
+// https://golang.org/pkg/os/
+
+/*
+
+// Chdir
+os.Chdir("../")
+
+// Chmod
+_ = os.Chmod("main.go", 0777) // chmod 777 main.go
+
+// Clearenv
+os.Clearenv() // clear env vars
+
+// Exit
+os.Exit(1) // exit with error
+
+// Mkdir
+_ = os.Mkdir("dir1", os.ModeDir) // (path string, perm FileMode) => error
+
+// NewSyscallError
+// ***
+
+// Remove
+_ = os.Remove("file.txt") // remove file or empty dir
+
+// RemoveAll
+_ = os.RemoveAll("dir1") // recursively remove until done or error
+
+// Rename
+_ = os.Rename("dir1", "dir2")
+
+// Setenv
+_ = os.Setenv("hello", "world") // hello=world
+
+// Unsetenv
+_ = os.Unsetenv("hello")
+
+*/
+
+func useOs() {
+	printSectionTitle("os")
+
+	// Getwd
+	cwd, _ := os.Getwd()
+	// Environ
+	envVars := os.Environ() // []string ("key=value")
+	// Getenv
+	home := os.Getenv("HOME") // get value of env var
+	// Getpid
+	pid := os.Getpid() // int (pid of caller)
+	// Hostname
+	host, _ := os.Hostname()
+	// LookupEnv
+	user, foundEnvVar := os.LookupEnv("USER")
+	// UserHomeDir
+	homeDir, _ := os.UserHomeDir()
+
+	// print results
+	bulkPrint(
+		"cwd", cwd,
+		"len(envVars)", len(envVars),
+		"home", home,
+		"pid", pid,
+		"host", host,
+		"user", user, "foundEnvVar", foundEnvVar,
+		"homeDir", homeDir,
+	)
+}
+
+func useOsFile() {
+	printSectionTitle("os (file)")
+
+	var f *os.File
+	fn := "my-example-file.txt"
+
+	// Create (will overwrite!)
+	f, _ = os.Create(fn) // create/open
+	name := f.Name()     // get name
+	f.Close()            // close
+
+	// Write
+	f, _ = os.OpenFile(fn, os.O_WRONLY, os.ModePerm) // open for writing
+	content := []byte("Hey Kakashi!")                // content to write
+	n, _ := f.Write(content)                         // write
+	f.Close()                                        // close
+
+	// Read
+	f, _ = os.Open(fn)       // open file
+	b := make([]byte, n)     // receiver for read
+	f.Read(b)                // read open file
+	readContent := string(b) // []byte -> string
+	f.Close()                // close file
+
+	// Remove
+	os.Remove(fn) // remove file or empty dir
+
+	// print results
+	bulkPrint(
+		"name", name,
+		"readContent", readContent,
+	)
+}
+
+// ---
+// exec
+// ---
+
+func useExec() {
+	printSectionTitle("exec")
+
+	c := []string{"ls", "-a"}
+	// Command
+	command := exec.Command(c[0], c[1:]...)
+	b, err := command.Output()
+	if err != nil {
+		fmt.Println(err)
+	}
+	output := strings.Split(string(b), "\n")
+
+	// print results
+	bulkPrint(
+		"c", strings.Join(c, " "),
+		"output", output,
+	)
+}
+
+// ---
+// math
+// ---
+
+// https://golang.org/pkg/math/
+
+func round(n float64, p int) float64 {
+	// move decimal place, round to int, move decimal place back
+	a := math.Pow10(p)
+	return math.Round(n*a) / a
+}
+
+func useMath() {
+	printSectionTitle("math")
+
+	// constants
+	e := math.E
+	pi := math.Pi
+	phi := math.Phi
+	// math
+	abs := math.Abs(-1)         // 1
+	ceil := math.Ceil(0.95)     // 1
+	floor := math.Floor(1.05)   // 1
+	rounded := math.Round(1.65) // 2
+	// exp
+	cbrt := math.Cbrt(27)  // 3
+	exp := math.Exp(-1)    // 1/e
+	pow := math.Pow(2, 3)  // 2**3
+	pow10 := math.Pow10(3) // 10**3
+	// log
+	ln := math.Log(math.E) // 1
+	log := math.Log10(10)  // 1
+	// max/min
+	max := math.Max(2, 3) // 3
+	min := math.Min(2, 3) // 2
+	// trig
+	sin := math.Sin(pi / 2)         // 1
+	cos := math.Cos(0)              // 1
+	tan := math.Tan(pi / 4)         // 1
+	csc := 1 / math.Sin(pi/2)       // 1
+	sec := 1 / math.Cos(pi/2)       // 1
+	cot := 1 / math.Tan(pi/4)       // 1
+	asin := math.Asin(1)            // pi/2
+	acos := math.Acos(0)            // pi/2
+	atan := math.Atan(math.Inf(+1)) // pi/2
+
+	// print results
+	bulkPrint(
+		// constants
+		"e", round(e, 2),
+		"pi", round(pi, 2),
+		"phi", round(phi, 2),
+		// math
+		"abs", abs,
+		"ceil", ceil,
+		"floor", floor,
+		"rounded", rounded,
+		// exp
+		"cbrt", cbrt,
+		"exp", exp,
+		"pow", pow,
+		"pow10", pow10,
+		// log
+		"ln", ln,
+		"log", log,
+		// max/min
+		"max", max,
+		"min", min,
+		// trig
+		"sin", round(sin, 2),
+		"cos", round(cos, 2),
+		"tan", round(tan, 2),
+		"csc", round(csc, 2),
+		"sec", round(sec, 2),
+		"cot", round(cot, 2),
+		"asin", round(asin, 2),
+		"acos", round(acos, 2),
+		"atan", round(atan, 2),
+	)
+}
+
+// ---
+// rand (math/rand)
+// ---
+
+// https://golang.org/pkg/math/rand/
+
+// ---
+// errors
+// ---
+
+// https://golang.org/pkg/errors/
+
+// ---
+// testing
+// ---
+
+// https://golang.org/pkg/testing/
+
+// ---
+// regexp
+// ---
+
+// https://golang.org/pkg/regexp/
+
+// ---
+// io
+// ---
+
+// https://golang.org/pkg/io/
+
+// ---
+// bufio
+// ---
+
+// https://golang.org/pkg/bufio/
+
+// ---
+// archive
+// ---
+
+// https://golang.org/pkg/archive/
