@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -43,6 +46,9 @@ func main() {
 	useExec()
 	// math
 	useMath()
+	// net/http
+	useNetHttpGet()
+	useNetHttpPost()
 }
 
 // ---
@@ -600,6 +606,89 @@ func useMath() {
 		"acos", round(acos, 2),
 		"atan", round(atan, 2),
 	)
+}
+
+func useNetHttpGet() {
+	printSectionTitle("net/http (Get)")
+
+	type User struct {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+	}
+
+	// make request
+	url := "https://jsonplaceholder.typicode.com/users/1"
+	res, err := http.Get(url) // struct -- Status, StatusCode, Content-Type, Body
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	// get body
+	defer res.Body.Close()
+	body, err2 := ioutil.ReadAll(res.Body) // []byte
+	if err2 != nil {
+		log.Println(err2)
+		return
+	}
+	// unmarshal body
+	var user User
+	err3 := json.Unmarshal(body, &user)
+	if err3 != nil {
+		log.Println(err3)
+		return
+	}
+	// print results
+	bulkPrint(
+		"user", fmt.Sprintf("%+v", user),
+	)
+}
+
+func useNetHttpPost() {
+	printSectionTitle("net/http (Post)")
+
+	type User struct {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+	}
+
+	// make request
+	url := "https://jsonplaceholder.typicode.com/users"
+	contentType := "application/json"
+	postBody, err := json.Marshal(User{
+		Id:   3,
+		Name: "Hiruzen Sarutobi",
+	})
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	data := bytes.NewBuffer(postBody)
+	res, err2 := http.Post(url, contentType, data) // struct -- Status, StatusCode, Content-Type, Body
+	if err2 != nil {
+		log.Println(err2)
+		return
+	}
+	// get body
+	defer res.Body.Close()
+	body, err3 := ioutil.ReadAll(res.Body) // []byte
+	if err3 != nil {
+		log.Println(err3)
+		return
+	}
+	// unmarshal body
+	var user User
+	err4 := json.Unmarshal(body, &user)
+	if err4 != nil {
+		log.Println(err4)
+		return
+	}
+	// print results
+	bulkPrint(
+		"user", fmt.Sprintf("%+v", user),
+	)
+
+	// print results
+
 }
 
 // ---
