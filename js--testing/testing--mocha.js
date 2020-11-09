@@ -99,11 +99,11 @@ describe("friend", () => {
 // before(description, function)
 
 describe("hooks", () => {
-  before(() => console.log("runs before first test"));
-  after(() => console.log("runs after first test"));
-  beforeEach(() => console.log("runs before each test"));
-  afterEach(() => console.log("runs after each test"));
-  // *** test something here ***
+  before(() => console.log("runs before first test in block"));
+  after(() => console.log("runs after last test in block"));
+  beforeEach(() => console.log("runs before each test in block"));
+  afterEach(() => console.log("runs after each test in block"));
+  // *** test things here ***
 });
 
 // ---
