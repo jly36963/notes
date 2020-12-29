@@ -20,6 +20,8 @@
 
 import httpx
 import asyncio
+import json
+from pprint import pprint
 
 # ---
 # basic usage
@@ -54,106 +56,112 @@ async def httpx_get_json(url):
 
 
 # ---
-# get (with params)
+# fetch
 # ---
 
 
-async def httpx_get_json_with_query(url, params):
+async def fetch(url, method="GET", headers=None, payload=None, params=None, debug=False, form_encode=False):
     """
-    Make GET request (with query) and return parsed body.
+    Make request to specified url and return parsed body
     """
+    # form encode or json encode
+    data = payload if form_encode else json.dumps(payload)
+    # make request with httpx
     async with httpx.AsyncClient() as client:
-        try:
-            # response
-            response: httpx.Response = await client.get(url, params=params)
-            body: dict = response.json()
-            # return body
-            return body
-        except Exception as e:
-            print(e)
-            return None
-
-
-# ---
-# get (with headers)
-# ---
-
-
-async def httpx_get_json_with_headers(url, headers):
-    """
-    Make GET request (with headers) and return parsed body.
-    """
-    async with httpx.AsyncClient() as client:
-        try:
-            # response
-            response: httpx.Response = await client.get(url, headers=headers)
-            body: dict = response.json()
-            # return body
-            return body
-        except Exception as e:
-            print(e)
-            return None
-
-# ---
-# post
-# ---
-
-
-async def httpx_post_json(url, data):
-    """
-    Make POST request to specified url and return parsed body
-    """
-    async with httpx.AsyncClient() as client:
-        try:
-            # response
-            response = await client.post(url, data=data)
-            body: dict = response.json()
-            # return body
-            return body
-        except Exception as e:
-            print(e)
-            return None
-
+        # request
+        response: httpx.Response = await client.request(
+            method,
+            url,
+            headers=headers,
+            data=data,
+            params=params
+        )
+        # debug
+        if debug:
+            print(
+                f"status: {response.status_code} {response.reason_phrase}",
+                f"headers: {response.headers}",
+                f"text: {response.text}",
+                f"elapsed: {response.elapsed}",
+                sep="\n\n"
+            )
+        # error
+        response.raise_for_status()
+        # parse body
+        body = response.json()
+        # return body
+        return body
 
 # ---
 # main
 # ---
 
+
 async def main():
 
     # get
-    httpx_get_json_result = await httpx_get_json(
-        url="https://jsonplaceholder.typicode.com/users/1"
-    )
+    get_result = None
+    try:
+        get_result = await fetch(
+            url="https://jsonplaceholder.typicode.com/users/1",
+        )
+    except Exception as e:
+        print(e)
 
     # get (query)
-    httpx_get_json_with_query_result = await httpx_get_json_with_query(
-        url="https://jsonplaceholder.typicode.com/users",
-        params={'limit': 5, 'offset': 5}
-    )
+    get_with_query_result = None
+    try:
+        get_with_query_result = await fetch(
+            url="https://jsonplaceholder.typicode.com/users",
+            params={"limit": 5, "offset": 5}
+        )
+    except Exception as e:
+        print(e)
 
     # get (headers)
-    httpx_get_json_with_headers_result = await httpx_get_json_with_headers(
-        url="https://jsonplaceholder.typicode.com/users/1",
-        headers={
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Token': '55DF6FCF66DB349E42272C11CD49F701EEF64FD7F842DA431C4CD252211AFD66'
-        }
-    )
+    get_with_headers_result = None
+    try:
+        get_with_headers_result = await fetch(
+            url="https://jsonplaceholder.typicode.com/users/1",
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Token": "55DF6FCF66DB349E42272C11CD49F701EEF64FD7F842DA431C4CD252211AFD66"
+            }
+        )
+    except Exception as e:
+        print(e)
 
     # post
-    httpx_post_json_result = await httpx_post_json(
-        url="https://jsonplaceholder.typicode.com/users",
-        data={'name': "Hiruzen Sarutobi"}
-    )
+    post_result = None
+    try:
+        post_result = await fetch(
+            method="POST",
+            url="https://jsonplaceholder.typicode.com/users",
+            payload={"name": "Hiruzen Sarutobi"},
+            form_encode=True
+        )
+    except Exception as e:
+        print(e)
 
     # results
     print(
-        "httpx_get_json_result", httpx_get_json_result,
-        "httpx_get_json_with_query_result", httpx_get_json_with_query_result,
-        "httpx_get_json_with_headers_result", httpx_get_json_with_headers_result,
-        "httpx_post_json_result", httpx_post_json_result,
+        "get_result", json.dumps(
+            get_result,
+            indent=2
+        ),
+        "get_with_query_result", json.dumps(
+            get_with_query_result,
+            indent=2
+        ),
+        "get_with_headers_result", json.dumps(
+            get_with_headers_result,
+            indent=2
+        ),
+        "post_result", json.dumps(
+            post_result,
+            indent=2
+        ),
         sep="\n"
     )
 
