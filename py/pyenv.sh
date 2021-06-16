@@ -5,6 +5,8 @@
 
 # install pyenv
 brew install pyenv
+# initialize pyenv (follow steps)
+pyenv init
 # install python
 pyenv install -v 3.6.5
 # uninstall
