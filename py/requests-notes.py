@@ -1,54 +1,108 @@
 import requests
-import pydash as _
-import json
+from typing import Union
 from pprint import pprint
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
 
-# fetch function (uses requests)
 
-def fetch(url, method='GET', headers=None, payload=None, params=None, debug=False):
+def fetch(
+    url: str,
+    method: str = 'GET',
+    headers: Union[dict, None] = None,
+    payload: Union[dict, list, None] = None,
+    params: Union[dict, None] = None,
+    retries: int = 3
+) -> dict:
     """
-    Make request to specified url and return parsed body
+    Make request to specified url and return result
+
+    Parameters:
+    -------
+    url
+        url to make request to
+    method
+        HTTP method (GET, POST, PUT, DELETE, etc)
+    headers
+        request headers object
+    payload
+        body to be sent as json
+    params
+        query params
+    retries
+        number of retries
+
+    Returns
+    -------
+    response object
+        {
+            "data": Union[dict,list,None],
+            "text": Union[str,None],
+            "status": int,
+            "headers": dict,
+            "elapsed": datetime.timedelta,
+        }
     """
-    # request
-    response = requests.request(
-        method, 
-        url, 
-        headers=headers, 
-        data=json.dumps(payload), 
-        params=params
-    )
-    # debug
-    if debug:
-        print(
-            f"status: {response.status_code} {response.reason}",
-            f"headers: {response.headers}",
-            f"text: {response.text}",
-            f"elapsed: {response.elapsed}",
-            sep='\n\n'
+    if not isinstance(url, str):
+        raise Exception('Argument "url" must be a string')
+
+    with requests.Session() as r:
+        if retries:
+            max_retries = Retry(
+                total=retries,
+                backoff_factor=2,  # factor * (2 ** (num_of_retries - 1))
+                status_forcelist=[500, 502, 503, 504]
+            )
+            r.mount('http://', HTTPAdapter(max_retries=max_retries))  # type: ignore
+            r.mount('https://', HTTPAdapter(max_retries=max_retries))  # type: ignore
+
+        response = r.request(
+            method,
+            url,
+            headers=headers,
+            json=payload,
+            params=params
         )
-    # error
-    response.raise_for_status()
-    # parse body
-    body = response.json()
-    return body
 
-# use fetch function (get)
+        response.raise_for_status()
 
-result = fetch(url="https://jsonplaceholder.typicode.com/users/1", debug=False)
-pprint(result)
+        try:
+            data = response.json()
+        except Exception:
+            print('Could not parse response json for %s request to %s', method, url)
+            data = None
+
+        return {
+            "data": data,
+            "text": response.text,
+            "status":  response.status_code,
+            "headers":  response.headers,
+            "elapsed":  response.elapsed,
+        }
 
 
-# use fetch function (post)
+def main() -> None:
+    """
+    Example usage of fetch. Uses 'requests' library
+    """
+    # use fetch function (get)
 
-result = fetch(
-    url="https://jsonplaceholder.typicode.com/users",
-    method='POST',
-    payload={'name': "Hiruzen Sarutobi"},
-    headers={
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Token': '55DF6FCF66DB349E42272C11CD49F701EEF64FD7F842DA431C4CD252211AFD66'
-    },
-)
+    result: dict = fetch(url="https://jsonplaceholder.typicode.com/users/1")
+    pprint(result)
 
-pprint(result)
+    # use fetch function (post)
+
+    result: dict = fetch(
+        url="https://jsonplaceholder.typicode.com/users",
+        method='POST',
+        payload={'name': "Hiruzen Sarutobi"},
+        headers={
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Token': '7dda3fda-ce14-4ee4-bf8d-c04fd2571a4c'
+        },
+    )
+
+    pprint(result)
+
+
+main()

@@ -18,10 +18,10 @@
 # imports
 # ---
 
-import httpx
 import asyncio
 import json
-from pprint import pprint
+from typing import Union, Dict, Any
+import httpx
 
 # ---
 # basic usage
@@ -44,7 +44,7 @@ async def httpx_get_json(url):
             # response
             response: httpx.Response = await client.get(url)
             status_code: int = response.status_code
-            encoding: str = response.encoding
+            encoding: Union[str, None] = response.encoding
             b: bytes = response.content
             text: str = response.text
             body: dict = response.json()
@@ -60,37 +60,71 @@ async def httpx_get_json(url):
 # ---
 
 
-async def fetch(url, method="GET", headers=None, payload=None, params=None, debug=False, form_encode=False):
+async def fetch(
+    url: str,
+    method: str = 'GET',
+    headers: Union[dict, None] = None,
+    payload: Union[dict, list, None] = None,
+    params: Union[dict, None] = None,
+) -> Dict[str, Any]:
     """
-    Make request to specified url and return parsed body
+    Make request to specified url and return result
+
+    Parameters:
+    -------
+    url
+        url to make request to
+    method
+        HTTP method (GET, POST, PUT, DELETE, etc)
+    headers
+        request headers object
+    payload
+        body to be sent as json
+    params
+        query params
+    retries
+        number of retries
+
+    Returns
+    -------
+    response object
+        {
+            "data": Union[dict,list,None],
+            "text": Union[str,None],
+            "status": int,
+            "headers": dict,
+            "elapsed": datetime.timedelta,
+        }
     """
-    # form encode or json encode
-    data = payload if form_encode else json.dumps(payload)
-    # make request with httpx
+    if not isinstance(url, str):
+        raise Exception('Argument "url" must be a string')
+
+    # TODO: retries
+
     async with httpx.AsyncClient() as client:
-        # request
-        response: httpx.Response = await client.request(
+        response = await client.request(
             method,
             url,
             headers=headers,
-            data=data,
+            json=payload,
             params=params
         )
-        # debug
-        if debug:
-            print(
-                f"status: {response.status_code} {response.reason_phrase}",
-                f"headers: {response.headers}",
-                f"text: {response.text}",
-                f"elapsed: {response.elapsed}",
-                sep="\n\n"
-            )
-        # error
+
         response.raise_for_status()
-        # parse body
-        body = response.json()
-        # return body
-        return body
+
+        try:
+            data = response.json()
+        except Exception:
+            print('Could not parse response json for %s request to %s', method, url)
+            data = None
+
+        return {
+            "data": data,
+            "text": response.text,
+            "status":  response.status_code,
+            "headers":  response.headers,
+            "elapsed":  response.elapsed,
+        }
 
 # ---
 # main
@@ -139,7 +173,6 @@ async def main():
             method="POST",
             url="https://jsonplaceholder.typicode.com/users",
             payload={"name": "Hiruzen Sarutobi"},
-            form_encode=True
         )
     except Exception as e:
         print(e)

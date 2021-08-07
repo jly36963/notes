@@ -1,4 +1,5 @@
 # imports
+import os
 from dotenv import load_dotenv
 
 # load dotenv

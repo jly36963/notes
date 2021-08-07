@@ -1,18 +1,17 @@
-# -----------
+# ---
 # types
-# -----------
+# ---
 
 # imports
 from typing import List, Dict, Set, Tuple, Optional
 from datetime import datetime, date
 from pydantic import BaseModel
 
-# -----------
+# ---
 # types
-# -----------
+# ---
 
 # simple types
-
 str
 int
 float
@@ -25,11 +24,13 @@ list
 set
 tuple
 
-# -----------
+# ---
 # simple type (example)
-# -----------
+# ---
 
 # without types
+
+
 def get_full_name(a, b):
     return f"{a.title()} {b.title()}"
 
@@ -39,9 +40,9 @@ def gfn(a: str, b: str) -> str:
     return f"{a.title()} {b.title()}"
 
 
-# -----------
-# generic type (example)
-# -----------
+# ---
+# container type (example)
+# ---
 
 # list
 def double_sum(integers: List[int]) -> int:
@@ -65,11 +66,13 @@ Tuple[int, int, str]  # specify types for each
 # set
 Set[bytes]  # type for all
 
-# -----------
+# ---
 # classes
-# -----------
+# ---
 
 # class
+
+
 class Person:
     def __init__(self, name: str):
         self.name = name
@@ -80,11 +83,9 @@ def get_person_name(one_person: Person):
     return one_person.name
 
 
-# -----------
-# pydantic (type validation)
-# -----------
-
-# example 1
+# ---
+# pydantic (type validation) (example 1)
+# ---
 
 
 class User(BaseModel):
@@ -105,50 +106,28 @@ print(user)
 print(user.id)
 # > 123
 
-# example 2
+# ---
+# pydantic (type validation) (example 2)
+# ---
 
 
 def main(user_id: str):
     return user_id
 
 
-class User(BaseModel):
+class Account(BaseModel):
     id: int
     name: str
     joined: date
 
 
-my_user: User = User(id=3, name="John Doe", joined="2018-07-19")
+my_account: Account = Account(id=3, name="John Doe", joined="2018-07-19")
 
-second_user_data = {
+second_account_data = {
     "id": 4,
     "name": "Mary",
     "joined": "2018-11-30",
 }
 
-my_second_user: User = User(**second_user_data)
+my_second_account: Account = Account(**second_account_data)
 
-
-# -----------
-#
-# -----------
-
-
-# -----------
-#
-# -----------
-
-
-# -----------
-#
-# -----------
-
-
-# -----------
-#
-# -----------
-
-
-# -----------
-#
-# -----------

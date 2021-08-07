@@ -72,7 +72,8 @@ for pattern in patterns:
 
 text = 'This is a string containing term1.'
 match = re.search('term1',text)
-print(match.start()) # 22
+if match:
+    print(match.start()) # 22
 
 # ---------------------
 # re.split (1 -- split by what, 2 -- what is split)

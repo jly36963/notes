@@ -1,10 +1,10 @@
-# ----------------
+# ---
 # PYTHON BASICS
-# ----------------
+# ---
 
-# ----------------
+# ---
 # VARIABLES
-# ----------------
+# ---
 
 # start with letter or underscore, can contain letters, numbers, underscores
 my_var = 'snake case'
@@ -12,9 +12,9 @@ MY_CONSTANT = 'capital snake case'
 MyClass = 'upper camel case'
 __my_dunder__ = 'double underscore variables'
 
-# ----------------
+# ---
 # MATH OPERATORS
-# ----------------
+# ---
 
 # python supports int, float, decimal, fraction
 '''
@@ -29,9 +29,9 @@ __my_dunder__ = 'double underscore variables'
 _ last printed expression (5+5=10 _+3=13)
 '''
 
-# ----------------
+# ---
 # OPERATOR PRECEDENCE 
-# ----------------
+# ---
 
 '''
 ()
@@ -44,9 +44,9 @@ in, not in
 and, or, not
 '''
 
-# ----------------
+# ---
 # STRING METHODS
-# ----------------
+# ---
 
 str1 = 'hello'
 str1.capitalize() # returns string, first character capitalized
@@ -65,9 +65,9 @@ str1.replace('hello', 'hi') # return string, replace occurences of old substring
 str1.rfind('h') # returns index of last instance of substring (-1 if not found)
 str1.split(',') # return list of strings (split at arg value)
 
-# ----------------
+# ---
 # STRINGS AND FORMATTING
-# ----------------
+# ---
 
 print("I don't have school today!")
 print(r'this is a r\a\w\ string!') # r'string' -- prevents '\' escapes.
@@ -83,9 +83,9 @@ print('This {food} is {adjective}.'.format(food='spam', adjective='absolutely ho
 # format -- '!a', '!s', '!r' can be used to apply 'ascii()', 'str()', and 'repr()'.
   # example: 'I had {!s} tacos'.format(12).'
 
-# ----------------
+# ---
 # F-STRINGS (PYTHON 3.6) (FORMATING)
-# ----------------
+# ---
 
 # formatted string literals
 name = 'Landon'
@@ -96,9 +96,9 @@ My name is {name}.
 I am {age} years old.
 '''
 
-# ----------------
+# ---
 # ESCAPE CHARACTERS
-# ----------------
+# ---
 
 str1 = '\n' # linefeed (LF) (new line)
 str1 = '\r' # carriage return (CR)
@@ -107,9 +107,9 @@ str1 = '\'' # escaped single quote
 str1 = '\"' # escaped double quote
 str1 = '\\' # escaped backslash
 
-# ----------------
+# ---
 # INDEX
-# ----------------
+# ---
 
 word='Python'
 word[0] # P (index starts at 0)
@@ -126,9 +126,9 @@ word[42:] # [empty string]
 'why ' + word[2:5] + '?' # why tho?
 len(word) = 6
 
-# ----------------
+# ---
 # LISTS
-# ----------------
+# ---
 
 # Python knows a number of compound data types, used to group together other values.
 # The most versatile is the list, which can be written as a list of comma-separated values (items) between square brackets.
@@ -152,9 +152,9 @@ n = [1, 2, 3]
 x = [a, n] # [['a', 'b', 'c'], [1, 2, 3]]
 x[0][1] # 'b'
 
-# ----------------
+# ---
 # LIST METHODS
-# ----------------
+# ---
 
 list1 = []
 list1.append(x) # Add an item to the end of the list. Equivalent to a[len(a):] = [x].
@@ -169,9 +169,9 @@ list1.reverse() # Reverse the elements of the list in place.
 
 # list.remove -- del list[i] deletes item by index (instead of value).
 
-# ----------------
+# ---
 # MAP
-# ----------------
+# ---
 
 # function for map
 def add_one(num1):
@@ -188,26 +188,26 @@ numbers1 = [1,2,3,4,5]
 numbers2 = list(map(lambda x: x-1, numbers1))
 print(numbers2)
 
-# ----------------
+# ---
 # FILTER
-# ----------------
+# ---
 
 numbers1 = [1,2,3,4,5]
 numbers2 = list(filter(lambda x: x > 2, numbers1))
 print(numbers2)
 
-# ----------------
+# ---
 # MEMBERSHIP TESTING
-# ----------------
+# ---
 
 print('a' in 'apple') # True
 print('a' in ['a', 'b', 'c']) # True
 print('a' in 'cliff') # False
 print('a' in [1, 2, 3]) # False
 
-# ----------------
+# ---
 # DICTIONARIES, TUPLES, SETS
-# ----------------
+# ---
 
 # dictionaries ({key:value}) (unordered) (like JS objects)
 squares = dict([(1,1), (2,4), (3,9), (4,16)])
@@ -253,9 +253,9 @@ print(basket)   # duplicates removed -- {'orange', 'banana', 'pear', 'apple'}
 for fruit in basket:
     print(fruit)
 
-# ----------------
+# ---
 # CONTROL FLOW
-# ----------------
+# ---
 
 # while loop
 b=1
@@ -328,9 +328,9 @@ for num in range(2, 10):
     print("Found a number", num)
 
 
-# ----------------
+# ---
 # FUNCTIONS
-# ----------------
+# ---
 
 # function syntax
 def function1(parameter1, parameter2):
@@ -382,9 +382,9 @@ print(fib.__doc__) # print docstring
 
 
 
-# ----------------
+# ---
 # LOCAL/GLOBAL
-# ----------------
+# ---
 var1 = 5
 def func():
     var2 = 10
@@ -394,9 +394,9 @@ def func():
     print(globals()['var1']) # 5 (key provided, value returned)
 
 
-# ----------------
+# ---
 # MODULES
-# ----------------
+# ---
 
 # import module
 import module_name
@@ -419,9 +419,9 @@ from subdirectory1.subdirectory2.python_file import function_name
 function_name()
 
 
-# ----------------
+# ---
 # READ/WRITE TO FILE
-# ----------------
+# ---
 
 # mode can be 'r', 'w', 'a', 'r+' (read, write, append, and read/write.)
 
@@ -440,9 +440,9 @@ with open('my_file.txt') as f:
         print(line, end='\n')
 f.close()
 
-# ----------------
+# ---
 # ITERATORS
-# ----------------
+# ---
 
 # for ... in ...
 for element in [1, 2, 3]:
@@ -482,17 +482,17 @@ def reverse(data):
 for char in reverse('golf'):
      print(char) # f l o g
 
-# ---------------------
+# ---
 # list comprehension
-# ---------------------
+# ---
 
 a = [1,2,3,4]
 b = [x**2 for x in a]
 print(b)
 
-# ---------------------
+# ---
 # dictionary
-# ---------------------
+# ---
 
 people = [
     {
@@ -505,9 +505,9 @@ people = [
     }
 ]
 
-# ---------------------
+# ---
 # *args and **kwargs
-# ---------------------
+# ---
 
 # *args should come at the end of parameters/arguments
 
@@ -536,9 +536,9 @@ def return_kwargs(**kwargs):
 print(return_kwargs(name='Landon', age=26)) # {'name': 'Landon', 'age': 26}
 
 
-# ---------------------
+# ---
 # classes // objects
-# ---------------------
+# ---
 
 # object1 != object2 (self is different for each object)
 # object1.name == object2.name (if they have the same name)
@@ -560,9 +560,9 @@ print(landon.greeting) # Hi! my name is Landon!
 print(landon.how_old()) # I am 26 years old!
 
 
-# ---------------------
+# ---
 # class and static methods
-# ---------------------
+# ---
 
 class Student:
     def __init__(self, name, age, major, classes):
@@ -604,9 +604,9 @@ print(Student.speak_truth2()) # uses 'Student' class name (not 'landon')
 print(Student.speak_truth3())
 
 
-# ---------------------
+# ---
 # inheritance
-# ---------------------
+# ---
 
 class Student:
     def __init__(self, name, school):
@@ -634,9 +634,9 @@ yamato2 = WorkingStudent.friend(kakashi, 'Yamato', "Dion's Pizza") # args is use
 print(nate2.workplace)
 
 
-# ---------------------
+# ---
 # repr (class instance -- represent the object with a string)
-# ---------------------
+# ---
 class Book():
     def __init__(self,title,author,pages):
         self.title = title
@@ -650,9 +650,9 @@ mybook = Book('Python Rocks!', 'Landon', 250)
 print(mybook) # <__main__.Book object at 0x000000270FF8ED828>
 print(mybook) # Title: Python Rocks!, Author: Landon
 
-# ---------------------
+# ---
 # lambda functions (anonymous functions)
-# ---------------------
+# ---
 
 # lambda
 lambda x: print(x)
@@ -673,9 +673,9 @@ numbers = [1, 2, 3, 4]
 print([x for x in numbers if x % 2 == 0]) # list comprehension filter
 print(list(filter(lambda x: x % 2 == 0, numbers))) # lambda filter
 
-# ---------------------
+# ---
 # functions as parameters
-# ---------------------
+# ---
 
 def outer_function(inner_function):
     return inner_function()
@@ -687,9 +687,9 @@ def greeting():
 print(outer_function(greeting)) # Hello there!
 
 
-# ---------------------
+# ---
 # function as parameter/argument
-# ---------------------
+# ---
 
 def func1():
     return 'Hello!'
@@ -700,9 +700,9 @@ def func2(func):
 func2(func1)
 
 
-# ---------------------
+# ---
 # functions inside of functions (flask example)
-# ---------------------
+# ---
 
 app.route('/')
 def index(logged_in=False):
@@ -719,9 +719,9 @@ def index(logged_in=False):
         needs_to_log_in():
 
 
-# ---------------------
+# ---
 # decorator functions (how to create)
-# ---------------------
+# ---
 
 import functools
 

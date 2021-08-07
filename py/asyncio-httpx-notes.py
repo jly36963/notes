@@ -1,64 +1,130 @@
-# standard imports
-import sys
-import os
 import json
 import asyncio
-# package imports
+from typing import Union, List, Dict, Any
 import httpx
 
-# ---
-# functions
-# ---
 
+async def fetch(
+    url: str,
+    method: str = 'GET',
+    headers: Union[dict, None] = None,
+    payload: Union[dict, list, None] = None,
+    params: Union[dict, None] = None,
+) -> Dict[str, Any]:
+    """
+    Make request to specified url and return result
 
-async def fetch(url, method="GET", headers=None, payload=None, params=None, debug=False, form_encode=False, timeout=None):
+    Parameters:
+    -------
+    url
+        url to make request to
+    method
+        HTTP method (GET, POST, PUT, DELETE, etc)
+    headers
+        request headers object
+    payload
+        body to be sent as json
+    params
+        query params
+    retries
+        number of retries
+
+    Returns
+    -------
+    response object
+        {
+            "data": Union[dict,list,None],
+            "text": Union[str,None],
+            "status": int,
+            "headers": dict,
+            "elapsed": datetime.timedelta,
+        }
     """
-    Make request to specified url and return parsed body
-    """
-    # form encode or json encode
-    data = payload if form_encode else json.dumps(payload)
-    # make request with httpx
+    if not isinstance(url, str):
+        raise Exception('Argument "url" must be a string')
+
+    # TODO: retries
+
     async with httpx.AsyncClient() as client:
-        # request
-        response: httpx.Response = await client.request(
+        response = await client.request(
             method,
             url,
             headers=headers,
-            data=data,
-            params=params,
-            timeout=timeout
+            json=payload,
+            params=params
         )
-        # debug
-        if debug:
-            print(
-                f"status: {response.status_code} {response.reason_phrase}",
-                f"headers: {response.headers}",
-                f"text: {response.text}",
-                f"elapsed: {response.elapsed}",
-                sep="\n\n"
-            )
-        # error
+
         response.raise_for_status()
-        # parse body
-        body = response.json()
-        # return body
-        return body
+
+        try:
+            data = response.json()
+        except Exception:
+            print('Could not parse response json for %s request to %s', method, url)
+            data = None
+
+        return {
+            "data": data,
+            "text": response.text,
+            "status":  response.status_code,
+            "headers":  response.headers,
+            "elapsed":  response.elapsed,
+        }
 
 
-async def post_person(person):
+async def post_person(person: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Post a person to jsonplaceholder.
+    """
+    url: str = "https://jsonplaceholder.typicode.com/users"
+    headers: Dict[str, str] = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Token": "55DF6FCF66DB349E42272C11CD49F701EEF64FD7F842DA431C4CD252211AFD66"
+    }
     response = await fetch(
-        url="https://jsonplaceholder.typicode.com/users",
+        url=url,
         method='POST',
         headers=headers,
         payload=person,
-        debug=False
     )
-    print(response)
-    await asyncio.sleep(2)  # wait after request
+    await asyncio.sleep(1)  # wait after request
     return response
 
 
-async def bs_async_func(sema, async_func, args):
+async def with_for_loop(people: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Post people using for loop.
+    """
+    uploaded_people = []
+
+    for person in people:
+        response = await post_person(person)
+        person = response.get('data')
+        uploaded_people.append(person)
+
+    return uploaded_people
+
+
+async def with_gather(people: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Post people using gather (like Promise.al() in js).
+    """
+    # tasks (promises)
+    tasks = list(map(
+        lambda person: post_person(person),
+        people
+    ))
+    # gather (Promise.all)
+    responses = await asyncio.gather(*tasks)
+    # responses -> people
+    uploaded_people = list(map(
+        lambda r: r.get('data', {}),
+        responses
+    ))
+    return uploaded_people
+
+
+async def bs_async_func(sema, async_func, args) -> Any:
     """
     HOF that runs a function inside of a semaphore context
     """
@@ -66,14 +132,26 @@ async def bs_async_func(sema, async_func, args):
     if not sema:
         raise Exception("sema required for async execution")
 
+    result: Any = None
+
     # execute function in sema context
     async with sema:
-        await async_func(*args)
+        result = await async_func(*args)
+
+    return result
 
 
-async def post_people(sema, people):
+async def with_sema(people: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Post people using semafore and gather
+
+    NOTE: in jupyter, add task to asyncio event loop
+    """
     # awaitable tasks
     tasks = []
+
+    # create semaphore
+    sema = asyncio.BoundedSemaphore(2)
 
     for person in people:
         # make request
@@ -86,53 +164,51 @@ async def post_people(sema, people):
         )
         tasks.append(task)
     # schedule awaitable tasks
-    responses = asyncio.gather(*tasks)
+    responses = await asyncio.gather(*tasks)
+    uploaded_people: List[Dict[str, Any]] = list(map(
+        lambda r: r.get('data', {}),
+        responses
+    ))
     # execute
-    await responses
+    return uploaded_people
 
-# ---
-# data
-# ---
 
-# people to be posted
-people = [
-    {'name': 'hiruzen'},
-    {'name': 'kakashi'},
-    {'name': 'yamato'},
-    {'name': 'iruka'},
-    {'name': 'hashirama'},
-    {'name': 'itachi'},
-    {'name': 'shisui'},
-]
+async def main() -> None:
+    """
+    Basic usage of httpx
+    """
+    # people to be posted
+    people: List[Dict[str, Any]] = [
+        {'name': 'hiruzen'},
+        {'name': 'kakashi'},
+        {'name': 'yamato'},
+        {'name': 'iruka'},
+        {'name': 'hashirama'},
+        {'name': 'itachi'},
+        {'name': 'shisui'},
+    ]
 
-# headers used in fetch
-headers: dict = {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-    "Token": "55DF6FCF66DB349E42272C11CD49F701EEF64FD7F842DA431C4CD252211AFD66"
-}
+    # for loop (await one request at at time)
+    for_loop_responses = await with_for_loop(people)
 
-# ---
-# prepare
-# ---
+    # gather (await multiple requests)
+    gather_responses = await with_gather(people)
 
-# create semaphore
-sema = asyncio.BoundedSemaphore(2)
+    # sema (limits number of concurrent requests)
+    sema_responses = await with_sema(people)
 
-# async execution
-loop = asyncio.get_event_loop()
+    # print results
+    results = {
+        'for_loop_responses': for_loop_responses,
+        'gather_responses': gather_responses,
+        'sema_responses': sema_responses
+    }
 
-# ---
-# execute
-# ---
+    print(json.dumps(
+        results,
+        default=str,
+        indent=2
+    ))
 
-# python
-future = asyncio.ensure_future(post_people(sema, people))
-loop.run_until_complete(future)
-
-# jupyter (old) (runaway process)
-# loop.create_task(post_people(sema, people))
-
-# jupyter
-# future = asyncio.ensure_future(post_people(sema, people))
-# await future
+# run main function
+asyncio.run(main())
