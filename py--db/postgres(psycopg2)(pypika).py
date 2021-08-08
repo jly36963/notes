@@ -3,6 +3,16 @@
 # ---------
 
 # ---
+# imports
+# ---
+
+from typing import Union, List, Dict, Any
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from pypika import Query, Table, Field, PostgreSQLQuery
+import arrow
+
+# ---
 # docker
 # ---
 
@@ -65,16 +75,6 @@ pip install psycopg2-binary
 # install pypika
 pip install pypika
 '''
-
-# ---
-# imports
-# ---
-
-import psycopg2
-from psycopg2.extras import RealDictCursor
-from pypika import Query, Table, Field, PostgreSQLQuery
-import arrow
-print('hi')
 
 # ---
 # connection class
@@ -184,7 +184,7 @@ class PypikaExecutor:
         self.conn = conn
 
     @staticmethod
-    def get_dicts_from_cursor(cursor):
+    def get_dicts_from_cursor(cursor) -> Union[List[Dict[str, Any]], None]:
         columns = [desc[0] for desc in cursor.description]
         values_list = cursor.fetchall()
         rows = []
@@ -193,7 +193,7 @@ class PypikaExecutor:
             rows.append(row)
         return rows
 
-    def raw(self, query: str):
+    def raw(self, query: str) -> Union[Any, None]:
         print(query)
         conn = self.conn
         result = None
@@ -205,7 +205,7 @@ class PypikaExecutor:
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
 
-    def execute_query(self, query: str):
+    def execute_query(self, query: str) -> Union[Any, None]:
         print(query)
         conn = self.conn
         rows = None
@@ -218,7 +218,11 @@ class PypikaExecutor:
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
 
-    def insert_one(self, table_name: str, entry: dict):
+    def insert_one(
+        self, 
+        table_name: str, 
+        entry: dict
+    ) -> Union[Dict[str,Any], None]:
         table = Table(table_name)
         qb = (
             PostgreSQLQuery
@@ -229,9 +233,13 @@ class PypikaExecutor:
         )
         sql = str(qb)
         rows = self.execute_query(sql)
-        return rows[0] if len(rows) else None
+        return rows[0] if (rows and len(rows)) else None
 
-    def insert_many(self, table_name: str, entries: list):
+    def insert_many(
+        self, 
+        table_name: str, 
+        entries: List[Dict[str, Any]]
+    ) -> Union[List[Dict[str,Any]], None]:
         # TODO -- one query, rather than iteration
         rows = []
         for entry in entries:
@@ -239,7 +247,11 @@ class PypikaExecutor:
             rows.append(row)
         return rows
 
-    def find_one_by_id(self, table_name: str, row_id: int):
+    def find_one_by_id(
+        self, 
+        table_name: str, 
+        row_id: int
+    ) -> Union[Dict[str,Any], None]:
         table = Table(table_name)
         qb = (
             PostgreSQLQuery
@@ -250,13 +262,21 @@ class PypikaExecutor:
         )
         sql = str(qb)
         rows = self.execute_query(sql)
-        return rows[0] if len(rows) else None
+        return rows[0] if (rows and len(rows)) else None
 
-    def find_one(self, table_name: str, predicate: dict):
+    def find_one(
+        self, 
+        table_name: str, 
+        predicate: Dict[str, Any]
+    ) -> Union[Dict[str,Any], None]:
         rows = self.find(table_name, predicate)
-        return rows[0] if len(rows) else None
+        return rows[0] if (rows and len(rows)) else None
 
-    def find(self, table_name: str, predicate: dict):
+    def find(
+        self, 
+        table_name: str, 
+        predicate: Dict[str, Any]
+    ) -> Union[List[Dict[str,Any]], None]:
         table = Table(table_name)
         qb = (
             PostgreSQLQuery
@@ -270,7 +290,12 @@ class PypikaExecutor:
         rows = self.execute_query(sql)
         return rows
 
-    def update_one_by_id(self, table_name: str, row_id: int, updates: dict):
+    def update_one_by_id(
+        self, 
+        table_name: str, 
+        row_id: int, 
+        updates: Dict[str,Any]
+    ) -> Union[Dict[str,Any], None]:
         table = Table(table_name)
         qb = (
             PostgreSQLQuery
@@ -283,16 +308,24 @@ class PypikaExecutor:
             qb = qb.set(table[k], v)
         sql = str(qb)
         rows = self.execute_query(sql)
-        return rows[0] if len(rows) else None
+        return rows[0] if (rows and len(rows)) else None
 
-    def delete_one_by_id(self, table_name, row_id):
+    def delete_one_by_id(
+        self, 
+        table_name: str,
+        row_id: int
+    ) -> Union[Dict[str,Any], None]:
         self.update_one_by_id(
             table_name,
             row_id,
             {'deleted_at': str(arrow.utcnow())}
         )
 
-    def hard_delete_one_by_id(self, table_name, row_id):
+    def hard_delete_one_by_id(
+        self, 
+        table_name: str, 
+        row_id: int,
+    ) -> Union[Dict[str,Any], None]:
         table = Table(table_name)
         qb = (
             PostgreSQLQuery
@@ -303,7 +336,7 @@ class PypikaExecutor:
         )
         sql = str(qb)
         rows = self.execute_query(sql)
-        return rows[0] if len(rows) else None
+        return rows[0] if (rows and len(rows)) else None
 
 
 ppkx = PypikaExecutor(conn)
@@ -367,17 +400,18 @@ inserted_rows = ppkx.insert_many('ninjas', [
     }
 ])
 
+assert isinstance(inserted_row, dict)
+assert isinstance(inserted_rows, list)
+
 # ---
 # select
 # ---
-
-# find one by id
+    
 print("row_id", inserted_row['id'])
+# find one by id
 row_found_by_id = ppkx.find_one_by_id('ninjas', inserted_row['id'])
-
 # find one
 row_found = ppkx.find_one('ninjas', {'id': inserted_row['id']})
-
 # find
 rows_found = ppkx.find('ninjas', {'id': inserted_row['id']})
 
@@ -425,3 +459,4 @@ print(
     "hard_deleted_row", hard_deleted_row,
     sep='\n'
 )
+    

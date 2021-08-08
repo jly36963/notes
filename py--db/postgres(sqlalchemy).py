@@ -3,13 +3,18 @@
 # ----------------
 
 
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import sqlalchemy
+from sqlalchemy import create_engine
+
 # ----------------
 # docker
 # ----------------
 
 # persisting data
-  # windows and OSX can't mount local volumes
-  # use named volume
+# windows and OSX can't mount local volumes
+# use named volume
 
 # docker-compose
 '''
@@ -27,7 +32,7 @@ services:
       POSTGRES_DB: 'excalnet'
     volumes:
       - pgdata:/var/lib/postgresql/data
-    restart: always
+    restart: unless-stopped
 
 volumes:
   pgdata:
@@ -39,8 +44,7 @@ volumes:
 # basics
 # -----------------
 
-import sqlalchemy
-from sqlalchemy import create_engine
+
 # connection string (dialect+driver://username:password@host:port/db)
 engine = create_engine('postgresql+psycopg2://scott:tiger@localhost:5432/mydatabase')
 conn = engine.connect()
@@ -49,22 +53,25 @@ conn = engine.connect()
 # class / table
 # -----------------
 
+
 class Product(Base):
     __tablename__ = 'products'
-    id=Column(Integer, primary_key=True)
-    title=Column('title', String(32))
-    in_stock=Column('in_stock', Boolean)
-    quantity=Column('quantity', Integer)
-    price=Column('price', Numeric)
+    id = Column(Integer, primary_key=True)
+    title = Column('title', String(32))
+    in_stock = Column('in_stock', Boolean)
+    quantity = Column('quantity', Integer)
+    price = Column('price', Numeric)
 
 # -----------------
 # one to many
 # -----------------
 
+
 class Article(Base):
     __tablename__ = 'articles'
     id = Column(Integer, primary_key=True)
     comments = relationship("Comment")
+
 
 class Comment(Base):
     __tablename__ = 'comments'
@@ -72,10 +79,13 @@ class Comment(Base):
     article_id = Column(Integer, ForeignKey('articles.id'))
 
 # one to many (2)
+
+
 class Parent(Base):
     __tablename__ = 'parent'
     id = Column(Integer, primary_key=True)
     children = relationship("Child")
+
 
 class Child(Base):
     __tablename__ = 'child'
@@ -83,10 +93,13 @@ class Child(Base):
     parent_id = Column(Integer, ForeignKey('parent.id'))
 
 # one to many (bi-directional)
+
+
 class Parent(Base):
     __tablename__ = 'parent'
     id = Column(Integer, primary_key=True)
     children = relationship("Child", back_populates="parent")
+
 
 class Child(Base):
     __tablename__ = 'child'
@@ -97,6 +110,7 @@ class Child(Base):
 # -----------------
 # many to one
 # -----------------
+
 
 class Tire(Base):
     __tablename__ = 'tires'
@@ -110,22 +124,28 @@ class Car(Base):
     id = Column(Integer, primary_key=True)
 
 # many to one (example 2)
+
+
 class Parent(Base):
     __tablename__ = 'parent'
     id = Column(Integer, primary_key=True)
     child_id = Column(Integer, ForeignKey('child.id'))
     child = relationship("Child")
 
+
 class Child(Base):
     __tablename__ = 'child'
     id = Column(Integer, primary_key=True)
 
 # many to one (bi-directional)
+
+
 class Parent(Base):
     __tablename__ = 'parent'
     id = Column(Integer, primary_key=True)
     child_id = Column(Integer, ForeignKey('child.id'))
     child = relationship("Child", back_populates="parents")
+
 
 class Child(Base):
     __tablename__ = 'child'
@@ -142,6 +162,7 @@ class Person(Base):
     id = Column(Integer, primary_key=True)
     mobile_phone = relationship("MobilePhone", uselist=False, back_populates="person")
 
+
 class MobilePhone(Base):
     __tablename__ = 'mobile_phones'
     id = Column(Integer, primary_key=True)
@@ -149,10 +170,13 @@ class MobilePhone(Base):
     person = relationship("Person", back_populates="mobile_phone")
 
 # one to one (example 2)
+
+
 class Parent(Base):
     __tablename__ = 'parent'
     id = Column(Integer, primary_key=True)
     child = relationship("Child", uselist=False, back_populates="parent")
+
 
 class Child(Base):
     __tablename__ = 'child'
@@ -164,40 +188,48 @@ class Child(Base):
 # many to many
 # -----------------
 
+
 students_classes_association = Table('students_classes', Base.metadata,
-    Column('student_id', Integer, ForeignKey('students.id')),
-    Column('class_id', Integer, ForeignKey('classes.id'))
-)
+                                     Column('student_id', Integer, ForeignKey('students.id')),
+                                     Column('class_id', Integer, ForeignKey('classes.id'))
+                                     )
+
 
 class Student(Base):
     __tablename__ = 'students'
     id = Column(Integer, primary_key=True)
     classes = relationship("Class", secondary=students_classes_association)
 
+
 class Class(Base):
     __tablename__ = 'classes'
     id = Column(Integer, primary_key=True)
 
+
 # many to many (example 2)
 association_table = Table('association', Base.metadata,
-    Column('left_id', Integer, ForeignKey('left.id')),
-    Column('right_id', Integer, ForeignKey('right.id'))
-)
+                          Column('left_id', Integer, ForeignKey('left.id')),
+                          Column('right_id', Integer, ForeignKey('right.id'))
+                          )
+
 
 class Parent(Base):
     __tablename__ = 'left'
     id = Column(Integer, primary_key=True)
     children = relationship("Child", secondary=association_table)
 
+
 class Child(Base):
     __tablename__ = 'right'
     id = Column(Integer, primary_key=True)
 
+
 # many to many (bi-directional)
 association_table = Table('association', Base.metadata,
-    Column('left_id', Integer, ForeignKey('left.id')),
-    Column('right_id', Integer, ForeignKey('right.id'))
-)
+                          Column('left_id', Integer, ForeignKey('left.id')),
+                          Column('right_id', Integer, ForeignKey('right.id'))
+                          )
+
 
 class Parent(Base):
     __tablename__ = 'left'
@@ -206,6 +238,7 @@ class Parent(Base):
         "Child",
         secondary=association_table,
         back_populates="parents")
+
 
 class Child(Base):
     __tablename__ = 'right'
@@ -220,8 +253,6 @@ class Child(Base):
 # sessions
 # -----------------
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 # create an engine
 engine = create_engine('postgresql://usr:pass@localhost:5432/sqlalchemy')
@@ -237,9 +268,6 @@ session = Session()
 # declarative base
 # -----------------
 
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 
 engine = create_engine('postgresql://usr:pass@localhost:5432/sqlalchemy')
 Session = sessionmaker(bind=engine)
@@ -261,69 +289,19 @@ Base = declarative_base()
 # create Film class
 
 # Create
-doctor_strange = Film(title="Doctor Strange", director="Scott Derrickson", year="2016")  
-session.add(doctor_strange)  
+doctor_strange = Film(title="Doctor Strange", director="Scott Derrickson", year="2016")
+session.add(doctor_strange)
 session.commit()
 
 # Read
-films = session.query(Film)  
-for film in films:  
+films = session.query(Film)
+for film in films:
     print(film.title)
 
 # Update
-doctor_strange.title = "Some2016Film"  
+doctor_strange.title = "Some2016Film"
 session.commit()
 
 # Delete
-session.delete(doctor_strange)  
-session.commit() 
-
-
-# -----------------
-# 
-# -----------------
-
-
-
-
-# -----------------
-# 
-# -----------------
-
-
-
-
-# -----------------
-# 
-# -----------------
-
-
-
-
-# -----------------
-# 
-# -----------------
-
-
-
-
-# -----------------
-# 
-# -----------------
-
-
-
-
-# -----------------
-# 
-# -----------------
-
-
-
-
-# -----------------
-# 
-# -----------------
-
-
-
+session.delete(doctor_strange)
+session.commit()

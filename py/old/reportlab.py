@@ -1,17 +1,17 @@
-# -----------------
+# ---
 # REPORTLAB
-# -----------------
+# ---
 
-# -----------------
+# ---
 # dependencies and install
-# -----------------
+# ---
 
 # pillow
 # reportlab
 
-# -----------------
+# ---
 # imports
-# -----------------
+# ---
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4
@@ -27,9 +27,9 @@ PAGE_WIDTH = defaultPageSize[0]
 PAGE_HEIGHT = defaultPageSize[1]
 styles = getSampleStyleSheet()
 
-# -----------------
+# ---
 # canvas object
-# -----------------
+# ---
 
 # origin (0,0) is bottom left corner
     # in tkinter and wxPython, it is top left
@@ -47,9 +47,9 @@ c.drawString(100,100, 'Welcome to Reportlab!') # draw string (100 right, 100 up)
 c.showPage() # save current page of canvas, also ends current page
 c.save() # save documents to disk
 
-# -----------------
+# ---
 # canvas object (in-depth)
-# -----------------
+# ---
 
 # example of instantiation with arguments
 c = canvas.Canvas(
@@ -78,9 +78,9 @@ c.showPage()
 c.save()
     
 
-# -----------------
+# ---
 # drawing operations
-# -----------------
+# ---
 
 c.translate(inch, inch) # move origin up/right
 
@@ -112,9 +112,9 @@ canvas.drawImage(self, image, x,y, width=None,height=None,mask=None) # use this 
 # path object methods
     # skipped
 
-# -----------------
+# ---
 # state change operations
-# -----------------
+# ---
 
 # colors
 Changing Colorscanvas.setFillColorCMYK(c, m, y, k) 
@@ -149,21 +149,21 @@ canvas.rotate(theta)
 canvas.skew(alpha, beta)
 
 
-# -----------------
+# ---
 # text object methods
-# -----------------
+# ---
 
 # skipped
 
-# -----------------
+# ---
 # path & line object methods
-# -----------------
+# ---
 
 # skipped
 
-# -----------------
+# ---
 # platypus -- page layout and typography using scripts
-# -----------------
+# ---
 
 # layers of PLATYPUS:
     # DocTemplates -- outermost container for the document
@@ -178,9 +178,9 @@ canvas.skew(alpha, beta)
     # pass a list of flowables to its 'build' method
 
 
-# -----------------
+# ---
 # platypus example
-# -----------------
+# ---
 
 title = 'Hello world'
 pageinfo = 'platypus example'
@@ -219,9 +219,9 @@ def go():
         Story.append(Spacer(1, 0.2 * inch))
     doc.build(Story, onFirstPage=firstPage, onLaterPages=laterPage)
 
-# -----------------
+# ---
 # flowables (example)
-# -----------------
+# ---
 
 style = styles['BodyText'] # styles is defined near import statements
 p1 = Paragraph('This is a very silly example', style)
@@ -248,9 +248,9 @@ Flowable.getSpaceBefore(self):
 # all flowables have an 'hAlign' property: ('LEFT', 'RIGHT', 'CENTER')
     # this determines horizontal placement for objects that are < full width of frame.
 
-# -----------------
+# ---
 # frames
-# -----------------
+# ---
 
 # frames -- active containers which are themselves contained in 'PageTemplates.Frames'.
     # they maintain a concept of remaining drawable space.
@@ -271,9 +271,9 @@ Frame.addFromList(drawlist, canvas) # consumes 'Flowables' from 'drawlist' until
 Frame.split(flowable,canv) # asks the flowable to split: uses up available space and returns list of flowables
 Frame.drawBoundary(canvas) # draws the frame boundary as a rectangle (primarily for debugging)
 
-# -----------------
+# ---
 # frames (example)
-# -----------------
+# ---
 
 styleN = styles['Normal']
 styleH = styles['Heading1']
@@ -286,9 +286,9 @@ f.addFromList(story,c)
 c.save()
 
 
-# -----------------
+# ---
 # documents and templates
-# -----------------
+# ---
 
 # the 'BaseDocTemplate' class implements the basic machinery for document formatting.
     # an instance contains a list of PageTemplates that can be used to describe the layout on a single page.
@@ -327,9 +327,9 @@ BaseDocTemplate.afterFlowable(self, flowable)
     # skipped
 
 
-# -----------------
+# ---
 # document templates example
-# -----------------
+# ---
 
 styleN = styles['Normal']
 styleH = styles['Heading1']
@@ -340,15 +340,15 @@ doc = SimpleDocTemplate('hello.pdf', pagesize=letter)
 doc.build(story)
 
 
-# -----------------
+# ---
 # page templates
-# -----------------
+# ---
 
 # skipped
 
-# -----------------
+# ---
 # paragraphs
-# -----------------
+# ---
 
 # instance of paragraph
     # text -- text of paragraph. excess white space is removed at beginning/ends of lines
@@ -399,9 +399,9 @@ class ParagraphStyle(PropertySet):
         'embeddedHyphenation': _embeddedHyphenation,
     }
 
-# -----------------
+# ---
 # tables
-# -----------------
+# ---
 
 # the 'Table' and 'LongTable' classes derive from the 'Flowable' class. they are gridding mechanisms.
     # LongTable uses a greedy algorithm when calculating column widths and is intended for long tables where speed counts.
@@ -451,100 +451,100 @@ cmds = LIST_STYLE.getCommands()
 # TableStyle span commands
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 
 
-# -----------------
+# ---
 # 
-# -----------------
+# ---
 
 
 

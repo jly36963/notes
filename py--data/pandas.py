@@ -1,58 +1,62 @@
-# ---------------
+# ---
 # PANDAS
-# ---------------
+# ---
 
 
-# ---------------
-# series
-# ---------------
-
+from io import StringIO
 import numpy as np
 import pandas as pd
-from pandas import Series, DataFrame
 
+
+# ---
 # series
-srs1 = Series([1,2,3,4])
-srs1 # 0 1 2 3 # 1 2 3 4
+# ---
+
+srs1 = pd.Series([1,2,3,4]) # 0 1 2 3 # 1 2 3 4
+srs2 = pd.Series([1,2,3,4])
 srs1.values # array([ 1, 2, 3, 4 ])
 srs1.index # RangeIndex(start=0, stop=4, step=1)
 srs1[0] # 1
 srs1 = srs1.append(srs2) # concatenate series
 
-# series with index
-srs2 = Series([1,2,3,4,5], index=['a','b','c','d','e'])
-srs2 # a b c d e # 1 2 3 4 5
-srs2.values # array([ 1, 2, 3, 4, 5 ])
-srs2.index # Int64Index([ 'a', 'b', 'c', 'd', 'e' ], dtype='object')
-srs2['a'] # 1
-srs2[0:3] # a b c d # 1 2 3 4
-srs2[['a','b','c']] # a b c # 1 2 3
-srs2[srs2 == 2] # b 2
-srs2[srs2 != 2] # a c d e # 1 3 4 5
-srs2[~(srs2 == 2)] # a c d e # 1 3 4 5
-srs2[(srs2>1) & (srs2<4)] # b c # 2 3
-srs2[(srs2<2) | (srs2>4)] # a e # 1 5
+
+# ---
+# series with specified index
+# ---
+
+srs1 = pd.Series([1,2,3,4,5], index=['a','b','c','d','e'])
+srs1 # a b c d e # 1 2 3 4 5
+srs1.values # array([ 1, 2, 3, 4, 5 ])
+srs1.index # Int64Index([ 'a', 'b', 'c', 'd', 'e' ], dtype='object')
+srs1['a'] # 1
+srs1[0:3] # a b c d # 1 2 3 4
+srs1[['a','b','c']] # a b c # 1 2 3
+srs1[srs1 == 2] # b 2
+srs1[srs1 != 2] # a c d e # 1 3 4 5
+srs1[~(srs1 == 2)] # a c d e # 1 3 4 5
+srs1[(srs1>1) & (srs1<4)] # b c # 2 3
+srs1[(srs1<2) | (srs1>4)] # a e # 1 5
 
 srs2[ ~(srs2.isin(srs1)) ] # return srs2 elements that aren't in srs1
 
 
 # convert series
-srs = Series([1,2,3,4,5], index=['a','b','c','d','e'])
+srs = pd.Series([1,2,3,4,5], index=['a','b','c','d','e'])
 dict1 = srs.to_dict() # series to dict
 csv = srs.to_csv('file_name.csv') # series to csv
 json = srs.to_json() # series to json
 list1 = srs.to_list() # series to list (values)
 
-srs3 = Series(dict1) # dict to series
+srs3 = pd.Series(dict1) # dict to series
 
 # naming a series
-srs = Series([1,2,3,4,5], index=['a','b','c','d','e'])
+srs = pd.Series([1,2,3,4,5], index=['a','b','c','d','e'])
 srs.name = 'My Series'
 srs.index.name = 'Letters'
 
-# -----------------
+# ---
 # series methods
-# -----------------
+# ---
 
 # math methods
 srs.abs() # return series with absolute value of each element
@@ -92,13 +96,11 @@ srs1.isin(srs2) # elem1 in srs2 ? True : False (returns series of booleans)
 srs.unique() # return series with only unique values
 srs.value_counts() # returns series -- srs.values as index, counts as values
 
-# ---------------
+# ---
 # dataframes
-# ---------------
+# ---
 
-import numpy as np
-import pandas as pd
-from pandas import Series,DataFrame
+
 
 # clipboard (read)
 df = pd.read_clipboard() # read from clipboard (pip install xsel)
@@ -134,9 +136,9 @@ df = pd.read_excel(
     sheet_name=0 # index -- 0, string -- 'Sheet1'
 )
 
-# ---------------
+# ---
 # df attributes (info about df)
-# ---------------
+# ---
 
 # df attributes
 df # displays table as dataframe
@@ -160,13 +162,13 @@ df = pd.DataFrame.from_dict(
 )
 
 # create df (nested array)
-df = DataFrame(
+df = pd.DataFrame(
     [[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24]],
     index=['a','b','c','d','e'],
     columns=['col1','col2','col3','col4','col5']
 )
 # create df (np.arange)
-df = DataFrame(
+df = pd.DataFrame(
     np.arange(25).reshape(5,5),
     index=['a','b','c','d','e'],
     columns=['col1','col2','col3','col4','col5']
@@ -176,9 +178,9 @@ df['col1'] # column col1
 df[['col1','col2','col3']] # columns col1 n2 n3
 df[ (df['col3'] < 20) & (df['col3'] >5)] # rows b c d
 
-# ---------------
+# ---
 # df indexing (at, loc, iat, iloc)
-# ---------------
+# ---
 
 # loc -- arrays as indexers, can assign new columns/indices, slower
 # iloc -- arrays as indexers, cannot assign new columns/indices, slower
@@ -221,9 +223,9 @@ df.iat[4, 5] = 10 # set value at specific index/column
 # loc + at
 df.loc[4].at['B'] # value within a series (loc + at)
 
-# ---------------
+# ---
 # dataframes (methods & attributes)
-# ---------------
+# ---
 
 # math
 df.abs() # return df containing abs value of each element
@@ -272,9 +274,9 @@ df.ix[3] # show index 3 (row) as series (DEPRECATED)
 ##################################################
 
 
-# --------------
+# ---
 # series (misc)
-# --------------
+# ---
 
 # copy series
 srs2 = srs1.copy()
@@ -286,25 +288,25 @@ srs2[srs2 > 2] # c d e # 3 4 5
 'c' in srs2 # True
 
 # adding series
-srs = Series([1,2,3,4,5], index=['a','b','c','d','e'])
+srs = pd.Series([1,2,3,4,5], index=['a','b','c','d','e'])
 srs2 = srs + srs # a b c d e # 2 4 6 8 10
 
 # series reindexing
-srs1 = Series([1,2,3,4,5], index=['a','b','c','d','e'])
+srs1 = pd.Series([1,2,3,4,5], index=['a','b','c','d','e'])
 srs2 = srs1.reindex(['a','b','c','d','e','f']) # e & f will be NaN
 srs3 = srs1.reindex(['a','b','c','d','e','f'], fill_value=0) # e & f will be 0
 
 # drop entry
-srs = Series([1,2,3,4,5], index=['a','b','c','d','e'])
+srs = pd.Series([1,2,3,4,5], index=['a','b','c','d','e'])
 srs.drop('b')
 
 # data alignment
-srs1 = Series([1,2,3,4,5], index=['a','b','c','d','e'])
-srs2 = Series([1,2,3,4,5,6], index=['a','b','c','d','e','f'])
+srs1 = pd.Series([1,2,3,4,5], index=['a','b','c','d','e'])
+srs2 = pd.Series([1,2,3,4,5,6], index=['a','b','c','d','e','f'])
 srs1 + srs2 # a-e (normal) f (NaN)
 
 # sorting
-srs = Series([1,2,3,4,5], index=['a','b','c','d','e'])
+srs = pd.Series([1,2,3,4,5], index=['a','b','c','d','e'])
 srs.sort_index() # sort by indices
 srs.sort_index(ascending=False, inplace=True, na_position='last') # add args
 srs.sort_values() # order by values
@@ -315,13 +317,13 @@ srs.isnull() # returns series of booleans (null ? True : False)
 srs.notnull() # returns series of booleans (value_exists ?  True : False)
 
 # omit null values
-srs = Series([1,2,3,4,5], index=['a','b','c','d','e'])
+srs = pd.Series([1,2,3,4,5], index=['a','b','c','d','e'])
 srs['c'] = np.nan
 srs.dropna() # drop NaN values
 srs[srs.notnull()] # filter out NaN values
 
 # index hierarchy (levels)
-srs = Series(np.arange(6),
+srs = pd.Series(np.arange(6),
     index = [[1,1,1,2,2,2],['a','b','c','a','b','c']]
 ) # 1a 1b 1c 2a 2b 2c
 srs[1] # a b c # 0 1 2 (series)
@@ -329,18 +331,18 @@ srs[:,'a'] # 1 2 # 0 4 (all higher-level index, lower-level index 'a')
 srs[1]['a'] # 0 (value)
 
 # concatenate series
-srs1 = Series([0,1,2], index=['a','b','c'])
-srs2 = Series([4,5,6], index=['d','e','f'])
+srs1 = pd.Series([0,1,2], index=['a','b','c'])
+srs2 = pd.Series([4,5,6], index=['d','e','f'])
 srs = pd.concat([srs1,srs2], axis=0)
 
 # combine series
-srs1 = Series([1,1,np.nan,1,1], index=['a','b','c','d','e'])
-srs2 = Series([1,2,3,4,5], index=['a','b','c','d','e'])
+srs1 = pd.Series([1,1,np.nan,1,1], index=['a','b','c','d','e'])
+srs2 = pd.Series([1,2,3,4,5], index=['a','b','c','d','e'])
 srs1.combine_first(srs2) # combine, srs1 overrides srs2
 
-# ---------------
+# ---
 # dataframes (misc)
-# ---------------
+# ---
 
 # copy df
 df2 = df1.copy()
@@ -349,9 +351,9 @@ df2 = df1.copy()
 df.rename(columns = lambda x: x.strip(), inplace=True)
 
 # copy a df (choose existing columns)
-df2 = DataFrame(df1, columns = ['col1', 'col2', 'col4'])
+df2 = pd.DataFrame(df1, columns = ['col1', 'col2', 'col4'])
 # copy a df (new column -- each element will have value NaN)
-df2 = DataFrame(df1, columns = ['col1', 'NewColumn'])
+df2 = pd.DataFrame(df1, columns = ['col1', 'NewColumn'])
 
 # assign value to each element in a column
 df['Column Name'] = "New Value"
@@ -368,7 +370,7 @@ df['Column Name'] = values
 del df['Unwanted Column']
 
 # reindex df (reindex)
-df1 = DataFrame(
+df1 = pd.DataFrame(
     np.random.randn(25).reshape(5,5),
     index=['a','b','c','d','e'],
     columns=['col1','col2','col3','col4','col5']
@@ -380,7 +382,7 @@ df3 = df2.reindex(columns=['col1','col2','col3','col4','col5','col6'], fill_valu
 df4 = df1.ix[['a','b','c','d','e','f'], ['col1','col2','col3','col4','col5','col6']]
 
 # df.drop()
-df = DataFrame(
+df = pd.DataFrame(
     np.arange(25).reshape(5,5),
     index=['a','b','c','d','e'],
     columns=['col1','col2','col3','col4','col5']
@@ -389,12 +391,12 @@ df = df.drop('c') # drop row
 df = df.drop('col3', axis=1)# drop column
 
 # data alignment
-df1 = DataFrame(
+df1 = pd.DataFrame(
     np.arange(25).reshape(5,5),
     index=['a','b','c','d','e'],
     columns=['col1','col2','col3','col4','col5']
 )
-df2 = DataFrame(
+df2 = pd.DataFrame(
     np.arange(36).reshape(6,6),
     index=['a','b','c','d','e','f'],
     columns=['col1','col2','col3','col4','col5','col6']
@@ -403,8 +405,8 @@ df1 + df2 # adds where row/col match, else NaN
 df1.add(df2,fill_value=0) # fills empty elements (df1) prior to adding
 
 # add series to df
-srs1 = Series([1,2,3,4,5], index=['col1','col2','col3','col4','col5'])
-df1 = DataFrame(
+srs1 = pd.Series([1,2,3,4,5], index=['col1','col2','col3','col4','col5'])
+df1 = pd.DataFrame(
     np.arange(1,26,1).reshape(5,5),
     index=['a','b','c','d','e'],
     columns=['col1','col2','col3','col4','col5']
@@ -412,7 +414,7 @@ df1 = DataFrame(
 df1 + srs1 # srs1 will be added to each row of df1
 
 # sorting
-df1 = DataFrame(
+df1 = pd.DataFrame(
     np.arange(1,26,1).reshape(5,5),
     index=['a','b','c','d','e'],
     columns=['col1','col2','col3','col4','col5']
@@ -423,7 +425,7 @@ df.sort_values(by=['col1'], ascending=False,inplace=True,na_position='last')
 df.sort_values(by=['col1','col2']) # primary sort - col1, secondary sort - col2
 
 # missing values (NaN)
-df = DataFrame(
+df = pd.DataFrame(
     np.arange(1,26,1).reshape(5,5),
     index=['a','b','c','d','e'],
     columns=['col1','col2','col3','col4','col5']
@@ -437,13 +439,13 @@ df.fillna(1) # fill all NaN with 1
 df.fillna({'col1':0, 'col2':1}) # column-specific fills
 
 # df from multi-level series (higher-level index as row, lower-level as col)
-srs = Series(np.arange(6),
+srs = pd.Series(np.arange(6),
     index = [[1,1,1,2,2,2],['a','b','c','a','b','c']]
 )
 df = srs.unstack() # rows -- 1 2 # cols -- a b c
 
 # multi-level df
-df = DataFrame(
+df = pd.DataFrame(
     np.arange(1,17,1).reshape(4,4),
     index = [['a','a','b','b'],[1,2,1,2]],
     columns = [['A','A','B','B'],['i','ii','i','ii']]
@@ -487,12 +489,12 @@ df3 = pd.merge(
 )
 
 # concatenate df
-df1 = DataFrame(
+df1 = pd.DataFrame(
     np.arange(1,26,1).reshape(5,5),
     index=['a','b','c','d','e'],
     columns=['col1','col2','col3','col4','col5']
 )
-df2 = DataFrame(
+df2 = pd.DataFrame(
     np.arange(26,51,1).reshape(5,5),
     index=['f','g','h','i','j'],
     columns=['col1','col2','col3','col4','col5']
@@ -505,12 +507,12 @@ df = pd.concat(
 )
 
 # combine df
-df1 = DataFrame(
+df1 = pd.DataFrame(
     [[1,1,np.nan],[1,np.nan,1],[1,1,np.nan]],
     index=['a','b','c',],
     columns=['col1','col2','col3']
 )
-df2 = DataFrame(
+df2 = pd.DataFrame(
     [[1,2,3],[4,5,6],[7,8,9]],
     index=['a','b','c',],
     columns=['col1','col2','col3']
@@ -527,8 +529,8 @@ srs = df.stack() # multilevel series (keep null values -- dropna=False)
 df = srs.unstack() # df
 
 # stack/unstack (multilevel series -- > df)
-srs1 = Series([1,2,3,4,5], index=['a','b','c','d','e'])
-srs2 = Series([1,2,3,4,5], index=['a','b','c','d','e'])
+srs1 = pd.Series([1,2,3,4,5], index=['a','b','c','d','e'])
+srs2 = pd.Series([1,2,3,4,5], index=['a','b','c','d','e'])
 srs = pd.concat([srs1,srs2],keys=['i','ii']) # multilevel series
 df = srs.unstack() # df
 
@@ -551,13 +553,13 @@ df = pd.DataFrame.from_dict(
 df = df.pivot('col1','col2','col3') # index, col, val
 
 # find duplicates df
-df = DataFrame({'col1':['a','a','a','b','b','b'], 'col2':[1,1,2,1,1,2]}) # 5 rows, 2 cols
+df = pd.DataFrame({'col1':['a','a','a','b','b','b'], 'col2':[1,1,2,1,1,2]}) # 5 rows, 2 cols
 df.duplicated() # duplicate ? true : false (returns series of booleans)
 df[~df.duplicated()] # df with duplicates removed
 df.drop_duplicates() # drop duplicates
 
 # map df (map one column)
-df = DataFrame(
+df = pd.DataFrame(
     np.arange(1,26,1).reshape(5,5),
     index=['a','b','c','d','e'],
     columns=['col1','col2','col3','col4','col5']
@@ -567,7 +569,7 @@ df['col1'] = df['col1'].map(lambda x : f'number: {x}')
 
 
 # applymap df (map entire df)
-df = DataFrame(
+df = pd.DataFrame(
     np.arange(1,26,1).reshape(5,5),
     index=['a','b','c','d','e'],
     columns=['col1','col2','col3','col4','col5']
@@ -576,7 +578,7 @@ df = df.applymap(lambda x : x**2)
 df = df.applymap(lambda x : f'number: {x}')
 
 # replace
-df = DataFrame(
+df = pd.DataFrame(
     np.arange(1,26,1).reshape(5,5),
     index=['a','b','c','d','e'],
     columns=['col1','col2','col3','col4','col5']
@@ -587,7 +589,7 @@ df.replace([1,2,3,4], [4,3,2,1]) # 1 to 4, 2 to 3, etc
 df.replace({4:5}) # replace 4 with 5 (replace with dictionary)
 
 # rename index & column (map)
-df = DataFrame(
+df = pd.DataFrame(
     np.arange(1,13,1).reshape(3,4), # 3 rows, 4 cols
     index=[1,2,3],
     columns=[' col1',' col2',' col3',' col4']
@@ -598,7 +600,7 @@ df.columns = df.columns.map(lambda x: x.replace('col','column')) # 'col' to 'col
 df.columns = df.columns.map(lambda x: x.upper()) # cols to uppercase
 
 # rename index & column (rename)
-df = DataFrame(
+df = pd.DataFrame(
     np.arange(1,13,1).reshape(3,4), # 3 rows, 4 cols
     index=[1,2,3],
     columns=[' col1',' col2',' col3',' col4']
@@ -626,7 +628,7 @@ nums_cat = pd.cut(
 
 # outliers
 np.random.seed(12345)
-df = DataFrame(np.random.randn(5,4)) # 5 rows, 4 cols
+df = pd.DataFrame(np.random.randn(5,4)) # 5 rows, 4 cols
 df.describe() # returns df (each col -- count, mean, std, min, %, max)
 
 col1 = df[0]
@@ -638,7 +640,7 @@ df[ df.isnull().any(1) ] # return df (any row where elem == NaN)
 df[df>3] = np.sign(df) * 3 # return df (if elem > 3, elem = 3)
 
 # permutation
-df = DataFrame(
+df = pd.DataFrame(
     np.arange(1,26,1).reshape(5,5),
     index=[0,1,2,3,4],
     columns=['col1','col2','col3','col4','col5']
@@ -646,7 +648,7 @@ df = DataFrame(
 df = df.take(np.random.permutation(5)) # shuffle indices
 
 # groupby df (groups rows by values)
-df = DataFrame({
+df = pd.DataFrame({
     'col1': ['a','b','c','b','a'],
     'col2': ['i','ii','ii','iii','iii'],
     'col3': ['A','C','B','C','A'],
@@ -677,7 +679,7 @@ group_dict = dict(list(group_obj2))
 group_dict['a'] # returns df (groupy by col1, show 'a' group rows)
 
 # groupby df (group columns by category) (using dict & using series)
-df = DataFrame({
+df = pd.DataFrame({
     'int1': [1,2,3,1,1],
     'int2': [2,4,6,8,10],
     'float1': [1.2,2.3,3.15,1.56,1.33],
@@ -697,7 +699,7 @@ cols = pd.MultiIndex.from_arrays(
     [['a','a','a','b','b'],[1,2,3,1,2]],
     names=['col','sub_col']
 )
-df = DataFrame(
+df = pd.DataFrame(
     np.arange(1,26,1).reshape(5,5),
     columns=cols
 )
@@ -705,7 +707,7 @@ group_obj = df.groupby(level=0,axis=1)
 sums = group_obj.sum()
 
 # split, apply, combine (apply -- apply function along axis)
-df = DataFrame({
+df = pd.DataFrame({
     'wine': ['a','a','a','b','b','c','c','c'],
     'quality': [7,8,10,8,5,9,7,6],
     'percent_alc': [4.5,6,12,3.75,7,9,10,5]
@@ -719,7 +721,6 @@ df = df.sort_values('wine')
 df[df.alc_content_rank == 1] # show rows with highest rank
 
 # io.StringIO
-from io import StringIO
 data = '''\
 id,animal,intelligence
 1,dog,smart
@@ -736,19 +737,3 @@ pd.crosstab(df['animal'],df['intelligence'], margins=True)
 
 # loc & conditional
 df.loc[df['col1'] == 'value']
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# END
