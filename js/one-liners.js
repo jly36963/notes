@@ -1,12 +1,12 @@
-// -------------
+// ---
 // one liners
-// -------------
+// ---
 
 // https://1loc.dev/
 
-// -------------
+// ---
 // array
-// -------------
+// ---
 
 // Check if every element meets condition
 const allMeet = (arr, condition) => arr.every((item) => condition(item));
@@ -67,9 +67,9 @@ const partition = (arr, condition) =>
   arr.reduce((acc, i) => (acc[condition(i) ? 0 : 1].push(i), acc), [[], []]);
 partition([1, 2, 3, 4, 5], (n) => n % 2);
 
-// -------------
+// ---
 // numbers
-// -------------
+// ---
 
 // sum of arguments
 const sum = (...args) => args.reduce((a, b) => a + b);
@@ -93,9 +93,9 @@ const randomFloat = (min, max) => Math.random() * (max - min) + min;
 const randomInteger = (min, max) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
-// -------------
+// ---
 // objects
-// -------------
+// ---
 
 // check if plain object
 const isPlainObject = (v) =>
@@ -111,9 +111,9 @@ const isEmpty = (obj) =>
 const clone = (obj) => ({ ...obj }); // shallow
 const clone = (obj) => JSON.parse(JSON.stringify(obj)); // deep (might use a lot of memory)
 
-// -------------
+// ---
 // string
-// -------------
+// ---
 
 // check string
 const isNumeric = (str) => !/[^0-9]/.test(str); // only digits
@@ -148,95 +148,3 @@ const reverse = (str) => [...str].reverse().join("");
 // uppercase first letter of any word
 const uppercaseWords = (str) =>
   str.replace(/^(.)|\s+(.)/g, (c) => c.toUpperCase());
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------
-
-// -------------
-//
-// -------------

@@ -1,10 +1,10 @@
-// --------------
+// ---
 // async
-// --------------
+// ---
 
-// --------------
+// ---
 // promises
-// --------------
+// ---
 
 // promise
 const myPromise = new Promise((resolve, reject) => {
@@ -22,9 +22,9 @@ myPromise
   .then((value) => console.log(value)) // use output of first 'then'
   .catch((error) => console.log(error)); // use reject value
 
-// --------------
+// ---
 // fetch (promise based request)
-// --------------
+// ---
 
 const fetchUser = () => {
   let data, error;
@@ -37,9 +37,9 @@ const fetchUser = () => {
 
 let apiResponse = fetchUser();
 
-// --------------
+// ---
 // async / await
-// --------------
+// ---
 
 const fetchUser = async () => {
   try {
@@ -53,26 +53,6 @@ const fetchUser = async () => {
   }
 };
 
-// --------------
+// ---
 //
-// --------------
-
-// --------------
-//
-// --------------
-
-// --------------
-//
-// --------------
-
-// --------------
-//
-// --------------
-
-// --------------
-//
-// --------------
-
-// --------------
-//
-// --------------
+// ---
