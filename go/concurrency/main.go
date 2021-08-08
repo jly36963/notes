@@ -2,64 +2,38 @@
 // golang (structures)
 // ---------
 
-// ---
-// entry point
-// ---
-
 package main
-
-// ---
-// imports
-// ---
 
 import (
 	"fmt"
 	"math/rand"
-	"reflect"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 )
 
-// ---
-// package scope
-// ---
-
-var wg sync.WaitGroup
-var mutex sync.Mutex
-
-// ---
-// main
-// ---
-
 func main() {
 	// wait groups
-	print(upper("wait groups"))
+	fmt.Println(strings.ToUpper("wait groups"))
 	wgPrintStrings([]string{"Kakashi", "Itachi", "Shisui", "Hashirama"})
 
 	// wait groups (mutex)
-	print(upper("wait groups (mutex)"))
+	fmt.Println(strings.ToUpper("wait groups (mutex)"))
 	countToMutex(40, 4)
 
 	// wait groups (atomic)
-	print(upper("wait groups (atomic)"))
+	fmt.Println(strings.ToUpper("wait groups (atomic)"))
 	countToAtomic(40, 4)
 
-	print(upper(""))
-	print(upper(""))
-	print(upper(""))
-
+	fmt.Println(strings.ToUpper(""))
+	fmt.Println(strings.ToUpper(""))
+	fmt.Println(strings.ToUpper(""))
 }
 
 // ---
 // shorthand function names
 // ---
-
-var print = fmt.Println
-var upper = strings.ToUpper
-var format = fmt.Sprintf
-var typeOf = reflect.TypeOf
 
 // ---
 // wait groups
@@ -71,11 +45,13 @@ var typeOf = reflect.TypeOf
 // wg.Wait -- block until wg counter is 0
 
 func wgPrinter(a string) {
+	wg := sync.WaitGroup{}
 	fmt.Println(a)
 	wg.Done() // reduce wg count by one
 }
 
 func wgPrintStrings(s []string) {
+	wg := sync.WaitGroup{}
 	delta := len(s) // number of go-routines / wg needed
 	wg.Add(delta)   // add to wg counter
 	for _, str := range s {
@@ -93,12 +69,14 @@ func wgPrintStrings(s []string) {
 // prevent race conditions -- don't let multiple go-routines work on the same variable at once.
 
 func countToMutex(n int, numOfGR int) {
+	wg := sync.WaitGroup{}
+	mutex := sync.Mutex{}
 	// shared state
 	var counter int
 	// iterations
 	iterations := n / numOfGR
 	if n%numOfGR != 0 {
-		print("Number must be evenly divisible by number of go-routines")
+		fmt.Println("Number must be evenly divisible by number of go-routines")
 		return
 	}
 	// go-routine function
@@ -108,14 +86,14 @@ func countToMutex(n int, numOfGR int) {
 			mutex.Lock() // lock variable
 			counter++
 			mutex.Unlock() // unlock variable
-			print(format("%s: %d, Counter: %d", name, i, counter))
+			fmt.Println(fmt.Sprintf("%s: %d, Counter: %d", name, i, counter))
 		}
 		wg.Done()
 	}
 	// execution
 	wg.Add(numOfGR)
 	for i := 0; i < numOfGR; i++ {
-		name := format("GR%d", i)
+		name := fmt.Sprintf("GR%d", i)
 		go incrementor(name, iterations)
 	}
 	wg.Wait()
@@ -129,12 +107,13 @@ func countToMutex(n int, numOfGR int) {
 // atomic methods change the variable using its location in memory.
 
 func countToAtomic(n int, numOfGR int) {
+	wg := sync.WaitGroup{}
 	// shared state
 	var counter int64
 	// iterations
 	iterations := n / numOfGR
 	if n%numOfGR != 0 {
-		print("Number must be evenly divisible by number of go-routines")
+		fmt.Println("Number must be evenly divisible by number of go-routines")
 		return
 	}
 	// go-routine function
@@ -142,14 +121,14 @@ func countToAtomic(n int, numOfGR int) {
 		for i := 0; i < iterations; i++ {
 			time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
 			atomic.AddInt64(&counter, 1)
-			print(format("%s: %d, Counter: %d", name, i, atomic.LoadInt64(&counter)))
+			fmt.Println(fmt.Sprintf("%s: %d, Counter: %d", name, i, atomic.LoadInt64(&counter)))
 		}
 		wg.Done()
 	}
 	// execution
 	wg.Add(numOfGR)
 	for i := 0; i < numOfGR; i++ {
-		name := format("GR%d", i)
+		name := fmt.Sprintf("GR%d", i)
 		go incrementor(name, iterations)
 	}
 	wg.Wait()

@@ -20,9 +20,6 @@ PATH="$GOPATH/bin:$PATH"
 // bool, byte, complex64, complex128, error, float32, float64, int, int8, int16, int32, int64
 // rune, string, uint, uint8, uint32, uint64,
 
-// common types
-// bool, error, float64, int, string
-
 // alias
 // byte -- uint8
 // rune -- int32
@@ -121,15 +118,7 @@ fmt.Sprintf("number: %.2f", 2.20254)
 
 */
 
-// ---
-// entry point
-// ---
-
 package main
-
-// ---
-// imports
-// ---
 
 import (
 	"fmt"
@@ -138,84 +127,72 @@ import (
 	"strings"
 )
 
-// ---
-// main
-// ---
-
 func main() {
 	// runtime
-	print(upper("runtime details"))
+	fmt.Println(strings.ToUpper("runtime details"))
 	getRuntimeDetails()
 
 	// functions
-	print(upper("functions"))
+	fmt.Println(strings.ToUpper("functions"))
 	add(1, 2)
 
 	// functions (multiple returns)
-	print(upper("functions (multiple returns)"))
+	fmt.Println(strings.ToUpper("functions (multiple returns)"))
 	getSumAndProduct(3, 4) // x,y := getSumAndProduct(3,4)
 
 	// functions (anonymous)
-	print(upper("anonymous functions"))
+	fmt.Println(strings.ToUpper("anonymous functions"))
 	subtract(3, 2)
 
 	// functions (variadic)
-	print(upper("variadic functions"))
+	fmt.Println(strings.ToUpper("variadic functions"))
 	getSum(1, 2, 3, 4)           // any number of arguments
 	getSum([]int{1, 2, 3, 4}...) // spread slice
 
 	// functions (currying)
-	print(upper("currying"))
+	fmt.Println(strings.ToUpper("currying"))
 	addTwoNumbers(3)(5)
 
 	// scope (closure)
-	print(upper("scope / closure"))
+	fmt.Println(strings.ToUpper("scope / closure"))
 	scopedGreet()
 
 	// functions (recursion)
-	print(upper("recursion"))
+	fmt.Println(strings.ToUpper("recursion"))
 	getFibSequenceTo(20)
 
 	// functions (defer)
-	print(upper("defer"))
+	fmt.Println(strings.ToUpper("defer"))
 	deferredGreet("Hiruzen")
 
 	// bash commands
-	print(upper("bash commands"))
+	fmt.Println(strings.ToUpper("bash commands"))
 	runBashCommands([]string{"ls", "date", "pwd"})
 
 	// bash commands (args)
-	print(upper("bash commands (args)"))
+	fmt.Println(strings.ToUpper("bash commands (args)"))
 	runBashCommandsWithArgs([][]string{
-		[]string{"ls", "-a"},
-		[]string{"echo", "hello there!!"},
-		[]string{"go", "version"},
+		{"ls", "-a"},
+		{"echo", "hello there!!"},
+		{"go", "version"},
 	})
 
 	// control flow (if)
-	print(upper("if, else if, else"))
+	fmt.Println(strings.ToUpper("if, else if, else"))
 	greet("Kakashi")
 
 	// control flow (for loop)
-	print(upper("for loop"))
+	fmt.Println(strings.ToUpper("for loop"))
 	printNames([]string{"Kakashi", "Hiruzen", "Iruka", "Yamato", "Itachi", "Hashirama"})
 
 	// control flow (switch)
-	print(upper("switch"))
+	fmt.Println(strings.ToUpper("switch"))
 	getSnackbarColor("success")
 
-	print(upper(""))
-	print(upper(""))
-	print(upper(""))
+	fmt.Println(strings.ToUpper(""))
+	fmt.Println(strings.ToUpper(""))
+	fmt.Println(strings.ToUpper(""))
 }
-
-// ---
-// shorthand function names
-// ---
-
-var print = fmt.Println
-var upper = strings.ToUpper
-var format = fmt.Sprintf
 
 // ---
 // runtime details
@@ -224,15 +201,15 @@ var format = fmt.Sprintf
 func getRuntimeDetails() {
 	// get runtime details (string slice)
 	details := []string{
-		format("os: %v", runtime.GOOS),
-		format("arch: %v", runtime.GOARCH),
-		format("CPUs: %v", runtime.NumCPU()),
-		format("GR: %v", runtime.NumGoroutine()),
-		format("v: %v", runtime.Version()),
+		fmt.Sprintf("os: %v", runtime.GOOS),
+		fmt.Sprintf("arch: %v", runtime.GOARCH),
+		fmt.Sprintf("CPUs: %v", runtime.NumCPU()),
+		fmt.Sprintf("GR: %v", runtime.NumGoroutine()),
+		fmt.Sprintf("v: %v", runtime.Version()),
 	}
 	// print each detail (for loop)
 	for _, d := range details {
-		print(d)
+		fmt.Println(d)
 	}
 }
 
@@ -244,7 +221,7 @@ func getRuntimeDetails() {
 
 func add(a, b int) int {
 	sum := a + b // short variable declaration
-	print(sum)
+	fmt.Println(sum)
 	return sum
 }
 
@@ -255,8 +232,8 @@ func add(a, b int) int {
 func getSumAndProduct(a int, b int) (sum int, product int) {
 	sum = a + b
 	product = a * b
-	print(sum)
-	print(product)
+	fmt.Println(sum)
+	fmt.Println(product)
 	return
 }
 
@@ -268,7 +245,7 @@ func getSumAndProduct(a int, b int) (sum int, product int) {
 
 var subtract = func(a, b int) int {
 	difference := a + b
-	print(difference)
+	fmt.Println(difference)
 	return difference
 }
 
@@ -281,7 +258,7 @@ func getSum(nums ...int) int {
 	for _, num := range nums {
 		total += num
 	}
-	print(total)
+	fmt.Println(total)
 	return total
 }
 
@@ -292,7 +269,7 @@ func getSum(nums ...int) int {
 func addTwoNumbers(a int) func(b int) int {
 	return func(b int) int {
 		sum := a + b
-		print(sum)
+		fmt.Println(sum)
 		return sum
 	}
 }
@@ -305,9 +282,9 @@ func scopedGreet() {
 	g1 := "Hello Hashirama"
 	{
 		g1 := "Hello Itachi"
-		print(g1) // Itachi
+		fmt.Println(g1) // Itachi
 	}
-	print(g1) // Hashirama
+	fmt.Println(g1) // Hashirama
 }
 
 // ---
@@ -335,7 +312,7 @@ func getFibSequenceTo(n int) []int {
 	for i := 0; i < n; i++ {
 		sequence = append(sequence, fib(i))
 	}
-	print(sequence)
+	fmt.Println(sequence)
 	return sequence
 }
 
@@ -363,7 +340,7 @@ func runBashCommands(commands []string) {
 		}
 		results = append(results, string(out))
 	}
-	print(results)
+	fmt.Println(results)
 }
 
 // ---
@@ -375,11 +352,11 @@ func runBashCommandsWithArgs(commands [][]string) {
 	for _, c := range commands {
 		out, err := exec.Command(c[0], c[1:]...).Output()
 		if err != nil {
-			print(err)
+			fmt.Println(err)
 		}
 		results = append(results, string(out))
 	}
-	print(results)
+	fmt.Println(results)
 }
 
 // ---
@@ -388,11 +365,11 @@ func runBashCommandsWithArgs(commands [][]string) {
 
 func greet(name string) {
 	if name == "Kakashi" {
-		print("Hey Kaka sensei!")
+		fmt.Println("Hey Kaka sensei!")
 	} else if name == "Yamato" {
-		print("Hey Tenzo!")
+		fmt.Println("Hey Tenzo!")
 	} else {
-		print(format("Hello %v!", name))
+		fmt.Println(fmt.Sprintf("Hello %v!", name))
 	}
 }
 
@@ -402,7 +379,7 @@ func greet(name string) {
 
 func printNames(names []string) {
 	for i := 0; i < len(names); i++ {
-		print(names[i])
+		fmt.Println(names[i])
 	}
 }
 
@@ -428,7 +405,7 @@ func getSnackbarColor(alertType string) string {
 	default:
 		color = "gray"
 	}
-	print(color)
+	fmt.Println(color)
 	return color
 }
 

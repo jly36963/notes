@@ -23,31 +23,45 @@ import (
 
 func main() {
 	// runtime
+	printSectionTitle("runtime")
 	getRuntimeDetails()
 	// fmt
+	printSectionTitle("fmt")
 	useFmt()
 	// log
+	printSectionTitle("log")
 	useLog()
 	// strings
+	printSectionTitle("strings")
 	useStrings()
 	// json
+	printSectionTitle("json")
 	useJson()
 	// time
+	printSectionTitle("time")
 	useTime()
 	// filepath
+	printSectionTitle("filepath")
 	useFilepath()
 	// sort
+	printSectionTitle("sort")
 	useSort()
 	// os
+	printSectionTitle("os")
 	useOs()
 	// os (os.File)
+	printSectionTitle("os (file)")
 	useOsFile()
 	// os (os/exec)
+	printSectionTitle("exec")
 	useExec()
 	// math
+	printSectionTitle("math")
 	useMath()
 	// net/http
+	printSectionTitle("net/http (Get)")
 	useNetHttpGet()
+	printSectionTitle("net/http (Post)")
 	useNetHttpPost()
 }
 
@@ -83,8 +97,6 @@ type RuntimeDetails struct {
 }
 
 func getRuntimeDetails() {
-	printSectionTitle("runtime")
-
 	fmt.Printf("%+v\n", RuntimeDetails{
 		Os:      runtime.GOOS,
 		Arch:    runtime.GOARCH,
@@ -110,7 +122,6 @@ func getRuntimeDetails() {
 // %e -- floating point (decimal notation)
 
 func useFmt() {
-	printSectionTitle("fmt")
 
 	// Println
 	fmt.Println("Hello world!") // print string
@@ -142,8 +153,6 @@ log.Fatalln("Error!")
 */
 
 func useLog() {
-	printSectionTitle("log")
-
 	// Println
 	log.Println("Hello World!")
 	// Printf
@@ -156,8 +165,6 @@ func useLog() {
 // ---
 
 func useStrings() {
-	printSectionTitle("strings")
-
 	// Compare -- just use comparison operators (==, <, >, etc)
 	comparison := strings.Compare("Kakashi", "Obito") // -1, 0, or 1
 	// Contains
@@ -219,8 +226,6 @@ type Person struct {
 }
 
 func useJson() {
-	printSectionTitle("json")
-
 	// struct -> []byte
 	bytes, _ := json.Marshal(Person{
 		FirstName: "Kakashi",
@@ -250,8 +255,6 @@ func useJson() {
 // ---
 
 func useTime() {
-	printSectionTitle("time")
-
 	// Date
 	date := time.Date(2020, 10, 11, 12, 0, 0, 0, time.UTC)
 	// Now
@@ -325,8 +328,6 @@ func printFilePaths(path string) {
 }
 
 func useFilepath() {
-	printSectionTitle("filepath")
-
 	fp := "client/build/index.html"
 	// Base
 	base := filepath.Base(fp) // string
@@ -364,8 +365,6 @@ func useFilepath() {
 // ---
 
 func useSort() {
-	printSectionTitle("sort")
-
 	// Float64s
 	floats := []float64{5.2, -1.3, 0.7, -3.8, 2.6}
 	sort.Float64s(floats)
@@ -441,8 +440,6 @@ _ = os.Unsetenv("hello")
 */
 
 func useOs() {
-	printSectionTitle("os")
-
 	// Getwd
 	cwd, _ := os.Getwd()
 	// Environ
@@ -471,8 +468,6 @@ func useOs() {
 }
 
 func useOsFile() {
-	printSectionTitle("os (file)")
-
 	var f *os.File
 	fn := "my-example-file.txt"
 
@@ -509,8 +504,6 @@ func useOsFile() {
 // ---
 
 func useExec() {
-	printSectionTitle("exec")
-
 	c := []string{"ls", "-a"}
 	// Command
 	command := exec.Command(c[0], c[1:]...)
@@ -540,8 +533,6 @@ func round(n float64, p int) float64 {
 }
 
 func useMath() {
-	printSectionTitle("math")
-
 	// constants
 	e := math.E
 	pi := math.Pi
@@ -609,8 +600,6 @@ func useMath() {
 }
 
 func useNetHttpGet() {
-	printSectionTitle("net/http (Get)")
-
 	type User struct {
 		Id   int    `json:"id"`
 		Name string `json:"name"`
@@ -625,16 +614,15 @@ func useNetHttpGet() {
 	}
 	// get body
 	defer res.Body.Close()
-	body, err2 := ioutil.ReadAll(res.Body) // []byte
-	if err2 != nil {
-		log.Println(err2)
+	body, err := ioutil.ReadAll(res.Body) // []byte
+	if err != nil {
+		log.Println(err)
 		return
 	}
 	// unmarshal body
 	var user User
-	err3 := json.Unmarshal(body, &user)
-	if err3 != nil {
-		log.Println(err3)
+	if err = json.Unmarshal(body, &user); err != nil {
+		log.Println(err)
 		return
 	}
 	// print results
@@ -644,8 +632,6 @@ func useNetHttpGet() {
 }
 
 func useNetHttpPost() {
-	printSectionTitle("net/http (Post)")
-
 	type User struct {
 		Id   int    `json:"id"`
 		Name string `json:"name"`
@@ -663,25 +649,25 @@ func useNetHttpPost() {
 		return
 	}
 	data := bytes.NewBuffer(postBody)
-	res, err2 := http.Post(url, contentType, data) // struct -- Status, StatusCode, Content-Type, Body
-	if err2 != nil {
-		log.Println(err2)
+	res, err := http.Post(url, contentType, data) // struct -- Status, StatusCode, Content-Type, Body
+	if err != nil {
+		log.Println(err)
 		return
 	}
 	// get body
 	defer res.Body.Close()
-	body, err3 := ioutil.ReadAll(res.Body) // []byte
-	if err3 != nil {
-		log.Println(err3)
+	body, err := ioutil.ReadAll(res.Body) // []byte
+	if err != nil {
+		log.Println(err)
 		return
 	}
 	// unmarshal body
 	var user User
-	err4 := json.Unmarshal(body, &user)
-	if err4 != nil {
-		log.Println(err4)
+	if err = json.Unmarshal(body, &user); err != nil {
+		log.Println(err)
 		return
 	}
+
 	// print results
 	bulkPrint(
 		"user", fmt.Sprintf("%+v", user),

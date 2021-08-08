@@ -2,15 +2,7 @@
 // golang (structures)
 // ---------
 
-// ---
-// entry point
-// ---
-
 package main
-
-// ---
-// imports
-// ---
 
 import (
 	"encoding/json" // json
@@ -18,81 +10,59 @@ import (
 	"math"
 	"reflect"
 	"strings"
-	// "math/rand"
-	// "os"
-	// "os/exec" // exec
-	// "sort"
-	// "sync"
-	// "sync/atomic"
-	// "time"
-	// "context"
 )
 
-// ---
-// main
-// ---
-
 func main() {
-
 	// pointers
-	print(upper("pointers"))
+	printSectionTitle("pointers")
 	usePointer()
 
 	// strings
-	print(upper("strings"))
+	printSectionTitle("strings")
 	useStringFunctions()
 
 	// maps
-	print(upper("maps"))
+	printSectionTitle("maps")
 	iterateMap()
 
 	// slices
-	print(upper("slice"))
+	printSectionTitle("slice")
 	printSlice()
 
 	// slices (iterating)
-	print(upper("slice (iterating)"))
+	printSectionTitle("slice (iterating)")
 	iterateSlice([]string{"Kakashi", "Itachi", "Hiruzen", "Hashirama"})
 
 	// slices (copying)
-	print(upper("slice (copying)"))
+	printSectionTitle("slice (copying)")
 	copySlice()
 
 	// arrays
-	print(upper("array"))
+	printSectionTitle("array")
 	printArrays()
 
 	// arrays (copying)
-	print(upper("array (copying)"))
+	printSectionTitle("array (copying)")
 	copyArray()
 
 	// structs
-	print(upper("structs"))
+	printSectionTitle("structs")
 	createNinja()
 
-	print(upper("interfaces"))
+	// interfaces
+	printSectionTitle("interfaces")
 	useInterface()
 
-	print(upper("json"))
+	// json
+	printSectionTitle("json")
 	useJson()
-
-	print(upper(""))
-
-	print(upper(""))
-
-	print(upper(""))
-
-	print(upper(""))
 }
 
-// ---
-// shorthand function names
-// ---
-
-var print = fmt.Println
-var upper = strings.ToUpper
-var format = fmt.Sprintf
-var typeOf = reflect.TypeOf
+func printSectionTitle(title string) {
+	fmt.Println("")
+	fmt.Println(strings.ToUpper(title))
+	fmt.Println("")
+}
 
 // ---
 // pointers
@@ -117,11 +87,11 @@ func usePointer() {
 	a := 3
 	// function to change value at location in memory
 	changePointerValue := func(p *int) {
-		print(*p) // dereferenced value
-		print(p)  // address
-		*p = 4    // change value
-		print(*p) // new value
-		print(p)  // address
+		fmt.Println(*p) // dereferenced value
+		fmt.Println(p)  // address
+		*p = 4          // change value
+		fmt.Println(*p) // new value
+		fmt.Println(p)  // address
 	}
 	// change value at location in memory
 	changePointerValue(&a)
@@ -152,7 +122,7 @@ func useStringFunctions() {
 	}
 	// iterate
 	for _, e := range examples {
-		print(e)
+		fmt.Println(e)
 	}
 }
 
@@ -182,7 +152,7 @@ func iterateMap() {
 
 func printSlice() {
 	names := []string{"Kakashi", "Itachi", "Hiruzen", "Hashirama"}
-	print(names)
+	fmt.Println(names)
 }
 
 // ---
@@ -192,7 +162,7 @@ func printSlice() {
 func iterateSlice(names []string) {
 	// for loop
 	for _, n := range names {
-		print(n)
+		fmt.Println(n)
 	}
 }
 
@@ -206,7 +176,7 @@ func copySlice() {
 	// copy
 	namesCopy := make([]string, len(names))
 	copy(namesCopy, names) // copy (dest, src)
-	print(namesCopy)
+	fmt.Println(namesCopy)
 }
 
 // ---
@@ -226,10 +196,10 @@ func printArrays() {
 	hokage[2] = "Hashirama"
 	// for loop
 	for _, n := range ninja {
-		print(n)
+		fmt.Println(n)
 	}
 	for _, h := range hokage {
-		print(h)
+		fmt.Println(h)
 	}
 }
 
@@ -240,15 +210,14 @@ func printArrays() {
 func copyArray() {
 	// original array
 	arr := [3]int{1, 2, 3}
-
 	// copy value
 	arrCopy := arr
 	// copy reference
 	arrRef := &arr
 
 	// view type
-	print(format("%T", arrCopy))
-	print(format("%T", arrRef))
+	fmt.Println(fmt.Sprintf("%T", arrCopy))
+	fmt.Println(fmt.Sprintf("%T", arrRef))
 }
 
 // ---
@@ -292,7 +261,7 @@ func createNinja() {
 		age:   46,
 		jutsu: []Jutsu{chidori, kamui, susanoo},
 	}
-	print(kakashi)
+	fmt.Println(kakashi)
 }
 
 // ---
@@ -331,9 +300,9 @@ func (c circle) perim() float64 {
 
 // interface method
 func measure(g geometry) {
-	print(typeOf(g))
-	print(format("area: %.1f", g.area()))
-	print(format("perimeter: %.1f", g.perim()))
+	fmt.Println(reflect.TypeOf(g))
+	fmt.Println(fmt.Sprintf("area: %.1f", g.area()))
+	fmt.Println(fmt.Sprintf("perimeter: %.1f", g.perim()))
 }
 func useInterface() {
 	// use interface method
@@ -365,43 +334,35 @@ func useJson() {
 		Age: 46,
 	}
 	// marshal
-	bytes, err1 := json.Marshal(kakashi)
-	if err1 != nil {
-		print(format("error: %s", err1))
+	bytes, err := json.Marshal(kakashi)
+	if err != nil {
+		fmt.Println(fmt.Sprintf("error: %s", err))
 	}
-	// unmarshal
+	// unmarshal -- src (bytes), destination (struct)
 	var kakashi2 jonin
-	err2 := json.Unmarshal(bytes, &kakashi2) // src (bytes), destination (struct)
-	if err2 != nil {
-		print(format("error: %s", err2))
+	if err = json.Unmarshal(bytes, &kakashi2); err != nil {
+		fmt.Println(fmt.Sprintf("error: %s", err))
+		return
 	}
 
 	// re-marshal (check work)
-	bytes2, err3 := json.Marshal(kakashi2)
-	if err3 != nil {
-		print(format("error: %s", err3))
+	bytes, err = json.Marshal(kakashi2)
+	if err != nil {
+		fmt.Println(fmt.Sprintf("error: %s", err))
+		return
 	}
 
 	// unmarshal (again)
 	var kakashi3 jonin
-	err4 := json.Unmarshal(bytes2, &kakashi3)
-	if err4 != nil {
-		print(format("error: %s", err4))
+	if err = json.Unmarshal(bytes, &kakashi3); err != nil {
+		fmt.Println(fmt.Sprintf("error: %s", err))
 	}
 
-	print(kakashi)
-	print(string(bytes))
-	print("")
-	print(kakashi2)
-	print(string(bytes2))
-	print("")
-	print(kakashi3)
+	fmt.Println(kakashi)
+	fmt.Println(string(bytes))
+	fmt.Println("")
+	fmt.Println(kakashi2)
+	fmt.Println(string(bytes))
+	fmt.Println("")
+	fmt.Println(kakashi3)
 }
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
