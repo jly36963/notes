@@ -1,9 +1,6 @@
-# environment
-alias mdej='conda activate mydataenv; jupyter notebook'
+# conda
 alias mde='conda activate mydataenv'
-alias mne='conda activate mynodeenv'
-alias mse='conda activate myscalaenv;'
-alias msej='conda activate myscalaenv; jupyter notebook'
+alias mdej='conda activate mydataenv; jupyter notebook'
 
 # file system
 alias ll='ls -la'
@@ -24,8 +21,5 @@ alias unlock_all='sudo chmod 777 -R *'
 # update
 alias qu='sudo echo "UPDATING"; sudo apt-get -y update; echo "UPGRADING"; sudo apt-get -y upgrade; echo "CLEANING"; sudo apt-get -y clean'
 
-# ----------
 # motivation
-# ----------
-
 alias motivation='echo "Work hard, be considerate, be happy, be healthy, be competitive, be patient."'

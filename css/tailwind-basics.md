@@ -1,41 +1,40 @@
-<!-- ----------- -->
-<!-- TAILWIND -->
-<!-- ----------- -->
+# tailwind
 
-<!-- ----------- -->
-<!-- install -->
-<!-- ----------- -->
+## install
 
+```sh
 npm install tailwindcss
+```
 
-<!-- ----------- -->
-<!-- add tailwind to css (@tailwind directive) -->
-<!-- ----------- -->
+## add tailwind to css (@tailwind directive)
 
 add these to a css file.
 tailwind directives/imports should be at beginning of css file.
 tailwind will swap these directives out at build time with all of its generated CSS.
 
+```css
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+```
 
-<!-- ----------- -->
-<!-- add tailwind to css (postcss) -->
-<!-- ----------- -->
+## add tailwind to css (postcss)
 
+```css
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+```
 
-<!-- ----------- -->
-<!-- customize tailwindcss (config) -->
-<!-- ----------- -->
+## customize tailwindcss (config)
 
+```sh
 npx tailwindcss init
+```
 
 tailwind.config.js
 
+```js
 module.exports = {
   theme: {},
   variants: {},
@@ -46,11 +45,11 @@ module.exports = {
     './src/**/*.jsx',
   ],
 }
+```
 
-<!-- ----------- -->
-<!-- add tailwindcss to postcss -->
-<!-- ----------- -->
+## add tailwindcss to postcss
 
+```js
 module.exports = {
   plugins: [
     // ...
@@ -59,10 +58,9 @@ module.exports = {
     // ...
   ]
 }
+```
 
-<!-- ----------- -->
-<!-- customization -->
-<!-- ----------- -->
+## customization
 
 <!-- https://tailwindcss.com/docs/configuration -->
 <!-- https://tailwindcss.com/docs/theme -->
@@ -70,10 +68,10 @@ module.exports = {
 <!-- https://tailwindcss.com/docs/customizing-spacing -->
 <!-- https://tailwindcss.com/docs/configuring-variants -->
 
-<!-- ----------- -->
-<!-- div -->
-<!-- ----------- -->
+## usage
 
+```html 
+<!-- div -->
 <!-- container -- set max-width of element to match min-width of current breakpoint -->
 <div class="container">Hello!</div>
 <!-- width (0,1,2,3,4,5,6,8,10,12,16,20,24,32,40,48,56,64) -->
@@ -459,24 +457,7 @@ module.exports = {
 <!-- course -->
 <!-- https://tailwindcss.com/course -->
 
-
-<!-- ----------- -->
-<!--  -->
-<!-- ----------- -->
-
-
-
-
-<!-- ----------- -->
-<!--  -->
-<!-- ----------- -->
-
-
-
-
-<!-- ----------- -->
-<!--  -->
-<!-- ----------- -->
+```
 
 
 

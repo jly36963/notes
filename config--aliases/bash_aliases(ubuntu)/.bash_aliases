@@ -1,7 +1,6 @@
-# environment
-alias mje='conda activate mydataenv; jupyter notebook'
+# conda
 alias mde='conda activate mydataenv'
-alias mne='conda activate mynodeenv'
+alias mje='conda activate mydataenv; jupyter notebook'
 
 # file system
 alias ll='ls -la'

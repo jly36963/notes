@@ -3,7 +3,6 @@
 ## HTML TEMPLATE (with bootstrap CDN)
 
 ``` html
-
 <!doctype html>
 <html lang="en">
   <head>
@@ -36,8 +35,8 @@
 ```
 
 ## HTML TEMPLATE (with css and script links)
-``` html
 
+``` html
 <!DOCTYPE html> <!-- The DOCTYPE tells the browser what kind of document this is (HTML) -->
 <html lang="en">
   <head>
@@ -70,7 +69,6 @@
   </body>
 
 </html>
-
 ```
 
 ## HTML NOTES
@@ -247,5 +245,4 @@ action/method tell the form where/how to send the form data.
 
 <!-- http://www.example.com/projects/index.html is an absolute URL
   (if you're already in the projects folder, use a relative URL: index.html) -->
-
 ```
