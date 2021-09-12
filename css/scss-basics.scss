@@ -1,10 +1,10 @@
-// --------------------
+// ---
 // CSS AND SCSS (SASS)
-// --------------------
+// ---
 
-// --------------------
+// ---
 // NPM, SCSS, & PREPROCESSING
-// --------------------
+// ---
 
 // npm install node-sass --save
 // create 'main.scss' file in 'scss' directory of project.
@@ -15,9 +15,9 @@
 // adding a '-w' flag to the compile:scss script will make node-sass watch for updates
 // live-server can also be used to detect changes to scss files.
 
-// --------------------
+// ---
 // CSS PRINCIPLES
-// --------------------
+// ---
 
 // CSS should be in the head (style tag) or in an external file
 // CSS overwrites itself (duplicate properties will overwrite previous ones)
@@ -28,9 +28,9 @@
   // MAINTAINABLE/SCALABLE
   // WEB PERFORMANCE
 
-// --------------------
+// ---
 // BASIC RESET (UNIVERSAL SELECTOR)
-// --------------------
+// ---
 
 *, *::before, *::after {
   margin: 0;
@@ -48,9 +48,9 @@ body {
   box-sizing: border-box; // include margin & border in width/height
 }
 
-// --------------------
+// ---
 // BUILD MEANINGFUL CLASSNAMES
-// --------------------
+// ---
 
 // block element modifier -- BEM format
 
@@ -64,9 +64,9 @@ body {
 .recipe__stat--key {}
 .recipe__stat--value {}
 
-// --------------------
+// ---
 // SASS FEATURES
-// --------------------
+// ---
 
 // features
 
@@ -86,18 +86,18 @@ body {
   // make different selectors inherit common declarations
 
 
-// --------------------
+// ---
 // Sass and SCSS (SYNTAX)
-// --------------------
+// ---
 
 // sass -- indentation sensitive, no brackets/semi-colons
 // SCSS -- preserves original CSS syntax
 
 // js comments work (instead of /* comment */)
 
-// --------------------
+// ---
 // SCSS VARIABLES
-// --------------------
+// ---
 
 $c-primary: #55f;
 $c-secondary: #2a6;
@@ -110,9 +110,9 @@ $c-light: #eee;
   background-color: $c-p;
 }
 
-// --------------------
+// ---
 // NESTED SELECTORS
-// --------------------
+// ---
 
 // use '&' when using pseudo-classes in nested selectors
 
@@ -129,9 +129,9 @@ $c-light: #eee;
   }
 }
 
-// --------------------
+// ---
 // ADVANCED NESTING
-// --------------------
+// ---
 
 // classes: '.header', '.header__logo-box'
 
@@ -167,18 +167,18 @@ $c-light: #eee;
 }
 
 
-// --------------------
+// ---
 // RGBA WITH HEX
-// --------------------
+// ---
 
 box-1 {
   background: rgba($c-tertiary, .8)  // in scss, rgba can accept hex
 }
 
 
-// --------------------
+// ---
 // COLOR FUNCTIONS (SCSS)
-// --------------------
+// ---
 
 .btn-main {
   background-color: $c-secondary;
@@ -191,9 +191,9 @@ box-1 {
   }
 }
 
-// --------------------
+// ---
 // SCSS MIXINS (with arguments, default arguments)
-// --------------------
+// ---
 
 @mixin clearfix {
   &::after {
@@ -215,9 +215,9 @@ a {
   @include style-link-text(#eee);
 }
 
-// --------------------
+// ---
 // SCSS FUNCTIONS
-// --------------------
+// ---
 
 @function divide($numerator, $denominator) {
   @return $numerator / $denominator;
@@ -227,9 +227,9 @@ box-1 {
   margin: divide(3, 2) * 1rem;
 }
 
-// --------------------
+// ---
 // EXTENDS (using placeholder) (like mixins, but produces DRY code)
-// --------------------
+// ---
 
 %btn-placeholder {
   padding: 1rem;
@@ -249,9 +249,9 @@ btn-alternate {
   background-color: $c-secondary;
 }
 
-// --------------------
+// ---
 // 7-1 PATTERN
-// --------------------
+// ---
 
 // 7 folders, 1 main Sass file
   // main.scss
@@ -293,9 +293,9 @@ btn-alternate {
 @import "pages/profile";
 
 
-// --------------------
+// ---
 // NOT (PSEUDO-SELECTOR)
-// --------------------
+// ---
 
 .row {
   background-color: #eee;
@@ -305,9 +305,9 @@ btn-alternate {
   }
 }
 
-// --------------------
+// ---
 // ATTRIBUTE SELECTOR (advanced)
-// --------------------
+// ---
 
 // select all elements whose class begins with 'col-'
 [class^="col-"] {}
@@ -316,9 +316,9 @@ btn-alternate {
 // select all elements whose class contains 'col-'
 [class*="col-"] {}
 
-// --------------------
+// ---
 // CUSTOM GRID WITH FLOATS
-// --------------------
+// ---
 
 // variables (abstracts/variables)
 $grid-width: 72rem; // px to rem: 1140/16 = 71.25rem
@@ -382,18 +382,18 @@ $grid-gutter-v: 2rem;
 }
 
 
-// --------------------
+// ---
 // MEDIA QUERIES (BREAKPOINTS)
-// --------------------
+// ---
 
 // best practice is to create a breakpoints based on content.
 
 // predefined breakpoints (based on devices) that work pretty well:
   // phone (<600), tablet-portrait (<900), tablet-landscape (<1200), desktop (<1800)
 
-// --------------------
+// ---
 // SCSS & MEDIA QUERIES (NESTING)
-// --------------------
+// ---
 
 // without mixin (good)
 
@@ -405,9 +405,9 @@ $grid-gutter-v: 2rem;
   }
 }
 
-// --------------------
+// ---
 // SCSS & MEDIA QUERIES (MIXIN)
-// --------------------
+// ---
 
 // abstracts/mixins
 @mixin rd-phone {
@@ -432,9 +432,9 @@ html {
   }
 }
 
-// --------------------
+// ---
 // SCSS & MEDIA QUERIES (MEDIA QUERY MANAGER) (BEST)
-// --------------------
+// ---
 
 // abstracts/mixins
 @mixin rd($device) {
@@ -470,9 +470,9 @@ html {
   }
 }
 
-// --------------------
+// ---
 // SCSS RESPONSIVE IMAGES
-// --------------------
+// ---
 
 // responsive images improve performance and design.
   // resolution switching (decrease resolution on smaller screen)
@@ -480,9 +480,9 @@ html {
   // art direction (serving an alternate/altered image for smaller screens)
 
 
-// --------------------
+// ---
 // SCSS & FLEXBOX (display: flex;)
-// --------------------
+// ---
 
 * {
   margin: 0;
@@ -508,45 +508,12 @@ html {
   color: $c-light;
 }
 
-// --------------------
+// ---
 // SCSS & CSS-GRID
-// --------------------
+// ---
 
 .container {
   display: grid;
 }
 
 
-// --------------------
-//
-// --------------------
-
-
-
-// --------------------
-//
-// --------------------
-
-
-
-// --------------------
-//
-// --------------------
-
-
-
-// --------------------
-//
-// --------------------
-
-
-
-// --------------------
-//
-// --------------------
-
-
-
-// --------------------
-//
-// --------------------

@@ -14,7 +14,6 @@
   // language support
   // numerics
 
-
 // ------------
 // containers
 // ------------
@@ -84,7 +83,7 @@ int main() {
   v1.pop_back(); // remove last element
   v1.resize(4); // fill/remove elements until number of elements equals the argument.
   v1.swap(v2); // swap two vectors
-  v1.assign(5, 10) // fill array with 10, 5 times {10,10,10,10,10}
+  v1.assign(5, 10); // fill array with 10, 5 times {10,10,10,10,10}
   // iterators example
   cout << "Output of begin and end: "; 
   for (auto i = g1.begin(); i != g1.end(); ++i) 
@@ -152,7 +151,7 @@ int main() {
   list1.swap(list2); // swap contents of two lists
   list1.sort(); // sort in ascending order
   list1.reverse(); // reverse the list
-  list1.remove_if(even) // bool even(const int& value) { return (value % 2) == 0;}
+  list1.remove_if(even); // bool even(const int& value) { return (value % 2) == 0;}
   // iteration example
   list<string> names;   // default constructor makes it empty
   names.push_back("zeus");
