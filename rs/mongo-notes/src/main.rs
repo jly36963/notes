@@ -15,6 +15,11 @@ async fn main() {
     let db = client.database("practice");
     // Create instance of DAL
     let mongo_dal = MongoDAL { db };
+
+    // ---
+    // Ninjas
+    // ---
+
     // Insert one
     let ninja_new = NinjaNew {
         first_name: "Kakashi".to_string(),
@@ -41,11 +46,26 @@ async fn main() {
     };
     // Update one
     // TODO
+
     // Delete one
     // TODO
+
     // Insert many
     // TODO
+
     // Find
+    // TODO
+
+    // ---
+    // Jutsus
+    // ---
+
+    // TODO
+
+    // ---
+    // NinjasJutsus
+    // ---
+
     // TODO
 }
 
