@@ -566,6 +566,7 @@ pub fn basic_iterators() -> () {
 }
 
 pub fn basic_traits() -> () {
+    // https://doc.rust-lang.org/book/ch10-02-traits.html
     // TODO
 }
 

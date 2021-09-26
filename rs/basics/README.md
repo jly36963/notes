@@ -16,6 +16,11 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustup update
 ```
 
+### using nightly build
+
+- `rustup default nightly`
+- `rustup update && cargo update`
+
 ### tools
 
 - rustup -- rust toolchain installer (somewhat like nvm)
