@@ -1,0 +1,11 @@
+[package]
+name = "mongo-notes"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mongodb = "2.0.0"
+tokio = { version = "1.12.0", features = ["full"] }
+serde = "1.0"
+async-trait = "0.1.51"
+
