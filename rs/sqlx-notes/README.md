@@ -3,11 +3,6 @@
 - https://github.com/launchbadge/sqlx
 - https://docs.rs/sqlx/0.5.7/sqlx/
 
-# seaql
-
-https://github.com/SeaQL/sea-query/tree/0.16.4
-
-
 ## Startup
 
 ```bash
