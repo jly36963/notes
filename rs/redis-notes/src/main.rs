@@ -17,15 +17,16 @@ async fn main() {
     let redis_conn_str = String::from("redis://127.0.0.1:6379/");
     let client = redis::Client::open(redis_conn_str.clone()).unwrap();
     let async_redis_dal = AsyncRedisDAL { client };
+
     // Strings
     let result = async_redis_dal
-        .set_str("name".to_string(), "Itachi".to_string())
+        .string_set("name".to_string(), "Itachi".to_string())
         .await;
     match result {
         Ok(r) => println!("Async string set result: {}", r),
         Err(e) => println!("Async string set error: {}", e),
     }
-    let result = async_redis_dal.get_str("name".to_string()).await;
+    let result = async_redis_dal.string_get("name".to_string()).await;
     match result {
         Ok(r) => println!("Async string get result: {}", r),
         Err(e) => println!("Async string get error: {}", e),
@@ -41,25 +42,63 @@ async fn main() {
     let redis_dal = RedisDAL { client };
 
     // Strings
-    let result = redis_dal.set_str("name".to_string(), "Kakashi".to_string());
+    let result = redis_dal.string_set("name".to_string(), "Kakashi".to_string());
     match result {
-        Ok(r) => println!("String set result: {}", r),
-        Err(e) => println!("String set error: {}", e),
+        Ok(r) => println!("String SET result: {}", r),
+        Err(e) => println!("String SET error: {}", e),
     }
-    let result = redis_dal.get_str("name".to_string());
+    let result = redis_dal.string_get("name".to_string());
     match result {
-        Ok(r) => println!("String get result: {}", r),
-        Err(e) => println!("String get error: {}", e),
+        Ok(r) => println!("String GET result: {}", r),
+        Err(e) => println!("String GET error: {}", e),
     }
-    let result = redis_dal.expire_str("name".to_string(), 60);
+    let result = redis_dal.string_expire("name".to_string(), 60);
     match result {
-        Ok(r) => println!("String expire result: {}", r),
-        Err(e) => println!("String expire error: {}", e),
+        Ok(r) => println!("String EXPIRE result: {}", r),
+        Err(e) => println!("String EXPIRE error: {}", e),
+    }
+
+    // List
+    let result = redis_dal.list_lpush("dates".to_string(), "2021-09-15".to_string());
+    match result {
+        Ok(r) => println!("List LPUSH result: {}", r),
+        Err(e) => println!("List LPUSH error: {}", e),
+    }
+    let result = redis_dal.list_rpush("dates".to_string(), "2021-05-26".to_string());
+    match result {
+        Ok(r) => println!("List RPUSH result: {}", r),
+        Err(e) => println!("List RPUSH error: {}", e),
+    }
+    let result = redis_dal.list_lrange("dates".to_string(), 0, -1);
+    match result {
+        Ok(r) => println!("List LRANGE result: {:#?}", r),
+        Err(e) => println!("List LRANGE error: {:#?}", e),
+    }
+    let result = redis_dal.list_llen("dates".to_string());
+    match result {
+        Ok(r) => println!("List LLEN result: {}", r),
+        Err(e) => println!("List LLEN error: {}", e),
+    }
+    let result = redis_dal.list_lpop("dates".to_string());
+    match result {
+        Ok(r) => println!("List LPOP result: {}", r),
+        Err(e) => println!("List LPOP error: {}", e),
+    }
+    let result = redis_dal.list_rpop("dates".to_string());
+    match result {
+        Ok(r) => println!("List RPOP result: {}", r),
+        Err(e) => println!("List RPOP error: {}", e),
+    }
+
+    let result = redis_dal.list_del("dates".to_string());
+    match result {
+        Ok(r) => println!("List DEL result: {}", r),
+        Err(e) => println!("List DEL error: {}", e),
     }
 }
 
 // ---
-// Structs
+// DAL (SYNC)
 // ---
 
 struct RedisDAL {
@@ -69,11 +108,23 @@ struct RedisDAL {
 pub trait TRedisDAL {
     // Connection
     fn get_conn(&self) -> redis::Connection;
-    // String
-    fn get_str(&self, k: String) -> Result<String, redis::RedisError>;
-    fn set_str(&self, k: String, v: String) -> Result<String, redis::RedisError>;
-    fn expire_str(&self, k: String, s: usize) -> Result<i32, redis::RedisError>;
-
+    // String (GET, SET, EXPIRE)
+    fn string_get(&self, k: String) -> Result<String, redis::RedisError>;
+    fn string_set(&self, k: String, v: String) -> Result<String, redis::RedisError>;
+    fn string_expire(&self, k: String, s: usize) -> Result<i32, redis::RedisError>;
+    // List (LPUSH, RPUSH, LRANGE, LTRIM, LLEN, LPOP, RPOP, DEL)
+    fn list_lpush(&self, k: String, s: String) -> Result<i32, redis::RedisError>;
+    fn list_rpush(&self, k: String, s: String) -> Result<i32, redis::RedisError>;
+    fn list_lrange(
+        &self,
+        k: String,
+        start: isize,
+        stop: isize,
+    ) -> Result<Vec<String>, redis::RedisError>;
+    fn list_llen(&self, k: String) -> Result<i32, redis::RedisError>;
+    fn list_lpop(&self, k: String) -> Result<String, redis::RedisError>;
+    fn list_rpop(&self, k: String) -> Result<String, redis::RedisError>;
+    fn list_del(&self, k: String) -> Result<i32, redis::RedisError>;
     // TODO:
     // lists, sets, sorted sets, hashes
 }
@@ -85,22 +136,67 @@ impl TRedisDAL for RedisDAL {
         conn.unwrap()
     }
     // String
-    fn get_str(&self, k: String) -> Result<String, redis::RedisError> {
+    fn string_get(&self, k: String) -> Result<String, redis::RedisError> {
         let mut conn = self.get_conn();
         let result = conn.get(k);
         result
     }
-    fn set_str(&self, k: String, v: String) -> Result<String, redis::RedisError> {
+    fn string_set(&self, k: String, v: String) -> Result<String, redis::RedisError> {
         let mut conn = self.get_conn();
         let result = conn.set(k, v);
         result
     }
-    fn expire_str(&self, k: String, s: usize) -> Result<i32, redis::RedisError> {
+    fn string_expire(&self, k: String, s: usize) -> Result<i32, redis::RedisError> {
         let mut conn = self.get_conn();
         let result = conn.expire(k, s);
         result
     }
+    // List
+    fn list_lpush(&self, k: String, s: String) -> Result<i32, redis::RedisError> {
+        let mut conn = self.get_conn();
+        let result = conn.lpush(k, s);
+        result
+    }
+    fn list_rpush(&self, k: String, s: String) -> Result<i32, redis::RedisError> {
+        let mut conn = self.get_conn();
+        let result = conn.rpush(k, s);
+        result
+    }
+    fn list_lrange(
+        &self,
+        k: String,
+        start: isize,
+        stop: isize,
+    ) -> Result<Vec<String>, redis::RedisError> {
+        let mut conn = self.get_conn();
+        let result = conn.lrange(k, start, stop);
+        result
+    }
+    fn list_llen(&self, k: String) -> Result<i32, redis::RedisError> {
+        let mut conn = self.get_conn();
+        let result = conn.llen(k);
+        result
+    }
+    fn list_lpop(&self, k: String) -> Result<String, redis::RedisError> {
+        let mut conn = self.get_conn();
+        let result = conn.lpop(k, None);
+        result
+    }
+    fn list_rpop(&self, k: String) -> Result<String, redis::RedisError> {
+        let mut conn = self.get_conn();
+        let result = conn.rpop(k, None);
+        result
+    }
+    fn list_del(&self, k: String) -> Result<i32, redis::RedisError> {
+        let mut conn = self.get_conn();
+        let result = conn.del(k);
+        result
+    }
 }
+
+// ---
+// DAL (ASYNC)
+// ---
 
 struct AsyncRedisDAL {
     client: redis::Client,
@@ -111,8 +207,8 @@ pub trait TAsyncRedisDAL {
     // Connection
     async fn get_conn(&self) -> redis::aio::Connection;
     // String
-    async fn get_str(&self, k: String) -> Result<String, redis::RedisError>;
-    async fn set_str(&self, k: String, v: String) -> Result<String, redis::RedisError>;
+    async fn string_get(&self, k: String) -> Result<String, redis::RedisError>;
+    async fn string_set(&self, k: String, v: String) -> Result<String, redis::RedisError>;
 }
 
 #[async_trait]
@@ -123,12 +219,12 @@ impl TAsyncRedisDAL for AsyncRedisDAL {
         conn.unwrap()
     }
     // String
-    async fn get_str(&self, k: String) -> Result<String, redis::RedisError> {
+    async fn string_get(&self, k: String) -> Result<String, redis::RedisError> {
         let mut conn = self.get_conn().await;
         let result = conn.get(k).await;
         result
     }
-    async fn set_str(&self, k: String, v: String) -> Result<String, redis::RedisError> {
+    async fn string_set(&self, k: String, v: String) -> Result<String, redis::RedisError> {
         let mut conn = self.get_conn().await;
         let result = conn.set(k, v).await;
         result
