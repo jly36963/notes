@@ -26,10 +26,10 @@ type IPostgresDAL interface {
 	DeleteNinja(id string) (types.Ninja, error)
 
 	// jutsus
-	// TODO: create jutsu
-	// TODO: select jutsu
-	// TODO: update jutsu
-	// TODO: delete jutsu
+	CreateJutsu(jutsuNew types.JutsuNew) (types.Jutsu, error)
+	GetJutsu(id string) (types.Jutsu, error)
+	UpdateJutsu(id string, jutsuUpdates types.JutsuNew) (types.Jutsu, error)
+	DeleteJutsu(id string) (types.Jutsu, error)
 
 	// ninjas_jutsus
 	// TODO: create ninja_jutsu
@@ -154,6 +154,33 @@ func (dal *PostgresDAL) rowToNinja(row pgx.Row) (types.Ninja, error) {
 	return ninja, nil
 }
 
+func (dal *PostgresDAL) rowToJutsu(row pgx.Row) (types.Jutsu, error) {
+	var id string
+	var name string
+	var chakraNature string
+	var description string
+	var createdAt time.Time
+	var updatedAt sql.NullTime
+
+	if err := row.Scan(&id, &name, &chakraNature, &description, &createdAt, &updatedAt); err != nil {
+		return types.Jutsu{}, err
+	}
+
+	jutsu := types.Jutsu{
+		ID:           id,
+		Name:         name,
+		ChakraNature: chakraNature,
+		Description:  description,
+		CreatedAt:    createdAt,
+	}
+
+	if updatedAt.Valid {
+		jutsu.UpdatedAt = updatedAt.Time
+	}
+
+	return jutsu, nil
+}
+
 // ---
 // ninjas
 // ---
@@ -214,7 +241,7 @@ func (dal *PostgresDAL) UpdateNinja(id string, ninjaUpdates types.NinjaNew) (typ
 		Suffix("Returning *")
 
 	// dynamically add updates, determine if update should happen
-	shouldUpdate := false // return error
+	shouldUpdate := false
 	if ninjaUpdates.FirstName != "" {
 		updateBuilder = updateBuilder.Set("first_name", ninjaUpdates.FirstName)
 		shouldUpdate = true
@@ -224,7 +251,7 @@ func (dal *PostgresDAL) UpdateNinja(id string, ninjaUpdates types.NinjaNew) (typ
 		shouldUpdate = true
 	}
 	if ninjaUpdates.Age != 0 {
-		updateBuilder = updateBuilder.Set("last_name", ninjaUpdates.Age)
+		updateBuilder = updateBuilder.Set("age", ninjaUpdates.Age)
 		shouldUpdate = true
 	}
 	if !shouldUpdate {
@@ -243,7 +270,7 @@ func (dal *PostgresDAL) UpdateNinja(id string, ninjaUpdates types.NinjaNew) (typ
 		return types.Ninja{}, err
 	}
 
-	return ninja, err
+	return ninja, nil
 }
 
 func (dal *PostgresDAL) DeleteNinja(id string) (types.Ninja, error) {
@@ -266,14 +293,123 @@ func (dal *PostgresDAL) DeleteNinja(id string) (types.Ninja, error) {
 		return types.Ninja{}, err
 	}
 
-	return ninja, err
+	return ninja, nil
 }
 
 // ---
 // jutsus
 // ---
 
-// TODO
+func (dal *PostgresDAL) CreateJutsu(jutsuNew types.JutsuNew) (types.Jutsu, error) {
+	// get query builder
+	qb := dal.GetQB()
+	insertBuilder := qb.
+		Insert("jutsus").
+		Columns("name", "chakra_nature", "description").
+		Values(jutsuNew.Name, jutsuNew.ChakraNature, jutsuNew.Description).
+		Suffix("RETURNING *")
+
+	// execute query
+	row, err := dal.ExecuteInsert(insertBuilder)
+	if err != nil {
+		return types.Jutsu{}, err
+	}
+
+	// convert to struct
+	jutsu, err := dal.rowToJutsu(row)
+	if err != nil {
+		return types.Jutsu{}, err
+	}
+
+	return jutsu, nil
+}
+
+func (dal *PostgresDAL) GetJutsu(id string) (types.Jutsu, error) {
+	// get query builder
+	qb := dal.GetQB()
+	selectBuilder := qb.
+		Select("*").
+		From("jutsus").
+		Where(sq.Eq{"id": id})
+
+	// execute query
+	row, err := dal.ExecuteSelect(selectBuilder)
+	if err != nil {
+		return types.Jutsu{}, err
+	}
+
+	// convert to struct
+	jutsu, err := dal.rowToJutsu(row)
+	if err != nil {
+		return types.Jutsu{}, err
+	}
+
+	return jutsu, nil
+}
+
+func (dal *PostgresDAL) UpdateJutsu(id string, jutsuUpdates types.JutsuNew) (types.Jutsu, error) {
+	// get query builder
+	qb := dal.GetQB()
+	updateBuilder := qb.
+		Update("jutsus").
+		Where(sq.Eq{"id": id}).
+		Suffix("Returning *")
+
+	// dynamically add updates, determine if update should happen
+	shouldUpdate := false
+	if jutsuUpdates.Name != "" {
+		updateBuilder = updateBuilder.Set("name", jutsuUpdates.Name)
+		shouldUpdate = true
+	}
+	if jutsuUpdates.ChakraNature != "" {
+		updateBuilder = updateBuilder.Set("chakra_nature", jutsuUpdates.ChakraNature)
+		shouldUpdate = true
+	}
+	if jutsuUpdates.Description != "" {
+		updateBuilder = updateBuilder.Set("description", jutsuUpdates.Description)
+		shouldUpdate = true
+	}
+	if !shouldUpdate {
+		return types.Jutsu{}, errors.New("no fields to update")
+	}
+
+	// execute query
+	row, err := dal.ExecuteUpdate(updateBuilder)
+	if err != nil {
+		return types.Jutsu{}, err
+	}
+
+	// convert to struct
+	jutsu, err := dal.rowToJutsu(row)
+	if err != nil {
+		return types.Jutsu{}, err
+	}
+
+	return jutsu, nil
+}
+
+func (dal *PostgresDAL) DeleteJutsu(id string) (types.Jutsu, error) {
+	// get query builder
+	qb := dal.GetQB()
+	deleteBuilder := qb.
+		Delete("jutsus").
+		Where(sq.Eq{"id": id}).
+		Suffix("Returning *")
+
+	// execute query
+	row, err := dal.ExecuteDelete(deleteBuilder)
+	if err != nil {
+		return types.Jutsu{}, err
+	}
+
+	// convert to struct
+	jutsu, err := dal.rowToJutsu(row)
+	if err != nil {
+		return types.Jutsu{}, err
+	}
+
+	return jutsu, nil
+}
 
 // ---
 // ninjas_jutsus
