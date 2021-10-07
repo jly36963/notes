@@ -18,22 +18,20 @@ import (
 
 type IPostgresDAL interface {
 	GetClient(s string)
-
 	// ninjas
 	CreateNinja(ninjaNew types.NinjaNew) (types.Ninja, error)
 	GetNinja(id string) (types.Ninja, error)
 	UpdateNinja(id string, ninjaUpdates types.NinjaNew) (types.Ninja, error)
 	DeleteNinja(id string) (types.Ninja, error)
-
 	// jutsus
 	CreateJutsu(jutsuNew types.JutsuNew) (types.Jutsu, error)
 	GetJutsu(id string) (types.Jutsu, error)
 	UpdateJutsu(id string, jutsuUpdates types.JutsuNew) (types.Jutsu, error)
 	DeleteJutsu(id string) (types.Jutsu, error)
-
 	// ninjas_jutsus
-	// TODO: create ninja_jutsu
-	// TODO: delete ninja_jutsu
+	CreateNinjaJutsu(ninjaID, jutsuID string) (bool, error)
+	DeleteNinjaJutsu(ninjaID string, jutsuID string) (bool, error)
+	// TODO: get ninja with jutsus
 }
 
 type PostgresDAL struct {
@@ -415,4 +413,38 @@ func (dal *PostgresDAL) DeleteJutsu(id string) (types.Jutsu, error) {
 // ninjas_jutsus
 // ---
 
-// TODO
+func (dal *PostgresDAL) CreateNinjaJutsu(ninjaID, jutsuID string) (bool, error) {
+	// get query builder
+	qb := dal.GetQB()
+	insertBuilder := qb.
+		Insert("ninjas_jutsus").
+		Columns("ninja_id", "jutsu_id").
+		Values(ninjaID, jutsuID).
+		Suffix("RETURNING *")
+
+	// execute query
+	_, err := dal.ExecuteInsert(insertBuilder)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (dal *PostgresDAL) DeleteNinjaJutsu(ninjaID string, jutsuID string) (bool, error) {
+	// get query builder
+	qb := dal.GetQB()
+	deleteBuilder := qb.
+		Delete("ninjas_jutsus").
+		Where(sq.Eq{"ninja_id": ninjaID}).
+		Where(sq.Eq{"jutsu_id": jutsuID}).
+		Suffix("Returning *")
+
+	// execute query
+	_, err := dal.ExecuteDelete(deleteBuilder)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
