@@ -95,6 +95,38 @@ async fn main() {
         Ok(r) => println!("List DEL result: {}", r),
         Err(e) => println!("List DEL error: {}", e),
     }
+    // Set
+    for (i, color) in vec!["red", "yellow", "blue", "red"].iter().enumerate() {
+        let result = redis_dal.set_add("colors".to_string(), color.to_string());
+        match result {
+            Ok(r) => println!("Set SADD result({}): {}", i, r), // TODO: result is 0?
+            Err(e) => println!("Set SADD error({}): {}", i, e),
+        }
+    }
+    let result = redis_dal.set_card("colors".to_string());
+    match result {
+        Ok(r) => println!("Set SCARD result: {}", r),
+        Err(e) => println!("Set SCARD error: {}", e),
+    }
+    let result = redis_dal.set_members("colors".to_string());
+    match result {
+        Ok(r) => println!("Set SMEMBERS result: {:#?}", r),
+        Err(e) => println!("Set SMEMBERS error: {:#?}", e),
+    }
+    let result = redis_dal.set_ismember("colors".to_string(), "red".to_string());
+    match result {
+        Ok(r) => println!("Set SISMEMBER result: {}", r),
+        Err(e) => println!("Set SISMEMBER error: {}", e),
+    }
+    let result = redis_dal.set_del("colors".to_string());
+    match result {
+        Ok(r) => println!("Set DEL result: {}", r),
+        Err(e) => println!("Set DEL error: {}", e),
+    }
+    // Sorted set
+    // TODO
+    // Hashes
+    // TODO
 }
 
 // ---
@@ -125,8 +157,17 @@ pub trait TRedisDAL {
     fn list_lpop(&self, k: String) -> Result<String, redis::RedisError>;
     fn list_rpop(&self, k: String) -> Result<String, redis::RedisError>;
     fn list_del(&self, k: String) -> Result<i32, redis::RedisError>;
-    // TODO:
-    // lists, sets, sorted sets, hashes
+    // Set (SADD, SCARD, SMEMBERS, SISMEMBER)
+    // Other useful methods: SMOVE, SPOP, SREM, SUNION, SDIFF, SINTER (https://redis.io/commands#set)
+    fn set_add(&self, k: String, s: String) -> Result<i32, redis::RedisError>;
+    fn set_card(&self, k: String) -> Result<i32, redis::RedisError>;
+    fn set_members(&self, k: String) -> Result<Vec<String>, redis::RedisError>;
+    fn set_ismember(&self, k: String, s: String) -> Result<bool, redis::RedisError>;
+    fn set_del(&self, k: String) -> Result<i32, redis::RedisError>;
+    // Sorted set
+    // TODO
+    // Hashes
+    // TODO
 }
 
 impl TRedisDAL for RedisDAL {
@@ -188,6 +229,32 @@ impl TRedisDAL for RedisDAL {
         result
     }
     fn list_del(&self, k: String) -> Result<i32, redis::RedisError> {
+        let mut conn = self.get_conn();
+        let result = conn.del(k);
+        result
+    }
+    // Set
+    fn set_add(&self, k: String, s: String) -> Result<i32, redis::RedisError> {
+        let mut conn = self.get_conn();
+        let result = conn.sadd(k, s);
+        result
+    }
+    fn set_card(&self, k: String) -> Result<i32, redis::RedisError> {
+        let mut conn = self.get_conn();
+        let result = conn.scard(k);
+        result
+    }
+    fn set_members(&self, k: String) -> Result<Vec<String>, redis::RedisError> {
+        let mut conn = self.get_conn();
+        let result = conn.smembers(k);
+        result
+    }
+    fn set_ismember(&self, k: String, s: String) -> Result<bool, redis::RedisError> {
+        let mut conn = self.get_conn();
+        let result = conn.sismember(k, s);
+        result
+    }
+    fn set_del(&self, k: String) -> Result<i32, redis::RedisError> {
         let mut conn = self.get_conn();
         let result = conn.del(k);
         result
