@@ -246,9 +246,9 @@ pub trait TRedisDAL {
         stop: isize,
     ) -> Result<Vec<String>, redis::RedisError>;
     fn sorted_del(&self, k: String) -> Result<i32, redis::RedisError>;
-    // ZREMRANGEBYRANK
 
     // Hashes
+    // https://redis.io/commands#hash
     // TODO
 }
 
