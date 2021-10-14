@@ -130,7 +130,7 @@ conn = psycopg2.connect(
 # rowcount -- number of rows from last execution
 
 
-def use_cursor(conn):
+def use_cursor(conn: psycopg2.connection) -> None:
     # create
     cursor = conn.cursor()
     # use
@@ -145,8 +145,9 @@ def use_cursor(conn):
 # ---
 
 
-def use_cursor_context(conn):
+def use_cursor_context(conn: psycopg2.connection) -> None:
     with conn.cursor() as cursor:
+        cursor: psycopg2.cursor
         # cursor exists here
         cursor.execute('SELECT version();')
         db_version = cursor.fetchone()
@@ -163,8 +164,9 @@ def use_cursor_context(conn):
 # return rows as dictionaries (instead of tuples)
 
 
-def select_returning_dict(conn, query):
-    with conn.cursor(cursor_factory=RealDictCursor):
+def select_returning_dict(conn: psycopg2.connection, query: str):
+    with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+        cursor: psycopg2.cursor
         cursor.execute(query)
         row = dict(cursor.fetchOne())
         print(row)
@@ -180,11 +182,11 @@ def select_returning_dict(conn, query):
 
 class PypikaExecutor:
 
-    def __init__(self, conn):
+    def __init__(self, conn: psycopg2.connection):
         self.conn = conn
 
     @staticmethod
-    def get_dicts_from_cursor(cursor) -> Union[List[Dict[str, Any]], None]:
+    def get_dicts_from_cursor(cursor: psycopg2.cursor) -> Union[List[Dict[str, Any]], None]:
         columns = [desc[0] for desc in cursor.description]
         values_list = cursor.fetchall()
         rows = []
@@ -199,6 +201,7 @@ class PypikaExecutor:
         result = None
         try:
             with conn.cursor() as cursor:
+                cursor: psycopg2.cursor
                 result = cursor.execute(query)
             conn.commit()
             return result
@@ -211,6 +214,7 @@ class PypikaExecutor:
         rows = None
         try:
             with conn.cursor() as cursor:
+                cursor: psycopg2.cursor
                 cursor.execute(query)
                 rows = self.get_dicts_from_cursor(cursor)
             conn.commit()
@@ -258,7 +262,6 @@ class PypikaExecutor:
             .from_(table)
             .select('*')
             .where(table.id == row_id)
-            # .where(table.deleted_at.notnull())
         )
         sql = str(qb)
         rows = self.execute_query(sql)
@@ -281,7 +284,6 @@ class PypikaExecutor:
         qb = (
             PostgreSQLQuery
             .from_(table)
-            # .where(table.deleted_at.notnull())
             .select('*')
         )
         for k, v in predicate.items():
@@ -301,7 +303,6 @@ class PypikaExecutor:
             PostgreSQLQuery
             .update(table)
             .where(table.id == row_id)
-            # .where(table.deleted_at.notnull())
             .returning('*')
         )
         for k, v in updates.items():
@@ -311,17 +312,6 @@ class PypikaExecutor:
         return rows[0] if (rows and len(rows)) else None
 
     def delete_one_by_id(
-        self, 
-        table_name: str,
-        row_id: int
-    ) -> Union[Dict[str,Any], None]:
-        self.update_one_by_id(
-            table_name,
-            row_id,
-            {'deleted_at': str(arrow.utcnow())}
-        )
-
-    def hard_delete_one_by_id(
         self, 
         table_name: str, 
         row_id: int,
