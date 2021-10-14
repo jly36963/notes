@@ -81,7 +81,7 @@ class PGDAL:
             PostgreSQLQuery
             .into(table)
             .columns(*ninja_new.keys())
-            .insert(*[FormatParameter() for _ in ninja_new.keys()])  # TODO: fix this
+            .insert(*[FormatParameter() for _ in ninja_new.keys()])
             .returning('*')
         )
         args += list(ninja_new.values())
