@@ -40,7 +40,7 @@ def main():
     result = redis_dal.list_lpush("dates", "2021-09-15")
     print(f"List LPUSH result: {result}")
     result = redis_dal.list_rpush("dates", "2021-05-26")
-    print(f"List LPUSH result: {result}")
+    print(f"List RPUSH result: {result}")
     result = redis_dal.list_lrange("dates", 0, -1)
     print(f"List LRANGE result: {result}")
     result = redis_dal.list_llen("dates")
