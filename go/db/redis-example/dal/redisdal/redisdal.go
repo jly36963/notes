@@ -2,6 +2,7 @@ package redisdal
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -240,7 +241,7 @@ func (dal *RedisDAL) SortedCard(k string) int64 {
 
 // SortedCount ...
 func (dal *RedisDAL) SortedCount(k string, lb, rb int64) int64 {
-	val, err := dal.client.ZCount(dal.ctx, k, string(lb), string(rb)).Result()
+	val, err := dal.client.ZCount(dal.ctx, k, fmt.Sprint(lb), fmt.Sprint(rb)).Result()
 	if err != nil {
 		panic(err)
 	}
