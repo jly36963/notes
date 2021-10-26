@@ -1,9 +1,10 @@
-from typing import Union, List, Dict, Any
-import psycopg2
+from typing import Union, List, Any
+import asyncpg
 from pypika import Table, PostgreSQLQuery
-from pypika.terms import FormatParameter
+from pypika.terms import QmarkParameter
 from ...types.types import NinjaNew, NinjaUpdates, Ninja, JutsuNew, JutsuUpdates, Jutsu
 from enum import Enum
+from uuid import UUID
 
 
 class Tables(Enum):
@@ -13,59 +14,59 @@ class Tables(Enum):
 
 
 class PGDAL:
-    def __init__(self, conn: psycopg2.extensions.connection):
+    def __init__(self, conn: asyncpg.connection.Connection):
         self.conn = conn
 
     @staticmethod
-    def get_dicts_from_cursor(cursor: psycopg2.extensions.cursor) -> Union[List[Dict[str, Any]], None]:
-        if not cursor.description:
-            return None
-        columns = [desc[0] for desc in cursor.description]
-        values_list = cursor.fetchall()
-        rows = []
-        for values in values_list:
-            row = dict(zip(columns, values))
-            rows.append(row)
-        return rows
+    def replace_placeholder(sql: str) -> str:
+        """
+        Replace ? with $1, $2, etc
+        NOTE: This is based on the golang query building library "squirrel"
+        """
+        output = ""
+        i: int = 0
+        while True:
+            idx = sql.find("?")
+            # break if no more "?"
+            if idx == -1:
+                break
+            # escape ?? -> ?
+            if len(sql[idx:]) > 1 and sql[idx:idx+2] == "??":
+                output += sql[:idx]
+                output += "?"
+                if len(sql[idx:]) == 1:
+                    break
+                sql = sql[idx+2:]
+            # Replace ? with $i
+            else:
+                i += 1
+                output += sql[:idx]
+                output += f"${i}"
+                sql = sql[idx+1:]
+        output += sql
+        return output
 
-    def execute_raw(
+    async def execute_query(
         self,
         query: str,
-        args: Union[list, None]
-    ) -> Union[Any, None]:
-        """
-        Executes query in transaction and returns cursor result
-        """
-        conn = self.conn
-        result = None
-        with conn.cursor() as cursor:
-            cursor: psycopg2.extensions.cursor
-            result = cursor.execute(query, args) if args else cursor.execute(query)
-        conn.commit()
-        return result
-
-    def execute_query(
-        self,
-        query: str,
-        args: Union[list, None] = None
+        args: list = []
     ) -> Union[Any, None]:
         """
         Executes query in transaction and returns rows
         """
+        query = self.replace_placeholder(query)
         conn = self.conn
-        rows = None
-        with conn.cursor() as cursor:
-            cursor: psycopg2.extensions.cursor
-            cursor.execute(query, args) if args else cursor.execute(query)
-            rows = self.get_dicts_from_cursor(cursor)
-        conn.commit()
-        return rows
+        records = []
+        async with conn.transaction():
+            async for record in conn.cursor(query, *args):
+                records.append(dict(record))
+        return records
 
     # ---
     # ninjas
     # ---
 
-    def create_ninja(self, ninja_new: NinjaNew) -> Union[Ninja, None]:
+    async def create_ninja(self, ninja_new: NinjaNew) -> Union[Ninja, None]:
         """
         Create a ninja and return it
         """
@@ -75,15 +76,15 @@ class PGDAL:
             PostgreSQLQuery
             .into(table)
             .columns(*ninja_new.keys())
-            .insert(*[FormatParameter() for _ in ninja_new.keys()])
+            .insert(*[QmarkParameter() for _ in ninja_new.keys()])
             .returning('*')
         )
         args += list(ninja_new.values())
         sql = str(qb)
-        rows = self.execute_query(sql, args)
+        rows = await self.execute_query(sql, args)
         return rows[0] if (rows and len(rows)) else None
 
-    def get_ninja(self, id: str) -> Union[Ninja, None]:
+    async def get_ninja(self, id: UUID) -> Union[Ninja, None]:
         """
         Get a ninja by id
         """
@@ -93,14 +94,14 @@ class PGDAL:
             PostgreSQLQuery
             .from_(table)
             .select('*')
-            .where(table.id == FormatParameter())
+            .where(table.id == QmarkParameter())
         )
         args.append(id)
         sql = str(qb)
-        rows = self.execute_query(sql, args)
+        rows = await self.execute_query(sql, args)
         return rows[0] if (rows and len(rows)) else None
 
-    def update_ninja(self, id: str, ninja_updates: NinjaUpdates) -> Union[Ninja, None]:
+    async def update_ninja(self, id: UUID, ninja_updates: NinjaUpdates) -> Union[Ninja, None]:
         """
         Update a ninja by id and return it
         """
@@ -109,18 +110,18 @@ class PGDAL:
         qb = (
             PostgreSQLQuery
             .update(table)
-            .where(table.id == FormatParameter())
+            .where(table.id == QmarkParameter())
             .returning('*')
         )
         for k, v in ninja_updates.items():
-            qb = qb.set(table[k], FormatParameter())
+            qb = qb.set(table[k], QmarkParameter())
             args.append(v)
         args.append(id)
         sql = str(qb)
-        rows = self.execute_query(sql, args)
+        rows = await self.execute_query(sql, args)
         return rows[0] if (rows and len(rows)) else None
 
-    def delete_ninja(self, id: str) -> Union[Ninja, None]:
+    async def delete_ninja(self, id: UUID) -> Union[Ninja, None]:
         """
         Delete a ninja and return it
         """
@@ -130,15 +131,15 @@ class PGDAL:
             PostgreSQLQuery
             .from_(table)
             .delete()
-            .where(table.id == FormatParameter())
+            .where(table.id == QmarkParameter())
             .returning('*')
         )
         args.append(id)
         sql = str(qb)
-        rows = self.execute_query(sql, args)
+        rows = await self.execute_query(sql, args)
         return rows[0] if (rows and len(rows)) else None
 
-    def associate_ninja_and_jutsu(self, ninja_id: str, jutsu_id: str) -> None:
+    async def associate_ninja_and_jutsu(self, ninja_id: UUID, jutsu_id: UUID) -> None:
         """
         Associate a ninja and jutsu
         """
@@ -148,16 +149,16 @@ class PGDAL:
             PostgreSQLQuery
             .into(table)
             .columns([table.ninja_id, table.jutsu_id])
-            .insert(FormatParameter(), FormatParameter())
+            .insert(QmarkParameter(), QmarkParameter())
             .returning('*')
         )
         args.append(ninja_id)
         args.append(jutsu_id)
         sql = str(qb)
-        self.execute_query(sql, args)
+        await self.execute_query(sql, args)
         return
 
-    def dissociate_ninja_and_jutsu(self, ninja_id: str, jutsu_id: str) -> None:
+    async def dissociate_ninja_and_jutsu(self, ninja_id: UUID, jutsu_id: UUID) -> None:
         """
         Dissociate a ninja and jutsu
         """
@@ -168,17 +169,17 @@ class PGDAL:
             .from_(table)
             .delete()
             .where(
-                (table.ninja_id == FormatParameter()) &
-                (table.jutsu_id == FormatParameter())
+                (table.ninja_id == QmarkParameter()) &
+                (table.jutsu_id == QmarkParameter())
             )
         )
         args.append(ninja_id)
         args.append(jutsu_id)
         sql = str(qb)
-        self.execute_query(sql, args)
+        await self.execute_query(sql, args)
         return
 
-    def get_ninja_with_jutsus(self, ninja_id: str) -> Union[Ninja, None]:
+    async def get_ninja_with_jutsus(self, ninja_id: UUID) -> Union[Ninja, None]:
         """
         Get ninja with associated jutsus
         """
@@ -192,11 +193,11 @@ class PGDAL:
             PostgreSQLQuery
             .from_(ninjas_table)
             .select("*")
-            .where(ninjas_table.id == FormatParameter())
+            .where(ninjas_table.id == QmarkParameter())
         )
         args.append(ninja_id)
         sql = str(qb)
-        rows = self.execute_query(sql, args)
+        rows = await self.execute_query(sql, args)
         ninja = rows[0] if (rows and len(rows)) else None
 
         # get jutsus
@@ -209,12 +210,12 @@ class PGDAL:
                 PostgreSQLQuery
                 .from_(ninjas_jutsus_table)
                 .select(ninjas_jutsus_table.jutsu_id)
-                .where(ninjas_jutsus_table.ninja_id == FormatParameter())
+                .where(ninjas_jutsus_table.ninja_id == QmarkParameter())
             ))
         )
         args.append(ninja_id)
         sql = str(qb)
-        jutsus = self.execute_query(sql, args) or []
+        jutsus = await self.execute_query(sql, args) or []
 
         # result
         if not ninja:
@@ -226,7 +227,7 @@ class PGDAL:
     # jutsus
     # ---
 
-    def create_jutsu(self, jutsu_new: JutsuNew) -> Union[Jutsu, None]:
+    async def create_jutsu(self, jutsu_new: JutsuNew) -> Union[Jutsu, None]:
         """
         Create a jutsu and return it
         """
@@ -236,15 +237,15 @@ class PGDAL:
             PostgreSQLQuery
             .into(table)
             .columns(*jutsu_new.keys())
-            .insert(*[FormatParameter() for _ in jutsu_new.keys()])
+            .insert(*[QmarkParameter() for _ in jutsu_new.keys()])
             .returning('*')
         )
         args += list(jutsu_new.values())
         sql = str(qb)
-        rows = self.execute_query(sql, args)
+        rows = await self.execute_query(sql, args)
         return rows[0] if (rows and len(rows)) else None
 
-    def get_jutsu(self, id: str) -> Union[Jutsu, None]:
+    async def get_jutsu(self, id: UUID) -> Union[Jutsu, None]:
         """
         Get a jutsu by id
         """
@@ -254,14 +255,14 @@ class PGDAL:
             PostgreSQLQuery
             .from_(table)
             .select('*')
-            .where(table.id == FormatParameter())
+            .where(table.id == QmarkParameter())
         )
         args.append(id)
         sql = str(qb)
-        rows = self.execute_query(sql, args)
+        rows = await self.execute_query(sql, args)
         return rows[0] if (rows and len(rows)) else None
 
-    def update_jutsu(self, id: str, jutsu_updates: JutsuUpdates) -> Union[Jutsu, None]:
+    async def update_jutsu(self, id: UUID, jutsu_updates: JutsuUpdates) -> Union[Jutsu, None]:
         """
         Update a ninja by id and return it
         """
@@ -270,18 +271,18 @@ class PGDAL:
         qb = (
             PostgreSQLQuery
             .update(table)
-            .where(table.id == FormatParameter())
+            .where(table.id == QmarkParameter())
             .returning('*')
         )
         for k, v in jutsu_updates.items():
-            qb = qb.set(table[k], FormatParameter())
+            qb = qb.set(table[k], QmarkParameter())
             args.append(v)
         args.append(id)
         sql = str(qb)
-        rows = self.execute_query(sql, args)
+        rows = await self.execute_query(sql, args)
         return rows[0] if (rows and len(rows)) else None
 
-    def delete_jutsu(self, id: str) -> Union[Jutsu, None]:
+    async def delete_jutsu(self, id: UUID) -> Union[Jutsu, None]:
         """
         Delete a jutsu and return it
         """
@@ -291,16 +292,10 @@ class PGDAL:
             PostgreSQLQuery
             .from_(table)
             .delete()
-            .where(table.id == FormatParameter())
+            .where(table.id == QmarkParameter())
             .returning('*')
         )
         args.append(id)
         sql = str(qb)
-        rows = self.execute_query(sql, args)
+        rows = await self.execute_query(sql, args)
         return rows[0] if (rows and len(rows)) else None
-
-    # ---
-    # ninjas_jutsus
-    # ---
-
-    # TODO

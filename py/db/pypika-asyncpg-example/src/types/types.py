@@ -1,5 +1,6 @@
 from typing import Union, TypedDict, List
 import datetime
+from uuid import UUID
 
 
 class NinjaNew(TypedDict):
@@ -15,7 +16,7 @@ class NinjaUpdates(TypedDict, total=False):
 
 
 class Ninja(TypedDict):
-    id: str
+    id: UUID
     first_name: str
     last_name: str
     age: int
@@ -37,7 +38,7 @@ class JutsuUpdates(TypedDict, total=False):
 
 
 class Jutsu(TypedDict):
-    id: str
+    id: UUID
     name: str
     description: str
     chakra_nature: str
