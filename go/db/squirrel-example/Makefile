@@ -14,7 +14,8 @@ MIGRATIONS_PATH="./dal/pg/migrations"
 # commands
 # ---
 
-.PHONY: dev run build run-build prettier install
+.PHONY: dev run build run-build prettier install \
+	migrate rollback migration
 
 default:
 	install build run-build

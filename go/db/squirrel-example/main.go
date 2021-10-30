@@ -102,21 +102,34 @@ func main() {
 	fmt.Printf("%+v\n", jutsu)
 
 	// create relation ninja + jutsu
-	_, err = PostgresDal.CreateNinjaJutsu(ninjaID, jutsuID)
+	_, err = PostgresDal.AssociateNinjaJutsu(ninjaID, jutsuID)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Associate ninja & jutsu")
 
 	// get ninja with jutsu
-	// TODO
+	ninjaWithJutsu, err := PostgresDal.GetNinjaWithJutsus(ninjaID)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Select ninja with jutsus")
+	fmt.Printf("%+v\n", ninjaWithJutsu)
 
 	// delete relation
-	_, err = PostgresDal.DeleteNinjaJutsu(ninjaID, jutsuID)
+	_, err = PostgresDal.DissociateNinjaJutsu(ninjaID, jutsuID)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Remove association for ninja & jutsu")
+
+	// get ninja with jutsu
+	ninjaWithJutsu, err = PostgresDal.GetNinjaWithJutsus(ninjaID)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Select ninja with jutsus (post dissociation")
+	fmt.Printf("%+v\n", ninjaWithJutsu)
 
 	// delete ninja
 	ninja, err = PostgresDal.DeleteNinja(ninjaID)
