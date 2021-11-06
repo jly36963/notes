@@ -1,7 +1,9 @@
+mod helpers;
+
 use super::super::types;
+use anyhow;
 use async_trait::async_trait;
 use sqlx;
-mod helpers;
 
 pub struct PostgresDAL {
     pub pg_pool: sqlx::Pool<sqlx::Postgres>,
@@ -10,54 +12,67 @@ pub struct PostgresDAL {
 #[async_trait]
 pub trait TPostgresDAL {
     // ninjas
-    async fn create_ninja(&self, ninja_new: types::NinjaNew) -> Result<types::Ninja, sqlx::Error>;
-    async fn get_ninja(&self, id: String) -> Result<types::Ninja, sqlx::Error>;
+    async fn create_ninja(
+        &self,
+        ninja_new: types::NinjaNew,
+    ) -> anyhow::Result<Option<types::Ninja>>;
+    async fn get_ninja(&self, id: String) -> anyhow::Result<Option<types::Ninja>>;
     async fn update_ninja(
         &self,
         id: String,
         ninja_updates: types::NinjaUpdates,
-    ) -> Result<types::Ninja, sqlx::Error>;
-    async fn delete_ninja(&self, id: String) -> Result<types::Ninja, sqlx::Error>;
+    ) -> anyhow::Result<Option<types::Ninja>>;
+    async fn delete_ninja(&self, id: String) -> anyhow::Result<Option<types::Ninja>>;
     // jutsus
-    async fn create_jutsu(&self, jutsu_new: types::JutsuNew) -> Result<types::Jutsu, sqlx::Error>;
-    async fn get_jutsu(&self, id: String) -> Result<types::Jutsu, sqlx::Error>;
+    async fn create_jutsu(
+        &self,
+        jutsu_new: types::JutsuNew,
+    ) -> anyhow::Result<Option<types::Jutsu>>;
+    async fn get_jutsu(&self, id: String) -> anyhow::Result<Option<types::Jutsu>>;
     async fn update_jutsu(
         &self,
         id: String,
         jutsu_updates: types::JutsuUpdates,
-    ) -> Result<types::Jutsu, sqlx::Error>;
-    async fn delete_jutsu(&self, id: String) -> Result<types::Jutsu, sqlx::Error>;
+    ) -> anyhow::Result<Option<types::Jutsu>>;
+    async fn delete_jutsu(&self, id: String) -> anyhow::Result<Option<types::Jutsu>>;
     // ninjas_jutsus
     async fn associate_ninja_and_jutsu(
         &self,
         ninja_id: String,
         jutsu_id: String,
-    ) -> Result<bool, sqlx::Error>;
+    ) -> anyhow::Result<()>;
     async fn dissociate_ninja_and_jutsu(
         &self,
         ninja_id: String,
         jutsu_id: String,
-    ) -> Result<bool, sqlx::Error>;
-    async fn get_ninja_jutsus(&self, id: String) -> Result<Vec<types::Jutsu>, sqlx::Error>;
-    async fn get_ninja_with_jutsus(&self, id: String) -> Result<types::Ninja, sqlx::Error>;
+    ) -> anyhow::Result<()>;
+    async fn get_ninja_jutsus(&self, id: String) -> anyhow::Result<Vec<types::Jutsu>>;
+    async fn get_ninja_with_jutsus(&self, id: String) -> anyhow::Result<Option<types::Ninja>>;
 }
 
 #[async_trait]
 impl TPostgresDAL for PostgresDAL {
     // ninjas
-    async fn create_ninja(&self, ninja_new: types::NinjaNew) -> Result<types::Ninja, sqlx::Error> {
+    async fn create_ninja(
+        &self,
+        ninja_new: types::NinjaNew,
+    ) -> anyhow::Result<Option<types::Ninja>> {
         let sql = helpers::replace_placeholders(String::from(
             "INSERT INTO ninjas (first_name, last_name, age) VALUES ( ?, ?, ? ) RETURNING *;",
         ));
 
-        let row = sqlx::query_as::<_, types::NinjaSqlx>(&sql)
+        let row = match sqlx::query_as::<_, types::NinjaSqlx>(&sql)
             .bind(ninja_new.first_name)
             .bind(ninja_new.last_name)
             .bind(ninja_new.age)
-            .fetch_one(&self.pg_pool)
-            .await?;
+            .fetch_optional(&self.pg_pool)
+            .await? // sqlx::Error
+        {
+            Some(r) => r,
+            None => return Ok(None),
+        };
 
-        Ok(types::Ninja {
+        Ok(Some(types::Ninja {
             id: row.id.to_string(),
             first_name: row.first_name,
             last_name: row.last_name,
@@ -65,19 +80,23 @@ impl TPostgresDAL for PostgresDAL {
             created_at: row.created_at,
             updated_at: row.updated_at,
             jutsus: None,
-        })
+        }))
     }
 
-    async fn get_ninja(&self, id: String) -> Result<types::Ninja, sqlx::Error> {
-        let uuid = sqlx::types::Uuid::parse_str(&id).unwrap();
+    async fn get_ninja(&self, id: String) -> anyhow::Result<Option<types::Ninja>> {
+        let uuid = sqlx::types::Uuid::parse_str(&id)?;
         let sql = helpers::replace_placeholders(String::from("SELECT * FROM ninjas WHERE id = ?"));
 
-        let row = sqlx::query_as::<_, types::NinjaSqlx>(&sql)
+        let row = match sqlx::query_as::<_, types::NinjaSqlx>(&sql)
             .bind(uuid)
-            .fetch_one(&self.pg_pool)
-            .await?;
+            .fetch_optional(&self.pg_pool)
+            .await? // sqlx::Error
+        {
+            Some(r) => r,
+            None => return Ok(None),
+        };
 
-        Ok(types::Ninja {
+        Ok(Some(types::Ninja {
             id: row.id.to_string(),
             first_name: row.first_name,
             last_name: row.last_name,
@@ -85,15 +104,15 @@ impl TPostgresDAL for PostgresDAL {
             created_at: row.created_at,
             updated_at: row.updated_at,
             jutsus: None,
-        })
+        }))
     }
 
     async fn update_ninja(
         &self,
         id: String,
         ninja_updates: types::NinjaUpdates,
-    ) -> Result<types::Ninja, sqlx::Error> {
-        let uuid = sqlx::types::Uuid::parse_str(&id).unwrap();
+    ) -> anyhow::Result<Option<types::Ninja>> {
+        let uuid = sqlx::types::Uuid::parse_str(&id)?;
         let mut update_clause = String::from("SET ");
         // get fields
         let first_name = ninja_updates.first_name;
@@ -133,9 +152,12 @@ impl TPostgresDAL for PostgresDAL {
         }
         qb = qb.bind(uuid);
         // fetch row
-        let row = qb.fetch_one(&self.pg_pool).await?;
+        let row = match qb.fetch_optional(&self.pg_pool).await? {
+            Some(r) => r,
+            None => return Ok(None),
+        };
         // return ninja
-        Ok(types::Ninja {
+        Ok(Some(types::Ninja {
             id: row.id.to_string(),
             first_name: row.first_name,
             last_name: row.last_name,
@@ -143,21 +165,25 @@ impl TPostgresDAL for PostgresDAL {
             created_at: row.created_at,
             updated_at: row.updated_at,
             jutsus: None,
-        })
+        }))
     }
 
-    async fn delete_ninja(&self, id: String) -> Result<types::Ninja, sqlx::Error> {
-        let uuid = sqlx::types::Uuid::parse_str(&id).unwrap();
+    async fn delete_ninja(&self, id: String) -> anyhow::Result<Option<types::Ninja>> {
+        let uuid = sqlx::types::Uuid::parse_str(&id)?;
         let sql = helpers::replace_placeholders(String::from(
             "DELETE FROM ninjas WHERE id = ? RETURNING *;",
         ));
 
-        let row = sqlx::query_as::<_, types::NinjaSqlx>(&sql)
+        let row = match sqlx::query_as::<_, types::NinjaSqlx>(&sql)
             .bind(uuid)
-            .fetch_one(&self.pg_pool)
-            .await?;
+            .fetch_optional(&self.pg_pool)
+            .await?
+        {
+            Some(r) => r,
+            None => return Ok(None),
+        };
 
-        Ok(types::Ninja {
+        Ok(Some(types::Ninja {
             id: row.id.to_string(),
             first_name: row.first_name,
             last_name: row.last_name,
@@ -165,23 +191,30 @@ impl TPostgresDAL for PostgresDAL {
             created_at: row.created_at,
             updated_at: row.updated_at,
             jutsus: None,
-        })
+        }))
     }
 
     // jutsu
-    async fn create_jutsu(&self, jutsu_new: types::JutsuNew) -> Result<types::Jutsu, sqlx::Error> {
+    async fn create_jutsu(
+        &self,
+        jutsu_new: types::JutsuNew,
+    ) -> anyhow::Result<Option<types::Jutsu>> {
         let sql = helpers::replace_placeholders(String::from(
             "INSERT INTO jutsus (name, description, chakra_nature) VALUES ( ?, ?, ? ) RETURNING *;",
         ));
 
-        let row = sqlx::query_as::<_, types::JutsuSqlx>(&sql)
+        let row = match sqlx::query_as::<_, types::JutsuSqlx>(&sql)
             .bind(jutsu_new.name)
             .bind(jutsu_new.description)
             .bind(jutsu_new.chakra_nature)
-            .fetch_one(&self.pg_pool)
-            .await?;
+            .fetch_optional(&self.pg_pool)
+            .await? // sqlx::Error
+        {
+            Some(r) => r,
+            None => return Ok(None),
+        };
 
-        Ok(types::Jutsu {
+        Ok(Some(types::Jutsu {
             id: row.id.to_string(),
             name: row.name,
             description: row.description,
@@ -189,18 +222,22 @@ impl TPostgresDAL for PostgresDAL {
             created_at: row.created_at,
             updated_at: row.updated_at,
             ninjas: None,
-        })
+        }))
     }
-    async fn get_jutsu(&self, id: String) -> Result<types::Jutsu, sqlx::Error> {
-        let uuid = sqlx::types::Uuid::parse_str(&id).unwrap();
+    async fn get_jutsu(&self, id: String) -> anyhow::Result<Option<types::Jutsu>> {
+        let uuid = sqlx::types::Uuid::parse_str(&id)?;
         let sql = helpers::replace_placeholders(String::from("SELECT * FROM jutsus WHERE id = ?"));
 
-        let row = sqlx::query_as::<_, types::JutsuSqlx>(&sql)
+        let row = match sqlx::query_as::<_, types::JutsuSqlx>(&sql)
             .bind(uuid)
-            .fetch_one(&self.pg_pool)
-            .await?;
+            .fetch_optional(&self.pg_pool)
+            .await? // sqlx::Error
+        {
+            Some(r) => r,
+            None => return Ok(None),
+        };
 
-        Ok(types::Jutsu {
+        Ok(Some(types::Jutsu {
             id: row.id.to_string(),
             name: row.name,
             description: row.description,
@@ -208,14 +245,14 @@ impl TPostgresDAL for PostgresDAL {
             created_at: row.created_at,
             updated_at: row.updated_at,
             ninjas: None,
-        })
+        }))
     }
     async fn update_jutsu(
         &self,
         id: String,
         jutsu_updates: types::JutsuUpdates,
-    ) -> Result<types::Jutsu, sqlx::Error> {
-        let uuid = sqlx::types::Uuid::parse_str(&id).unwrap();
+    ) -> anyhow::Result<Option<types::Jutsu>> {
+        let uuid = sqlx::types::Uuid::parse_str(&id)?;
         let mut update_clause = String::from("SET ");
         // get fields
         let name = jutsu_updates.name;
@@ -255,9 +292,12 @@ impl TPostgresDAL for PostgresDAL {
         }
         qb = qb.bind(uuid);
         // fetch row
-        let row = qb.fetch_one(&self.pg_pool).await?;
+        let row = match qb.fetch_optional(&self.pg_pool).await? {
+            Some(r) => r,
+            None => return Ok(None),
+        };
         // return ninja
-        Ok(types::Jutsu {
+        Ok(Some(types::Jutsu {
             id: row.id.to_string(),
             name: row.name,
             description: row.description,
@@ -265,21 +305,25 @@ impl TPostgresDAL for PostgresDAL {
             created_at: row.created_at,
             updated_at: row.updated_at,
             ninjas: None,
-        })
+        }))
     }
 
-    async fn delete_jutsu(&self, id: String) -> Result<types::Jutsu, sqlx::Error> {
-        let uuid = sqlx::types::Uuid::parse_str(&id).unwrap();
+    async fn delete_jutsu(&self, id: String) -> anyhow::Result<Option<types::Jutsu>> {
+        let uuid = sqlx::types::Uuid::parse_str(&id)?; // sqlx::types::uuid::Error
         let sql = helpers::replace_placeholders(String::from(
             "DELETE FROM jutsus WHERE id = ? RETURNING *;",
         ));
 
-        let row = sqlx::query_as::<_, types::JutsuSqlx>(&sql)
+        let row = match sqlx::query_as::<_, types::JutsuSqlx>(&sql)
             .bind(uuid)
-            .fetch_one(&self.pg_pool)
-            .await?;
+            .fetch_optional(&self.pg_pool)
+            .await? // sqlx::Error
+        {
+            Some(r) => r,
+            None => return Ok(None),
+        };
 
-        Ok(types::Jutsu {
+        Ok(Some(types::Jutsu {
             id: row.id.to_string(),
             name: row.name,
             description: row.description,
@@ -287,7 +331,7 @@ impl TPostgresDAL for PostgresDAL {
             created_at: row.created_at,
             updated_at: row.updated_at,
             ninjas: None,
-        })
+        }))
     }
 
     // ninjas_jutsus
@@ -295,44 +339,49 @@ impl TPostgresDAL for PostgresDAL {
         &self,
         ninja_id: String,
         jutsu_id: String,
-    ) -> Result<bool, sqlx::Error> {
+    ) -> anyhow::Result<()> {
+        let ninja_uuid = sqlx::types::Uuid::parse_str(&ninja_id).unwrap(); // sqlx::types::uuid::Error
+        let jutsu_uuid = sqlx::types::Uuid::parse_str(&jutsu_id).unwrap();
         let sql = helpers::replace_placeholders(String::from(
-            "INSERT INTO ninjas_jutsus (ninja_id, jutsu_id) VALUES ( ?::uuid, ?::uuid ) RETURNING *;",
+            "INSERT INTO ninjas_jutsus (ninja_id, jutsu_id) VALUES ( ?, ? ) RETURNING *;",
         ));
 
         let _ = sqlx::query(&sql)
-            .bind(ninja_id)
-            .bind(jutsu_id)
+            .bind(ninja_uuid)
+            .bind(jutsu_uuid)
             .execute(&self.pg_pool)
             .await;
 
-        Ok(true)
+        Ok(())
     }
 
     async fn dissociate_ninja_and_jutsu(
         &self,
         ninja_id: String,
         jutsu_id: String,
-    ) -> Result<bool, sqlx::Error> {
+    ) -> anyhow::Result<()> {
+        let ninja_uuid = sqlx::types::Uuid::parse_str(&ninja_id).unwrap(); // sqlx::types::uuid::Error
+        let jutsu_uuid = sqlx::types::Uuid::parse_str(&jutsu_id).unwrap();
         let sql = helpers::replace_placeholders(String::from(
-            "DELETE FROM ninjas_jutsus WHERE (ninja_id = ?::uuid AND jutsu_id = ?::uuid) RETURNING *;",
+            "DELETE FROM ninjas_jutsus WHERE (ninja_id = ? AND jutsu_id = ?) RETURNING *;",
         ));
 
         let _ = sqlx::query(&sql)
-            .bind(ninja_id)
-            .bind(jutsu_id)
+            .bind(ninja_uuid)
+            .bind(jutsu_uuid)
             .execute(&self.pg_pool)
             .await;
 
-        Ok(true)
+        Ok(())
     }
 
-    async fn get_ninja_jutsus(&self, id: String) -> Result<Vec<types::Jutsu>, sqlx::Error> {
+    async fn get_ninja_jutsus(&self, id: String) -> anyhow::Result<Vec<types::Jutsu>> {
+        let uuid = sqlx::types::Uuid::parse_str(&id)?; // sqlx::types::uuid::Error
         let sql = helpers::replace_placeholders(String::from(
-            "SELECT * FROM jutsus WHERE jutsus.id IN (SELECT jutsu_id FROM ninjas_jutsus WHERE ninjas_jutsus.ninja_id = ?::uuid);"
+            "SELECT * FROM jutsus WHERE jutsus.id IN (SELECT jutsu_id FROM ninjas_jutsus WHERE ninjas_jutsus.ninja_id = ?);"
         ));
         let rows = sqlx::query_as::<_, types::JutsuSqlx>(&sql)
-            .bind(id)
+            .bind(uuid)
             .fetch_all(&self.pg_pool)
             .await?;
         let mut jutsus: Vec<types::Jutsu> = Vec::new();
@@ -350,10 +399,13 @@ impl TPostgresDAL for PostgresDAL {
         Ok(jutsus)
     }
 
-    async fn get_ninja_with_jutsus(&self, id: String) -> Result<types::Ninja, sqlx::Error> {
-        let mut ninja = self.get_ninja(id.clone()).await.unwrap();
+    async fn get_ninja_with_jutsus(&self, id: String) -> anyhow::Result<Option<types::Ninja>> {
+        let mut ninja = match self.get_ninja(id.clone()).await? {
+            Some(n) => n,
+            None => return Ok(None),
+        };
         let jutsus = self.get_ninja_jutsus(id).await.unwrap();
         ninja.jutsus = Some(jutsus);
-        Ok(ninja)
+        Ok(Some(ninja))
     }
 }

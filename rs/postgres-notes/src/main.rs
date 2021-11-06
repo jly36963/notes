@@ -1,19 +1,20 @@
-use providers::pg;
-use providers::pg::TPostgresDAL;
-use sqlx;
-use sqlx::postgres::PgPoolOptions;
 mod providers;
 mod types;
+
+use bb8::Pool;
+use bb8_postgres::PostgresConnectionManager;
+use providers::pg;
+use providers::pg::TPostgresDAL;
+use std::str::FromStr;
+use tokio_postgres::NoTls;
 
 #[tokio::main]
 async fn main() {
     // Connection
     let pg_conn_str = "postgresql://postgres:postgres@localhost:5432/practice";
-    let pg_pool = PgPoolOptions::new()
-        .max_connections(5)
-        .connect(pg_conn_str)
-        .await
-        .unwrap();
+    let pg_config = tokio_postgres::config::Config::from_str(pg_conn_str).unwrap();
+    let pg_manager = PostgresConnectionManager::new(pg_config, NoTls);
+    let pg_pool = Pool::builder().build(pg_manager).await.unwrap();
     // Set up providers
     let providers = providers::Providers {
         pgdal: pg::PostgresDAL { pg_pool },
@@ -21,8 +22,8 @@ async fn main() {
 
     // Create ninja
     let ninja_new = types::NinjaNew {
-        first_name: "Kakashi".to_string(),
-        last_name: "Hatake".to_string(),
+        first_name: String::from("Kakashi"),
+        last_name: String::from("Hatake"),
         age: 27,
     };
     let ninja = providers
@@ -35,18 +36,13 @@ async fn main() {
     let ninja_id = ninja.id;
 
     // Select ninja
-    let ninja = providers
-        .pgdal
-        .get_ninja(ninja_id.clone())
-        .await
-        .unwrap()
-        .unwrap();
+    let ninja = providers.pgdal.get_ninja(ninja_id.clone()).await.unwrap();
     println!("Select ninja result: {:#?}", ninja);
 
     // Update ninja
     let ninja_updates = types::NinjaUpdates {
         first_name: None,
-        last_name: Some("Sensei".to_string()),
+        last_name: Some(String::from("Sensei")),
         age: None,
     };
     let ninja = providers
@@ -59,9 +55,9 @@ async fn main() {
 
     // Create jutsu
     let jutsu_new = types::JutsuNew {
-        name: "Chidori".to_string(),
-        description: "Plover / a thousand birds".to_string(),
-        chakra_nature: "Lightning".to_string(),
+        name: String::from("Chidori"),
+        description: String::from("Plover / a thousand birds"),
+        chakra_nature: String::from("Lightning"),
     };
     let jutsu = providers
         .pgdal
@@ -84,7 +80,7 @@ async fn main() {
     // Update jutsu
     let jutsu_updates = types::JutsuUpdates {
         name: None,
-        description: Some("Lightning blade".to_string()),
+        description: Some(String::from("Lightning blade")),
         chakra_nature: None,
     };
     let jutsu = providers
@@ -107,7 +103,6 @@ async fn main() {
         .pgdal
         .get_ninja_with_jutsus(ninja_id.clone())
         .await
-        .unwrap()
         .unwrap();
     println!("Select ninja with jutsus result: {:#?}", ninja);
 
@@ -123,7 +118,6 @@ async fn main() {
         .pgdal
         .get_ninja_with_jutsus(ninja_id.clone())
         .await
-        .unwrap()
         .unwrap();
     println!(
         "Select ninja with jutsus (post dissociation) result: {:#?}",
@@ -135,16 +129,10 @@ async fn main() {
         .pgdal
         .delete_ninja(ninja_id.clone())
         .await
-        .unwrap()
         .unwrap();
     println!("Delete ninja result: {:#?}", ninja);
 
     // Delete jutsu
-    let jutsu = providers
-        .pgdal
-        .delete_jutsu(jutsu.id)
-        .await
-        .unwrap()
-        .unwrap();
+    let jutsu = providers.pgdal.delete_jutsu(jutsu.id).await.unwrap();
     println!("Delete jutsu result: {:#?}", jutsu);
 }
