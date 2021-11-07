@@ -1,7 +1,7 @@
-# sqlx
+# rust-postgres
 
-- https://github.com/launchbadge/sqlx
-- https://docs.rs/sqlx/0.5.7/sqlx/
+- https://github.com/sfackler/rust-postgres
+- https://docs.rs/tokio-postgres/0.7.5/tokio_postgres/
 
 ## Startup
 
