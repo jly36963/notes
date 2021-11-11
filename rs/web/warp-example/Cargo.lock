@@ -343,17 +343,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "iron-example"
-version = "0.1.0"
-dependencies = [
- "hyper",
- "serde",
- "serde_json",
- "tokio",
- "warp",
-]
-
-[[package]]
 name = "itoa"
 version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1069,6 +1058,17 @@ dependencies = [
  "tokio-util",
  "tower-service",
  "tracing",
+]
+
+[[package]]
+name = "warp-example"
+version = "0.1.0"
+dependencies = [
+ "hyper",
+ "serde",
+ "serde_json",
+ "tokio",
+ "warp",
 ]
 
 [[package]]
