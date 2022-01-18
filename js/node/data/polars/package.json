@@ -1,0 +1,15 @@
+{
+  "name": "polars-notes",
+  "version": "1.0.0",
+  "description": "polars examples",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "jly",
+  "license": "ISC",
+  "dependencies": {
+    "nodejs-polars": "^0.2.0"
+  }
+}
