@@ -100,4 +100,5 @@ def main() -> None:
     print(generated_dates)
 
 
-main()
+if __name__ == '__main__':
+    main()

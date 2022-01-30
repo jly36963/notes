@@ -1,18 +1,14 @@
-import requests
-from typing import Union
-from pprint import pprint
-from urllib3.util.retry import Retry
-from requests.adapters import HTTPAdapter
+from typing import Union, Dict, Any
+import httpx
 
 
-def fetch(
+async def fetch(
     url: str,
     method: str = 'GET',
     headers: Union[dict, None] = None,
     payload: Union[dict, list, None] = None,
     params: Union[dict, None] = None,
-    retries: int = 3
-) -> dict:
+) -> Dict[str, Any]:
     """
     Make request to specified url and return result
 
@@ -45,17 +41,10 @@ def fetch(
     if not isinstance(url, str):
         raise Exception('Argument "url" must be a string')
 
-    with requests.Session() as r:
-        if retries:
-            max_retries = Retry(
-                total=retries,
-                backoff_factor=2,  # factor * (2 ** (num_of_retries - 1))
-                status_forcelist=[500, 502, 503, 504]
-            )
-            r.mount('http://', HTTPAdapter(max_retries=max_retries))  # type: ignore
-            r.mount('https://', HTTPAdapter(max_retries=max_retries))  # type: ignore
+    # TODO: retries
 
-        response = r.request(
+    async with httpx.AsyncClient() as client:
+        response = await client.request(
             method,
             url,
             headers=headers,
@@ -78,31 +67,3 @@ def fetch(
             "headers":  response.headers,
             "elapsed":  response.elapsed,
         }
-
-
-def main() -> None:
-    """
-    Example usage of fetch. Uses 'requests' library
-    """
-    # use fetch function (get)
-
-    result: dict = fetch(url="https://jsonplaceholder.typicode.com/users/1")
-    pprint(result)
-
-    # use fetch function (post)
-
-    result: dict = fetch(
-        url="https://jsonplaceholder.typicode.com/users",
-        method='POST',
-        payload={'name': "Hiruzen Sarutobi"},
-        headers={
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Token': '7dda3fda-ce14-4ee4-bf8d-c04fd2571a4c'
-        },
-    )
-
-    pprint(result)
-
-
-main()
