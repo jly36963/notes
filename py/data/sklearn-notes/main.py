@@ -1,23 +1,16 @@
-# ---
-# sklearn
-# ---
-
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.datasets import load_iris
-import statsmodels.api as sm
 import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import sklearn
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.datasets import load_iris
+import statsmodels.api as sm
 from sklearn.model_selection import train_test_split
-from sklearn import linear_model
-from sklearn import svm
-from sklearn import metrics
+from sklearn import linear_model, svm, metrics
 from sklearn.svm import SVC
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import LogisticRegression
