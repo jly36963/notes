@@ -1,4 +1,6 @@
 from io import StringIO
+from typing import List, TypedDict
+from uuid import UUID
 import numpy as np
 import pandas as pd
 
@@ -8,7 +10,7 @@ import pandas as pd
 
 
 def basic_series():
-    # No index
+    # Default index
     srs1 = pd.Series([1, 2, 3, 4])  # 0 1 2 3 # 1 2 3 4
     srs2 = pd.Series([1, 2, 3, 4])
     srs1.values  # array([ 1, 2, 3, 4 ])
@@ -27,8 +29,8 @@ def basic_series():
     srs1[srs1 == 2]  # b 2
     srs1[srs1 != 2]  # a c d e # 1 3 4 5
     srs1[~(srs1 == 2)]  # a c d e # 1 3 4 5
-    srs1[(srs1 > 1) & (srs1 < 4)]  # b c # 2 3
-    srs1[(srs1 < 2) | (srs1 > 4)]  # a e # 1 5
+    srs1[(srs1.gt(1)) & (srs1.lt(4))]  # b c # 2 3
+    srs1[(srs1.lt(2)) | (srs1.gt(4))]  # a e # 1 5
 
     srs2[~(srs2.isin(srs1))]  # return srs2 elements that aren't in srs1
 
@@ -40,22 +42,21 @@ def basic_series():
     srs.to_list()  # series to list (values)
 
     # Series from dict
-    srs3 = pd.Series(dict1)  # dict to series
+    pd.Series(dict1)  # dict to series
 
     # Naming a series
     srs = pd.Series([1, 2, 3, 4, 5], index=['a', 'b', 'c', 'd', 'e'])
     srs.name = 'My Series'
     srs.index.name = 'Letters'
 
-# ---
-# series methods
-# ---
-
 
 def basic_series_methods():
+    srs1 = pd.Series([1, 2, 3, 4])  # 0 1 2 3 # 1 2 3 4
+    srs2 = pd.Series([1, 2, 3, 4])
+
     # math methods
-    srs.abs()  # return series with absolute value of each element
-    srs.round()  # round each elem to number of decimals (0 if no arg passed)
+    srs1.abs()  # return series with absolute value of each element
+    srs1.round()  # round each elem to number of decimals (0 if no arg passed)
     srs1.add(srs2)  # return series with (element-wise) sum of two series
     srs1.mul(srs2)  # return series with (element-wise) product of two series
     srs1.div(srs2)  # return series with (element-wise) float division of two series
@@ -69,28 +70,32 @@ def basic_series_methods():
     srs1.ne(srs2)  # elem1 != elem2 (element-wise), returns series of booleans
 
     # boolean methods
-    srs.any()  # are any elements in the series True
-    srs.all()  # are all elements in the series True
+    srs1.any()  # are any elements in the series True
+    srs1.all()  # are all elements in the series True
 
     # stats methods
-    srs.count()  # number of (non-null, non-NaN) observations in the series
-    srs.sum()  # return sum of series
-    srs.max()  # return max value of series
-    srs.min()  # return min value of series
-    srs.mean()  # return mean of series
-    srs.mode()  # return mode of series
-    srs.std()  # return standard deviation of series
-    srs.var()  # return (unbiased) variance of series
-    srs.agg(['min', 'max', 'mean'])  # return series with min/max/mean values
+    srs1.count()  # number of (non-null, non-NaN) observations in the series
+    srs1.sum()  # return sum of series
+    srs1.max()  # return max value of series
+    srs1.min()  # return min value of series
+    srs1.mean()  # return mean of series
+    srs1.mode()  # return mode of series
+    srs1.std()  # return standard deviation of series
+    srs1.var()  # return (unbiased) variance of series
+    srs1.agg(['min', 'max', 'mean'])  # return series with min/max/mean values
 
     # misc methods
-    srs.copy()  # create copy of series
-    srs.between(1, 4)  # 1 <= elem <= 4 (element-wise), returns series of booleans
-    srs.clip(0, 10)  # elem < 0 ? 0 : elem; elem > 10 ? 10 : elem (returns series)
-    srs1.isin(srs2)  # elem1 in srs2 ? True : False (returns series of booleans)
-    srs.unique()  # return series with only unique values
-    srs.value_counts()  # returns series -- srs.values as index, counts as values
+    srs1.copy()  # create copy of series
+    srs1.between(1, 4)  # 1 <= elem <= 4 (element-wise), returns series of booleans
+    srs1.clip(0, 10)  # elem < 0 ? 0 : elem; elem > 10 ? 10 : elem (returns series)
+    srs1.isin(srs1)  # elem1 in srs2 ? True : False (returns series of booleans)
+    srs1.unique()  # return series with only unique values
+    srs1.value_counts()  # returns series -- srs.values as index, counts as values
 
+
+# ---
+# dataframes
+# ---
 
 def basic_df_io():
     # clipboard (read)
@@ -117,9 +122,9 @@ def basic_df_io():
         orient='index',
         columns=['col1', 'col2', 'col3', 'col4']
     )
-    dict1 = df.to_dict()
+    df.to_dict()
     # excel (write/read) (pip install xlrd openpyxl)
-    xlsx = df.to_excel('data.xlsx', sheet_name='Sheet1')
+    df.to_excel('data.xlsx', sheet_name='Sheet1')
     df = pd.read_excel(
         'data.xlsx',
         index_col=0,  # None -- no col provided, 0 -- use col index 0 as index
@@ -128,8 +133,26 @@ def basic_df_io():
     )
 
 
+class Ninja(TypedDict):
+    id: UUID
+    first_name: str
+    last_name: str
+    age: int
+
+
+NINJAS_RECORDS: List[Ninja] = [
+    {'id': 'fa6c4c93-fb64-4cd7-8b21-0e5e0f717fd6', 'first_name': 'Kakashi', 'last_name': 'Hatake', 'age': 27},
+    {'id': '2c6c74c3-b9d6-4d49-a113-4f1a8164abe3', 'first_name': 'Tenzo', 'last_name': 'Yamato', 'age': 26},
+    {'id': '2e9093d5-f466-40bb-be14-993276f0a497', 'first_name': 'Iruka', 'last_name': 'Umino', 'age': 25},
+    {'id': '71547b9d-f28e-4511-b767-860bc37f148f', 'first_name': 'Itachi', 'last_name': 'Uchiha', 'age': 21},
+]  # type: ignore (https://github.com/microsoft/pyright/issues/2592)
+
+ninjas_dtypes = {'id': 'str', 'first_name': 'str', 'last_name': 'str', 'age': 'int64'}
+
+
 def basic_df_attributes():
-    # df attributes
+    df = pd.DataFrame(NINJAS_RECORDS)
+
     df  # displays table as dataframe
     df.columns  # show column labels
     df.ColumnName  # returns series of column values
@@ -137,6 +160,7 @@ def basic_df_attributes():
     df.index  # show row labels
     df.shape  # show dimensions as tuple
     df.size  # show number of elements as integer
+    df.dtypes  # underlying types used
 
 
 def basic_df_creation():
@@ -167,7 +191,7 @@ def basic_df_creation():
     # select df
     df['col1']  # column col1
     df[['col1', 'col2', 'col3']]  # columns col1 n2 n3
-    df[(df['col3'] < 20) & (df['col3'] > 5)]  # rows b c d
+    df[(df['col3'].lt(20)) & (df['col3'].gt(5))]  # rows b c d
 
 # ---
 # df indexing (at, loc, iat, iloc)
@@ -180,18 +204,23 @@ def basic_df_indexing():
     # at -- no arrays as indexers, can assign new columns/indices, faster
     # iat -- no arrays as indexers, cannot assign new columns/indices, faster
 
+    df = pd.DataFrame(NINJAS_RECORDS)
+
+    # indexing
+    df['first_name']  # returns column as series
+    df[['first_name', 'last_name']]  # returns columns as df
+
     # loc
-    df.loc[4]  # returns row as series (index)
-    df.loc[[4, 5, 6]]  # returns rows as df (list of indices)
-    df.loc['viper']  # returns row as series (index)
-    df.loc[['viper', 'cobra']]  # returns rows as df (list of indices)
-    df.loc[4, 'B']  # returns value at specific index/column (index, column)
-    df.loc[1:4, 'B']  # returns series of values (row slice, column)
+    df.loc[1]  # returns row as series (index)
+    df.loc[[1, 2, 3]]  # returns rows as df (list of indices)
+
+    df.loc[4, 'first_name']  # returns value at specific index/column (index, column)
+    df.loc[1:4, 'last_name']  # returns series of values (row slice, column)
 
     # loc (set)
-    df.loc[4, 'B'] = 20  # set a value
-    df.loc[4] = 20  # set all values for row
-    df.loc[1:4, 'B']  # set values for a slice
+    df.loc[1, 'first_name'] = 'Kaka'  # set a value
+    df.loc[:, 'village'] = 'Hidden Leaf'  # set all values for row
+    df.loc[1:4, 'age'] = 30  # set values for a slice
 
     # iloc (purely integer based loc)
     df.iloc[4]  # returns row as series (index)
@@ -201,25 +230,29 @@ def basic_df_indexing():
     df.iloc[0:2, 0:3]  # return row/column slices as df (row slice, col slice)
 
     # iloc (set)
-    df.iloc[4, 5] = 20  # set a value
-    df.iloc[4] = 20  # set all values for row
-    df.iloc[1:4, 5]  # set values for a slice
+    df.iloc[0, 2] = 'Sensei'  # set a value (row 0, column 2)
+    df.iloc[1:4, 4] = 29  # set values for a slice
 
     # at
-    df.at[4, 'B']  # value at specific index/column
-    df.at[4, 'B'] = 10  # set value at specific index/column
+    df.at[1, 'first_name']  # value at specific index/column
+    df.at[1, 'first_name'] = '?'  # set value at specific index/column
 
     # iat (purely integer based at)
-    df.iat[4, 5]  # value at specific index/column
-    df.iat[4, 5] = 10  # set value at specific index/column
+    df.iat[0, 1]  # value at specific index/column
+    df.iat[0, 1] = 'Kakashi'  # set value at specific index/column
 
     # loc + at
-    df.loc[4].at['B']  # value within a series (loc + at)
+    df.loc[4].at['last_name']  # value within a series (loc + at)
 
 
 def basic_df_methods():
+    df = pd.DataFrame(NINJAS_RECORDS)
+
+    df1 = pd.DataFrame(np.ones((5, 5)))
+    df2 = pd.DataFrame(np.arange(25).reshape(5, 5))
+
     # math
-    df.abs()  # return df containing abs value of each element
+    df1.abs()  # return df containing abs value of each element
     df1.add(df2)  # elem1 + elem2 (element-wise), return df
     df1.sub(df2)  # elem1 - elem2 (element-wise), return df
     df1.mul(df2)  # elem1 * elem2 (element-wise), return df
@@ -232,29 +265,30 @@ def basic_df_methods():
     df1.le(df2)  # elem1 <= elem2 ? True : False (return df)
 
     # stats (aggregate) (default -- columns)
-    df.describe()  # returns df with count/mean/std/min/max/etc of each column
-    df.sum()  # returns series of sums
-    df.sum(axix=1)  # returns series of sums (rows instead of columns)
-    df.prod()  # returns series of products
-    df.max()  # returns series of max values (df.idxmax -- index)
-    df.min()  # returns series of min values (df.idxmin -- index)
-    df.mean()  # returns series of means
-    df.median()  # returns series of medians
-    df.mode()  # returns series of modes
-    df.std()  # returns series of std
-    df.var()  # returns series of var
-    df.count()  # returns series of element counts
-    df.agg(['sum', 'mean'])  # returns df (multiple series of aggregates)
-    df.agg(['sum', 'min', 'max', 'mean', 'median', 'std', 'count'])
-    df['col_name'].mean()  # returns single value (mean of col) (mean of series)
-    df[['col1', 'col2']].mean()  # returns series (index -- col, values -- means)
-    df['ratio'] = df['col1'] / df['col2']  # new col created (ratio)
+    df2.describe()  # returns df with count/mean/std/min/max/etc of each column
+    df2.sum()  # returns series of sums
+    df2.sum(axix=1)  # returns series of sums (rows instead of columns)
+    df2.prod()  # returns series of products
+    df2.max()  # returns series of max values (df.idxmax -- index)
+    df2.min()  # returns series of min values (df.idxmin -- index)
+    df2.mean()  # returns series of means
+    df2.median()  # returns series of medians
+    df2.mode()  # returns series of modes
+    df2.std()  # returns series of std
+    df2.var()  # returns series of var
+    df2.count()  # returns series of element counts
+    df2.agg(['sum', 'mean'])  # returns df (multiple series of aggregates)
+    df2.agg(['sum', 'min', 'max', 'mean', 'median', 'std', 'count'])
+
+    # column (series) methods
+    df['age'].mean()  # returns single value (mean of col) (mean of series)
+    df['age'].max()  # returns single value (mean of col) (mean of series)
+    df['age'].min()  # returns single value (mean of col) (mean of series)
 
     # misc
     df.T  # transpose axes
     df.head()  # show first 5 rows, df.head(3) shows 3 rows
     df.tail()  # show last 5 rows, df.tail(3) shows 3 rows
-    df.ix[3]  # show index 3 (row) as series (DEPRECATED)
 
 
 # ---
@@ -263,23 +297,25 @@ def basic_df_methods():
 
 
 def misc_series():
+    srs1 = pd.Series([1, 2, 3, 4, 5], index=['a', 'b', 'c', 'd', 'e'], dtype=np.int64)
+
     # copy series
     srs2 = srs1.copy()
 
     # filter
-    srs2[srs2 > 2]  # c d e # 3 4 5
+    srs2[srs2.gt(2)]  # c d e # 3 4 5
 
     # membership testing
-    'c' in srs2  # True
+    1 in srs2  # True
 
     # adding series
     srs = pd.Series([1, 2, 3, 4, 5], index=['a', 'b', 'c', 'd', 'e'])
-    srs2 = srs + srs  # a b c d e # 2 4 6 8 10
+    srs2 = srs.add(srs)  # a b c d e # 2 4 6 8 10
 
     # series reindexing
     srs1 = pd.Series([1, 2, 3, 4, 5], index=['a', 'b', 'c', 'd', 'e'])
-    srs2 = srs1.reindex(['a', 'b', 'c', 'd', 'e', 'f'])  # e & f will be NaN
-    srs3 = srs1.reindex(['a', 'b', 'c', 'd', 'e', 'f'], fill_value=0)  # e & f will be 0
+    srs1.reindex(['a', 'b', 'c', 'd', 'e', 'f'])  # e & f will be NaN
+    srs1.reindex(['a', 'b', 'c', 'd', 'e', 'f'], fill_value=0)  # e & f will be 0
 
     # drop entry
     srs = pd.Series([1, 2, 3, 4, 5], index=['a', 'b', 'c', 'd', 'e'])
@@ -288,7 +324,7 @@ def misc_series():
     # data alignment
     srs1 = pd.Series([1, 2, 3, 4, 5], index=['a', 'b', 'c', 'd', 'e'])
     srs2 = pd.Series([1, 2, 3, 4, 5, 6], index=['a', 'b', 'c', 'd', 'e', 'f'])
-    srs1 + srs2  # a-e (normal) f (NaN)
+    srs1.add(srs2)  # a-e (normal) f (NaN)
 
     # sorting
     srs = pd.Series([1, 2, 3, 4, 5], index=['a', 'b', 'c', 'd', 'e'])
@@ -331,16 +367,18 @@ def misc_series():
 
 
 def misc_df():
+    df = pd.DataFrame(NINJAS_RECORDS)
     # copy df
-    df2 = df1.copy()
+    df.copy()
 
-    # strip whitespace from headers
-    df.rename(columns=lambda x: x.strip(), inplace=True)
+    # rename columns
+    df.rename(columns={'id': 'ID', 'first_name': 'First Name', 'last_name': 'Last Name', 'age': "Age"})
+    df.rename(columns=lambda x: x.strip())  # strip whitespace from headers
 
     # copy a df (choose existing columns)
-    df2 = pd.DataFrame(df1, columns=['col1', 'col2', 'col4'])
+    pd.DataFrame(df, columns=['col1', 'col2', 'col4'])
     # copy a df (new column -- each element will have value NaN)
-    df2 = pd.DataFrame(df1, columns=['col1', 'NewColumn'])
+    pd.DataFrame(df, columns=['col1', 'NewColumn'])
 
     # assign value to each element in a column
     df['Column Name'] = "New Value"
@@ -348,15 +386,16 @@ def misc_df():
 
     # use value/index (as series) to update a value in a specific column
     # in a specific column, values (at associated indices) will be replaced
-    value = Series(['New Value'], index=[4])
-    values = Series(['val1, val2'], index=[0, 2])
+    value = pd.Series(['New Value'], index=[4])
+    values = pd.Series(['val1, val2'], index=[0, 2])
     df['Column Name'] = value
     df['Column Name'] = values
 
     # delete column
-    del df['Unwanted Column']
+    del df['Unwanted Column']  # in-place only
+    df.drop(['Unwanted Column 1', 'Unwanted Column 2'], axis=1)
 
-    # reindex df (reindex)
+    # reindex df (reindex) (TODO: update this)
     df1 = pd.DataFrame(
         np.random.randn(25).reshape(5, 5),
         index=['a', 'b', 'c', 'd', 'e'],
@@ -364,9 +403,6 @@ def misc_df():
     )
     df2 = df1.reindex(['a', 'b', 'c', 'd', 'e', 'f'], fill_value=0)
     df3 = df2.reindex(columns=['col1', 'col2', 'col3', 'col4', 'col5', 'col6'], fill_value=0)
-
-    # reindex df (ix[rows,columns]) (DEPRECATED)
-    df4 = df1.ix[['a', 'b', 'c', 'd', 'e', 'f'], ['col1', 'col2', 'col3', 'col4', 'col5', 'col6']]
 
     # df.drop()
     df = pd.DataFrame(
@@ -388,7 +424,7 @@ def misc_df():
         index=['a', 'b', 'c', 'd', 'e', 'f'],
         columns=['col1', 'col2', 'col3', 'col4', 'col5', 'col6']
     )
-    df1 + df2  # adds where row/col match, else NaN
+    df1.add(df2)  # adds where row/col match, else NaN
     df1.add(df2, fill_value=0)  # fills empty elements (df1) prior to adding
 
     # add series to df
@@ -398,7 +434,7 @@ def misc_df():
         index=['a', 'b', 'c', 'd', 'e'],
         columns=['col1', 'col2', 'col3', 'col4', 'col5']
     )
-    df1 + srs1  # srs1 will be added to each row of df1
+    df1.add(srs1)  # srs1 will be added to each row of df1
 
     # sorting
     df1 = pd.DataFrame(
@@ -430,21 +466,6 @@ def misc_df():
                     index=[[1, 1, 1, 2, 2, 2], ['a', 'b', 'c', 'a', 'b', 'c']]
                     )
     df = srs.unstack()  # rows -- 1 2 # cols -- a b c
-
-    # multi-level df
-    df = pd.DataFrame(
-        np.arange(1, 17, 1).reshape(4, 4),
-        index=[['a', 'a', 'b', 'b'], [1, 2, 1, 2]],
-        columns=[['A', 'A', 'B', 'B'], ['i', 'ii', 'i', 'ii']]
-    )
-    df.index.names = ['primary_i', 'secondary_i']  # name higher/lower indices
-    df.columns.names = ['primary_col', 'secondary_col']
-    df.swaplevel()  # swap inner-most row levels
-    df.swaplevel(axis=1)  # swap inner most column levels
-    df.swaplevel('primary_i', 'secondary_i')  # swap row levels by name
-
-    df.sort_index(level=0)  # sort by outer index
-    df.sort_index(level=[0, 1])  # primary sort by outer, secondary sort by inner
 
     # merge df
     df1 = pd.DataFrame.from_dict(
@@ -508,7 +529,7 @@ def misc_df():
     df = df1.combine_first(df2)  # combine, df1 overrides df2 (if conflict)
 
     # stack/unstack (single-level df --> multilevel series)
-    df = DataFrame(
+    df = pd.DataFrame(
         np.arange(8).reshape(2, 4),  # 2 rows, 4 cols
         index=['a', 'b'],
         columns=['i', 'ii', 'iii', 'iv']
@@ -624,7 +645,7 @@ def misc_df():
     df[np.abs(df[0]) > 1]  # return df (all rows where df[0] > 1 (abs val)
     df[df.isnull().any(1)]  # return df (any row where elem == NaN)
 
-    df[df > 3] = np.sign(df) * 3  # return df (if elem > 3, elem = 3)
+    df[df.gt(3)] = np.sign(df) * 3  # return df (if elem > 3, elem = 3)
 
     # permutation
     df = pd.DataFrame(
@@ -673,7 +694,7 @@ def misc_df():
         'float2': [2.76, 4.44, 6.57, 8.5, 10.11]
     })
     categories = {'int1': 'int', 'int2': 'int', 'float1': 'float', 'float2': 'float'}
-    categories = Series(
+    categories = pd.Series(
         ['int', 'int', 'float', 'float'],
         index=['int1', 'int2', 'float1', 'float2']
     )
@@ -725,3 +746,21 @@ def misc_df():
 
     # loc & conditional
     df.loc[df['col1'] == 'value']
+
+
+def basic_multi_level_df():
+
+    # multi-level df
+    df = pd.DataFrame(
+        np.arange(1, 17, 1).reshape(4, 4),
+        index=[['a', 'a', 'b', 'b'], [1, 2, 1, 2]],
+        columns=[['A', 'A', 'B', 'B'], ['i', 'ii', 'i', 'ii']]
+    )
+    df.index.names = ['primary_i', 'secondary_i']  # name higher/lower indices
+    df.columns.names = ['primary_col', 'secondary_col']
+    df.swaplevel()  # swap inner-most row levels
+    df.swaplevel(axis=1)  # swap inner most column levels
+    df.swaplevel('primary_i', 'secondary_i')  # swap row levels by name
+
+    df.sort_index(level=0)  # sort by outer index
+    df.sort_index(level=[0, 1])  # primary sort by outer, secondary sort by inner

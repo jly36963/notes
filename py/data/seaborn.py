@@ -6,10 +6,6 @@
 # https://seaborn.pydata.org/api.html
 
 
-# ---
-# imports
-# ---
-
 from sklearn.datasets import load_iris
 import numpy as np
 import pandas as pd
@@ -34,7 +30,8 @@ sns.set(style='white', color_codes=True)
 # ---
 
 # hex
-## 000000
+# 000000
+
 # css4
 ## aqua, aquamarine, azure, beige, black, blue, brown, chartreuse, chocolate,
 ## coral, crimson, cyan, darkblue, darkgreen, fuchsia, gold, goldenrod, green,

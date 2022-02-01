@@ -4,18 +4,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import sklearn
+from sklearn import metrics
+from sklearn.datasets import load_iris, load_boston
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.datasets import load_iris
-import statsmodels.api as sm
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn import linear_model, svm, metrics
-from sklearn.svm import SVC
-from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
-from sklearn.datasets import load_boston
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+import statsmodels.api as sm
 
 
 # ---
@@ -24,22 +22,15 @@ from sklearn.datasets import load_boston
 
 # simple and efficient tools for data mining and data analysis
 # built on numpy, scipy, and matplotlib
+
 # capabilities:
-# - classification -- categorize objects
-# - regression -- predicting a continuous-valued attribute associated with an object
-# - clustering -- automatic grouping of similar objects into sets
-# - dimensionality reduction -- reducing the number of random variables to consider
-# - model selection - comparing, validating, and choosing parameters/models.
-# - preprocessing -- feature extraction and normalization
+# classification -- categorize objects
+# regression -- predicting a continuous-valued attribute associated with an object
+# clustering -- automatic grouping of similar objects into sets
+# dimensionality reduction -- reducing the number of random variables to consider
+# model selection - comparing, validating, and choosing parameters/models.
+# preprocessing -- feature extraction and normalization
 
-# ---
-# setup
-# ---
-
-'''
-%matplotlib inline
-'''
-sns.set_style('whitegrid')
 
 # ---
 # linear regression example (numpy)
