@@ -6,7 +6,7 @@ import polars as pl
 
 
 class Ninja(TypedDict):
-    id: UUID
+    id: str  # UUID not supported
     first_name: str
     last_name: str
     age: int
@@ -17,7 +17,7 @@ NINJAS_RECORDS: List[Ninja] = [
     {'id': '2c6c74c3-b9d6-4d49-a113-4f1a8164abe3', 'first_name': 'Tenzo', 'last_name': 'Yamato', 'age': 26},
     {'id': '2e9093d5-f466-40bb-be14-993276f0a497', 'first_name': 'Iruka', 'last_name': 'Umino', 'age': 25},
     {'id': '71547b9d-f28e-4511-b767-860bc37f148f', 'first_name': 'Itachi', 'last_name': 'Uchiha', 'age': 21},
-]  # type: ignore (https://github.com/microsoft/pyright/issues/2592)
+]
 
 
 def basic_constructor():
