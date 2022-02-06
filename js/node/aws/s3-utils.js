@@ -1,4 +1,3 @@
-// imports
 const AWS = require("aws-sdk");
 
 // s3 object

@@ -7,7 +7,6 @@
 npm i --save \
     chalk \
     minimist \
-    yargs \
     boxen \
     progress \
     clear \
@@ -102,32 +101,6 @@ const result = {
   c: true,
   beep: 'boop' 
 };
-
-// ------------
-// yargs
-// ------------
-
-// purpose
-  // parse CLI command
-
-// api docs
-  // https://github.com/yargs/yargs/blob/HEAD/docs/api.md
-
-// import
-const yargs = require('yargs');
-
-// usage
-const argv = yargs.argv // get args
-const argv = yargs.parse() // get args
-const argv = yargs([ '-x', '1' ]).argv // get args + additional arg
-
-// example 1
-const command = `$ ./ plunder.js --ships=4 --distance=22`
-const argv = yargs.parse();
-const result = {
-  ships: 4,
-  distance: 22,
-}
 
 // ------------
 // boxen
