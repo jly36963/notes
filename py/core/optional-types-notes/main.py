@@ -137,8 +137,21 @@ class Ninja(TypedDict):
     jutsus: Union[List[dict], None]
 
 
+class NinjaUpdates(TypedDict, total=False):
+    first_name: str
+    last_name: str
+    age: int
+
+
 def get_ninja_name(ninja: Ninja):
+    """Get the first and last name of the ninja"""
     return f"{ninja['first_name']} {ninja['last_name']}"
+
+
+def update_ninja(ninja: Ninja, updates: NinjaUpdates) -> Ninja:
+    """Take a ninja and override some of the user-defined fields"""
+    updated: Ninja = {**ninja, **updates}  # type: ignore
+    return updated
 
 
 # ---

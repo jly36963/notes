@@ -5,6 +5,7 @@
 import sys
 import functools
 from typing import Union, Any
+import collections
 
 # ---
 # Variables
@@ -15,6 +16,18 @@ my_var = 'snake case'
 MY_CONSTANT = 'capital snake case'
 MyClass = 'upper camel case'
 __my_dunder__ = 'double underscore variables'
+
+
+# ---
+# Types
+# ---
+
+# numeric types -- int, float, complex
+# sequence types -- list, tuple, range
+# text sequence types -- str
+# binary sequence types -- bytes, bytearray, memoryview
+# set types -- set, frozenset
+# mapping types -- dict
 
 # ---
 # Operators
@@ -313,6 +326,20 @@ def basic_sets():
 # ---
 
 
+def basic_truthiness():
+    '''
+    Basic usage of truthiness
+    '''
+    # Falsy
+    None, False, 0, 0.0, '', (), [], {}  # etc
+    # Truthy
+    True, 1, 1.0, 'not empty', (1,), [1, 2, 3], {"id": 1234}
+    # Truthiness
+    0 or 5  # 5
+    2 and 3  # 3
+    not 5  # False
+
+
 def basic_while_loop():
     a = 1
     l = []
@@ -605,6 +632,8 @@ def dict_from_kwargs(**kwargs):
 # ---
 # lambda functions (anonymous functions)
 # ---
+
+
 # lambda
 lambda x: print(x)
 
@@ -664,6 +693,93 @@ def my_decorator(inner_func):
 def my_function():
     print("I'm the inner function!!!")
 
+# ---
+# Built-in functions and constants
+# ---
+
+
+def basic_built_in_functions():
+    '''
+    Basic usage of built in functions
+    '''
+    abs(-5)  # 5
+    # aiter
+    all([n > 0 for n in [1, 2, 3, 4, 5]])  # True
+    any([n > 4 for n in [1, 2, 3, 4, 5]])  # True
+    # anext
+    ascii("µ")  # '\xb5'
+    bin(3)  # '0b11'
+    bool('not empty')  # True
+    # breakpoint
+    bytearray('hello', 'utf-8')  # bytearray(b'hello')
+    bytes('hello', 'utf-8')  # b'hello'
+    callable(lambda x: x + 2)  # True
+    chr(97)  # 'a' # unicode int to character
+    # classmethod
+    # compile
+    complex(2, 4)  # (2+4j)
+    # delattr
+    dict(first_name="Kakashi", last_name="Hatake")  # { "first_name": "Kakashi", ... }
+    # dir
+    divmod(5, 2)  # (2, 1) # dividend and remainder
+    enumerate(['a', 'b', 'c'])  # [(0,'a'),(1,'b'),(2,'c')] # for i, char in enumerate(['a','b','c'])
+    eval('2 + 1')  # 3
+    exec('a = 5; b = 3; print(a + b)')  # executes, returns None
+    list(filter(lambda x: x > 3, [1, 2, 3, 4, 5]))  # [4, 5]
+    float('-1.23')  # -1.23
+    format(45, 'b')  # 101101
+    frozenset(('a', 'e', 'i', 'o', 'u'))  # immutable set
+    getattr('a', 'isalpha')()  # get (and call) attribute
+    # globals
+    hasattr('a', 'isalpha')  # True
+    # hash
+    # help
+    hex(255)  # 0xff
+    # id
+    # input
+    int('10')  # 10
+    isinstance('a', str)  # True
+    issubclass(collections.OrderedDict, dict)  # True (OrderedDict in dict.__subclasses__())
+    iter(['a', 'e', 'i', 'o', 'u'])  # iterator object (call next(iterator_object))
+    len([1, 2, 3])  # 3
+    list('abc')  # ['a','b','c'] # convert iterable to list
+    # locals
+    list(map(lambda x: x**2, [1, 2, 3]))  # [1,4,9]
+    max(1, 2, 3)  # 3
+    min(1, 2, 3)  # 1
+    next(iter([1, 2, 3]))  # 1
+    # object # create new object # object is the base for all classes
+    oct(8)  # '0o10' # integer to octal string
+    # open
+    ord('a')  # 97 # opposite of chr
+    pow(3, 3)  # 27
+    # print
+    # property
+    list(range(5))  # [0,1,2,3,4]
+    repr(str.isalpha)  # <method 'isalpha' of 'str' objects> # printable representation (__repr__)
+    list(reversed([1, 2, 3]))  # [3,2,1]
+    round(3.015, 2)  # 3.02
+    # setattr # counterpart of getattr
+    [1, 2, 3, 4, 5][slice(3)]  # [1,2,3] # slice object that represents indices
+    sorted(['d', 'A', 'c', 'B'], key=str.lower)  # ['A','B','c','d']
+    # staticmethod
+    sum([1, 2, 3, 4, 5])  # 15
+    # super
+    tuple('abc')  # ('a','b','c')
+    type('abc')  # <class 'str'>
+    # vars
+    zip([0, 1, 2], ['a', 'b', 'c'])  # [(0,'a'),(1,'b'),(2,'c')]
+
+
+def basic_built_in_constants():
+    '''
+    Basic usage of built-in constants
+    '''
+    True  # <class 'bool'>
+    False  # <class 'bool'>
+    None  # <class 'NoneType'>
+    NotImplemented  # special value returned when an operation is not implemented for a type
+
 
 # -------------
 # COMMAND LINE ARGUMENTS
@@ -678,3 +794,80 @@ def basic_command_line_args():
     sys.argv[1]  # arg 1
     sys.argv[2]  # arg 2
     sys.argv[3]  # arg 3
+
+
+# ---
+# Built-in Exceptions
+# ---
+
+# Exception Hierarchy
+# https://docs.python.org/3/library/exceptions.html#exception-hierarchy
+
+# Exception
+
+# AssertionError
+# AttributeError
+# EOFError
+# FloatingPointError
+# GeneratorExit
+# ImportError
+# ModuleNotFoundError
+# IndexError
+# KeyError
+# KeyboardInterrupt
+# MemoryError
+# NameError
+# NotImplementedError
+# OSError
+# OverflowError
+# RecursionError
+# ReferenceError
+# RuntimeError
+# StopIteration
+# StopAsyncIteration
+# SyntaxError
+# IndentationError
+# TabError
+# SystemError
+# SystemExit
+# TypeError
+# UnboundLocalError
+# UnicodeError
+# UnicodeEncodeError
+# UnicodeDecodeError
+# UnicodeTranslateError
+# ValueError
+# ZeroDivisionError
+# IOError
+# WindowsError
+
+# BlockingIOError
+# ChildProcessError
+# ConnectionError
+# BrokenPipeError
+# ConnectionAbortedError
+# ConnectionRefusedError
+# ConnectionRefusedError
+# FileExistsError
+# FileNotFoundError
+# InterruptedError
+# IsADirectoryError
+# PermissionError
+# ProcessLookupError
+# TimeoutError
+
+# Warning
+# UserWarning
+# DeprecationWarning
+# PendingDeprecationWarning
+# SyntaxWarning
+# RuntimeWarning
+# FutureWarning
+# ImportWarning
+# UnicodeWarning
+# BytesWarning
+# ResourceWarning
+
+# ArithmeticError
+# BufferError
+# LookupError
