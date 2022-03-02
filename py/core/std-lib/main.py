@@ -5,23 +5,26 @@
 # https://docs.python.org/3/library/
 
 
-import time
-import json
 from array import array
 from base64 import b64encode
 from collections import Counter, deque
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import copy, deepcopy
 import csv
+from datetime import timedelta, datetime, date, timezone
 from enum import Enum
 import functools
 import gzip
 import io
+import json
 import logging
 import math
+from multiprocessing import Pool
 import os
 from pathlib import Path, PurePath
 import platform
 import subprocess
+import time
 import timeit
 import sys
 from typing import List, TypedDict
@@ -45,20 +48,48 @@ import zlib
 # textwrap
 # https://docs.python.org/3/library/textwrap.html
 
-
 # ---
 # data types
 # ---
 
-# datetime (TODO)
-# https://docs.python.org/3/library/datetime.html
+
+def basic_datetime():
+    """
+    Basic datetime usage
+    https://docs.python.org/3/library/datetime.html
+    """
+    # date
+    date(2022, 1, 1)  # 2022-01-01
+    date.today()  # 2022-03-01
+    date.today() + timedelta(days=1)  # 2022-03-02
+    date(2011, 10, 11).replace(day=1)  # 2021-10-01
+    date(2022, 3, 1).weekday()  # 1 (day of week, 0-6)(tuesday)
+    date(2022, 3, 1).isoweekday()  # 2 (day of week, 1-7)(tuesday)
+    date(2022, 3, 1).isoformat()  # 2022-03-01
+
+    # datetime
+
+    datetime(2022, 3, 1)  # 2022-03-01 00:00:00
+    datetime(2022, 3, 1) + timedelta(days=1)  # 2022-03-02 ...
+    datetime.today()  # 2022-03-01 ...
+    datetime.now()  # 2022-03-01 ... (current time)
+    datetime.fromtimestamp(time.time())  # 2022-03-01 ... (current time)
+    datetime.now(timezone.utc)  # 2022-03-01 ... (current time)(utc)
+    datetime.fromtimestamp(time.time(), tz=timezone.utc)  # 2022-03-01 ... (current time)(utc)
+
+    # split/combine datetime:
+    # date (get date portion), time (get time portion), combine (combine d/t portions)
 
 
-def basic_counter():
+def basic_collections():
     """
     Basic usage of counter (bag, multiset)
+    Basic usage of deque (double-ended queue) (generalization of stack, queue)
     https://docs.python.org/3/library/collections.html
     """
+
+    # counter
+
     colors = ['red', 'blue', 'blue', 'green', 'purple', 'green', 'white', 'purple', 'blue']
     c = Counter(colors)
     c['purple']  # 2
@@ -77,12 +108,8 @@ def basic_counter():
     c & c  # intersection
     c | c  # union
 
+    # deque
 
-def basic_queue():
-    """
-    Basic usage of deque (double-ended queue) (generalization of stack, queue)
-    https://docs.python.org/3/library/collections.html
-    """
     d = deque(['b', 'c', 'd'])
     d.append('e')  # add to right sight (end)
     d.appendleft('a')  # add to left side (beginning)
@@ -222,8 +249,40 @@ def basic_math():
 # itertools
 # https://docs.python.org/3/library/itertools.html
 
-# functools (TODO)
-# https://docs.python.org/3/library/functools.html
+
+def basic_functools():
+    """
+    Basic functools usage
+    https://docs.python.org/3/library/functools.html
+    """
+    # cache
+
+    @functools.cache
+    def factorial(n):
+        return n * factorial(n-1) if n else 1
+
+    factorial(10)  # no cached result
+    factorial(5)  # uses cached result
+    factorial(12)  # mostly cached result, 2 new calls
+
+    # partial (partially applied function)
+
+    def add(a, b):
+        return a + b
+
+    add_five = functools.partial(add, 5)
+    add_five(3)  # 8
+
+    # reduce
+
+    functools.reduce(
+        lambda x, y: x+y,
+        [1, 2, 3, 4, 5]
+    )  # 15
+
+    # singledispatch (generics)(overloading)(multiple call signatures)
+    # https://docs.python.org/3/library/functools.html#functools.singledispatch
+
 
 # operator
 # https://docs.python.org/3/library/operator.html
@@ -527,6 +586,7 @@ def basic_time():
             (2021, 10, 11, 17, 3, 38, 1, 48, 0)  # Oct 11 2021 17:03:38
         ))
     )
+    time.time()  # seconds since epoch (float)
 
 
 # argparse
@@ -584,14 +644,66 @@ def basic_platform():
 # concurrency
 # ---
 
-# threading (TODO)
+# threading
 # https://docs.python.org/3/library/threading.html
 
-# multiprocessing (TODO)
-# https://docs.python.org/3/library/multiprocessing.html
 
-# concurrent.futures
-# https://docs.python.org/3/library/concurrent.futures.html
+def basic_multiprocessing():
+    """
+    Basic multiprocessing usage
+    https://docs.python.org/3/library/multiprocessing.html
+    """
+    # Pool
+
+    def square(x):
+        return x**2
+
+    numbers = list(range(25))
+    pool = Pool(4)  # multiprocessing.Pool with 4 processes
+
+    result = pool.map(square, numbers)
+
+    print(result)  # [0, 1, 4, 9, 16, 25, ...]
+
+
+def basic_concurrent_futures():
+    """
+    Basic concurrent.futures usage
+    https://docs.python.org/3/library/concurrent.futures.html
+    """
+    # Setup
+
+    def double(x: int) -> int:
+        return 2 * x
+
+    numbers: List[int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+    # ThreadPoolExecutor (results in order completed)
+
+    results = []
+    futures = []
+
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        for n in numbers:
+            futures.append(executor.submit(double, n))
+
+    for future in as_completed(futures):
+        try:
+            results.append(future.result())
+        except Exception as e:
+            print(e)
+
+    print(results)
+
+    # ThreadPoolExecutor (results in original order)
+
+    results = []
+
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        for result in executor.map(double, numbers):
+            results.append(result)
+
+    print(results)
 
 # queue
 # https://docs.python.org/3/library/queue.html
