@@ -24,55 +24,45 @@ import (
 func main() {
 	// runtime
 	printSectionTitle("runtime")
-	getRuntimeDetails()
+	basicRuntime()
 	// fmt
 	printSectionTitle("fmt")
-	useFmt()
+	basicFmt()
 	// log
 	printSectionTitle("log")
-	useLog()
+	basicLog()
 	// strings
 	printSectionTitle("strings")
-	useStrings()
+	basicStrings()
 	// json
 	printSectionTitle("json")
-	useJson()
+	basicJson()
 	// time
 	printSectionTitle("time")
-	useTime()
+	basicTime()
 	// filepath
 	printSectionTitle("filepath")
-	useFilepath()
+	basicFilepath()
 	// sort
 	printSectionTitle("sort")
-	useSort()
+	basicSort()
 	// os
 	printSectionTitle("os")
-	useOs()
+	basicOs()
 	// os (os.File)
-	printSectionTitle("os (file)")
-	useOsFile()
+	printSectionTitle("os.File")
+	basicOsFile()
 	// os (os/exec)
-	printSectionTitle("exec")
-	useExec()
+	printSectionTitle("os/exec")
+	basicExec()
 	// math
 	printSectionTitle("math")
-	useMath()
+	basicMath()
 	// net/http
 	printSectionTitle("net/http (Get)")
-	useNetHttpGet()
+	basicNetHttpGet()
 	printSectionTitle("net/http (Post)")
-	useNetHttpPost()
-}
-
-// ---
-// helper func
-// ---
-
-func bulkPrint(args ...interface{}) {
-	for _, a := range args {
-		fmt.Println(a)
-	}
+	basicNetHttpPost()
 }
 
 func printSectionTitle(title string) {
@@ -81,47 +71,28 @@ func printSectionTitle(title string) {
 	fmt.Println("")
 }
 
-// ---------
-// notes
-// ---------
+func basicRuntime() {
+	os := runtime.GOOS
+	arch := runtime.GOARCH
+	cpus := runtime.NumCPU()
+	version := runtime.Version()
 
-// ---
-// runtime details
-// ---
-
-type RuntimeDetails struct {
-	Os      string `json:"os"`
-	Arch    string `json:"arch"`
-	CPUs    int    `json:"cpus"`
-	Version string `json:"version"`
+	fmt.Println("os: ", os)
+	fmt.Println("arch: ", arch)
+	fmt.Println("cpus: ", cpus)
+	fmt.Println("version: ", version)
 }
 
-func getRuntimeDetails() {
-	fmt.Printf("%+v\n", RuntimeDetails{
-		Os:      runtime.GOOS,
-		Arch:    runtime.GOARCH,
-		CPUs:    runtime.NumCPU(),
-		Version: runtime.Version(),
-	})
-}
-
-// ---
-// fmt
-// ---
-
-// https://golang.org/pkg/fmt/
-
-// format verbs
-// %s -- string
-// %v -- default value
-// %+v -- struct with field names
-// %#v -- golang representation
-// %T -- golang type
-// %d -- integer (base 10)
-// %f -- floating point
-// %e -- floating point (decimal notation)
-
-func useFmt() {
+func basicFmt() {
+	// format verbs
+	// %s -- string
+	// %v -- default value
+	// %+v -- struct with field names
+	// %#v -- golang representation
+	// %T -- golang type
+	// %d -- integer (base 10)
+	// %f -- floating point
+	// %e -- floating point (decimal notation)
 
 	// Println
 	fmt.Println("Hello world!") // print string
@@ -132,27 +103,18 @@ func useFmt() {
 	// Printf
 	firstName := "Itachi"
 	fmt.Printf("Hello %s!", firstName)
-
 }
 
-// ---
-// log
-// ---
+func basicLog() {
+	/*
+		// Fatal -- Print() + os.Exit(1)
+		log.Fatal("Error!")
+		// Fatalf -- Printf() + os.Exit(1)
+		log.Fatalf("Error occured at %v", time.Now())
+		// Fatalln -- Println() + os.Exit(1)
+		log.Fatalln("Error!")
+	*/
 
-// in many cases, it's like fmt.Print but with a date in front
-
-/*
-
-// Fatal -- Print() + os.Exit(1)
-log.Fatal("Error!")
-// Fatalf -- Printf() + os.Exit(1)
-log.Fatalf("Error occured at %v", time.Now())
-// Fatalln -- Println() + os.Exit(1)
-log.Fatalln("Error!")
-
-*/
-
-func useLog() {
 	// Println
 	log.Println("Hello World!")
 	// Printf
@@ -164,7 +126,7 @@ func useLog() {
 // strings
 // ---
 
-func useStrings() {
+func basicStrings() {
 	// Compare -- just use comparison operators (==, <, >, etc)
 	comparison := strings.Compare("Kakashi", "Obito") // -1, 0, or 1
 	// Contains
@@ -196,65 +158,59 @@ func useStrings() {
 	// Trim (also TrimLeft, TrimRight)
 	trimmed := strings.Trim("   Kakashi   ", " ") // string
 
-	// print results
-	bulkPrint(
-		"comparison", comparison,
-		"containsSubstring", containsSubstring,
-		"containsAnyChars", containsAnyChars,
-		"hasPrefix", hasPrefix,
-		"hasSuffix", hasSuffix,
-		"indexFound", indexFound,
-		"indexOfAny", indexOfAny,
-		"joinedStringSlice", joinedStringSlice,
-		"replacedOnce", replacedOnce,
-		"replacedAll", replacedAll,
-		"stringSlice", stringSlice,
-		"titleCase", titleCase,
-		"lowerCase", lowerCase,
-		"upperCase", upperCase,
-		"trimmed", trimmed,
-	)
+	fmt.Println("Compare", comparison)
+	fmt.Println("Contains", containsSubstring)
+	fmt.Println("ContainsAny", containsAnyChars)
+	fmt.Println("HasPrefix", hasPrefix)
+	fmt.Println("HasSuffix", hasSuffix)
+	fmt.Println("Index", indexFound)
+	fmt.Println("IndexAny", indexOfAny)
+	fmt.Println("Join", joinedStringSlice)
+	fmt.Println("Replace", replacedOnce)
+	fmt.Println("ReplaceAll", replacedAll)
+	fmt.Println("Split", stringSlice)
+	fmt.Println("Title", titleCase)
+	fmt.Println("ToLower", lowerCase)
+	fmt.Println("ToUpper", upperCase)
+	fmt.Println("Trim", trimmed)
 }
 
-// ---
-// json
-// ---
+func basicJson() {
+	// struct
+	type Person struct {
+		FirstName string `json:"firstName"`
+		LastName  string `json:"lastName"`
+	}
 
-type Person struct {
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-}
-
-func useJson() {
 	// struct -> []byte
 	bytes, _ := json.Marshal(Person{
 		FirstName: "Kakashi",
 		LastName:  "Hatake",
 	})
+
 	// []byte -> struct
 	var person Person
 	err := json.Unmarshal(bytes, &person)
 	if err != nil {
 		fmt.Println("Error while parsing")
 	}
+
 	// print struct
-	fmt.Println(fmt.Sprintf("%+v", person))
+	fmt.Printf("%+v", person)
+
 	// pretty print
 	formattedBytes, _ := json.MarshalIndent(Person{
 		FirstName: "Kakashi",
 		LastName:  "Hatake",
 	}, "", "  ")
-	fmt.Println(fmt.Sprintf("%s", formattedBytes))
+	fmt.Printf("%s", formattedBytes)
+
 	// valid json
 	isValid := json.Valid(formattedBytes) // boolean
 	fmt.Println("isValid", isValid)
 }
 
-// ---
-// time
-// ---
-
-func useTime() {
+func basicTime() {
 	// Date
 	date := time.Date(2020, 10, 11, 12, 0, 0, 0, time.UTC)
 	// Now
@@ -292,42 +248,25 @@ func useTime() {
 	pd, _ := time.ParseDuration("1h15m10s")
 	roundedDuration := pd.Round(time.Minute)
 
-	// print results
-	bulkPrint(
-		"date", date,
-		"now", now,
-		"hour", hour,
-		"sinceDuration", sinceDuration,
-		"untilDuration", untilDuration,
-		"parsedDuration", parsedDuration,
-		"hours", hours,
-		"tomorrow", tomorrow,
-		"difference", difference,
-		"newDate", newDate,
-		"before", before,
-		"after", after,
-		"formattedDate", formattedDate,
-		"timeSomewhereElse", timeSomewhereElse,
-		"dateFromUnixTimestamp", dateFromUnixTimestamp,
-		"roundedDuration", roundedDuration,
-	)
+	fmt.Println("time.Date", date)
+	fmt.Println("time.Now", now)
+	fmt.Println("time.Time.Hour", hour)
+	fmt.Println("time.Since", sinceDuration)
+	fmt.Println("time.Until", untilDuration)
+	fmt.Println("time.ParseDuration", parsedDuration)
+	fmt.Println("time.Duration.Hours", hours)
+	fmt.Println("time.Time.Add", tomorrow)
+	fmt.Println("time.Time.Sub", difference)
+	fmt.Println("time.Time.AddDate", newDate)
+	fmt.Println("time.Time.Before", before)
+	fmt.Println("time.Time.After", after)
+	fmt.Println("time.Time.Format", formattedDate)
+	fmt.Println("time.Time.In", timeSomewhereElse)
+	fmt.Println("time.Unix", dateFromUnixTimestamp)
+	fmt.Println("time.Duration.Round", roundedDuration)
 }
 
-// ---
-// path/filepath
-// ---
-
-// for os specific slash patterns, use `path/filepath` instead of `path`
-
-func printFilePaths(path string) {
-	fmt.Println("filepath.Walk()")
-	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
-		fmt.Println(path) // recursively print fp
-		return nil
-	})
-}
-
-func useFilepath() {
+func basicFilepath() {
 	fp := "client/build/index.html"
 	// Base
 	base := filepath.Base(fp) // string
@@ -345,32 +284,31 @@ func useFilepath() {
 	// Split
 	d, fn := filepath.Split(fp)
 
-	// print results
-	bulkPrint(
-		"base", base,
-		"dir", dir,
-		"ext", ext,
-		"isAbs", isAbs,
-		"joinedPath", joinedPath,
-		"match", match,
-		"splitPath", d, fn,
-	)
+	fmt.Println("filepath.Base", base)
+	fmt.Println("filepath.Dir", dir)
+	fmt.Println("filepath.Ext", ext)
+	fmt.Println("filepath.IsAbs", isAbs)
+	fmt.Println("os.Getwd", cwd)
+	fmt.Println("filepath.Join", joinedPath)
+	fmt.Println("filepath.Match", match)
+	fmt.Println("filepath.Split", d, fn)
 
-	// Walk
-	printFilePaths("../")
+	fmt.Println("filepath.Walk")
+	filepath.Walk("./", func(path string, info os.FileInfo, err error) error {
+		fmt.Println(path) // recursively print fp
+		return nil
+	})
 }
 
-// ---
-// sort
-// ---
-
-func useSort() {
+func basicSort() {
 	// Float64s
 	floats := []float64{5.2, -1.3, 0.7, -3.8, 2.6}
 	sort.Float64s(floats)
+
 	// Ints
 	ints := []int{3, 2, 5, 4, 1}
 	sort.Ints(ints)
+
 	// Strings (case sensitive)
 	strings := []string{"Kakashi", "Obito", "Itachi", "Hashirama"}
 	sort.Strings(strings)
@@ -383,63 +321,52 @@ func useSort() {
 	letters := []string{"b", "c", "e", "a", "d"}
 	sort.Sort(sort.Reverse(sort.StringSlice(letters)))
 
-	// Search
-	// *** will do later ***
+	// Sort slice of structs
+	// TODO
 
-	// print results
-	bulkPrint(
-		"floats", floats,
-		"ints", ints,
-		"strings", strings,
-		"letters", letters,
-		"s", s,
-	)
+	fmt.Println("floats", floats)
+	fmt.Println("ints", ints)
+	fmt.Println("strings", strings)
+	fmt.Println("letters", letters)
+	fmt.Println("s", s)
 }
 
-// ---
-// os
-// ---
+func basicOs() {
+	/*
+	   // Chdir
+	   os.Chdir("../")
 
-// https://golang.org/pkg/os/
+	   // Chmod
+	   _ = os.Chmod("main.go", 0777) // chmod 777 main.go
 
-/*
+	   // Clearenv
+	   os.Clearenv() // clear env vars
 
-// Chdir
-os.Chdir("../")
+	   // Exit
+	   os.Exit(1) // exit with error
 
-// Chmod
-_ = os.Chmod("main.go", 0777) // chmod 777 main.go
+	   // Mkdir
+	   _ = os.Mkdir("dir1", os.ModeDir) // (path string, perm FileMode) => error
 
-// Clearenv
-os.Clearenv() // clear env vars
+	   // NewSyscallError
+	   // ***
 
-// Exit
-os.Exit(1) // exit with error
+	   // Remove
+	   _ = os.Remove("file.txt") // remove file or empty dir
 
-// Mkdir
-_ = os.Mkdir("dir1", os.ModeDir) // (path string, perm FileMode) => error
+	   // RemoveAll
+	   _ = os.RemoveAll("dir1") // recursively remove until done or error
 
-// NewSyscallError
-// ***
+	   // Rename
+	   _ = os.Rename("dir1", "dir2")
 
-// Remove
-_ = os.Remove("file.txt") // remove file or empty dir
+	   // Setenv
+	   _ = os.Setenv("hello", "world") // hello=world
 
-// RemoveAll
-_ = os.RemoveAll("dir1") // recursively remove until done or error
+	   // Unsetenv
+	   _ = os.Unsetenv("hello")
+	*/
 
-// Rename
-_ = os.Rename("dir1", "dir2")
-
-// Setenv
-_ = os.Setenv("hello", "world") // hello=world
-
-// Unsetenv
-_ = os.Unsetenv("hello")
-
-*/
-
-func useOs() {
 	// Getwd
 	cwd, _ := os.Getwd()
 	// Environ
@@ -451,23 +378,20 @@ func useOs() {
 	// Hostname
 	host, _ := os.Hostname()
 	// LookupEnv
-	user, foundEnvVar := os.LookupEnv("USER")
+	user, found := os.LookupEnv("USER")
 	// UserHomeDir
 	homeDir, _ := os.UserHomeDir()
 
-	// print results
-	bulkPrint(
-		"cwd", cwd,
-		"len(envVars)", len(envVars),
-		"home", home,
-		"pid", pid,
-		"host", host,
-		"user", user, "foundEnvVar", foundEnvVar,
-		"homeDir", homeDir,
-	)
+	fmt.Println("os.Getwd", cwd)
+	fmt.Println("len(os.Environ())", len(envVars))
+	fmt.Println("os.Getenv", home)
+	fmt.Println("os.GetPid", pid)
+	fmt.Println("os.Hostname", host)
+	fmt.Println("os.LookupEnv", user, found)
+	fmt.Println("os.UserHomeDir", homeDir)
 }
 
-func useOsFile() {
+func basicOsFile() {
 	var f *os.File
 	fn := "my-example-file.txt"
 
@@ -492,47 +416,40 @@ func useOsFile() {
 	// Remove
 	os.Remove(fn) // remove file or empty dir
 
-	// print results
-	bulkPrint(
-		"name", name,
-		"readContent", readContent,
-	)
+	fmt.Println("os.File.Name", name)
+	fmt.Println("os.File.Read", readContent)
 }
 
 // ---
 // exec
 // ---
 
-func useExec() {
+func basicExec() {
+	// Command as slice
 	c := []string{"ls", "-a"}
-	// Command
+
+	// exec.Cmd
 	command := exec.Command(c[0], c[1:]...)
 	b, err := command.Output()
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	// Output
 	output := strings.Split(string(b), "\n")
 
-	// print results
-	bulkPrint(
-		"c", strings.Join(c, " "),
-		"output", output,
-	)
+	fmt.Println("command", strings.Join(c, " "))
+	fmt.Println("command output", output)
 }
 
-// ---
-// math
-// ---
+func basicMath() {
+	// round
+	round := func(n float64, p int) float64 {
+		// move decimal place, round to int, move decimal place back
+		a := math.Pow10(p)
+		return math.Round(n*a) / a
+	}
 
-// https://golang.org/pkg/math/
-
-func round(n float64, p int) float64 {
-	// move decimal place, round to int, move decimal place back
-	a := math.Pow10(p)
-	return math.Round(n*a) / a
-}
-
-func useMath() {
 	// constants
 	e := math.E
 	pi := math.Pi
@@ -564,42 +481,44 @@ func useMath() {
 	acos := math.Acos(0)            // pi/2
 	atan := math.Atan(math.Inf(+1)) // pi/2
 
-	// print results
-	bulkPrint(
-		// constants
-		"e", round(e, 2),
-		"pi", round(pi, 2),
-		"phi", round(phi, 2),
-		// math
-		"abs", abs,
-		"ceil", ceil,
-		"floor", floor,
-		"rounded", rounded,
-		// exp
-		"cbrt", cbrt,
-		"exp", exp,
-		"pow", pow,
-		"pow10", pow10,
-		// log
-		"ln", ln,
-		"log", log,
-		// max/min
-		"max", max,
-		"min", min,
-		// trig
-		"sin", round(sin, 2),
-		"cos", round(cos, 2),
-		"tan", round(tan, 2),
-		"csc", round(csc, 2),
-		"sec", round(sec, 2),
-		"cot", round(cot, 2),
-		"asin", round(asin, 2),
-		"acos", round(acos, 2),
-		"atan", round(atan, 2),
-	)
+	fmt.Println("constants")
+	fmt.Println("e", round(e, 2))
+	fmt.Println("pi", round(pi, 2))
+	fmt.Println("phi", round(phi, 2))
+
+	fmt.Println("rounding")
+	fmt.Println("abs", abs)
+	fmt.Println("ceil", ceil)
+	fmt.Println("floor", floor)
+	fmt.Println("rounded", rounded)
+
+	fmt.Println("exp")
+	fmt.Println("cbrt", cbrt)
+	fmt.Println("exp", exp)
+	fmt.Println("pow", pow)
+	fmt.Println("pow10", pow10)
+
+	fmt.Println("log")
+	fmt.Println("ln", ln)
+	fmt.Println("log", log)
+
+	fmt.Println("max/min")
+	fmt.Println("max", max)
+	fmt.Println("min", min)
+
+	fmt.Println("trig")
+	fmt.Println("sin", round(sin, 2))
+	fmt.Println("cos", round(cos, 2))
+	fmt.Println("tan", round(tan, 2))
+	fmt.Println("csc", round(csc, 2))
+	fmt.Println("sec", round(sec, 2))
+	fmt.Println("cot", round(cot, 2))
+	fmt.Println("asin", round(asin, 2))
+	fmt.Println("acos", round(acos, 2))
+	fmt.Println("atan", round(atan, 2))
 }
 
-func useNetHttpGet() {
+func basicNetHttpGet() {
 	type User struct {
 		Id   int    `json:"id"`
 		Name string `json:"name"`
@@ -612,6 +531,7 @@ func useNetHttpGet() {
 		log.Println(err)
 		return
 	}
+
 	// get body
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body) // []byte
@@ -619,19 +539,18 @@ func useNetHttpGet() {
 		log.Println(err)
 		return
 	}
+
 	// unmarshal body
 	var user User
 	if err = json.Unmarshal(body, &user); err != nil {
 		log.Println(err)
 		return
 	}
-	// print results
-	bulkPrint(
-		"user", fmt.Sprintf("%+v", user),
-	)
+
+	fmt.Println("user", fmt.Sprintf("%+v", user))
 }
 
-func useNetHttpPost() {
+func basicNetHttpPost() {
 	type User struct {
 		Id   int    `json:"id"`
 		Name string `json:"name"`
@@ -654,6 +573,7 @@ func useNetHttpPost() {
 		log.Println(err)
 		return
 	}
+
 	// get body
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body) // []byte
@@ -661,6 +581,7 @@ func useNetHttpPost() {
 		log.Println(err)
 		return
 	}
+
 	// unmarshal body
 	var user User
 	if err = json.Unmarshal(body, &user); err != nil {
@@ -668,12 +589,7 @@ func useNetHttpPost() {
 		return
 	}
 
-	// print results
-	bulkPrint(
-		"user", fmt.Sprintf("%+v", user),
-	)
-
-	// print results
+	fmt.Println("user", fmt.Sprintf("%+v", user))
 
 }
 
