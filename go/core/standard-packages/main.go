@@ -5,25 +5,34 @@ import (
 	"bytes"
 	"compress/gzip"
 	"compress/zlib"
+	"crypto"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/hmac"
+	"crypto/md5"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/csv"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"math"
+	"math/big"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
-
-// ---
-// main
-// ---
 
 func main() {
 	printSectionTitle("archive/tar")
@@ -32,10 +41,34 @@ func main() {
 	basicBufio()
 	printSectionTitle("builtin")
 	basicBuiltin()
+	printSectionTitle("bytes")
+	basicBytes()
 	printSectionTitle("compress/gzip")
 	basicCompressGzip()
 	printSectionTitle("compress/zlib")
 	basicCompressZlib()
+	printSectionTitle("container")
+	basicContainer()
+	printSectionTitle("context")
+	basicContext()
+	printSectionTitle("crypto/aes")
+	basicCryptoAes()
+	printSectionTitle("crypto/md5")
+	basicCryptoMd5()
+	printSectionTitle("crypto/hmac")
+	basicCryptoHmac()
+	printSectionTitle("crypto/rand")
+	basicCryptoRand()
+	printSectionTitle("crypto/rsa")
+	basicCryptoRsa()
+	printSectionTitle("crypto/tls")
+	basicCryptoTls()
+	printSectionTitle("encoding/base64")
+	basicEncodingBase64()
+	printSectionTitle("encoding/csv")
+	basicEncodingCsv()
+	printSectionTitle("encoding/json")
+	basicEncodingJson()
 	printSectionTitle("errors")
 	basicErrors()
 	printSectionTitle("filepath")
@@ -44,8 +77,6 @@ func main() {
 	basicFmt()
 	printSectionTitle("io")
 	basicIO()
-	printSectionTitle("json")
-	basicJson()
 	printSectionTitle("log")
 	basicLog()
 	printSectionTitle("math")
@@ -72,6 +103,8 @@ func main() {
 	basicStrings()
 	printSectionTitle("time")
 	basicTime()
+	printSectionTitle("testing")
+	basicTesting()
 }
 
 func printSectionTitle(title string) {
@@ -84,25 +117,23 @@ func basicArchiveTar() {
 	// Writer
 	var b bytes.Buffer
 	tw := tar.NewWriter(&b)
+	fn := "my-file.txt"
 	body := "Is mayonaise an instrument"
 	// Write header
 	h := &tar.Header{
-		Name: "my-file.txt",
+		Name: fn,
 		Mode: 0777,
 		Size: int64(len(body)),
 	}
 	if err := tw.WriteHeader(h); err != nil {
-		fmt.Println(err)
-		return
+		panic(err)
 	}
 	// Write body
 	if _, err := tw.Write([]byte(body)); err != nil {
-		fmt.Println(err)
-		return
+		panic(err)
 	}
 	if err := tw.Close(); err != nil {
-		fmt.Println(err)
-		return
+		panic(err)
 	}
 	// Read
 	tr := tar.NewReader(&b)
@@ -113,14 +144,12 @@ func basicArchiveTar() {
 			break // Break after last file
 		}
 		if err != nil {
-			fmt.Println(err)
-			return
+			panic(err)
 		}
 		fmt.Println("file name: ", h.Name)
 		sb := new(strings.Builder)
 		if _, err := io.Copy(sb, tr); err != nil {
-			fmt.Println(err)
-			return
+			panic(err)
 		}
 		s := sb.String()
 		fmt.Println("String result: ", s)
@@ -128,8 +157,8 @@ func basicArchiveTar() {
 }
 
 func basicBufio() {
-	// TODO
 	// https://golang.org/pkg/bufio/
+	fmt.Println("TODO")
 }
 
 func basicBuiltin() {
@@ -156,6 +185,11 @@ func basicBuiltin() {
 	// TODO: panic/recover
 }
 
+func basicBytes() {
+	// functions for the manipulation of byte slices
+	// analogous to the facilities of the strings package
+}
+
 func basicCompressGzip() {
 	// Write
 	var b bytes.Buffer
@@ -165,13 +199,13 @@ func basicCompressGzip() {
 	// Read
 	r, err := gzip.NewReader(&b) // io.readCloser
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 	// Read (to string variable)
 	sb := new(strings.Builder)
 	_, err = io.Copy(sb, r)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 	s := sb.String()
 	fmt.Println("String result: ", s)
@@ -187,13 +221,13 @@ func basicCompressZlib() {
 	// Read
 	r, err := zlib.NewReader(&b) // io.readCloser
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 	/*
 		// Read (to stdout)
 		_, err = io.Copy(os.Stdout, r)
 		if err != nil {
-			fmt.Println(err)
+			panic(err)
 		}
 		r.Close()
 	*/
@@ -201,16 +235,307 @@ func basicCompressZlib() {
 	sb := new(strings.Builder)
 	_, err = io.Copy(sb, r)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 	s := sb.String()
 	fmt.Println("String result: ", s)
 	r.Close()
 }
 
+func basicContainer() {
+	// https://pkg.go.dev/container
+	fmt.Println("TODO")
+}
+
+func basicContext() {
+	// https://pkg.go.dev/context
+	fmt.Println("TODO")
+}
+
+func basicCryptoAes() {
+	// https://pkg.go.dev/crypto
+	// https://pkg.go.dev/crypto#section-directories
+
+	text := []byte("No one can know, not even Squidward's house")
+	key := []byte("5eb63bbbe01eeed093cb22bb8f5acdc3")
+
+	// Create aes cipher (key needs to be 32 chars for aes-256)
+	c, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err)
+	}
+
+	// Galois/Counter Mode (mode of operation for symmetric key crypto block ciphers)
+	gcm, err := cipher.NewGCM(c)
+	if err != nil {
+		panic(err)
+	}
+
+	// byte array (size of nonce) to be passed to seal
+	nonceSize := gcm.NonceSize()
+	nonce := make([]byte, nonceSize)
+
+	// populate nonce (with a cryptographically secure random sequence)
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		panic(err)
+	}
+
+	// Encrypt using seal function
+	result := gcm.Seal(nonce, nonce, text, nil)
+	fmt.Println("crypto/aes seal result:", result)
+
+	// Write to file
+	fn := "my-encrypted-file.txt"
+	if err = os.WriteFile(fn, result, 0777); err != nil {
+		panic(err)
+	}
+
+	// Read from file
+	contents, err := os.ReadFile(fn)
+	if err != nil {
+		panic(err)
+	}
+
+	// Decrypt using open function
+	nonce, ciphertext := contents[:nonceSize], contents[nonceSize:]
+	result, err = gcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("crypto/aes open result:", string(result))
+
+	// Cleanup
+	if err = os.Remove(fn); err != nil {
+		fmt.Println("Could not remove file " + fn)
+	}
+}
+
+func basicCryptoMd5() {
+	// MD% is cryptographically broken and should not be used for secure applications
+	hasher := md5.New()
+	hasher.Write([]byte("No one can know, not even Squidward's house"))
+	result := hex.EncodeToString(hasher.Sum(nil))
+	fmt.Println("md5 hash result", result)
+}
+
+func basicCryptoHmac() {
+	secret := []byte("No one can know, not even Squidward's house")
+	data := []byte("One embarrassing snapshot of SpongeBob at the Christmas party")
+
+	// Create hmac and write to it
+	h := hmac.New(sha256.New, secret)
+	h.Write(data)
+
+	result := hex.EncodeToString(h.Sum(nil))
+	fmt.Println("hmac hash result:", result) // 64 chars
+}
+
+func basicCryptoRand() {
+	randInt, _ := rand.Int(rand.Reader, big.NewInt(100))
+	randPrime, _ := rand.Prime(rand.Reader, 8)      // Prime less than 2^8 (I think)
+	randRead, _ := rand.Read([]byte("Hello world")) // len(bytes)
+
+	fmt.Println("crypto.rand.Int: ", randInt)
+	fmt.Println("crypto.rand.Prime: ", randPrime)
+	fmt.Println("crypto.rand.Read: ", randRead)
+}
+
+func basicCryptoRsa() {
+	// Generate key
+	key, err := rsa.GenerateKey(rand.Reader, 1024) // 2048-bit key is recommended
+	if err != nil {
+		panic(err)
+	}
+	publicKey := key.PublicKey
+
+	// ---
+	// Encryption/Decryption
+	// ---
+
+	// Public key encrypts
+	// Private key decrypts
+
+	// Encrypt using public key
+	encryptedBytes, err := rsa.EncryptOAEP(
+		sha256.New(),
+		rand.Reader,
+		&publicKey,
+		[]byte("The owner of the white sedan you left your lights on"),
+		nil,
+	)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("crypto/rsa encrypt result:", encryptedBytes)
+
+	// Decrypt using private key
+	decryptedBytes, err := key.Decrypt(
+		nil,
+		encryptedBytes,
+		&rsa.OAEPOptions{Hash: crypto.SHA256},
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("crypto/rsa decrypt result:", string(decryptedBytes))
+
+	// ---
+	// rsa verification (Signing/Verification)
+	// ---
+
+	// Ensures message came from the party who issued the public key
+	// Verification requires data, signature, public key (data & signature must match)
+
+	// Hash message
+	msg := []byte("verifiable message")
+	msgHash := sha256.New()
+	_, err = msgHash.Write(msg)
+	if err != nil {
+		panic(err)
+	}
+	msgHashSum := msgHash.Sum(nil)
+
+	// Get signature
+	signature, err := rsa.SignPSS(rand.Reader, key, crypto.SHA256, msgHashSum, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	// Verify signature
+	err = rsa.VerifyPSS(&publicKey, crypto.SHA256, msgHashSum, signature, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("msgHashSum: ", msgHashSum)
+	fmt.Println("signature: ", signature)
+	fmt.Println("crypto/rsa verification successful")
+}
+
+func basicCryptoTls() {
+	// https://pkg.go.dev/crypto/tls@go1.17.8
+	fmt.Println("TODO")
+}
+
+func basicEncodingBase64() {
+	s := "Is mayonaise an instrument?"
+
+	// ---
+	// EncodeToString/DecodeString
+	// ---
+
+	// Encode to string
+	encoded := base64.StdEncoding.EncodeToString([]byte(s))
+	fmt.Println("base64.StdEncoding.EncodeToString:", encoded)
+
+	// Decode to []byte
+	decoded, err := base64.StdEncoding.DecodeString(encoded)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("base64.StdEncoding.DecodeString:", string(decoded))
+
+	// ---
+	// NewEncoder/NewDecoder
+	// ---
+
+	// Encode to []byte
+	encodedBuffer := bytes.Buffer{}
+	encoder := base64.NewEncoder(base64.StdEncoding, &encodedBuffer)
+	encoder.Write([]byte(s))
+	encoder.Close()
+	fmt.Println("base64.NewEncoder encoded:", encodedBuffer.String())
+
+	// Decode to []byte
+	r := bytes.NewReader(encodedBuffer.Bytes())
+	decoder := base64.NewDecoder(base64.StdEncoding, r)
+	decodedBytes, err := ioutil.ReadAll(decoder)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("base64.NewEncoder decoded:", string(decodedBytes))
+}
+
+func basicEncodingCsv() {
+	type Ninja struct {
+		FirstName string
+		LastName  string
+		Age       int
+	}
+	data := "first_name,last_name,age\nKakashi,Hatake,27\nIruka,Umino,25\nYamato,Tenzo,26\n"
+	r := csv.NewReader(strings.NewReader(data))
+	result := []Ninja{}
+
+	// Convert to [][]string
+	lines, err := r.ReadAll()
+	if err != nil {
+		panic(err)
+	}
+
+	// []string to struct
+	for i, record := range lines {
+		if i == 0 {
+			continue
+		}
+		age, err := strconv.Atoi(record[2])
+		if err != nil {
+			panic(err)
+		}
+		result = append(result, Ninja{
+			FirstName: record[0],
+			LastName:  record[1],
+			Age:       age,
+		})
+	}
+
+	// Print []struct
+	bytes, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("encoding/csv result:", string(bytes))
+}
+
+func basicEncodingJson() {
+	// struct
+	type Person struct {
+		FirstName string `json:"firstName"`
+		LastName  string `json:"lastName"`
+	}
+
+	// struct -> []byte
+	bytes, _ := json.Marshal(Person{
+		FirstName: "Kakashi",
+		LastName:  "Hatake",
+	})
+
+	// []byte -> struct
+	var person Person
+	err := json.Unmarshal(bytes, &person)
+	if err != nil {
+		fmt.Println("Error while parsing")
+	}
+
+	// print struct
+	fmt.Printf("%+v", person)
+
+	// pretty print
+	formattedBytes, _ := json.MarshalIndent(Person{
+		FirstName: "Kakashi",
+		LastName:  "Hatake",
+	}, "", "  ")
+	fmt.Printf("%s", formattedBytes)
+
+	// valid json
+	isValid := json.Valid(formattedBytes) // boolean
+	fmt.Println("isValid", isValid)
+}
+
 func basicErrors() {
-	// TODO
 	// https://golang.org/pkg/errors/
+	fmt.Println("TODO")
 }
 
 func basicFilepath() {
@@ -270,43 +595,8 @@ func basicFmt() {
 }
 
 func basicIO() {
-	// TODO
 	// https://golang.org/pkg/io/
-}
-
-func basicJson() {
-	// struct
-	type Person struct {
-		FirstName string `json:"firstName"`
-		LastName  string `json:"lastName"`
-	}
-
-	// struct -> []byte
-	bytes, _ := json.Marshal(Person{
-		FirstName: "Kakashi",
-		LastName:  "Hatake",
-	})
-
-	// []byte -> struct
-	var person Person
-	err := json.Unmarshal(bytes, &person)
-	if err != nil {
-		fmt.Println("Error while parsing")
-	}
-
-	// print struct
-	fmt.Printf("%+v", person)
-
-	// pretty print
-	formattedBytes, _ := json.MarshalIndent(Person{
-		FirstName: "Kakashi",
-		LastName:  "Hatake",
-	}, "", "  ")
-	fmt.Printf("%s", formattedBytes)
-
-	// valid json
-	isValid := json.Valid(formattedBytes) // boolean
-	fmt.Println("isValid", isValid)
+	fmt.Println("TODO")
 }
 
 func basicLog() {
@@ -403,8 +693,8 @@ func basicMath() {
 }
 
 func basicMathRand() {
-	// TODO
 	// https://golang.org/pkg/math/rand/
+	fmt.Println("TODO")
 }
 
 func basicNetHttpGet() {
@@ -578,7 +868,7 @@ func basicOsExec() {
 	command := exec.Command(c[0], c[1:]...)
 	b, err := command.Output()
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	// Output
@@ -589,8 +879,8 @@ func basicOsExec() {
 }
 
 func basicRegexp() {
-	// TODO
 	// https://golang.org/pkg/regexp/
+	fmt.Println("TODO")
 }
 
 func basicRuntime() {
@@ -741,8 +1031,7 @@ func basicTime() {
 	fmt.Println("time.Duration.Round", roundedDuration)
 }
 
-// ---
-// testing
-// ---
-
-// https://golang.org/pkg/testing/
+func basicTesting() {
+	// https://golang.org/pkg/testing/
+	fmt.Println("TODO")
+}
