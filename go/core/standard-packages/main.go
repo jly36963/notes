@@ -23,9 +23,11 @@ import (
 	"log"
 	"math"
 	"math/big"
+	mathrand "math/rand"
 	"net/http"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"runtime"
 	"sort"
@@ -89,16 +91,26 @@ func main() {
 	basicNetHttpPost()
 	printSectionTitle("os")
 	basicOs()
+	printSectionTitle("os (ReadFile/ReadDir)")
+	basicOsRead()
 	printSectionTitle("os.File")
 	basicOsFile()
 	printSectionTitle("os/exec")
 	basicOsExec()
+	printSectionTitle("path")
+	basicPath()
+	printSectionTitle("path/filepath")
+	basicPathFilepath()
+	printSectionTitle("reflect")
+	basicReflect()
 	printSectionTitle("regexp")
 	basicRegexp()
 	printSectionTitle("runtime")
 	basicRuntime()
 	printSectionTitle("sort")
 	basicSort()
+	printSectionTitle("strconv")
+	basicStrconv()
 	printSectionTitle("strings")
 	basicStrings()
 	printSectionTitle("time")
@@ -595,8 +607,7 @@ func basicFmt() {
 }
 
 func basicIO() {
-	// https://golang.org/pkg/io/
-	fmt.Println("TODO")
+	// Don't use this, use os
 }
 
 func basicLog() {
@@ -693,8 +704,29 @@ func basicMath() {
 }
 
 func basicMathRand() {
-	// https://golang.org/pkg/math/rand/
-	fmt.Println("TODO")
+	f32 := mathrand.Float32()
+	f64 := mathrand.Float64()
+	i := mathrand.Int()
+	intn := mathrand.Intn(100)
+	sliceInt := mathrand.Perm(5)
+	read, _ := mathrand.Read([]byte("Did you try W for Wambo?"))
+	ui32 := mathrand.Uint32()
+	ui64 := mathrand.Uint64()
+
+	shuffled := []int{1, 2, 3, 4, 5}
+	mathrand.Shuffle(len(shuffled), func(i, j int) {
+		shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
+	})
+
+	fmt.Println("math/rand Float32:", f32)
+	fmt.Println("math/rand Float64:", f64)
+	fmt.Println("math/rand Int:", i)
+	fmt.Println("math/rand Intn:", intn)
+	fmt.Println("math/rand Perm:", sliceInt)
+	fmt.Println("math/rand Read:", read)
+	fmt.Println("math/rand Shuffle:", shuffled)
+	fmt.Println("math/rand Uint32:", ui32)
+	fmt.Println("math/rand Uint64:", ui64)
 }
 
 func basicNetHttpGet() {
@@ -831,6 +863,46 @@ func basicOs() {
 	fmt.Println("os.UserHomeDir", homeDir)
 }
 
+func basicOsRead() {
+	// Write file
+	fn := "my-encrypted-file.txt"
+	contents := []byte("I'm always going to be there for you, even if it's only as an obstacle for you to overcome")
+	if err := os.WriteFile(fn, contents, 0777); err != nil {
+		panic(err)
+	}
+
+	// Read from file
+	contents, err := os.ReadFile(fn)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("os.ReadFile contents:", contents)
+
+	fileMetas, err := os.ReadDir(".")
+	if err != nil {
+		panic(err)
+	}
+	for i, meta := range fileMetas {
+		name := meta.Name()
+		info, err := meta.Info()
+		size := info.Size()
+		isDir := info.IsDir()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("os.ReadDir:", i)
+		fmt.Println("name:", name)
+		fmt.Println("size:", size)
+		fmt.Println("isDir:", isDir)
+	}
+
+	// Cleanup
+	if err = os.Remove(fn); err != nil {
+		fmt.Println("Could not remove file " + fn)
+	}
+}
+
 func basicOsFile() {
 	var f *os.File
 	fn := "my-example-file.txt"
@@ -841,10 +913,10 @@ func basicOsFile() {
 	f.Close()            // close
 
 	// Write
-	f, _ = os.OpenFile(fn, os.O_WRONLY, os.ModePerm) // open for writing
-	content := []byte("Hey Kakashi!")                // content to write
-	n, _ := f.Write(content)                         // write
-	f.Close()                                        // close
+	f, _ = os.OpenFile(fn, os.O_WRONLY, os.ModePerm)
+	content := []byte("You focus on the trivial, and lose sight of what is most important, change is impossible in this fog of ignorance.") // content to write
+	n, _ := f.Write(content)
+	f.Close()
 
 	// Read
 	f, _ = os.Open(fn)       // open file
@@ -876,6 +948,59 @@ func basicOsExec() {
 
 	fmt.Println("command", strings.Join(c, " "))
 	fmt.Println("command output", output)
+}
+
+func basicPath() {
+	// always uses slashes
+	base := path.Base("./a/b/c")           // c
+	cleaned := path.Clean("./a/b/../b/c")  // a/b/c
+	dir := path.Dir("./a/b/c")             // a/b
+	ext := path.Ext("./a/b/c.txt")         // .txt
+	isAbs := path.IsAbs("./a/b/c")         // false
+	joined := path.Join(".", "a", "", "b") // a/b
+	d, fn := path.Split("./a/b/c.txt")     // ./a/b/, c.txt
+
+	fmt.Println("path.Base", base)
+	fmt.Println("path.Clean", cleaned)
+	fmt.Println("path.Dir", dir)
+	fmt.Println("path.Ext", ext)
+	fmt.Println("path.IsAbs", isAbs)
+	fmt.Println("path.Join", joined)
+	fmt.Println("path.Split", d, fn)
+}
+
+func basicPathFilepath() {
+	// os specific behavior ("/", "\")
+	abs, _ := filepath.Abs("./a/b/c")              // absolute path
+	base := filepath.Base("./a/b/c")               // c
+	cleaned := filepath.Clean("./a/b/../b/c")      // a/b/c
+	dir := filepath.Dir("./a/b/c")                 // a/b
+	ext := filepath.Ext("./a/b/c.txt")             // .txt
+	glob, _ := filepath.Glob("*.go")               // .txt
+	isAbs := filepath.IsAbs("./a/b/c")             // false
+	joined := filepath.Join(".", "a", "", "b")     // a/b
+	rel, _ := filepath.Rel("/a", "/b/c")           // ../b/c
+	d, fn := filepath.Split("./a/b/c.txt")         // ./a/b/, c.txt
+	paths := filepath.SplitList("/a/b/c:/usr/bin") // []string{"a/b/c" "/usr/bin"}
+
+	fmt.Println("filepath.Abs", abs)
+	fmt.Println("filepath.Base", base)
+	fmt.Println("filepath.Clean", cleaned)
+	fmt.Println("filepath.Dir", dir)
+	fmt.Println("filepath.Ext", ext)
+	fmt.Println("filepath.Glob", glob)
+	fmt.Println("filepath.IsAbs", isAbs)
+	fmt.Println("filepath.Join", joined)
+	fmt.Println("filepath.Rel", rel)
+	fmt.Println("filepath.Split", d, fn)
+	fmt.Println("filepath.SplitPaths", paths)
+
+	// also Walk, WalkDir
+}
+
+func basicReflect() {
+	// TODO
+	// https://pkg.go.dev/reflect@go1.17.8
 }
 
 func basicRegexp() {
@@ -924,6 +1049,32 @@ func basicSort() {
 	fmt.Println("strings", strings)
 	fmt.Println("letters", letters)
 	fmt.Println("s", s)
+}
+
+func basicStrconv() {
+	shorthandStringToInt, _ := strconv.Atoi("100")
+	shorthandIntToString := strconv.Itoa(100)
+
+	stringToBool, _ := strconv.ParseBool("true")
+	stringToFloat, _ := strconv.ParseFloat("3.1415", 64)
+	stringToInt, _ := strconv.ParseInt("100", 10, 64)
+	strintToUint, _ := strconv.ParseUint("100", 10, 64)
+
+	boolToString := strconv.FormatBool(true)
+	floatToString := strconv.FormatFloat(3.1415, 'g', 2, 32)
+	intToString := strconv.FormatInt(100, 10)
+	uintToString := strconv.FormatUint(100, 10)
+
+	fmt.Println("strconv.Atoi", shorthandStringToInt)
+	fmt.Println("strconv.Itoa", shorthandIntToString)
+	fmt.Println("strconv.ParseBool", stringToBool)
+	fmt.Println("strconv.ParseFloat", stringToFloat)
+	fmt.Println("strconv.ParseInt", stringToInt)
+	fmt.Println("strconv.ParseUint", strintToUint)
+	fmt.Println("strconv.FormatBool", boolToString)
+	fmt.Println("strconv.FormatFloat", floatToString)
+	fmt.Println("strconv.FormatInt", intToString)
+	fmt.Println("strconv.FormatUint", uintToString)
 }
 
 func basicStrings() {
