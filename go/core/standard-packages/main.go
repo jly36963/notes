@@ -29,6 +29,8 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"reflect"
+	"regexp"
 	"runtime"
 	"sort"
 	"strconv"
@@ -178,7 +180,9 @@ func basicBuiltin() {
 
 	appended := append([]string{"a", "b"}, "c")
 	capacity := cap([]string{"a", "b", "c"})
-	copied := copy([]string{"a", "b", "c"}, []string{})
+	a := make([]string, 2)
+	b := []string{"Where's the leak, mam?", "Finland!!"}
+	elementsCopied := copy(a, b)
 	delete(map[uint64]string{1234: "Kakashi hatake"}, 1234)
 	length := len("Hello world")
 	slice1 := make([]string, 0, 3)
@@ -187,7 +191,7 @@ func basicBuiltin() {
 
 	fmt.Println("append", appended)
 	fmt.Println("cap", capacity)
-	fmt.Println("copy", copied)
+	fmt.Println("copy", elementsCopied)
 	fmt.Println("delete", "(deletes element with specified key)")
 	fmt.Println("len", length)
 	fmt.Println("make (slice)", slice1)
@@ -265,9 +269,6 @@ func basicContext() {
 }
 
 func basicCryptoAes() {
-	// https://pkg.go.dev/crypto
-	// https://pkg.go.dev/crypto#section-directories
-
 	text := []byte("No one can know, not even Squidward's house")
 	key := []byte("5eb63bbbe01eeed093cb22bb8f5acdc3")
 
@@ -999,13 +1000,96 @@ func basicPathFilepath() {
 }
 
 func basicReflect() {
-	// TODO
-	// https://pkg.go.dev/reflect@go1.17.8
+	// reflect.Value -- https://pkg.go.dev/reflect@go1.17.8#Value
+	// type assertion -- https://go.dev/ref/spec#Type_assertions
+
+	a := []string{"East? I thought you said Weast!"}
+	// Get a reflection value
+	value := reflect.ValueOf(a) // reflect.Value
+	// Get interface
+	valueInterface := value.Interface() // interface{}
+	// Get type of interface
+	interfaceType := reflect.TypeOf(valueInterface) // reflect.Type
+	// Get slice back (type assertion)
+	stringSlice := valueInterface.([]string) // []string
+	// Get indirect (value pointed to)
+	indirectSlice := reflect.Indirect(reflect.ValueOf(&a))
+	// Get type
+	valueType := value.Type() // []string
+	// Get kind
+	valueKind := value.Kind() // slice
+	// Get zero value
+	zeroValue := reflect.Zero(valueType) // reflect.Value
+	// Get slice from zero value
+	typedZeroValue := zeroValue.Interface().([]string) // []string
+
+	fmt.Println("value", value)
+	fmt.Println("valueInterface", valueInterface)
+	fmt.Println("interfaceType", interfaceType)
+	fmt.Println("stringSlice", stringSlice)
+	fmt.Println("indirectSlice", indirectSlice)
+	fmt.Println("valueType", valueType)
+	fmt.Println("valueKind", valueKind)
+	fmt.Println("zeroValue", zeroValue)
+	fmt.Println("typedZeroValue", typedZeroValue)
+
+	// TODO:
+	// VisibleFields, isExported
+	// CanConvert, Convert
+	// IsNil, IsValid, IsZero
 }
 
 func basicRegexp() {
-	// https://golang.org/pkg/regexp/
-	fmt.Println("TODO")
+	// syntax: https://pkg.go.dev/regexp/syntax
+
+	// String to test against
+	s := "In order to survive, we cling to all we know and understand. " +
+		"And label it reality. " +
+		"But knowledge and understanding are ambiguous. " +
+		"That reality could be an illusion. " +
+		"All humans live with the wrong assumptions."
+
+	// testPattern is a helper function to test regex patterns
+	testPattern := func(s, pattern string) bool {
+		re, err := regexp.Compile(pattern)
+		if err != nil {
+			return false
+		}
+		isMatch := re.MatchString(s)
+		return isMatch
+	}
+
+	// Test patterns
+	contains := testPattern(s, "ambiguous")
+	beginsWith := testPattern(s, "^In")
+	endsWith := testPattern(s, "assumptions.$")
+	oneOrMore := testPattern(s, "Al+")
+	zeroOrOne := testPattern(s, "labels?")
+	zeroOrMore := testPattern(s, "il*usion")
+	oneOf := testPattern(s, "B[aeiou]t")
+	matchOr := testPattern(s, "equivocal|ambiguous")
+	not := testPattern(s, "[^sharingan]")
+	anyChar := testPattern(s, "under.tanding")
+	zeroToThree := testPattern(s, "Al{0,3}")
+	insensitive := testPattern(s, "(?i)REALITY")
+	sevenLower := testPattern(s, "[a-z]{7}")
+	fourAlnum := testPattern(s, "[[:alnum:]]{4} reality")
+
+	fmt.Println(s)
+	fmt.Println("contains 'ambiguous'", contains)
+	fmt.Println("beginsWith 'In'", beginsWith)
+	fmt.Println("endsWith 'assumptions.'", endsWith)
+	fmt.Println("oneOrMore 'Al+.'", oneOrMore)
+	fmt.Println("zeroOrOne 'labels?'", zeroOrOne)
+	fmt.Println("zeroOrMore 'il*usion'", zeroOrMore)
+	fmt.Println("oneOf 'B[aeiou]t'", oneOf)
+	fmt.Println("matchOr 'equivocal|ambiguous'", matchOr)
+	fmt.Println("not '[^sharingan]'", not)
+	fmt.Println("anyChar 'under.tanding'", anyChar)
+	fmt.Println("zeroToThree 'Al{0,3}'", zeroToThree)
+	fmt.Println("insensitive '(?i)REALITY'", insensitive)
+	fmt.Println("sevenLower '[a-z]{7}'", sevenLower)
+	fmt.Println("fourAlnum '[[:alnum:]]{4} reality'", fourAlnum)
 }
 
 func basicRuntime() {
