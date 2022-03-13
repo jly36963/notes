@@ -14,6 +14,9 @@ fn main() {
     utils::print_section_header(String::from("basic vars"));
     examples::basic_vars();
 
+    utils::print_section_header(String::from("basic unused variables"));
+    examples::basic_unused_variables();
+
     utils::print_section_header(String::from("basic strings"));
     examples::basic_strings();
 
@@ -29,9 +32,6 @@ fn main() {
     utils::print_section_header(String::from("basic closures"));
     examples::basic_closures();
 
-    utils::print_section_header(String::from("basic unused_variables"));
-    examples::basic_unused_variables();
-
     utils::print_section_header(String::from("basic if"));
     examples::basic_if();
 
@@ -46,6 +46,9 @@ fn main() {
 
     utils::print_section_header(String::from("basic ownership"));
     examples::basic_ownership();
+
+    utils::print_section_header(String::from("basic referencing"));
+    examples::basic_referencing();
 
     utils::print_section_header(String::from("basic options"));
     examples::basic_options();
@@ -88,4 +91,7 @@ fn main() {
 
     utils::print_section_header(String::from("basic reflection"));
     examples::basic_reflection();
+
+    utils::print_section_header(String::from("basic generics"));
+    examples::basic_generics();
 }

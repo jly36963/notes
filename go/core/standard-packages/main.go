@@ -171,8 +171,9 @@ func basicArchiveTar() {
 }
 
 func basicBufio() {
-	// https://golang.org/pkg/bufio/
-	fmt.Println("TODO")
+	fmt.Println("Like io, but buffered")
+	// unbuffered -- each write operation is sent
+	// buffered -- collects data in buffer, sends data when buffer is full or explicitly flushed
 }
 
 func basicBuiltin() {
@@ -259,8 +260,18 @@ func basicCompressZlib() {
 }
 
 func basicContainer() {
-	// https://pkg.go.dev/container
-	fmt.Println("TODO")
+	// heap: common way to implement a priority queue
+	// push: add item
+	// pop: removes the highest-priority item
+
+	// list: doubly-linked list
+	// list: access ends, insert, push, move, remove
+	// element: access next or previous element
+
+	// ring: circular list
+	// ring: access next/prev, move, do (foreach)
+
+	fmt.Println("container has heap, list, and ring")
 }
 
 func basicContext() {
