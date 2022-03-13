@@ -10,11 +10,11 @@
 
 .PHONY: dev dev-build build
 
-# creates (and runs) execurable in ./target/debug/<project-name>
+# creates (and runs) executable in ./target/debug/<project-name>
 dev: 
 	@ cargo run
 
-# creates execurable in ./target/debug/<project-name>
+# creates executable in ./target/debug/<project-name>
 dev-build: 
 	@ cargo build
 
