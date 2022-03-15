@@ -1,0 +1,12 @@
+[package]
+name = "regex-notes"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+regex = "1.5"
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+

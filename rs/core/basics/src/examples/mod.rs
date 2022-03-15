@@ -566,11 +566,16 @@ pub fn basic_iterators() -> () {
     let prod6 = v6.into_iter().reduce(|curr, acc| curr * acc).unwrap();
     println!("product: {}", prod6);
 
+    // Fold
+    // like reduce, but allows for a starting place
+    println!("fold");
+    let v7 = vec![1, 2, 3];
+
     // Find (returns Option)
     println!("find");
-    let v7 = vec![1, 2, 3];
-    let i7 = v7.iter().find(|&&x| x > 5).unwrap_or(&0);
-    println!("{}", i7);
+    let v8 = vec![1, 2, 3];
+    let i8 = v8.iter().find(|&&x| x > 5).unwrap_or(&0);
+    println!("{}", i8);
 }
 
 /// Basic trait usage
