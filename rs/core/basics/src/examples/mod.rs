@@ -570,12 +570,14 @@ pub fn basic_iterators() -> () {
     // like reduce, but allows for a starting place
     println!("fold");
     let v7 = vec![1, 2, 3];
+    let sum7 = v7.into_iter().fold(0, |acc, curr| acc + curr);
+    println!("{}", sum7);
 
     // Find (returns Option)
     println!("find");
     let v8 = vec![1, 2, 3];
-    let i8 = v8.iter().find(|&&x| x > 5).unwrap_or(&0);
-    println!("{}", i8);
+    let item8 = v8.iter().find(|&&x| x > 5).unwrap_or(&0);
+    println!("{}", item8);
 }
 
 /// Basic trait usage

@@ -6,6 +6,9 @@ fn main() {
     print_section_header(String::from("basic json"));
     basic_json();
 
+    print_section_header(String::from("basic csv"));
+    basic_csv();
+
     print_section_header(String::from("basic yaml"));
     basic_yaml();
 
@@ -45,6 +48,71 @@ fn basic_json() {
     // Deserialize
     let ninja_deserialized: Ninja = serde_json::from_str(&ninja_serialized).unwrap();
     println!("ninja_deserialized: {:#?}", ninja_deserialized);
+}
+
+fn basic_csv() {
+    // ---
+    // csv StringRecord
+    // ---
+
+    let now = chrono::Utc::now().naive_utc();
+
+    let data: String = "first_name,last_name,age".to_string()
+        + "\nKakashi,Hatake,27"
+        + "\nIruka,Umino,25"
+        + "\nYamato,Tenzo,26\n".into();
+
+    let mut reader = csv::Reader::from_reader(data.as_bytes());
+    let mut ninjas: Vec<Ninja> = vec![];
+    for record in reader.records() {
+        let r = record.unwrap();
+
+        let first_name = r[0].into();
+        let last_name = r[1].into();
+        let age = r[2].parse::<i32>().unwrap_or(0);
+
+        ninjas.push(Ninja {
+            id: Uuid::new_v4(),
+            first_name,
+            last_name,
+            age,
+            created_at: now,
+            updated_at: None,
+            jutsus: None,
+        });
+    }
+
+    println!("ninjas: {:#?}", ninjas);
+
+    // ---
+    // serde deserialize
+    // ---
+
+    // reader.deserialize() will panic if required fields are missing
+
+    let data: String = "id,first_name,last_name,age,created_at".to_string()
+        + "\n83652eed-d28e-4ae4-95a8-9c218a778cc3,Kakashi,Hatake,27,2022-03-15T04:11:20.319369"
+        + "\na5f8d71f-5eef-4189-bc05-de9297013f25,Iruka,Umino,25,2022-03-15T04:11:20.319369"
+        + "\nfaac984f-edaf-4afa-ba0f-fa5881312c20,Yamato,Tenzo,26,2022-03-15T04:11:20.319369"
+            .into();
+
+    let mut reader = csv::Reader::from_reader(data.as_bytes());
+    let mut ninjas: Vec<Ninja> = vec![];
+    for record in reader.deserialize() {
+        let r: Ninja = record.unwrap();
+
+        ninjas.push(Ninja {
+            id: r.id,
+            first_name: r.first_name,
+            last_name: r.last_name,
+            age: r.age,
+            created_at: r.created_at,
+            updated_at: None,
+            jutsus: None,
+        });
+    }
+
+    println!("ninjas: {:#?}", ninjas);
 }
 
 fn basic_yaml() {
