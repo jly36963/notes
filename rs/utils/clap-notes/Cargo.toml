@@ -1,0 +1,12 @@
+[package]
+name = "clap-notes"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "3.1.6", features = ["derive", "cargo"] }
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+
