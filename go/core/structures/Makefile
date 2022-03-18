@@ -2,8 +2,6 @@
 # variables
 # ---
 
-# KNEX = node_modules/.bin/knex
-
 ENTRY="main.go"
 OUTPUT="bin/app.exe"
 
@@ -12,7 +10,7 @@ OUTPUT="bin/app.exe"
 # ---
 
 dev: 
-	air
+	go run $(ENTRY)
 
 run: 
 	go run $(ENTRY)
