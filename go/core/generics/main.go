@@ -14,6 +14,21 @@ func main() {
 
 	printSectionTitle("basic generic find struct")
 	basicGenericFindStruct()
+
+	printSectionTitle("basic generic map same type")
+	basicGenericMapSameType()
+
+	printSectionTitle("basic generic map different type")
+	basicGenericMapDifferentType()
+
+	printSectionTitle("basic generic reduce same type")
+	basicGenericReduceSameType()
+
+	printSectionTitle("basic generic reduce different type")
+	basicGenericReduceDifferentType()
+
+	printSectionTitle("basic generic filter")
+	basicFilter()
 }
 
 func printSectionTitle(title string) {
@@ -23,7 +38,7 @@ func printSectionTitle(title string) {
 }
 
 // ---
-// sum
+// Sum
 // ---
 
 type Number interface {
@@ -49,10 +64,10 @@ func basicGenericAdd() {
 }
 
 // ---
-// find
+// Find
 // ---
 
-func find[T any](items []T, predicate func(item T) bool) (T, bool) {
+func find[T any](items []T, predicate func(curr T) bool) (T, bool) {
 	var match T
 	for _, item := range items {
 		if found := predicate(item); found {
@@ -92,4 +107,94 @@ func basicGenericFindStruct() {
 	)
 	fmt.Println("found:", found)
 	fmt.Println(fmt.Sprintf("ninja: %+v", ninja))
+}
+
+// ---
+// Map
+// ---
+
+func mapper[I any, O any](items []I, mapperFunc func(curr I) O) []O {
+	var results []O
+	for _, item := range items {
+		results = append(results, mapperFunc(item))
+	}
+	return results
+}
+
+func basicGenericMapSameType() {
+	mapped := mapper[int32, int32](
+		[]int32{1, 2, 3, 4, 5},
+		func(curr int32) int32 {
+			return curr + 1
+		},
+	)
+	fmt.Println("mapped:", mapped)
+}
+
+func basicGenericMapDifferentType() {
+	mapped := mapper[int32, string](
+		[]int32{1, 2, 3, 4, 5},
+		func(curr int32) string {
+			return fmt.Sprintf("$%v", curr)
+		},
+	)
+	fmt.Println("mapped:", mapped)
+}
+
+// ---
+// Reduce
+// ---
+
+func reduce[I any, O any](items []I, reducerFunc func(acc O, curr I) O, initial O) O {
+	result := initial
+	for _, item := range items {
+		result = reducerFunc(result, item)
+	}
+	return result
+}
+
+func basicGenericReduceSameType() {
+	reduced := reduce[int32, int32](
+		[]int32{1, 2, 3, 4, 5},
+		func(acc, curr int32) int32 {
+			return acc + curr
+		},
+		0,
+	)
+	fmt.Println("reduced:", reduced)
+}
+
+func basicGenericReduceDifferentType() {
+	reduced := reduce[string, int](
+		[]string{"Why", "would", "you", "go", "so", "far", "for", "me?"},
+		func(acc int, curr string) int {
+			return acc + len(curr)
+		},
+		0,
+	)
+	fmt.Println("reduced:", reduced)
+}
+
+// ---
+// Filter
+// ---
+
+func filter[T any](items []T, filterFunc func(curr T) bool) []T {
+	result := []T{}
+	for _, item := range items {
+		if keep := filterFunc(item); keep {
+			result = append(result, item)
+		}
+	}
+	return result
+}
+
+func basicFilter() {
+	filtered := filter[int32](
+		[]int32{1, 2, 3, 4, 5},
+		func(curr int32) bool {
+			return curr > 3
+		},
+	)
+	fmt.Println("filtered:", filtered)
 }
