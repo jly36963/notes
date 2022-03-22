@@ -21,7 +21,7 @@ build:
 run-build:
 	./$(OUTPUT)
 
-prettier: 
+lint: 
 	go fmt ./...
 
 install: 

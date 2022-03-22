@@ -1,0 +1,19 @@
+go 1.18
+
+use (
+	./core/basics
+	./core/cobra
+	./core/concurrency
+	./core/generics
+	./core/standard-packages
+	./core/structures
+	./db/gorm-example
+	./db/mongo-example
+	./db/pg-example
+	./db/redis-example
+	./db/squirrel-example
+	./web/atreugo
+	./web/fasthttp
+	./web/gin
+	./web/gorilla
+)

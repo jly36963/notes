@@ -113,7 +113,7 @@ func basicGenericFindStruct() {
 // Map
 // ---
 
-func mapper[I any, O any](items []I, mapperFunc func(curr I) O) []O {
+func mapSlice[I any, O any](items []I, mapperFunc func(curr I) O) []O {
 	var results []O
 	for _, item := range items {
 		results = append(results, mapperFunc(item))
@@ -122,7 +122,7 @@ func mapper[I any, O any](items []I, mapperFunc func(curr I) O) []O {
 }
 
 func basicGenericMapSameType() {
-	mapped := mapper[int32, int32](
+	mapped := mapSlice[int32, int32](
 		[]int32{1, 2, 3, 4, 5},
 		func(curr int32) int32 {
 			return curr + 1
@@ -132,7 +132,7 @@ func basicGenericMapSameType() {
 }
 
 func basicGenericMapDifferentType() {
-	mapped := mapper[int32, string](
+	mapped := mapSlice[int32, string](
 		[]int32{1, 2, 3, 4, 5},
 		func(curr int32) string {
 			return fmt.Sprintf("$%v", curr)
