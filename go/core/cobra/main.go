@@ -216,8 +216,7 @@ func basicSubcommands() {
 	mathCmd.AddCommand(divCmd)
 
 	// math > sum
-	var sumCmd *cobra.Command
-	sumCmd = &cobra.Command{
+	sumCmd := &cobra.Command{
 		Use:     "sum <a..>",
 		Short:   "math is a very simple math program",
 		Example: "math sum 2 3 4",
@@ -245,7 +244,6 @@ func basicSubcommands() {
 	// Parse and handle
 	rootCmd.SetArgs([]string{"math", "sum", "2", "3", "5"})
 	rootCmd.Execute()
-
 }
 
 func reduce[I any, O any](items []I, reducerFunc func(acc O, curr I) O, initial O) O {
