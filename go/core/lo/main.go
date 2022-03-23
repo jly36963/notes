@@ -35,7 +35,7 @@ func basicLoUsage() {
 			return n > 3
 		},
 	)
-	mapped := lop.Map(
+	mapped := lo.Map(
 		[]int{1, 2, 3, 4, 5},
 		func(n int, _ int) int {
 			return n * 2
