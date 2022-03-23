@@ -5,6 +5,7 @@ use (
 	./core/cobra
 	./core/concurrency
 	./core/generics
+	./core/lo
 	./core/standard-packages
 	./core/structures
 	./db/gorm-example
