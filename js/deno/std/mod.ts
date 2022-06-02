@@ -1,12 +1,17 @@
-import { 
+import {
   // archive
   Tar,
   Untar,
   // async
-  delay, 
-  abortable, 
-  debounce, 
+  delay,
+  abortable,
+  debounce,
   deadline,
+  // bytes
+  concat,
+  repeat,
+  startsWith,
+  endsWith,
   // crypto
   crypto,
   // datetime
@@ -19,11 +24,15 @@ import {
   // encoding
   encode,
   decode,
+  he,
   // ensure
   ensureFile,
   ensureDir,
+  // fmt
+  sprintf,
   // io
   Buffer,
+  readLines,
   // log
   log,
   // path
@@ -34,17 +43,6 @@ import {
   // uuid
   v4,
 } from './deps.ts'
-
-const basicDenoSubprocess = async () => {
-  const result = Deno.run({ 
-    cmd: ['ls', '-a'],
-    stdout: "piped",
-    stderr: "piped"
-  })
-  // TODO: replace Deno.readAll (deprecated)
-  const output = (new TextDecoder()).decode(await readAll(result.stdout))
-  console.log('ls result: ', output)
-}
 
 const basicAsync = async () => {
   // abortable
@@ -61,7 +59,7 @@ const basicAsync = async () => {
   // debounce
   const debouncedLog = debounce(v => console.log(v), 100)
   console.log('debounce result: ')
-  ;(['a','b','c'] as string[]).forEach(v => debouncedLog(v)) // Take latest (c)
+  ;(['a', 'b', 'c'] as string[]).forEach(v => debouncedLog(v)) // Take latest (c)
 
   // delay
   await delay(100) // async sleep
@@ -104,7 +102,7 @@ const basicArchive = async () => {
       await ensureDir(entry.fileName);
       continue;
     }
-  
+
     await ensureFile(entry.fileName);
     const file = await Deno.open(entry.fileName, { write: true });
     await copy(entry, file); // entry implements Reader
@@ -118,7 +116,20 @@ const basicArchive = async () => {
   await Deno.remove(output)
 }
 
-// TODO: bytes
+const basicBytes = () => {
+  const te = (s: string): Uint8Array => new TextEncoder().encode(s)
+  const td = (bytes: Uint8Array): string => new TextDecoder('utf-8').decode(bytes)
+
+  const concatenated = td(concat(te('Hello'), te(' friend')))
+  const repeated = td(repeat(te('foo'), 2))
+  const startsWithPrefix = startsWith(new Uint8Array(5), new Uint8Array(2))
+  const endsWithSuffix = endsWith(new Uint8Array(5), new Uint8Array(2))
+
+  console.log('concatenated: ', concatenated)
+  console.log('repeated: ', repeated)
+  console.log('startsWithPrefix: ', startsWithPrefix)
+  console.log('endsWithSuffix: ', endsWithSuffix)
+}
 
 // TODO: collections (like lodash)
 // https://deno.land/std@0.140.0/collections
@@ -140,7 +151,7 @@ const basicCrypto = async () => {
   console.log("hashedStringUtf8: ", hashedStringUtf8)
   console.log("hashedStringBase64: ", hashedStringBase64)
 
-  // TODO: md5, hmac (when available)
+  // TODO: hmac
 }
 
 const basicCryptoAes = async () => {
@@ -187,7 +198,6 @@ const basicCryptoAes = async () => {
   console.log('encryptedBytes: ', encryptedBytes)
   console.log('decryptedBytes: ', decryptedBytes)
   console.log('decryptedMessage: ', decryptedMessage)
-
 }
 
 const basicCryptoRsa = async () => {
@@ -229,7 +239,6 @@ const basicCryptoRsa = async () => {
   console.log('encryptedBytes: ', encryptedBytes)
   console.log('decryptedBytes: ', decryptedBytes)
   console.log('decryptedMessage: ', decryptedMessage)
-
 }
 
 const basicDatetime = () => {
@@ -251,8 +260,6 @@ const basicDotenv = async () => {
   console.log('env', env)
 }
 
-// TODO: encoding -- csv, jsonc, toml, yaml
-
 const basicEncodingBase64 = () => {
   const message = "Where's the leak, mam?"
   const messageBytesUtf8 = new TextEncoder().encode(message)
@@ -263,22 +270,49 @@ const basicEncodingBase64 = () => {
   console.log('messageBytesUtf8: ', messageBytesUtf8)
   console.log('messageBytesBase64: ', messageBytesBase64)
   console.log('messageStringBase64: ', messageStringBase64)
+
+  // TODO: encoding -- csv, jsonc, toml, yaml
 }
 
 // TODO: flags
 
-// TODO: fmt
+const basicFmt = () => {
+  const formatted = sprintf("Hey there, %s", "Kakashi")
+  console.log("formatted: ", formatted)
+}
 
 // TODO: fs (ensureDir)
 
-// TODO: io
+const basicIo = async () => {
+  const td = (bytes: Uint8Array): string => new TextDecoder('utf-8').decode(bytes)
+
+  // Open file
+  const fileReader = await Deno.open('./deps.ts')
+
+  // Read lines (async iterator)
+  let text = ''
+  for await (const line of readLines(fileReader)) {
+    text += (line + '\n')
+  }
+
+  // MD5 hash of text contents
+  const hashedText = td(he(new Uint8Array(
+    await crypto.subtle.digest(
+      "MD5",
+      new TextEncoder().encode(text),
+    ),
+  )))
+
+  // Result
+  console.log('hashedText', hashedText)
+}
 
 const basicLog = async () => {
   const logFilename = './log.txt'
   // Set up loggers
   await log.setup({
-    handlers: { 
-      console: new log.handlers.ConsoleHandler("DEBUG", { formatter: "{loggerName}:{levelName}:{msg}"}),
+    handlers: {
+      console: new log.handlers.ConsoleHandler("DEBUG", { formatter: "{loggerName}:{levelName}:{msg}" }),
       file: new log.handlers.FileHandler("DEBUG", { filename: logFilename })
     },
     loggers: {
@@ -328,9 +362,17 @@ const basicPath = () => {
   // TODO: format, relative, resolve, common
 }
 
-// TODO: streams
-
-// TODO: testing
+const basicStreams = async () => {
+  const result = Deno.run({
+    cmd: ['ls', '-a'],
+    stdout: "piped",
+    stderr: "piped"
+  })
+  const output = (new TextDecoder()).decode(await readAll(result.stdout))
+  const error = (new TextDecoder()).decode(await readAll(result.stderr))
+  console.log('ls output: ', output)
+  console.log('ls error: ', error)
+}
 
 const basicUuid = () => {
   const id = crypto.randomUUID()
@@ -344,14 +386,14 @@ const printSectionTitle = (title: string) => {
 }
 
 const main = async () => {
-  printSectionTitle('basic Deno subprocess')
-  await basicDenoSubprocess()
-
   printSectionTitle('basic async')
   await basicAsync()
 
   printSectionTitle('basic archive')
   await basicArchive()
+
+  printSectionTitle('basic bytes')
+  await basicBytes()
 
   printSectionTitle('basic crypto')
   await basicCrypto()
@@ -371,11 +413,20 @@ const main = async () => {
   printSectionTitle('basic dotenv')
   await basicDotenv()
 
+  printSectionTitle('basic fmt')
+  basicFmt()
+
+  printSectionTitle('basic io')
+  await basicIo()
+
   printSectionTitle('basic log')
   await basicLog()
 
   printSectionTitle('basic path')
   basicPath()
+
+  printSectionTitle('basic streams')
+  await basicStreams()
 
   printSectionTitle('basic uuid')
   basicUuid()
