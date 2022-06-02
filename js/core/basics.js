@@ -6,284 +6,224 @@
 // variables
 // ---
 
-// variable names can only contain A-z, 0-9, _, $, cannot start with number.
+const basicVariables = () => {
+  // variable names can only contain A-z, 0-9, _, $, cannot start with number.
+  // scope: global, function, block
 
-// var
-// - can be reassigned.
-// - can be re-initialized
-// - no block scope
-var name = "john doe";
-// let
-// - can be reassigned
-// - can't be re-initialized
-// - yes block scope
-let name = "john doe";
-// const
-// - can't be reassigned.
-// - can't be re-intialized
-// - yes block scope
-const name = "john doe";
+  // var: can be reassigned, can be re-initialized, no block scope
+  var name1 = "john doe";
 
-// ---
-// scope
-// ---
+  // let: can be reassigned, can't be re-initialized, yes block scope
+  let name2 = "john doe";
 
-// global variable
-// function variable
-// block variable
+  // const: can't be reassigned, can't be re-intialized, yes block scope
+  const name3 = "john doe";
+}
 
 // ---
 // data types
 // ---
 
-// PRIMITIVE
-// string
-const name = "John Doe";
-// number
-const age = 25;
-// boolean
-const hasKids = true;
-// null
-const car = null;
-// undefined
-let birthDate;
-// symbol
-const sym = Symbol();
+const basicDataTypes = () => {
+  // primitive
+  const greeting = "Kakashi Hatake"; // string
+  const age = 27; // number
+  const isAwesome = true; // boolean
+  const currentJutsu = null; // null
+  const middleName = undefined; // undefined
+  const sym = Symbol("Kakashi"); // symbol
 
-// REFERENCE
-// array
-const numbers = [1, 2, 3, 4, 5];
-// object literal
-let landon = { name: "Landon", city: "Albuquerque", age: 25 };
-// date
-`const today = new Date();``const birthday = new Date('May 19 1992');`;
+  // reference
+  const numbers = [1, 2, 3, 4, 5]; // array
+  const kakashi = { id: 1, name: "Kakashi" }; // object literal
+  const now = new Date(); // date
 
-// To find data type, use `console.log(typeof variableName);`
+  // reflection
+  const t = typeof 5
+}
 
 // ---
-// comparison operators
+// operators
 // ---
 
-/*
+const basicOperators = () => {
+  // comparison
+  const identical = 5 === 5
+  const notIdentical = 5 !== 6
+  const lt = 5 < 6
+  const gt = 6 > 5
+  const lte = 5 <= 6
+  const gte = 5 >= 6
 
-=== // identical to
-!== // not identical to
-<  // less than
-> // greater than
-<= // less than or equal to
->= // greater than or equal to
+  // arithmetic
+  const sum = 1 + 2
+  const diff = 1 - 2
+  const product = 1 * 2
+  const quotient = 1 / 2
+  const remainder = 1 % 2
+  const power = 2 ** 3
 
-*/
+  // increment
+  1++
+  3--
 
-// ---
-// arithmetic operators
-// ---
+  // assignment
+  let a = 1
+  a += 3
+  a -= 2
+  a *= 4
+  a /= 2
+  a %= 2
 
-/* 
-
-+ // add
-- // subtract
-* // multiply
-/ // divide (5/2 returns 2.5)
-% // modulus (remainder)
-++ // increment
--- // decrement
-
-*/
-
-// ---
-// Math object
-// ---
-
-Math.PI;
-Math.E;
-Math.round(3.5);
-Math.ceil(3.5);
-Math.floor(3.5);
-Math.sqrt(3.5);
-Math.abs(3.5);
-Math.pow(2, 4);
-Math.min(1, 2, 3, 4, 5);
-Math.max(1, 2, 3, 4, 5);
-Math.random() * 3; // random float between 0 and 3
-Math.floor(Math.random() * 21); // random float 0-21, floored to int 0-20
+  // logical
+  true && 3 // and
+  true || 3 // or
+  !true // not
+  true ? 'true case' : 'false case' // ternary
+  true ?? 3 // nullish coalesce
+}
 
 // ---
-// assignment operators
+// math
 // ---
 
-/* 
-
-=
-+=
--=
-*=
-/=
-%=
-
-*/
-
-// ---
-// logical operators -- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Logical_Operators#Logical_AND_()
-// ---
-
-if (x < 10 && y > 1) {
-  // do something
-} // and
-if (x === 5 || y === 5) {
-  // do something
-} // or
-if (!(x === y)) {
-  // do something
-} // not
+const basicMath = () => {
+  Math.PI;
+  Math.E;
+  Math.round(3.5);
+  Math.ceil(3.5);
+  Math.floor(3.5);
+  Math.sqrt(3.5);
+  Math.abs(3.5);
+  Math.pow(2, 4);
+  Math.min(1, 2, 3, 4, 5);
+  Math.max(1, 2, 3, 4, 5);
+  Math.random() * 3; // random float between 0 and 3
+  Math.floor(Math.random() * 21); // random float 0-21, floored to int 0-20
+}
 
 // ---
-// number methods
+// strings
 // ---
 
-const x = "5";
-const n = 2;
-// string -> float (if needed), round to 'n' decimal places, return as string
-Number.parseFloat(x).toFixed(2);
-
-// ---
-// string methods
-// ---
-
-str1.concat(str2); // concatenate 2 strings.
-str4 = str1.concat(str2, str3); // concatenate 3 strings.
-str3 = str1 + " " + str2; // concatenates strings (with space between).
-str1 += str2; // concatenates str2 to the end of str1. (mutates str1)
-str1.replace("something", "something else"); // replace first instance
-str1.replace(/something/g, "something else"); // global replace.
-obj1.toString(); // return object as string
-str1.trim(); // removes whitespace from both ends of a string.
+const basicStrings = () => {
+  str1.concat(str2); // concatenate 2 strings.
+  str4 = str1.concat(str2, str3); // concatenate 3 strings.
+  str3 = str1 + " " + str2; // concatenates strings (with space between).
+  str1 += str2; // concatenates str2 to the end of str1. (mutates str1)
+  str1.replace("something", "something else"); // replace first instance
+  str1.replace(/something/g, "something else"); // global replace.
+  obj1.toString(); // return object as string
+  str1.trim(); // removes whitespace from both ends of a string.
+}
 
 // ---
 // arrays
 // ---
 
-// create array
-const num = [1, 2, 3, 4, 5];
-const num2 = new Array(1, 2, 3, 4, 5);
-const mix = [22, "Hello", true, undefined, null, { a: 1, b: 1 }, new Date()];
+const basicArrays = () => {
+  // create array
+  const arr1 = [1, 2, 3, 4, 5]; // new Array(1, 2, 3, 4, 5)
+  const arr2 = [6, 7, 8, 9, 10]
 
-// get single value
-let val = num[3];
-// change single value
-num[3] = 100;
+  // indexing
+  const val = num[3];
 
-// ---
-// array properties
-// ---
+  // array destructuring
+  const [first] = arr1 // 1
+  const [, second] = arr1 // 2
+  const [, , ...rest] = arr1 // [3,4,5]
 
-// length -- sets/returns the number of elements in an array.
-// constructor-- returns function that created the Array object's prototype.
-// prototype -- allows for the addition of properties/methods to an Array object.
+  // spread
+  const shallowCopy = [...arr1]
+  const shallowWithAdditional = [...arr1, 6]
 
-// ---
-// array methods
-// ---
+  // properties
+  arr1.length
 
-// concat
-arr1.concat(arr2); // joins 2+ arrays, returns copy of joined array.
-// iterative
-arr1.filter((x) => x > 4); // creates new array with each element that passes a test.
-arr1.find((x) => x > 4); // return first element that matches condition. (undefined if none)
-arr1.forEach((x) => console.log(x)); // calls a function for each array element.
-arr1.forEach((x, i) => console.log(`${i}: ${x}`)); // forEach using index
-arr1.map((x) => `<div>${x}</div>`); // return a copy of an array with each element transformed
-arr1.every((x) => x > 3); // return true if all elements meet condition
-arr1
-  .some((x) => x > 3) // return true if any elements meet condition
-  [
-    // search
-    ("a", "b", "c")
-  ].includes("a") // checks if an array contains specified element.
-  [("a", "b", "c")].indexOf("a"); // returns index value of the specified element.
-// join
-arr1.join(", "); // joins elements of array into a string.
-// change (mutate)
-const last = arr1.pop(); // removes last element of an array, returns that element. (mutates)
-const secondToLast = arr1.shift(); // removes first element of an array, returns new array.
-arr1.push("new element"); // adds new element to the end of an array, returns new length.
-arr1.unshift("new element"); // adds new elements to the beginning of an array, returns new length.
-arr1.sort(); // sorts elements of an array. (mutates)
-arr1.sort((a, b) => a - b); // sort using comparison function (sort by negative/positive output)
-arr1.reverse(); // reverse order of array.
-arr1.splice(1, 0, "new element"); // insert new element before index 1, delete none. return array of deleted elements
-// change (non-mutate)
-arr1.slice(2); // returns arr1[2:]
-arr1.slice(2, 4); // returns arr1[2:4]
-arr1.slice(-3); // returns arr1[-3:]
-arr1.slice(-1000, 1000); // returns arr1[:] (if indices provided are outside of index range)
+  // Array
+  Array.isArray(arr1)
+  Array.prototype.push.apply(arr1, [6, 7, 8])
 
-// ---
-// recursion + memoization
-// ---
+  // methods
+  arr1.concat(arr2); // return joined arrays
 
-// function -- memoize a callback
-const memoize = (callback) => {
-  let memo = {};
-  return (...args) => {
-    // used cached result
-    if (memo[args]) {
-      return memo[args];
-    } else {
-      // calculate result, store in cache
-      memo[args] = callback(args);
-      return memo[args];
-    }
-  };
-};
-// function -- find factorial (recursive)
-const factorial = (n) => {
-  if (n === 0) {
-    return 1;
-  } else {
-    return n * factorial(n - 1);
-  }
-};
-// memoize the recursive factorial function
-const memoizedFactorial = memoize(factorial);
-// run memoized function
-console.log(`1000! is ${memoizedFactorial(1000)}`);
+  arr1.filter((x) => x > 4); // return array with elements that match condition
+  arr1.find((x) => x > 4); // return first element that matches condition (or undefined)
+  arr1.forEach((x) => console.log(x)); // for each element, do something
+  arr1.forEach((x, i) => console.log(`${i}: ${x}`)); // forEach using index
+  arr1.map((x) => x * 2); // return a copy of an array with each element transformed
+  arr1.every((x) => x > 3); // return true if all elements meet condition
+  arr1.some((x) => x > 3) // return true if any elements meet condition
+  arr1.includes(5) // returns true if element is contained in array
+  arr1.indexOf(4); // returns index value of the specified element (or -1)
+  arr1.join(", "); // joins elements of array into a string with a delimiter.
+
+  arr1.pop(); // removes last element of an array, returns that element. (mutates)
+  arr1.shift(); // removes first element of an array, returns new that element. (mutates)
+  arr1.push(10); // adds new element to the end of an array, returns new length.
+  arr1.unshift(1); // adds new elements to the beginning of an array, returns new length.
+  arr1.sort(); // sorts elements of an array. (mutates in-place)
+  arr1.sort((a, b) => a - b); // sort using comparison function (sort by negative/positive output)
+  arr1.reverse(); // reverse order of array.
+  arr1.splice(1, 0, 0); // insert new element before index 1, delete none. return array of deleted elements
+
+  arr1.slice(2); // returns arr1[2:]
+  arr1.slice(2, 4); // returns arr1[2:4]
+  arr1.slice(-3); // returns arr1[-3:]
+  arr1.slice(-1000, 1000); // returns arr1[:] (if indices provided are outside of index range)
+}
 
 // ---
 // objects
 // ---
 
-// create object literal
-const kakashi = {
-  firstName: "Kakashi",
-  lastName: "Hatake",
-  age: 27,
-  state: "Konoha",
-  hobbies: ["sports", "teaching", "survivor"],
-  greet: () => `Hello! My name is ${this.firstName}!`,
-};
+const basicObjects = () => {
+  // create object literal
+  const kakashi = {
+    firstName: "Kakashi",
+    lastName: "Hatake",
+    age: 27,
+    greet: () => `Hello! My name is ${this.firstName}!`,
+  };
 
-// access value from object literal
-let val;
-val = kakashi.lastName;
-val = kakashi.greet();
+  // Access
+  const firstName = kakashi.firstName
+  const { lastName } = kakashi // object destructuring
 
-// iterate through objects (one object in this case)
-const people = [kakashi];
-for (let i = 0; i < people.length; i++) {
-  console.log(people[i].name);
+  // spread
+  const shallowCopy = { ...kakashi }
+  const shallowWithAdditional = { ...kakashi, state: 'Konoha' }
+  const shallowWithUpdate = { ...kakashi, firstName: 'Kaka', lastName: 'Sensei' }
+
+  // Methods
+  const keys = Object.keys(kakashi)
+  const values = Object.values(kakashi)
+  const entries = Object.entries(kakashi)
+  const isSameReference = Object.is(kakashi, kakashi)
+  // Avoid polyfill funny business
+  const hasProperty = Object.prototype.hasOwnProperty.call(kakashi, firstName)
+
+  // looping
+  for (const [k,v] of Object.entries(kakashi)) {
+    console.log(`${k}: ${v}`)
+  }
+  for (const k in kakashi) {
+    console.log(`${k}: ${kakashi[k]}`)
+  }
 }
 
 // ---
 // template literals
 // ---
 
-// with template literals (template strings) (es6)
-// - use backticks, not quotes, for template literals.
-// - variables, expressions, ternary operators, and functions can be used inside the brackets.
-
-const name = "Kakashi";
-const greeting = `Hello! My name is ${name}!`;
+const basicInterpolation = () => {
+  // template literals (template strings) (es6)
+  // use backticks, not quotes, for template literals.
+  // variables, expressions, ternary operators, and functions can be used inside the brackets.
+  const name = "Kakashi";
+  const greeting = `Hello! My name is ${name}!`;
+}
 
 // ---
 // conditionals, logic, and loops
@@ -291,239 +231,188 @@ const greeting = `Hello! My name is ${name}!`;
 
 // conditional statements
 
-if (condition) {
-  // run this code
-} else if (condition) {
-  // run this code
-} else if (condition) {
-  // run this code
-} else {
-  // run this code if nothing else worked
-}
-
-// undefined?
-
-let id;
-if (typeof id !== "undefined") {
-  console.log(`The ID is ${id}`);
-} else {
-  console.log("No ID");
-}
-
-// nesting if...else statements
-
-if (condition) {
-  if (condition) {
-    // run code 1a
-  } else if (condition) {
-    // run code 1b
+const basicIfElse = () => {
+  let a = 5
+  if (Number.isNaN(a)) {
+    throw new Error('Must be a number')
+  } else if (a < 0) {
+    throw new Error('Must not be negative')
+  } else if (a > 100) {
+    throw new Error('Must be lte 100')
+  } else if (!Number.isInteger(a)) {
+    a = Math.round(a)
+    console.log(`Rounding number to ${a}`)
   }
-} else if (condition) {
-  if (condition) {
-    // run code 2a
-  } else if (condition) {
-    // run code 2b
+
+  const output = String.prototype.repeat.call('hi', a)
+  console.log(output)
+}
+
+const basicIfElse2 = () => {
+  let a = 5
+  if (Number.isNaN(a)) {
+    throw new Error('Must be a number')
   }
-}
 
-// ---
-// logical operators
-// ---
-
-// `&&` conditions chained together must all be true.
-// `||` at least one of the conditions chained together must be true.
-// `(!(condition))` negates condition
-
-if (condition1 && condition2) {
-  // run this code
-} else if (condition1 && condition3) {
-  // run this code
-}
-
-if (condition1 || condition2 || condition3) {
-  // run this code
-}
-
-if (!condition) {
-  // run this code
+  const squared = a ** 2
+  console.log(`${a} squared is ${squared}`)
 }
 
 // ---
 // switch
 // ---
 
-switch (expression) {
-  case "value1":
-    // run this code
-    break;
-  case "value2":
-    // run this code
-    break;
-  case "value3":
-  // run this code
-  default:
-  // run this code if no cases match
+const basicSwitch = () => {
+  const colors = {
+    red: 'red',
+    yellow: 'yellow',
+    blue: 'blue',
+  }
+
+  const color = 'red'
+  let fruit
+
+  switch (color) {
+    case colors.red:
+      fruit = 'strawberries'
+      break;
+    case colors.yellow:
+      fruit = 'pineapple'
+      break;
+    case colors.blue:
+      fruit = 'blueberries'
+      break;
+    default:
+      throw new Error(`Color ${color} is not supported`)
+  }
+
+  console.log(`I like ${fruit}`)
 }
 
 // ---
-// ternary operator
+// looping
 // ---
 
-// (condition) ? if true : if false
-
-var x = 5;
-var response = x === 0 ? "x is 0!" : "x is not 0!";
-console.log(response);
-
-// ---
 // for loop
-// ---
 
-var info = "I can count from 1 to 10! ";
-for (var i = 1; i <= 10; i++) {
-  info += i.toString();
-  if (i < 10) {
-    info += ", ";
-  } else if (i === 10) {
-    info += ".";
+const basicForLoop = () => {
+  for (const i = 1; i <= 10; i++) {
+    console.log(i)
   }
 }
-console.log(info);
+
+// while
+
+const basicWhile = () => {
+  let i = 1;
+  while (i <= 10) {
+    console.log(i)
+    i++;
+  }
+}
 
 // break (exit loop)
 
-for (var i = 0; i < 10; i++) {
-  // run code
-  if (condition) {
-    break;
-  } else {
-    // more code
+const basicBreak = () => {
+  let value
+  while (true) {
+    value = Math.ceil(Math.random() * 10)
+    console.log(value)
+    if (value === 10) {
+      break
+    }
   }
 }
 
 // continue (skip to next iteration of loop)
 
-for (var i = 1; i <= 100; i++) {
-  // run code
-  if (!condition) {
-    continue;
+const basiContinue = () => {
+  for (var i = 1; i <= 10; i++) {
+    if (i % 2 != 0) {
+      continue
+    }
+    console.log(i)
   }
-}
-
-// ---
-// while loop
-// ---
-
-let i = 1;
-while (i < 100) {
-  // run code
-  i++;
 }
 
 // do ... while (will always run at least once, even if condition isn't met.)
 
 let i = 0;
 do {
-  // run code
+  console.log(i)
   i++;
-} while (i < 100);
+} while (i < 10);
 
-// ---
-// forEach (array looping)
-// ---
 
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-numbers.forEach((num) => {
-  console.log(num);
-});
+// for ... in ... loop
 
-// map (passes all elements from one array into a function and creates a new array)
+const basicForIn = () => {
+  const ninjaMap = {
+    '72f8a7bf-1f91-4ad9-b926-b312711ca495': 'Kakashi',
+    '844f0a9c-ca31-42f5-a19a-dbb9f8b36962': 'Iruka',
+    '1ba74f14-a665-4b44-b08d-6a0252501c02': 'Yamato'
+  };
 
-const users = [
-  { id: 1, name: "John" },
-  { id: 2, name: "Sara" },
-  { id: 3, name: "Karen" },
-  { id: 4, name: "Steve" },
-];
+  for (const id in ninjaMap) {
+    console.log(`${id} : ${ninjaMap[id]}`);
+  }
+}
 
-const ids = users.map((user) => console.log(`name: ${user.name}`));
+// for ... of ... loop
 
-// for ... in ... loops (mostly used for objects)
+const basicForOf = () => {
+  const numbers = [1, 2, 3, 4, 5]
 
-const user = {
-  firstName: "John",
-  lastName: "Doe",
-  age: 40,
-};
-
-for (let x in user) {
-  console.log(`${x} : ${user[x]}`);
+  for (const n in numbers) {
+    console.log(n)
+  }
 }
 
 // ---
 // functions
 // ---
 
-// normal function syntax
+// function
 
-function myFunction(a) {
-  const phrase = `Argument passed in: ${a}`;
-  return phrase;
+function sayHello() {
+  console.log('hello')
 }
 
-const didItWork = myFunction("hello!");
-console.log(didItWork);
+// params/args
 
-// ---
-// function parameters, arguments, defaults
-// ---
-
-function greet(firstName = "John", lastName = "Doe") {
-  const first = firstName;
-  const last = lastName;
-  const greeting = `Hello ${first} ${last}!`;
-  return greeting;
+function multiply(a, b) {
+  return a * b
 }
 
-console.log(greet("Landon", "Yarrington"));
+// defaults
 
-// ---
-// arrow functions
-// ---
+function doSomething(verbose = false) {
+  if (verbose) {
+    console.log('Verbose')
+  }
+}
+
+// rest
+
+const sum = (...args) => {
+  return args.reduce((accumulator, x) => accumulator + x);
+};
+
+// arrow
 
 const add = (a, b) => {
   const sum = a + b;
   return sum;
 };
 
-const subtract = (a, b) => a - b; // concise syntax
+const subtract = (a, b) => a - b;
 
-console.log(add(4, 5));
-console.log(subtract(5, 4));
-
-// ---
-// function expression (using anonymous functions)
-// ---
+// function expression
 
 const square = function (x = 0) {
   const output = x * x;
   return output;
 };
-
-console.log(square());
-
-// ---
-// IIFE (immediately invokable function expressions)
-// ---
-
-const model = (() => {
-  const number = 0;
-  return {
-    increaseNumber: () => {
-      number = number + 1;
-    },
-  };
-})();
 
 // ---
 // object with methods
@@ -543,65 +432,82 @@ const greetings = {
 
 greetings.helloPerson("Kakashi");
 
-// ---
-// ES6 OBJECT DESTRUCTURING
-// ---
+// IIFE (immediately invokable function expressions)
 
-const person = {
-  name: "Kakashi",
-  age: 26,
-  location: {
-    state: "Konoha",
-  },
+const basicIIFE = () => {
+  const counter = (() => {
+    // private value
+    let count = 0;
+    // public methods
+    return {
+      increment: (n = 1) => {
+        count = count + n;
+      },
+      decrement: (n = 1) => {
+        count = count - n;
+      },
+      getCount: () => {
+        return count;
+      },
+      resetCount: () => {
+        count = 0;
+      },
+    };
+  })();
+  
+  console.log(counter.getCount());
+  counter.increment(3);
+  console.log(counter.getCount());
+  counter.decrement(1);
+  console.log(counter.getCount());
+  counter.resetCount();
+  console.log(counter.getCount());
+}
+
+// curry
+
+const basicCurry = () => {
+  const add = (a) => (b) => {
+    return a + b;
+  };
+
+  // curried
+  const sum = add(5)(3);
+  console.log(sum);
+  
+  // partially applied
+  const addThree = add(3);
+  const sum2 = addThree(6);
+  console.log(sum2);
+}
+
+// compose
+
+const basicCompose = () => {
+  const square = (n) => n ** 2;
+  const double = (n) => 2 * n;
+  const pipe = (f, g) => (a) => g(f(a));
+  const squareDouble = pipe(square, double);
+  const result = squareDouble(3);
+  console.log(result); // double(square(3)) = 18
+}
+
+// recursion
+
+const factorial = (n) => {
+  if (n < 0) {
+    throw new Error('Cannot get factorial of negative number')
+  }
+  if (n === 0) {
+    return 1;
+  }
+  return n * factorial(n - 1);
 };
 
-const { name, age } = person; // const name = person.name; const age = person.age;
-const { state } = person.location;
-const { name: firstName, age } = person; // const firstName = person.name;
-const { name = "Anonymous", age } = person; // default value
-
-// ---
-// ES6 ARRAY DESTRUCTURING
-// ---
-
-const address = [
-  "1299 S Juniper Street",
-  "Philadelhia",
-  "Pennsylvania",
-  "19147",
-];
-console.log(`You are in ${address[1]} , ${address[2]}.`);
-const [street, city, state, zip] = address; // assigns by position
-const [, city, state] = address; // skips [0] and [4]
-
-// ---
-// ES6 SPREAD OPERATOR (ARRAY)
-// ---
-
-const names = ["Kakashi", "Iruka", "Konohamaru"];
-const names2 = [...names];
-const names3 = ["Itachi", ...names, "Hiruzen"];
-
-// ---
-// ES6 SPREAD OPERATOR (OBJECT)
-// ---
-
-// babel-plugin-transform-object-rest-spread
-
-const user = {
-  name: "Kakashi",
-  city: "Philadelphia",
-  age: 26,
-};
-
-console.log({
-  ...user,
-  age: 27,
-}); // overrides
-console.log({
-  age: 27,
-  ...user,
-}); // doesn't override
+const basicRecursion = () => {
+  const result = factorial(100)
+  console.log('result', result);
+}
 
 // ---
 // error handling (try/catch/finally)
@@ -609,44 +515,21 @@ console.log({
 
 // try/catch/finally -- gracefully handle errors without stopping the script.
 
-try {
-  const apiResponse = await axios.post("/api/add-user", { user });
-  const { data: user, error } = apiResponse.data;
-  if (error) {
-    console.log(error);
-    return;
+const basicErrorHandling = () => {
+  const a = false
+  const b = a ? [] : null
+
+  try {
+    console.log('Trying something that might fail')
+    result = b.length // null has no property length
+    console.log('Error above will prevent this line from executing')
+  } catch (err) {
+    console.log('Only executes if error was thrown')
+    console.log(err)
+  } finally {
+    console.log('Always excuted')
   }
-  return user;
-} catch (err) {
-  console.log(err.message); // properties (name, message)
-} finally {
-  console.log("try / catch complete"); // will always execute
 }
-
-// ---
-// throw error
-// ---
-
-// client
-
-try {
-  const apiResponse = await axios.post("/api/add-user", { user });
-  const { data: user, error } = apiResponse.data;
-  if (error) {
-    console.log(error);
-    return;
-  }
-  return user;
-} catch (err) {
-  console.log(err.message); // properties (name, message)
-} finally {
-  console.log("try / catch complete"); // will always execute
-}
-
-// backend
-
-const { user } = req.body;
-if (!user.name) throw "User is missing 'name' property";
 
 // ---
 // regular expressions (regex)
@@ -662,7 +545,7 @@ if (!user.name) throw "User is missing 'name' property";
 
 // iterator
 
-function nameIterator() {
+const nameIterator = () => {
   let nextIndex = 0;
 
   return {
@@ -674,14 +557,14 @@ function nameIterator() {
   };
 }
 
-// create an array of names
-const namesArr = ["Jack", "Jill", "John"];
-// Init iterator and pass in the names array
-const names = nameIterator(namesArr);
+const basicIterator = () => {
+  const namesArr = ["Jack", "Jill", "John"];
+  const names = nameIterator(namesArr);
 
-console.log(names.next().value); // Jack
-console.log(names.next().value); // Jill
-console.log(names.next().value); // John
+  console.log(names.next().value); // Jack
+  console.log(names.next().value); // Jill
+  console.log(names.next().value); // John
+}
 
 // generator example
 
@@ -691,210 +574,272 @@ function* sayNames() {
   yield "John";
 }
 
-const names = sayNames;
-
-console.log(names.next().value); // Jack
-console.log(names.next().value); // Jill
-console.log(names.next().value); // John
-
-// ---
-// ID Generator
-// ---
-
-function* createIds() {
-  let index = 1;
-
-  while (true) {
-    yield index++;
+const basicGenerator = () => {
+  for (const name of sayNames()) {
+    console.log(name) // Jack // Jill // John
   }
 }
-
-const gen = createIds();
-
-console.log(gen.next().value); // 1
-console.log(gen.next().value); // 2
-console.log(gen.next().value); // 3
-console.log(gen.next().value); // 4
-console.log(gen.next().value); // 5
 
 // ---
 // symbols
 // ---
 
-// for ... in ... loops and JSON.stringify ignore symbols.
+const basicSymbols = () => {
+  // for ... in ... loops and JSON.stringify ignore symbols.
 
-// create a symbol
-const sym1 = Symbol();
-// symbol with identifier
-const sym2 = Symbol("sym2");
-// typeof -- symbol (primitive data type)
-console.log(typeof sym2);
-// symbols can't be the same
-console.log(Symbol() === Symbol()); // false (even if identifiers are the same)
-// symbol to string
-console.log(`Hello ${String(sym1)}`);
-console.log(`Hello ${sym1.toString()}`);
+  // create a symbol
+  const sym1 = Symbol();
+  // symbol with identifier
+  const sym2 = Symbol("sym2");
+  // typeof -- symbol (primitive data type)
+  console.log(typeof sym2);
+  // symbols can't be the same
+  console.log(Symbol() === Symbol()); // false (even if identifiers are the same)
+  // symbol to string
+  console.log(`Hello ${String(sym1)}`);
+  console.log(`Hello ${sym1.toString()}`);
 
-// symbols -- unique object keys
+  // symbols -- unique object keys
 
-const KEY1 = Symbol();
-const KEY2 = Symbol("sym2");
+  const KEY1 = Symbol();
+  const KEY2 = Symbol("sym2");
 
-const myObj = {};
-// when using variables as a key, use bracket notation (not dot notation);
-// dot notation treats them as new properties.
-myObj[KEY1] = "Prop1";
-myObj[KEY2] = "Prop2";
+  const myObj = {};
+  // when using variables as a key, use bracket notation (not dot notation);
+  // dot notation treats them as new properties.
+  myObj[KEY1] = "Prop1";
+  myObj[KEY2] = "Prop2";
 
-console.log(myObj[KEY1]); // Prop1
-console.log(myObj[KEY2]); // Prop2
-
-// ---
-// destructuring (ES6)
-// ---
-
-// destructuring assignment
-let a, b;
-[a, b] = [100, 200];
-console.log(a); // 100
-
-// rest pattern (array)
-const [a, b, ...rest] = [100, 200, 300, 400, 500]; // rest = 300, 400, 500
-
-// rest pattern (object)
-({ a, b } = { a: 100, b: 200, c: 300, d: 400, e: 500 });
-({ a, b, ...rest } = { a: 100, b: 200, c: 300, d: 400, e: 500 });
-
-// array destructuring
-const people = ["John", "Beth", "Mike"];
-const [person1, person2, person3] = people;
-console.log(person1, person2, person3); // John Beth Mike
-
-function getPeople() {
-  return ["John", "Beth", "Mike"];
+  console.log(myObj[KEY1]); // Prop1
+  console.log(myObj[KEY2]); // Prop2
 }
-
-let person1, person2, person3;
-[person1, person2, person3] = getPeople();
-
-// object destructuring
-const person = {
-  name: "John Doe",
-  age: 32,
-  city: "Miami",
-  gender: "Male",
-  sayHello: function () {
-    console.log("Hello");
-  },
-};
-
-// Old ES5 Way
-const name = person.name,
-  age = person.age,
-  city = person.city;
-
-// New ES6 Way
-const { name, age, city, sayHello } = person;
-console.log(name, age, city);
-sayHello();
 
 // ---
 // maps (es6) (kinda like object literals)
 // ---
 
-// maps are key:value pairs, can use ANY type as key or value.
+const basicMaps = () => {
+  // maps are key:value pairs, can use ANY type as key or value.
 
-// new map
-const map1 = new Map();
-// set keys
-const key1 = "some string",
-  key2 = {},
-  key3 = function () {};
-// set map values by key
-map1.set(key1, "Value of key1");
-map1.set(key2, "Value of key2");
-map1.set(key3, "Value of key3");
-// Value of key1, key2, key3
-console.log(map1.get(key1), map1.get(key2), map1.get(key3));
-// number of values in map
-console.log(map1.size);
+  // new map
+  const map1 = new Map();
+  // set keys
+  const key1 = "some string"
+  const key2 = {}
+  const key3 = function () { }
+  // set map values by key
+  map1.set(key1, "Value of key1");
+  map1.set(key2, "Value of key2");
+  map1.set(key3, "Value of key3");
+  // Value of key1, key2, key3
+  console.log(map1.get(key1), map1.get(key2), map1.get(key3));
+  // number of values in map
+  console.log(map1.size);
 
-// iterating through map
+  // iterating through map
 
-// loop using for ... of to get keys/values
-for (let [key, value] of map1) {
-  consold.log(`${key} = ${value}`);
+  // loop using for ... of to get keys/values
+  for (let [key, value] of map1) {
+    consold.log(`${key} = ${value}`);
+  }
+  // loop using for ... of to get keys
+  for (let key of map1.keys()) {
+    consold.log(key);
+  }
+  // loop using for ... of to get values
+  for (let value of map1.values()) {
+    consold.log(value);
+  }
+  // forEach loops
+  map1.forEach(function (key, value) {
+    console.log(`${key} = ${value}`);
+  });
+
+  // convert map to array
+
+  // create an array of the key/value pairs
+  const keyValArr = Array.from(map1);
+  consold.log(keyValArr);
+  // create an array of the values
+  const valArr = Array.from(map1.values());
+  consold.log(valArr);
+  // create an array of the keys
+  const keyArr = Array.from(map1.keys());
+  consold.log(keyArr);
 }
-// loop using for ... of to get keys
-for (let key of map1.keys()) {
-  consold.log(key);
-}
-// loop using for ... of to get values
-for (let value of map1.values()) {
-  consold.log(value);
-}
-// forEach loops
-map1.forEach(function (key, value) {
-  console.log(`${key} = ${value}`);
-});
-
-// convert map to array
-
-// create an array of the key/value pairs
-const keyValArr = Array.from(map1);
-consold.log(keyValArr);
-// create an array of the values
-const valArr = Array.from(map1.values());
-consold.log(valArr);
-// create an array of the keys
-const keyArr = Array.from(map1.keys());
-consold.log(keyArr);
 
 // ---
 // sets
 // ---
 
-// sets store unique values of any type
-// duplicates are ignored
+const basicSets = () => {
+  // sets store unique values of any type
+  // duplicates are ignored
 
-// Add values to set (method 1)
-const set1 = new Set();
-set1.add(100);
-set1.add("A string");
-set1.add({ name: "John" });
-set1.add(true);
-console.log(set1);
+  // Add values to set (method 1)
+  const set1 = new Set();
+  set1.add(100);
+  set1.add("A string");
+  set1.add({ name: "John" });
+  set1.add(true);
+  console.log(set1);
 
-// add values to set (method 2)
-const set2 = new Set([1, true, "string"]);
-console.log(set2);
+  // add values to set (method 2)
+  const set2 = new Set([1, true, "string"]);
+  console.log(set2);
 
-// size of set
-console.log(set1.size);
+  // size of set
+  console.log(set1.size);
 
-// test for values
-console.log(set1.has(100)); // true
-console.log(set1.has(50 + 50)); // true
-console.log(set1.has({ name: "John" })); // false (because objects aren't primitive)
+  // test for values
+  console.log(set1.has(100)); // true
+  console.log(set1.has(50 + 50)); // true
+  console.log(set1.has({ name: "John" })); // false (because objects aren't primitive)
 
-// delete from set
-set1.delete(100);
+  // delete from set
+  set1.delete(100);
 
-// iterating through sets
+  // iterating through sets
 
-// for ... of
-for (let item of set1) {
-  console.log(item);
+  // for ... of
+  for (let item of set1) {
+    console.log(item);
+  }
+  // forEach loop
+  set1.forEach((value) => {
+    console.log(value);
+  });
+
+  // convert set to array
+  const setArr = Array.from(set1);
+  console.log(setArr);
 }
-// forEach loop
-set1.forEach((value) => {
-  console.log(value);
-});
-
-// convert set to array
-const setArr = Array.from(set1);
-console.log(setArr);
 
 // ---
-//
+// classes
 // ---
+
+class Person {
+  constructor({ firstName, lastName }) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+  introduce() {
+    console.log(`Hello there! My name is ${this.firstName} ${this.lastName}.`);
+  }
+}
+class Ninja extends Person {
+  constructor({ firstName, lastName, village }) {
+    super({ firstName, lastName }); // pass to parent constructor
+    this.village = village;
+  }
+}
+
+const basicClasses = () => {
+  const kakashi = new Ninja({ 
+    firstName: "Kakashi", 
+    lastName: "Hatake", 
+    village: "Hidden Leaf Village" 
+  });
+  console.log(kakashi); // representation as object
+  kakashi.introduce(); // use parent class method
+}
+
+basicClasses()
+
+// ---
+// advanced javascript
+// ---
+
+// javascript
+// - single threaded language
+// - callback loop
+// - interpreted language
+
+// code
+// - interpreted: read line by line and executed. faster to stand up, slower performance.
+// - compiled: converted to machine code. slower to stand up, faster performance
+// - JIT: TODO
+
+// js engine
+// - ECMAScript engines: must conform to ECMA language standard.
+// -- v8 engine (nodejs, chrome): fastest, compliles to machine code
+// -- spidermonkey (firefox): slower, compiles to byte code (original js engine)
+
+// v8 flow
+// - parser --> AST --> interpreter --> bytecode
+// - parser --> AST --> interpreter --> profiler --> compiler --> optimized code
+
+// runtime
+// - web API: native to browser, not JS. (DOM, requests (fetch), setTimeout)
+// - memory heap: where memory is allocated
+// - call stack: where code is in its execution
+// -- LIFO mode (last in, first out)
+// - event loop
+// - callback queue
+// - job queue: like callback queue but for promises. has higher priority.
+
+// async
+// - call stack: LIFO mode (normal operations)
+// - async event initiated -- put on job/callback queue (job queue if promises are involved)
+// - once call stack is clear, event loop checks for (ready) job/callback queue items
+// - those job/callback queue items will be returned to call stack.
+
+// ---
+// scope and hosting
+// ---
+
+// global scope
+// - not in a function (closure)
+// - accessible anywhere
+// local scope
+// - in a function
+// - accessible only from that function
+// nested scope
+// - nested functions and their associated local scopes.
+// block scope
+// - let & const, if defined in a block, are limited to that scope
+// - var does not support block scope
+
+// lexical scope model
+// - capturing free variables into lexical environments. implemented by closures
+
+// static scope (lexical scope)
+// - available data + variables where the function was defined
+// - write time
+// dynamic scope
+// - available data + variables where the function is called.
+// - run time
+// - 'this' is dynamically scoped
+
+// hoisting
+// - moving declarations to the top of their environments (during compilation)
+// - var -- partially hoisted
+// -- declaration is hoisted, not the initialization. memory is allocated.
+// -- returns undefined if used before initizlization.
+// - function -- fully hoisted (doesn't work for function expressions)
+// - let, const -- not hoisted
+
+// bubbling
+// - look for variable in scope
+
+// ---
+// functions
+// ---
+
+// expression
+// - defined at runtime
+// declaration
+// - defined at parse time
+
+// invocation/call/execution
+// - creates execution context
+// - gets 'this' keyword
+// - gets 'arguments' keyword. (don't use these, it slows down compiler)
+
+// ---
+// context vs scope
+// ---
+
+// context -- value of 'this'. determined by how a function is invoked
+// scope -- visibility of variales

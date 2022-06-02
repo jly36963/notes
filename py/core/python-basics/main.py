@@ -11,11 +11,16 @@ import collections
 # Variables
 # ---
 
-# start with letter or underscore, can contain letters, numbers, underscores
-my_var = 'snake case'
-MY_CONSTANT = 'capital snake case'
-MyClass = 'upper camel case'
-__my_dunder__ = 'double underscore variables'
+
+def basic_variables():
+    """
+    Variables
+    """
+    # start with letter or underscore, can contain letters, numbers, underscores
+    my_var = 'snake case'
+    MY_CONSTANT = 'capital snake case'
+    MyClass = 'upper camel case'
+    __my_dunder__ = 'double underscore variables'
 
 
 # ---
@@ -65,11 +70,11 @@ def basic_strings():
     """
     Strings
     """
-    "I don't have school today!"  # basic string
-    r'this is a r\a\w\ string!'  # r'string' -- prevents '\' escapes.
-    '''use triple quotes for long/multi-line strings.'''  # multiline string
-    3*'ha'  # hahaha
-    'py' 'thon'  # python automatically concatenates strings, use '+' otherwise.
+    basic_string = "I don't have school today!"  # basic string
+    raw_string = r'this is a r\a\w\ string!'  # r'string' -- prevents '\' escapes.
+    multiline_string = '''use triple quotes for long/multi-line strings.'''  # multiline string
+    multiplied_string = 3 * 'ha'  # hahaha
+    concatenated_string = 'py' 'thon'  # python # like "py" + "thon"
 
 
 def basic_string_methods():

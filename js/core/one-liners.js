@@ -20,13 +20,13 @@ contains([1, 2, 3, 4, 5], (x) => x < 10);
 const isArray = (obj) => Array.isArray(obj);
 
 // clone array
-const clone = (arr) => [...arr]; // shallow
-const clone = (arr) => JSON.parse(JSON.stringify(arr)); // deep (might use a lot of memory)
+const cloneArr1 = (arr) => [...arr]; // shallow
+const cloneArr2 = (arr) => JSON.parse(JSON.stringify(arr)); // deep (might use a lot of memory)
 
 // compare arrays for equality
-const isEqual = (a, b) =>
+const isEqual1 = (a, b) =>
   a.length === b.length && a.every((v, i) => v === b[i]); // shallow
-const isEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b); // deep (may cause memory issues)
+const isEqual2 = (a, b) => JSON.stringify(a) === JSON.stringify(b); // deep (may cause memory issues)
 
 // create a range of numbers (array)
 const range = (min, max) =>
@@ -59,8 +59,8 @@ const unique = (arr) => [...new Set(arr)];
 const union = (...arr) => [...new Set(arr.flat())];
 
 // merge arrays
-const merge = (a, b) => [...a, ...b]; // keep duplicates
-const merge = (a, b) => [...new Set([...a, ...b])]; // remove duplicates
+const merge1 = (a, b) => [...a, ...b]; // keep duplicates
+const merge2 = (a, b) => [...new Set([...a, ...b])]; // remove duplicates
 
 // partition array by condition
 const partition = (arr, condition) =>
@@ -72,13 +72,13 @@ partition([1, 2, 3, 4, 5], (n) => n % 2);
 // ---
 
 // sum of arguments
-const sum = (...args) => args.reduce((a, b) => a + b);
+const sumRest = (...args) => args.reduce((a, b) => a + b);
 
 // mean of arguments
-const mean = (...args) => args.reduce((a, b) => a + b) / args.length;
+const meanRest = (...args) => args.reduce((a, b) => a + b) / args.length;
 
 // product of arguments
-const product = (...args) => args.reduce((a, b) => a * b);
+const productRest = (...args) => args.reduce((a, b) => a * b);
 
 // clamp number between two values (force within bounds)
 const clamp = (val, min = 0, max = 1) => Math.max(min, Math.min(max, val));
@@ -108,8 +108,8 @@ const isEmpty = (obj) =>
   Object.keys(obj).length === 0 && obj.constructor === Object;
 
 // copy object
-const clone = (obj) => ({ ...obj }); // shallow
-const clone = (obj) => JSON.parse(JSON.stringify(obj)); // deep (might use a lot of memory)
+const cloneObj1 = (obj) => ({ ...obj }); // shallow
+const cloneObj2 = (obj) => JSON.parse(JSON.stringify(obj)); // deep (might use a lot of memory)
 
 // ---
 // string
