@@ -12,6 +12,31 @@ import {
   repeat,
   startsWith,
   endsWith,
+  // collections
+  chunk,
+  deepMerge,
+  distinctBy,
+  distinct,
+  filterEntries,
+  filterKeys,
+  filterValues,
+  findSingle,
+  firstNotNullishOf,
+  groupBy,
+  includesValue,
+  intersect,
+  mapEntries,
+  mapKeys,
+  mapValues,
+  mapNotNullish,
+  maxBy,
+  maxOf,
+  minBy, 
+  minOf,
+  partition,
+  sample,
+  sortBy,
+  union,
   // crypto
   crypto,
   // datetime
@@ -28,6 +53,8 @@ import {
   // ensure
   ensureFile,
   ensureDir,
+  // flags
+  flagsParse,
   // fmt
   sprintf,
   // io
@@ -131,8 +158,95 @@ const basicBytes = () => {
   console.log('endsWithSuffix: ', endsWithSuffix)
 }
 
-// TODO: collections (like lodash)
-// https://deno.land/std@0.140.0/collections
+const basicCollectionsFunctions = () => {
+  // aggregateGroups: basically reduce for Record<string, Array<any>> (current, key, first, acc)
+  // associateBy: similar to lodash keyBy (element is value, callback determines key)
+  // associateWith: like associateBy, but element is key and callback determines value
+  const chunkResult = chunk(Array(10).fill(0), 5)
+  const deepMergeResult = deepMerge({ a: 1, b: 2 }, {a: 3, c: 4 })
+  const distinctByResult = distinctBy([1,2,3,4,1], v => v)
+  const distinctResult = distinct([1,2,3,4,1])
+  // dropWhile: drop array elements before first element that fails predicate
+  // dropLastWhile: drop array elements including and after last element that fails predicate
+  const filterEntriesResult = filterEntries({ a: 0, b: 2 }, ([_k, v]) => v > 0)
+  const filterKeysResult = filterKeys({ a: 0, b: 2 }, k => k !== 'b')
+  const filterValuesResult = filterValues({ a: 0, b: 2 }, v => v > 0)
+  const findSingleResult = findSingle([1,2,3,4,5], n => n === 2)
+  const firstNotNullishOfResult = firstNotNullishOf([undefined,1,2,3,4], (v) => v)
+  const groupByResult = groupBy([{ a: 1, b: 'abc' }, { a: 2, b: 'def' }], ({ b }) => b)
+  const includesValueResult = includesValue({a: 1, b: 2}, 2)
+  const intersectResult = intersect([1,2,3], [2,3,4])
+  // joinToString: fancy join (suffix, prefix, limit, truncated, etc)
+  const mapEntriesResult = mapEntries({ a: 1, b: 2 }, ([k, v]) => [`${k}${k}`, v*2])
+  const mapKeysResult = mapKeys({ a: 1, b: 2 }, k => k.toUpperCase())
+  const mapValuesResult = mapValues({ a: 1, b: 2 }, v => v*2)
+  const mapNotNullishResult = mapNotNullish([undefined,1,2,3,4], v => v && v * 2)
+  const maxByResult = maxBy(
+    [{ name: "Kakashi", age: 27 }, {name: "Yamato", age: 24 }],
+    ({ age }) => age
+  )
+  const maxOfResult = maxOf(
+    [{ name: "Kakashi", age: 27 }, {name: "Yamato", age: 24 }],
+    ({ age }) => age
+  )
+  // maxWith: find max element using custom comparator
+  const minByResult = minBy(
+    [{ name: "Kakashi", age: 27 }, {name: "Yamato", age: 24 }],
+    ({ age }) => age
+  )
+  const minOfResult = minOf(
+    [{ name: "Kakashi", age: 27 }, {name: "Yamato", age: 24 }],
+    ({ age }) => age
+  )
+  // minWith: find min element using custom comparator
+  const partitionResult = partition([1,2,3,4,5], n => n > 3)
+  // permutations: return array of all order permutations
+  // reduceGroups: basically reduce for Record<string, Array<any>>
+  // runningReduce: reduce, but returns an array of intermediate accumulator results
+  // sumOf: get sum of array using selector
+  const sampleResult = sample([1,2,3,4])
+  // slidingWindows: return array of sliding views of a given size
+  const sortByResult = sortBy(
+    [{ name: "Kakashi", age: 27 }, {name: "Yamato", age: 24 }],
+    ({ name }) => name
+  )
+  // takeLastWhile: ...
+  // takeWhile: ...
+  const unionResult = union([1,2,3],[2,3,4])
+  // unzip: split array of 2-tuples into 2 separate arrays
+  // withoutAll: remove elements in arr2 from arr1
+  // zip: combine 2 arrays into an array of 2-tuples
+
+  console.log('chunkResult: ', chunkResult)
+  console.log('deepMergeResult: ', deepMergeResult)
+  console.log('distinctByResult: ', distinctByResult)
+  console.log('distinctResult: ', distinctResult)
+  console.log('filterEntriesResult: ', filterEntriesResult)
+  console.log('filterKeysResult: ', filterKeysResult)
+  console.log('filterValuesResult: ', filterValuesResult)
+  console.log('findSingleResult: ', findSingleResult)
+  console.log('firstNotNullishOfResult: ', firstNotNullishOfResult)
+  console.log('groupByResult: ', groupByResult)
+  console.log('includesValueResult: ', includesValueResult)
+  console.log('intersectResult: ', intersectResult)
+  console.log('mapEntriesResult: ', mapEntriesResult)
+  console.log('mapKeysResult: ', mapKeysResult)
+  console.log('mapValuesResult: ', mapValuesResult)
+  console.log('mapNotNullishResult: ', mapNotNullishResult)
+  console.log('maxByResult: ', maxByResult)
+  console.log('maxOfResult: ', maxOfResult)
+  console.log('minByResult: ', minByResult)
+  console.log('minOfResult: ', minOfResult)
+  console.log('partitionResult: ', partitionResult)
+  console.log('sampleResult: ', sampleResult)
+  console.log('sortByResult: ', sortByResult)
+  console.log('unionResult: ', unionResult)
+}
+
+const basicCollectionsStructures = () => {
+  // BSTree
+  // RBTree
+}
 
 const basicCrypto = async () => {
   const message = "No one can know, not even Squidward's house"
@@ -274,14 +388,19 @@ const basicEncodingBase64 = () => {
   // TODO: encoding -- csv, jsonc, toml, yaml
 }
 
-// TODO: flags
+const basicFlags = () => {
+  const parsed = flagsParse(['pipenv', 'install', '--dev'])
+  console.log('parsed', parsed)
+}
 
 const basicFmt = () => {
   const formatted = sprintf("Hey there, %s", "Kakashi")
   console.log("formatted: ", formatted)
 }
 
-// TODO: fs (ensureDir)
+const basicFs = async () => {
+  // unstable
+}
 
 const basicIo = async () => {
   const td = (bytes: Uint8Array): string => new TextDecoder('utf-8').decode(bytes)
@@ -393,7 +512,13 @@ const main = async () => {
   await basicArchive()
 
   printSectionTitle('basic bytes')
-  await basicBytes()
+  basicBytes()
+
+  printSectionTitle('basic collections (functions)')
+  basicCollectionsFunctions()
+
+  printSectionTitle('basic collections (structures)')
+  basicCollectionsStructures()
 
   printSectionTitle('basic crypto')
   await basicCrypto()
@@ -413,8 +538,14 @@ const main = async () => {
   printSectionTitle('basic dotenv')
   await basicDotenv()
 
+  printSectionTitle('basic flags')
+  basicFlags()
+
   printSectionTitle('basic fmt')
   basicFmt()
+
+  printSectionTitle('basic fs')
+  await basicFs()
 
   printSectionTitle('basic io')
   await basicIo()

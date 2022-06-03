@@ -6,6 +6,32 @@ export {
 } from "https://deno.land/std@0.140.0/async/mod.ts";
 export { Tar, Untar } from "https://deno.land/std@0.140.0/archive/tar.ts";
 export { concat, repeat, startsWith, endsWith } from "https://deno.land/std@0.140.0/bytes/mod.ts";
+export { 
+  chunk,
+  deepMerge,
+  distinctBy,
+  distinct,
+  filterEntries,
+  filterKeys,
+  filterValues,
+  findSingle,
+  firstNotNullishOf,
+  groupBy,
+  includesValue,
+  intersect,
+  mapEntries,
+  mapKeys,
+  mapValues,
+  mapNotNullish,
+  maxBy,
+  maxOf,
+  minBy, 
+  minOf,
+  partition,
+  sample,
+  sortBy,
+  union,
+} from "https://deno.land/std@0.140.0/collections/mod.ts";
 export { crypto } from "https://deno.land/std@0.140.0/crypto/mod.ts";
 export { 
   parse, 
@@ -18,6 +44,7 @@ export { encode, decode } from "https://deno.land/std@0.140.0/encoding/base64.ts
 export { encode as he, decode as hd } from "https://deno.land/std@0.140.0/encoding/hex.ts";
 export { ensureFile } from "https://deno.land/std@0.140.0/fs/ensure_file.ts";
 export { ensureDir } from "https://deno.land/std@0.140.0/fs/ensure_dir.ts";
+export { parse as flagsParse } from "https://deno.land/std@0.140.0/flags/mod.ts";
 export { sprintf } from "https://deno.land/std@0.140.0/fmt/printf.ts"
 export { Buffer } from "https://deno.land/std@0.140.0/io/buffer.ts";
 export { readLines } from "https://deno.land/std@0.140.0/io/mod.ts";
