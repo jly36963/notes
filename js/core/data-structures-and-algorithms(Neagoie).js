@@ -78,33 +78,35 @@
 // - for sorted arrays, use binary search tree to reduce time complexity.
 
 // ---
-// time complexity exapmles
+// time complexity examples
 // ---
 
-const data = [1, 2, 3, 4, 5];
+const basicTimeComplexity = () => {
+  const data = [1, 2, 3, 4, 5];
+  // O(1) -- constant time. as data size increases, time complexity is static..
+  console.log(data[0]);
+  // O(log n) -- logarithmic time (binary search)
+  binarySearch(data, 2);
+  // O(n * log n) -- logarithmic linear time / linearithmic time (merge sort)
+  mergeSort(data);
+  // O(n) -- linear time. as data size increases, time complexity increases linearly
+  data.forEach((d) => console.log(d));
+  // O(n^2) -- quadratic time. as data size increases, time complexity increases quadratically
+  data.forEach((d1) => data.forEach((d2) => console.log(`${d1}, ${d2}`)));
+  // O(2^n) -- exponential time. (powerset, fibonacci)
+  powerSet(data);
+  // O(n!) -- factorial time (permutations)
+  getPermutations(data);
+}
 
-// O(1) -- constant time. as data size increases, time complexity is static..
-console.log(data[0]);
-// O(log n) -- logarithmic time (binary search)
-binarySearch(data, 2);
-// O(n * log n) -- logarithmic linear time / linearithmic time (merge sort)
-mergeSort(data);
-// O(n) -- linear time. as data size increases, time complexity increases linearly
-data.forEach((d) => console.log(d));
-// O(n^2) -- quadratic time. as data size increases, time complexity increases quadratically
-data.forEach((d1) => data.forEach((d2) => console.log(`${d1}, ${d2}`)));
-// O(2^n) -- exponential time. (powerset, fibonacci)
-powerSet(data);
-// O(n!) -- factorial time (permutations)
-getPermutations(data);
+// ---
+// interesting functions
+// ---
 
-// functions
-
-// permutation function
 const getPermutations = (arr) => {
   const length = arr.length;
   const result = [...arr];
-  let c = new Array(length).fill(0);
+  const c = new Array(length).fill(0);
   let i = 1;
 
   while (i < length) {
@@ -124,7 +126,6 @@ const getPermutations = (arr) => {
   return result;
 };
 
-// binary search function
 const binarySearch = (arr, target) => {
   let startIndex = 0;
   let endIndex = arr.length - 1;
@@ -146,15 +147,15 @@ const binarySearch = (arr, target) => {
 // power set
 const powerSet = (arr) => {
   const obj = {};
-  //This loop is to take out all duplicate number/letter
+  // This loop is to take out all duplicate number/letter
+  // variable array will have no duplicates
   for (let i = 0; i < arr.length; i++) {
     obj[arr[i]] = true;
-  } //variable array will have no duplicates
+  } 
   const array = Object.keys(obj);
   const result = [[]];
   for (let i = 0; i < array.length; i++) {
-    // this line is crucial! It prevents us from infinite loop
-    const len = result.length;
+    const len = result.length; // This line is the exit condition
     for (let x = 0; x < len; x++) {
       result.push(result[x].concat(array[i]));
     }
@@ -162,11 +163,10 @@ const powerSet = (arr) => {
   return result;
 };
 
-// merge sort
 const merge = (left, right) => {
-  let resultArray = [],
-    leftIndex = 0,
-    rightIndex = 0;
+  const resultArray = []
+  const leftIndex = 0
+  const rightIndex = 0
   // We will concatenate values into the resultArray in order
   while (leftIndex < left.length && rightIndex < right.length) {
     if (left[leftIndex] < right[rightIndex]) {
@@ -181,7 +181,7 @@ const merge = (left, right) => {
   // from either left OR the right
   return resultArray
     .concat(left.slice(leftIndex))
-    .concat(right.slice(rightIndex));
+    .concat(right.slice(rightIndex))
 };
 
 const mergeSort = (arr) => {
@@ -335,7 +335,7 @@ const reverse = (str) => {
   return result;
 };
 
-const reverse = (str) => [...str].reverse().join("");
+const reverse2 = (str) => [...str].reverse().join("");
 
 // ---
 // data structures (hash tables)
@@ -400,11 +400,13 @@ class HashTable {
   }
 }
 
-const people = new HashTable(50); // 50 elements
-people.set("kakashi", "Kakashi Hatake");
-people.set("yamato", "Tenzo Yamato");
-people.set("iruka", "Iruka Umino");
-people.get("kakashi"); // "Kakashi Hatake"
+const useHashTable = () => {
+  const people = new HashTable(50); // 50 elements
+  people.set("kakashi", "Kakashi Hatake");
+  people.set("yamato", "Tenzo Yamato");
+  people.set("iruka", "Iruka Umino");
+  people.get("kakashi"); // "Kakashi Hatake"
+}
 
 // ---
 // singly linked list
@@ -495,10 +497,12 @@ class LinkedList {
   }
 }
 
-const people = new LinkedList("kakashi");
-people.append("yamato");
-people.prepend("iruka");
-people.insert(2, "hiruzen");
+const useSinglyLinkedList = () => {
+  const people = new LinkedList("kakashi");
+  people.append("yamato");
+  people.prepend("iruka");
+  people.insert(2, "hiruzen");
+}
 
 // ---
 // doubly linked list
@@ -581,11 +585,13 @@ class DoublyLinkedList {
   }
 }
 
-const dll = new DoublyLinkedList("kakashi");
-dll.append("yamato");
-dll.prepend("iruka");
-console.log(dll);
-console.log(dll.get(0), dll.get(1), dll.get(2));
+const useDoublyLinkedList = () => {
+  const dll = new DoublyLinkedList("kakashi");
+  dll.append("yamato");
+  dll.prepend("iruka");
+  console.log(dll);
+  console.log(dll.get(0), dll.get(1), dll.get(2));
+}
 
 // ---
 // data structures (stacks and queues)

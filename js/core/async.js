@@ -35,13 +35,13 @@ const fetchUser = () => {
   return { data, error }; // one will have value, other will be undefined;
 };
 
-let apiResponse = fetchUser();
+const apiResponse = fetchUser();
 
 // ---
 // async / await
 // ---
 
-const fetchUser = async () => {
+const fetchUserAsync = async () => {
   try {
     const apiResponse = await fetch(
       "https://jsonplaceholder.typicode.com/users/1"
