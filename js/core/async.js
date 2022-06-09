@@ -6,50 +6,57 @@
 // promises
 // ---
 
-// promise
-const myPromise = new Promise((resolve, reject) => {
-  const someCondition = true;
-  if (someCondition) {
-    resolve("Success!");
-  } else {
-    reject("Failure!");
-  }
-});
+const _basicPromises = () => {
+  const myPromise = new Promise((resolve, reject) => {
+    const someCondition = true;
+    if (someCondition) {
+      resolve("Success!");
+    } else {
+      reject("Failure!");
+    }
+  });
 
-// use promise value -- then & catch (and chaining 'then')
-myPromise
-  .then((value) => `It worked! ${value}`) // use resolve value (pass to next '.then' if applicable)
-  .then((value) => console.log(value)) // use output of first 'then'
-  .catch((error) => console.log(error)); // use reject value
+  // use promise value -- then & catch (and chaining 'then')
+  myPromise
+    .then((value) => `It worked! ${value}`) // use resolve value (pass to next '.then' if applicable)
+    .then((value) => console.log(value)) // use output of first 'then'
+    .catch((error) => console.log(error)); // use reject value
+};
 
 // ---
 // fetch (promise based request)
 // ---
 
-const fetchUser = () => {
-  let data, error;
-  fetch("https://jsonplaceholder.typicode.com/users/1")
-    .then((response) => response.json())
-    .then((json) => (data = json)) // store json in 'data'
-    .catch((err) => (error = console.log(err) || err)); // store err in 'error'
-  return { data, error }; // one will have value, other will be undefined;
-};
+const _basicPromiseFetch = () => {
+  const fetchUser = () => {
+    return fetch("https://jsonplaceholder.typicode.com/users/1")
+      .then((response) => response.json())
+      .catch((e) => {
+        throw e;
+      });
+  };
 
-const apiResponse = fetchUser();
+  fetchUser().then(console.log).catch(console.error);
+};
 
 // ---
 // async / await
 // ---
 
-const fetchUserAsync = async () => {
-  try {
-    const apiResponse = await fetch(
-      "https://jsonplaceholder.typicode.com/users/1"
+const _basicAsyncAwait = async () => {
+  const fetchUserAsync = async () => {
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/users/1",
     );
-    const user = await apiResponse.json();
-    return { data: user, error: null };
+    const user = await response.json();
+    return user;
+  };
+
+  try {
+    const result = await fetchUserAsync();
+    console.log(result);
   } catch (err) {
-    return { data: null, error: err };
+    console.error(err);
   }
 };
 

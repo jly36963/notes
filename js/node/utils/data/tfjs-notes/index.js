@@ -25,10 +25,10 @@ const trainTestSplit = ({ df, inputCols, outputCols, testSize }) => {
   return result;
 }
 
-const flatten = (arr) => [].concat.apply([], arr);
+const flatten = (arr) => Array.prototype.concat.apply([], arr);
 
 // entry point
-(async () => {
+const main = async () => {
   try {
     // csv
     const csvFilePath = path.join(__dirname, 'iris.csv')
@@ -54,6 +54,7 @@ const flatten = (arr) => [].concat.apply([], arr);
     const X = df.select(...inputCols).slice()
 
     // DO STUFF HERE
+
     const ConfusionMatrix = require('ml-confusion-matrix');
 
     const trueLabels = [0, 1, 0, 1, 1, 0];
@@ -71,4 +72,6 @@ const flatten = (arr) => [].concat.apply([], arr);
     console.log(err);
   }
 
-})()
+}
+
+main()

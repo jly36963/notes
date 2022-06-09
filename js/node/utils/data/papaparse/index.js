@@ -1,20 +1,13 @@
-// ---------------
+// ---
 // papaparse
-// ---------------
+// ---
 
-// install 
-  // npm i --save papaparse
-
-// docs
-  // https://www.papaparse.com/docs
-
-// nodejs
-  // if using in node, use fs to read file (utf8 encoding)
+// https://www.papaparse.com/docs
 
 const papa = require('papaparse');
 const fs = require('fs');
 
-(async () => {
+const main = async () => {
   // read csv
   const csv = fs.readFileSync('iris.csv', 'utf8');
   // parse csv
@@ -27,4 +20,6 @@ const fs = require('fs');
   // get data
   const irisData = parsedCsv.data;
   console.log(irisData);
-})()
+}
+
+main()

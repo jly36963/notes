@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "ml": "^6.0.0",
+    "ml-confusion-matrix": "^0.4.0",
+    "ml-hclust": "^3.1.0",
+    "ml-kmeans": "^5.0.0",
+    "ml-knn": "^3.0.0",
+    "ml-naivebayes": "^4.0.0",
+    "ml-pca": "^4.0.2",
+    "ml-regression-multivariate-linear": "^2.0.3",
+    "ml-regression-polynomial": "^2.2.0",
+    "ml-regression-robust-polynomial": "^3.0.0",
+    "ml-regression-simple-linear": "^2.0.3"
+  }
+}
