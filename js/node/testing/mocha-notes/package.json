@@ -1,0 +1,19 @@
+{
+  "name": "mocha-notes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha --recursive",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "expect": "^28.1.1",
+    "mocha": "^10.0.0",
+    "sinon": "^14.0.0"
+  }
+}
