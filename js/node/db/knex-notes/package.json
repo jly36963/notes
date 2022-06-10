@@ -1,0 +1,19 @@
+{
+  "name": "knex-notes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "knex": "^2.1.0",
+    "knex-stringcase": "^1.4.6",
+    "lodash-es": "^4.17.21",
+    "pg": "^8.7.3"
+  }
+}
