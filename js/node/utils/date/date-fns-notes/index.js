@@ -42,7 +42,7 @@ const basicCreation = () => {
   const now = new Date();
   // toDate
   toDate(1392098430000); // 2014-02-11T06:00:30.000Z
-}
+};
 
 const basicComparisonAndValidation = () => {
   const now = new Date();
@@ -65,7 +65,7 @@ const basicComparisonAndValidation = () => {
   max([yesterday, now, tomorrow]); // max date (tomorrow)
   // min
   min([yesterday, now, tomorrow]); // min date (yesterday)
-}
+};
 
 const basicFormat = () => {
   const now = new Date();
@@ -77,7 +77,7 @@ const basicFormat = () => {
   formatDistance(tomorrow, now, { includeSeconds: true }); // 1 day
   formatDistanceToNow(tomorrow, { includeSeconds: true }); // 1 day
   formatRelative(tomorrow, now, { includeSeconds: true }); // tomorrow at 2:50 PM
-}
+};
 
 const basicStartEnd = () => {
   // endOf_/startOf_: endOfSecond, endOfMinute, endOfHour, endOfDay, endOfWeek, endOfMonth, endOfYear
@@ -85,12 +85,12 @@ const basicStartEnd = () => {
 
   const now = new Date();
   // start/end
-  startOfMonth(now)
+  startOfMonth(now);
   endOfMonth(now);
   // add/sub
   add(now, { days: 1 });
   sub(now, { days: 1 });
-}
+};
 
 const basicGet = () => {
   // zero-indexed for many
@@ -101,7 +101,7 @@ const basicGet = () => {
 
   const now = new Date();
   getDay(now); // 0 - 6
-}
+};
 
 const basicMisc = () => {
   const now = new Date();
@@ -116,7 +116,7 @@ const basicMisc = () => {
 
   // toDate
   toDate(1392098430000); // 2014-02-11T06:00:30.000Z
-}
+};
 
 const basicDifference = () => {
   // differenceInSeconds, differenceInMinutes, differenceInHours, differenceInDays,
@@ -125,7 +125,7 @@ const basicDifference = () => {
   const now = new Date();
   const tomorrow = add(now, { days: 1 });
   differenceInDays(now, tomorrow); // -1
-}
+};
 
 const basicIs = () => {
   // isThisSecond, isThisHour, isToday, isThisWeek, isThisMonth, isThisYear
@@ -135,7 +135,7 @@ const basicIs = () => {
   const tomorrow = add(now, { days: 1 });
   isSameWeek(now, tomorrow); // true (in most cases)
   isThisWeek(tomorrow); // true (in most cases)
-}
+};
 
 const basicTz = () => {
   const now = new Date();
@@ -145,18 +145,18 @@ const basicTz = () => {
   const date = new Date("2018-09-01T16:01:36.386Z");
   const timeZone = "Europe/Berlin";
   const zonedDate = utcToZonedTime(date, timeZone);
-}
+};
 
 const main = () => {
-  basicCreation()
-  basicComparisonAndValidation()
-  basicFormat()
-  basicStartEnd()
-  basicGet()
-  basicMisc()
-  basicDifference()
-  basicIs()
-  basicTz()
-}
+  basicCreation();
+  basicComparisonAndValidation();
+  basicFormat();
+  basicStartEnd();
+  basicGet();
+  basicMisc();
+  basicDifference();
+  basicIs();
+  basicTz();
+};
 
-main()
+main();

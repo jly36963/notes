@@ -33,8 +33,7 @@ const basicdayjsInstance = () => {
   dayjs().toJSON();
   // string
   dayjs().toString(); // 'Fri, 25 Jan 2019 02:00:00 GMT'
-
-}
+};
 
 // ---
 // usage
@@ -54,10 +53,10 @@ const basicDayjsUsage = () => {
   now.isValid(); // does it contain a valid date?
   // isDayjs
   dayjs.isDayjs(now); // is it a dayjs object?
-}
+};
 
 const basicGetAndSet = () => {
-  const now = dayjs()
+  const now = dayjs();
   // get/set units: year, month, date, dag, hour, minute, second, millisecond
 
   // get
@@ -89,7 +88,7 @@ const basicGetAndSet = () => {
   // start/end
   now.startOf("year");
   now.endOf("month");
-}
+};
 
 const basicComparison = () => {
   const now = dayjs();
@@ -100,7 +99,7 @@ const basicComparison = () => {
   tomorrow.diff(now, "day"); // 1
   yesterday.isBefore(now); // true
   tomorrow.isAfter(now); // true
-}
+};
 
 const basicPlugins = () => {
   // import & use plugins
@@ -144,14 +143,14 @@ const basicPlugins = () => {
   now.toObject(); // { years, months, date, hours, minutes, seconds, milliseconds }
   // utc
   // https://day.js.org/docs/en/plugin/utc
-}
+};
 
 const main = () => {
-  basicdayjsInstance()
-  basicDayjsUsage()
-  basicGetAndSet()
-  basicComparison()
-  basicPlugins()
-}
+  basicdayjsInstance();
+  basicDayjsUsage();
+  basicGetAndSet();
+  basicComparison();
+  basicPlugins();
+};
 
-main()
+main();

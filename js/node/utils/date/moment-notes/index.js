@@ -5,7 +5,7 @@
 // docs
 // https://momentjs.com/
 
-const moment = require('moment')
+const moment = require("moment");
 // var moment = require('moment-timezone');
 
 const basicFormat = () => {
@@ -14,8 +14,7 @@ const basicFormat = () => {
   moment().format("MMM Do YY"); // May 16th 20
   moment().format("YYYY [escaped] YYYY"); // 2020 escaped 2020
   moment().format(); // 2020-05-16T12:53:25-07:00
-}
-
+};
 
 const basicRelative = () => {
   moment("20111031", "YYYYMMDD").fromNow(); // 9 years ago
@@ -23,7 +22,7 @@ const basicRelative = () => {
   moment().startOf("day").fromNow(); // 13 hours ago
   moment().endOf("day").fromNow(); // in 11 hours
   moment().startOf("hour").fromNow(); // an hour ago
-}
+};
 
 const basicCalendarTime = () => {
   moment().subtract(10, "days").calendar(); // 05/06/2020
@@ -34,8 +33,7 @@ const basicCalendarTime = () => {
   moment().add(1, "days").calendar(); // Tomorrow at 12:53 PM
   moment().add(3, "days").calendar(); // Tuesday at 12:53 PM
   moment().add(10, "days").calendar(); // 05/26/2020
-}
-
+};
 
 const basicLocale = () => {
   moment.locale(); // en
@@ -49,7 +47,7 @@ const basicLocale = () => {
   moment().format("lll"); // May 16, 2020 12:55 PM
   moment().format("LLLL"); // Saturday, May 16, 2020 12:55 PM
   moment().format("llll"); // Sat, May 16, 2020 12:55 PM
-}
+};
 
 // const basicTz = () => {
 //   var june = moment("2014-06-01T12:00:00Z");
@@ -102,7 +100,7 @@ const basicCreation = () => {
   // clone (method 2)
   const c = moment();
   const d = a.clone();
-}
+};
 
 const basicSetGet = () => {
   const date = moment();
@@ -124,7 +122,7 @@ const basicSetGet = () => {
   date.set("minute", 20);
   date.set("second", 30);
   date.set("millisecond", 123);
-}
+};
 
 const basicCompare = () => {
   const date1 = moment();
@@ -152,7 +150,7 @@ const basicCompare = () => {
 
   // between
   date2.isBetween(date1, date3);
-}
+};
 
 const basicNow = () => {
   // fromNow & toNow
@@ -177,7 +175,7 @@ const basicNow = () => {
     lastWeek: "[Last] dddd",
     sameElse: "DD/MM/YYYY",
   });
-}
+};
 
 const basicShift = () => {
   const date = moment();
@@ -198,7 +196,7 @@ const basicShift = () => {
   // endOf
   // year -- set the moment to 12-31 23:59:59.999 this year
   date.endOf("year"); // year, month, day, hour, minute, second
-}
+};
 
 const basicDisplay = () => {
   // format
@@ -221,26 +219,25 @@ const basicDisplay = () => {
   date.toObject(); // { years, months, date, hours, minutes, seconds, milliseconds }
   // string
   date.toString();
-}
+};
 
 // TODO
 // https://momentjs.com/docs/#/customization/
 
-
 const basicDurations = () => {
   const twoYears = moment.duration(2, "years");
-}
+};
 
 const main = () => {
-  basicFormat()
-  basicRelative()
-  basicCalendarTime()
-  basicLocale()
-  basicCreation()
-  basicSetGet()
-  basicCompare()
-  basicNow()
-  basicShift()
-}
+  basicFormat();
+  basicRelative();
+  basicCalendarTime();
+  basicLocale();
+  basicCreation();
+  basicSetGet();
+  basicCompare();
+  basicNow();
+  basicShift();
+};
 
-main()
+main();
