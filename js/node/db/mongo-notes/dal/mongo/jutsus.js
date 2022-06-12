@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { pick, pickBy } from "lodash-es";
+import { pickBy } from "lodash-es";
 import { getConnection } from "./connection.js";
 import collections from "./collections.js";
 
