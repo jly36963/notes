@@ -1,0 +1,16 @@
+{
+  "name": "mongo-notes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lodash-es": "^4.17.21",
+    "mongodb": "^4.7.0"
+  }
+}

@@ -2,11 +2,10 @@ import knex from './connection.js';
 import tables from './tables.js';
 import { pick, first } from 'lodash-es';
 
-const get = async (id) => {
-  const result = await knex(tables.JUTSUS).select('*').where({ id });
-  return first(result);
-};
+/** Get a jutsu from the database */
+const get = async (id) => knex(tables.JUTSUS).first('*').where({ id });
 
+/** Insert a jutsu in the database */
 const insert = async (jutsu) => {
   const result = await knex(tables.JUTSUS)
     .insert(pick(jutsu, ['name', 'chakraNature', 'description']))
@@ -14,6 +13,7 @@ const insert = async (jutsu) => {
   return first(result);
 };
 
+/** Update an existing jutsu in the database */
 const update = async (id, updates) => {
   const result = await knex(tables.JUTSUS)
     .where({ id })
@@ -22,6 +22,7 @@ const update = async (id, updates) => {
   return first(result);
 };
 
+/** Delete an existing jutsu in the database */
 const del = async (id) => {
   const result = await knex(tables.JUTSUS)
     .where({ id })
