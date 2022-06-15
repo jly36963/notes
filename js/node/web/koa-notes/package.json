@@ -1,0 +1,37 @@
+{
+  "name": "koa-practice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@koa/multer": "^2.0.2",
+    "@koa/router": "^8.0.8",
+    "koa": "^2.11.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-except": "0.0.2",
+    "koa-json": "^2.0.2",
+    "koa-jsonp": "^2.0.2",
+    "koa-pino-logger": "^3.0.0",
+    "koa-route": "^3.2.0",
+    "koa-router": "^8.0.8",
+    "koa-send": "^5.0.0",
+    "koa-session": "^5.13.1",
+    "koa-session-redis-store": "^1.0.5",
+    "koa-sslify": "^4.0.3",
+    "koa-static": "^5.0.0",
+    "koa-versioned": "^0.1.8",
+    "koa-websocket": "^6.0.0",
+    "koa2-useragent": "^0.3.2",
+    "pino-pretty": "^4.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

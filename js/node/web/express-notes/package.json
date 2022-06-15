@@ -1,0 +1,26 @@
+{
+  "name": "express-api-example",
+  "version": "1.0.0",
+  "description": "express example",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-pino-logger": "^5.0.0",
+    "helmet": "^3.22.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.2",
+    "pino": "^6.2.1",
+    "pino-pretty": "^4.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

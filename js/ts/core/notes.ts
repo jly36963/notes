@@ -1,21 +1,9 @@
 // ---
-// typescript basics
+// Typescript basics
 // ---
 
-// page
-// https://www.typescriptlang.org/
-
-// playground
-// https://www.typescriptlang.org/play/index.html
-
-// install
-// npm i -g typescript
-
-// compile
-// tsc helloworld.ts
-
 // ---
-// declarations
+// Declarations
 // ---
 
 const basicDeclarations = () => {
@@ -25,7 +13,7 @@ const basicDeclarations = () => {
 }
 
 // ---
-// types
+// Types
 // ---
 
 const basicTypes = () => {
@@ -53,7 +41,7 @@ const basicTypes = () => {
 }
 
 // ---
-// functions
+// Functions
 // ---
 
 // https://www.typescriptlang.org/docs/handbook/functions.html
@@ -79,7 +67,7 @@ const basicFunctions = () => {
 }
 
 // ---
-// classes
+// Classes
 // ---
 
 // https://www.typescriptlang.org/docs/handbook/interfaces.html#class-types
@@ -105,21 +93,21 @@ const basicClasses = () => {
 }
 
 // ---
-// union types
+// Union types
 // ---
 
 // type unions require type-narrowing to use type-specific properties/methods
 
 const basicUnionTypes = () => {
   type nil = null | undefined
-  const greet = (name: string | nil) => name 
+  const greet = (name: string | nil) => name
     ? `Hello ${name.trim()}!`
     : "Hello friend!"
 
 }
 
 // ---
-// interfaces
+// Interfaces
 // ---
 
 const basicInterfaces = () => {
@@ -173,17 +161,58 @@ const basicInterfaces = () => {
     interval: number;
     reset(): void;
   }
-  
+
   function getCounter(): Counter {
-    let counter = function (start: number) {} as Counter;
+    let counter = function (start: number) { } as Counter;
     counter.interval = 123;
-    counter.reset = function () {};
+    counter.reset = function () { };
     return counter;
   }
-  
+
   let c = getCounter();
   c(10);
   c.reset();
   c.interval = 5.0;
 }
+
+// ---
+// Utility types
+// ---
+
+const basicUtilityTypes = () => {
+  interface Ninja {
+    id: string;
+    firstName: string;
+    lastName: string;
+    age: number;
+    createdAt: string;
+    updatedAt: string | null;
+    jutsus?: Array<Jutsu>;
+  }
+
+  interface Jutsu {
+    id: string;
+    name: string;
+    chakraNature: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string | null;
+    ninjas?: Array<Ninja>;
+  }
+
+  type partialNinja = Partial<Ninja> // All properties optional
+  type requiredNinja = Required<Ninja> // All properties required
+  type readonlyNinja = Readonly<Ninja> // All properties cannot be reassigned
+  type ninjaMap = Record<string, Ninja> // Generic Key/Type map type
+  type pickedNinja = Pick<Ninja, 'firstName' | 'lastName' | 'age'> // Pick props
+  type omittedNinja = Omit<Ninja, 'jutsus'> // Omit props
+
+  type excluded = Exclude<'null' | 'undefined', 'null'> // Exclude from union
+  type extracted = Extract<'null' | 'undefined', 'null'> // Extract from union
+  type nonNullable = NonNullable<'string' | 'undefined'> // Remove nil from union
+  type params = Parameters<(string) => string> // Param types of func
+  type output = ReturnType<(string) => string> // Return type of func
+}
+
+
 

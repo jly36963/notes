@@ -1,0 +1,21 @@
+{
+  "name": "polka-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@polka/send-type": "^0.5.2",
+    "body-parser": "^1.19.0",
+    "polka": "^0.5.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

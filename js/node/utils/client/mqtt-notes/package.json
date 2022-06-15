@@ -1,0 +1,25 @@
+{
+  "name": "mqtt-notes",
+  "version": "1.0.0",
+  "description": "mqtt notes",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "run-example": "node example.js",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "mqtt"
+  ],
+  "author": "jly",
+  "license": "ISC",
+  "dependencies": {
+    "aedes": "^0.46.2",
+    "aedes-logging": "^2.0.1",
+    "async-mqtt": "^2.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
