@@ -5,24 +5,8 @@ import sinon from "sinon";
 import Calculator from "../../lib/calculator.js";
 
 describe("Calculator", () => {
-  // let c = new Calculator();
-  // let randIntStub = stub(c, "randInt", returnsNext([Promise.resolve(27)]));
-
-  // beforeEach(() => {
-  //   // Reset calculator
-  //   c = new Calculator();
-  //   // Stubs
-  //   randIntStub = stub(c, "randInt", returnsNext([Promise.resolve(27)]));
-  // });
-
-  // afterEach(() => {
-  //   // Restore stubs
-  //   randIntStub.restore()
-  // })
-
   let c: Calculator;
   let randIntStub: sinon.SinonStubbedMember<typeof c.randInt>
-
 
   beforeEach(() => {
     // Setup
