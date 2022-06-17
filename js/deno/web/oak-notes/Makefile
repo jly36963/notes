@@ -1,14 +1,17 @@
 # ---
-# variables
+# Variables
 # ---
 
-# None
+# TODO
 
 # ---
-# commands
+# Commands
 # ---
 
-.PHONY: lint fmt test dev build run
+.PHONY: lint fmt test dev build run run-example
+
+install:
+	@npm i
 
 lint:
 	@deno lint
@@ -28,3 +31,6 @@ build:
 	
 run:
 	@deno run --allow-all ./build/mod.js
+
+run-example:
+	@deno run --allow-all ./example.ts

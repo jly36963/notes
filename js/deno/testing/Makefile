@@ -24,7 +24,7 @@ dev:
 
 build:
 	@mkdir -p build
-	@deno bundle mod.ts ./build/mod.ts
+	@deno bundle mod.ts ./build/mod.js
 	
 run:
-	@deno run --allow-all ./build/mod.ts
+	@deno run --allow-all ./build/mod.js
