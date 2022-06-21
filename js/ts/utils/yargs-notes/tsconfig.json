@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "es2020",
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "noEmit": false,
+    "outDir": "build",
+    "moduleResolution": "nodenext",
+    "moduleDetection": "auto",
+    "esModuleInterop": true,
+  },
+  "exclude": ["node_modules"]
+}

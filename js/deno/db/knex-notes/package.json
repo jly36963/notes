@@ -1,4 +1,8 @@
 {
+  "type": "module",
+  "engines": {
+    "node": ">=18.3.0"
+  },
   "dependencies": {
     "knex": "^2.1.0",
     "knex-stringcase": "^1.4.6",

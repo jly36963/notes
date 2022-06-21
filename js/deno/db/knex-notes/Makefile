@@ -24,14 +24,14 @@ fmt:
 # 	@deno test
 
 dev:
-	@deno run  --allow-all --watch --compat --unstable mod.ts
+	@deno run  --allow-all --compat --unstable --watch  mod.ts
 
 build:
 	@mkdir -p build
-	@deno bundle mod.ts ./build/mod.js
+	@deno bundle  mod.ts ./build/mod.js
 	
 run:
-	@deno run --allow-all ./build/mod.js
+	@deno run --allow-all --compat --unstable ./build/mod.js
 
 # ---
 # Migrations
