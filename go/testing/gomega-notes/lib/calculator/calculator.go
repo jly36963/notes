@@ -82,8 +82,6 @@ func Mean[T Number](numbers []T) float64 {
 
 }
 
-// []int32{1, 2, 3, 4, 5}
-
 // Std gets the standard deviation of a slice of numbers
 func Std[T Number](numbers []T, completeSample bool) float64 {
 	length := len(numbers)
