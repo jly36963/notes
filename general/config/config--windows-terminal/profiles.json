@@ -3,195 +3,31 @@
   "defaultProfile": "{c6eaf9f4-32a7-5fdc-b5cf-066e8a4b1e40}",
   "initialRows": 25,
   "initialCols": 80,
-  "keybindings": [
-    {
-      "command": "closeTab",
-      "keys": [
-        "ctrl+w"
-      ]
-    },
-    {
-      "command": "newTab",
-      "keys": [
-        "ctrl+t"
-      ]
-    },
-    {
-      "command": "newTabProfile0",
-      "keys": [
-        "ctrl+shift+1"
-      ]
-    },
-    {
-      "command": "newTabProfile1",
-      "keys": [
-        "ctrl+shift+2"
-      ]
-    },
-    {
-      "command": "newTabProfile2",
-      "keys": [
-        "ctrl+shift+3"
-      ]
-    },
-    {
-      "command": "newTabProfile3",
-      "keys": [
-        "ctrl+shift+4"
-      ]
-    },
-    {
-      "command": "newTabProfile4",
-      "keys": [
-        "ctrl+shift+5"
-      ]
-    },
-    {
-      "command": "newTabProfile5",
-      "keys": [
-        "ctrl+shift+6"
-      ]
-    },
-    {
-      "command": "newTabProfile6",
-      "keys": [
-        "ctrl+shift+7"
-      ]
-    },
-    {
-      "command": "newTabProfile7",
-      "keys": [
-        "ctrl+shift+8"
-      ]
-    },
-    {
-      "command": "newTabProfile8",
-      "keys": [
-        "ctrl+shift+9"
-      ]
-    },
-    {
-      "command": "nextTab",
-      "keys": [
-        "ctrl+tab"
-      ]
-    },
-    {
-      "command": "openSettings",
-      "keys": [
-        "ctrl+,"
-      ]
-    },
-    {
-      "command": "prevTab",
-      "keys": [
-        "ctrl+shift+tab"
-      ]
-    },
-    {
-      "command": "scrollDown",
-      "keys": [
-        "ctrl+shift+down"
-      ]
-    },
-    {
-      "command": "scrollDownPage",
-      "keys": [
-        "ctrl+shift+pgdn"
-      ]
-    },
-    {
-      "command": "scrollUp",
-      "keys": [
-        "ctrl+shift+up"
-      ]
-    },
-    {
-      "command": "scrollUpPage",
-      "keys": [
-        "ctrl+shift+pgup"
-      ]
-    },
-    {
-      "command": "switchToTab0",
-      "keys": [
-        "alt+1"
-      ]
-    },
-    {
-      "command": "switchToTab1",
-      "keys": [
-        "alt+2"
-      ]
-    },
-    {
-      "command": "switchToTab2",
-      "keys": [
-        "alt+3"
-      ]
-    },
-    {
-      "command": "switchToTab3",
-      "keys": [
-        "alt+4"
-      ]
-    },
-    {
-      "command": "switchToTab4",
-      "keys": [
-        "alt+5"
-      ]
-    },
-    {
-      "command": "switchToTab5",
-      "keys": [
-        "alt+6"
-      ]
-    },
-    {
-      "command": "switchToTab6",
-      "keys": [
-        "alt+7"
-      ]
-    },
-    {
-      "command": "switchToTab7",
-      "keys": [
-        "alt+8"
-      ]
-    },
-    {
-      "command": "switchToTab8",
-      "keys": [
-        "alt+9"
-      ]
-    }
-  ],
   "alwaysShowTabs": true,
   "requestedTheme": "system",
   "showTabsInTitlebar": true,
   "showTerminalTitleInTitlebar": true,
   "wordDelimiters": " ./\\()\"'-:,.;<>~!@#$%^&*|+=[]{}~?\u2502",
   "globals": {
-    // no longer used?
   },
   "profiles": [
     {
       "guid": "{c6eaf9f4-32a7-5fdc-b5cf-066e8a4b1e40}",
-      "fontFace": "IBM Plex Mono",
-      "fontSize": 10,
+      "font": {
+        "fontFace": "IBM Plex Mono",
+        "fontSize": 10
+      },
       "hidden": false,
       "name": "Ubuntu-18.04",
       "icon": "https://cdn0.iconfinder.com/data/icons/flat-round-system/512/ubuntu-512.png",
-      // "backgroundImage": "https://images.unsplash.com/photo-1470955233021-2c79a52e5034?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
-      // "backgroundImageOpacity": 0.9,
-      // "backgroundImageStretchMode": "uniformToFill",
       "source": "Windows.Terminal.Wsl"
     },
     {
       "guid": "{0110db4a-cf7b-5647-9a03-7232d80cd09e}",
-      "fontFace": "IBM Plex Mono",
-      "fontSize": 10,
+      "font": {
+        "fontFace": "IBM Plex Mono",
+        "fontSize": 10
+      },
       "hidden": false,
       "name": "openSUSE-Leap-15-1",
       "icon": "https://icons.iconarchive.com/icons/papirus-team/papirus-apps/512/distributor-logo-opensuse-icon.png",
@@ -199,8 +35,10 @@
     },
     {
       "guid": "{46ca431a-3a87-5fb3-83cd-11ececc031d2}",
-      "fontFace": "IBM Plex Mono",
-      "fontSize": 10,
+      "font": {
+        "fontFace": "IBM Plex Mono",
+        "fontSize": 10
+      },
       "hidden": false,
       "name": "kali-linux",
       "icon": "https://www.kali.org/wp-content/uploads/2019/12/kali-square.png",
@@ -208,23 +46,27 @@
     },
     {
       "guid": "{a8202b0e-781a-5dab-98e2-e9d469a63619}",
-      "fontFace": "IBM Plex Mono",
-      "fontSize": 10,
+      "font": {
+        "fontFace": "IBM Plex Mono",
+        "fontSize": 10
+      },
       "hidden": false,
       "name": "CentOS7",
       "icon": "https://cdn1.iconfinder.com/data/icons/system-shade-circles/512/centOS-512.png",
       "source": "Windows.Terminal.Wsl"
     },
     {
-      "acrylicOpacity": 0.5,
+      "opacity": 0.5,
       "background": "#012456",
       "closeOnExit": true,
       "colorScheme": "Campbell",
       "commandline": "powershell.exe",
       "cursorColor": "#FFFFFF",
       "cursorShape": "bar",
-      "fontFace": "Consolas",
-      "fontSize": 10,
+      "font": {
+        "fontFace": "IBM Plex Mono",
+        "fontSize": 10
+      },
       "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
       "historySize": 9001,
       "icon": "ms-appx:///ProfileIcons/{61c54bbd-c2c6-5271-96e7-009a87ff44bf}.png",
@@ -235,14 +77,16 @@
       "useAcrylic": false
     },
     {
-      "acrylicOpacity": 0.75,
+      "opacity": 0.75,
       "closeOnExit": true,
       "colorScheme": "Campbell",
       "commandline": "cmd.exe",
       "cursorColor": "#FFFFFF",
       "cursorShape": "bar",
-      "fontFace": "Consolas",
-      "fontSize": 10,
+      "font": {
+        "fontFace": "IBM Plex Mono",
+        "fontSize": 10
+      },
       "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
       "historySize": 9001,
       "icon": "ms-appx:///ProfileIcons/{0caa0dad-35be-5f56-a8ff-afceeeaa6101}.png",

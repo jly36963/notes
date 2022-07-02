@@ -13,6 +13,7 @@ use (
 	./db/pg-example
 	./db/redis-example
 	./db/squirrel-example
+	./testing/gomega-notes
 	./web/atreugo
 	./web/fasthttp
 	./web/gin

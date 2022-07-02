@@ -1,0 +1,141 @@
+{
+  // ---
+  // Editor
+  // ---
+  // theme
+  "workbench.colorTheme": "Atom One Light",
+  // atom keymap
+  "atomKeymap.promptV3Features": true,
+  "editor.multiCursorModifier": "ctrlCmd",
+  // minimap
+  "editor.minimap.enabled": false,
+  // emmet
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "vue-html": "html",
+    "vue": "html",
+    "svelte": "html"
+  },
+  // spacing
+  "editor.detectIndentation": true,
+  "editor.insertSpaces": true,
+  // font
+  "editor.fontFamily": "IBM Plex Mono",
+  "editor.fontLigatures": true,
+  // git
+  "diffEditor.renderSideBySide": false,
+  "diffEditor.ignoreTrimWhitespace": false,
+  // search
+  "search.exclude": {
+    "**/.cache": true,
+    "**/build": true,
+    "**/.next": true,
+    "**/.nuxt": true,
+    "**/__sapper__": true,
+    "**/coverage": true,
+    "**/node_modules": true,
+    "**/.venv": true
+  },
+  // zoom
+  "window.zoomLevel": -2,
+  // ---
+  // Format
+  // ---
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  /*
+  // eslint
+  "eslint.format.enable": true, // enable as formatter
+  "eslint.validate": ["javascript", "typescript", "javascriptreact", "typescriptreact"],
+  */
+  // go
+  "go.formatTool": "goimports",
+  // python
+  "python.formatting.provider": "autopep8",
+  "python.formatting.autopep8Args": [
+    "--max-line-length",
+    "120",
+    "--experimental"
+  ],
+  // pylance type checking
+  "python.analysis.typeCheckingMode": "basic",
+  // pylance import logic
+  "python.analysis.useImportHeuristic": true,
+  // ---
+  // Language specific
+  // ---
+  // md & config
+  "[markdown]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "denoland.vscode-deno",
+  },
+  "[json]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[jsonc]": {
+    "editor.tabSize": 2
+    // "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    // "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  // backend
+  "[javascript]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+    // "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    // "editor.defaultFormatter": "vscode.typescript-language-features",
+  },
+  "[typescript]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "denoland.vscode-deno"
+    // "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    // "editor.defaultFormatter": "vscode.typescript-language-features",
+  },
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true
+  },
+  "[cpp]": {
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true
+  },
+  "[rust]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rust-lang.rust"
+  },
+  // ui
+  "[html]": {
+    "editor.tabSize": 2
+  },
+  "[css]": {
+    "editor.tabSize": 2
+  },
+  "[vue]": {
+    "editor.tabSize": 2
+  },
+  "[svelte]": {
+    "editor.tabSize": 2
+  },
+  "[typescriptreact]": {
+    "editor.tabSize": 2
+    // "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[jsx]": {
+    "editor.tabSize": 2
+  },
+  // ---
+  // Misc
+  // ---
+  // tcl
+  "turboConsoleLog.logMessagePrefix": "TCL",
+  // cpp
+  "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 0}",
+  // svelte
+  "svelte.plugin.css.diagnostics.enable": false,
+  // notebooks
+  "workbench.editorAssociations": {
+    "*.ipynb": "jupyter-notebook"
+  }
+}
