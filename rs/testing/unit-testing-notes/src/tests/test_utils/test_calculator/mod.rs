@@ -8,12 +8,14 @@ fn test_add() {
     let expected = 3;
     assert_eq!(result, expected);
 }
+
 #[test]
 fn test_subtract() {
     let result = subtract(1, 2);
     let expected = -1;
     assert_eq!(result, expected);
 }
+
 #[test]
 fn test_multiply() {
     let result = multiply(1, 2);

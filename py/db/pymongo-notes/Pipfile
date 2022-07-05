@@ -7,8 +7,9 @@ name = "pypi"
 pymongo = "*"
 python-dotenv = "*"
 arrow = "*"
+pydash = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"

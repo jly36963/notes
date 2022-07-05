@@ -1,4 +1,4 @@
-# py ariadne fastapi
+# motor mongo notes
 
 ## setup
 
