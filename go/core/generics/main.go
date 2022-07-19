@@ -54,8 +54,10 @@ func sumNumbers[T Number](numbers []T) T {
 }
 
 func basicGenericAdd() {
+	// Unnecessary type arguments included
 	sumInts := sumNumbers[int32]([]int32{1, 2, 3, 4, 5})
 	sumfloats := sumNumbers[float32]([]float32{1, 2, 3, 4, 5})
+	// Type args inferred
 	sumInferred := sumNumbers([]float32{1, 2, 3, 4, 5})
 
 	fmt.Println("sumInts: ", sumInts)

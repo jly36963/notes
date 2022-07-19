@@ -189,9 +189,6 @@ func main() {
 	fmt.Println(strings.ToUpper("switch"))
 	getSnackbarColor("success")
 
-	fmt.Println(strings.ToUpper(""))
-	fmt.Println(strings.ToUpper(""))
-	fmt.Println(strings.ToUpper(""))
 }
 
 // ---

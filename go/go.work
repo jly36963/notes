@@ -8,6 +8,8 @@ use (
 	./core/lo
 	./core/standard-packages
 	./core/structures
+	./data/gota-notes
+	./data/gonum-notes
 	./db/gorm-example
 	./db/mongo-example
 	./db/pg-example
