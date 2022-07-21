@@ -322,6 +322,11 @@ func basicMultivariateStatistics() {
 	prettyPrintMatrix(covMatDense)
 }
 
+// TODO:
+// Pearson correlation coefficient (r and p-value)
+// Hypothesis testing (t-test, z-test, shapiro-wilk, mww ranksum, anova)
+// outliers (IQR)
+
 // ---
 // Helpers (df)
 // ---
