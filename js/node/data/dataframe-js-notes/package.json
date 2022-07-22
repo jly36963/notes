@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dataframe-js": "^1.4.4"
+    "dataframe-js": "^1.4.4",
+    "lodash": "^4.17.21"
   }
 }
