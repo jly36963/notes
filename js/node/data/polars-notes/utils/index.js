@@ -1,6 +1,6 @@
-const printSectionTitle = (s) => console.log("\n" + s.toUpperCase() + "\n")
+export const printSectionTitle = (s) => console.log("\n" + s.toUpperCase() + "\n")
 
-const range = (a, b, c) => {
+export const range = (a, b, c) => {
   // Convert args to start/stop/step
   let start, stop, step
   if (a !== undefined && b !== undefined && c !== undefined) {
@@ -30,13 +30,13 @@ const range = (a, b, c) => {
   return result
 }
 
-const round = (n, precision = 0) => {
+export const round = (n, precision = 0) => {
   const x = 10 ** Math.max(precision, 0)
   return Math.round(n * x) / x
 }
 
-module.exports = {
-  printSectionTitle,
-  range,
-  round
+export function getRowAsObj(df, index) {
+  const values = df.row(index)
+  const cols = df.columns
+  return cols.reduce((obj, c, i) => ({ ...obj, [c]: values[i] }), {})
 }
