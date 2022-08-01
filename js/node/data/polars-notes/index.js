@@ -68,7 +68,7 @@ const basicDfDetails = () => {
   console.log("height: ", df.height)
   console.log("shape: ", df.shape)
   console.log("width: ", df.width)
-  console.log("schema: ", df.schema())
+  console.log("schema: ", df.schema)
   console.log("describe: ", df.describe())
 }
 
@@ -80,17 +80,24 @@ const basicDfExport = () => {
   )
 
   // CSV
-  const csv = df.toCSV()
+  const csv = df.writeCSV().toString('utf-8')
   console.log(csv)
 
   df = pl.readCSV(csv)
   console.log(df.head())
 
   // JSON
-  const json = df.toJSON({ orient: 'row' })
+  const json = df.writeJSON({ format: 'json' }).toString('utf-8')
   console.log(json)
 
   df = pl.DataFrame(JSON.parse(json))
+  console.log(df.head())
+
+  // Array<object>
+  const records = df.toRecords()
+  console.log(records)
+
+  df = pl.DataFrame(records)
   console.log(df.head())
 }
 
@@ -179,10 +186,10 @@ const basicDfCombine = () => {
   )
 
   // Concat
-  console.log('Concat: ', pl.concat([df, df]))
+  console.log('concat: ', pl.concat([df, df]))
 
   // Join 
-  // TODO
+  console.log('join:', df.join(df, { how: 'inner', on: 'a', suffix: '_r' })) // leftOn, rightON
 }
 
 const basicColumnAssignment = () => {
@@ -214,11 +221,16 @@ const basicDfMissing = () => {
 }
 
 const basicDfGrouping = () => {
-  // TODO: groupBy
-}
+  const df = pl.readCSV('./data/iris.csv')
 
-const basicDfMapping = () => {
-  // TODO: map
+  const grouped = df.groupBy('species')
+  console.log('grouped:', grouped)
+  console.log('groupby max:', grouped.max())
+  console.log('groupby groups:', grouped.groups())
+  // groupby agg: count, first, last, max, mean, median, min, quantile, sum
+
+  // No support for iterating through groups yet?
+  // TODO: partitionBy
 }
 
 const main = () => {
@@ -248,9 +260,6 @@ const main = () => {
   basicDfMissing()
   printSectionTitle('basic df grouping')
   basicDfGrouping()
-  printSectionTitle('basic df mapping')
-  basicDfMapping()
-
 }
 
 main()

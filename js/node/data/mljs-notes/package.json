@@ -1,6 +1,12 @@
 {
+  "name": "mljs-notes",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
-    "ml": "^6.0.0",
+    "lodash": "^4.17.21",
     "ml-confusion-matrix": "^0.4.0",
     "ml-hclust": "^3.1.0",
     "ml-kmeans": "^5.0.0",
@@ -10,6 +16,9 @@
     "ml-regression-multivariate-linear": "^2.0.3",
     "ml-regression-polynomial": "^2.2.0",
     "ml-regression-robust-polynomial": "^3.0.0",
-    "ml-regression-simple-linear": "^2.0.3"
-  }
+    "ml-regression-simple-linear": "^2.0.3",
+    "nodejs-polars": "^0.5.4"
+  },
+  "author": "",
+  "license": "ISC"
 }

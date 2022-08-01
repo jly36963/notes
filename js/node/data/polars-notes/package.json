@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "lodash-es": "^4.17.21",
-    "nodejs-polars": "^0.2.0"
+    "nodejs-polars": "^0.5.4"
   }
 }

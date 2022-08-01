@@ -1,203 +1,158 @@
-// ---
-// ml
-// ---
-
-const { DataFrame } = require('dataframe-js');
-const path = require('path');
+const { mapValues, zipObject, flatten } = require('lodash')
+const pl = require('nodejs-polars')
 const SimpleLinearRegression = require('ml-regression-simple-linear');
 const PolynomialRegression = require('ml-regression-polynomial');
 const MLR = require('ml-regression-multivariate-linear');
-const RobustPolynomialRegression = require('ml-regression-robust-polynomial');
 const ConfusionMatrix = require('ml-confusion-matrix');
 const KNN = require('ml-knn');
 const { GaussianNB, MultinomialNB } = require('ml-naivebayes');
 const { PCA } = require('ml-pca');
 const { agnes } = require('ml-hclust');
 const { kmeans } = require('ml-kmeans');
+const { printSectionTitle, round, trainTestSplit, getRmse, mapArray } = require('./utils')
 
-// ---
-// Helper functions
-// ---
-
-const mapValues = (df, obj) => {
-  let dfNew = df.slice();
-  Object.keys(obj).forEach(k => {
-    dfNew = dfNew.replace(k, obj[k])
-  })
-  return dfNew;
-}
-
-const trainTestSplit = ({ df, inputCols, outputCols, testSize }) => {
-  // df -- dataframe, inputCols -- array, outputCols -- array, testSize -- float
-  if (testSize > 1 || testSize < 0) throw new Error('testSize must be equal to or between 0 and 1')
-  if (!Array.isArray(inputCols) || inputCols.length < 1) throw new Error('inputCols must be an array of length >= 1.')
-  if (!Array.isArray(outputCols) || outputCols.length !== 1) throw new Error('outputCols must be an array of length 1.')
-  const trainSize = 1 - testSize;
-  const [train, test] = df.bisect(trainSize);
-  const X_train = train.select(...inputCols);
-  const y_train = train.select(...outputCols);
-  const X_test = test.select(...inputCols);
-  const y_test = test.select(...outputCols)
-  const result = { X_train, y_train, X_test, y_test };
-  return result;
-}
-
-const flatten = (arr) => [].concat.apply([], arr);
-
-// ---
-// Load data
-// ---
-
-const basicLoadData = async () => {
-  try {
-    // csv
-    const csvFilePath = path.join(__dirname, 'iris.csv')
-    const header = true;
-    let df = await DataFrame.fromCSV(csvFilePath, header);
-    df = df.castAll([Number, Number, Number, Number, String])
-    const inputCols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-    const outputCols = ['species']
-    // convert values to classes (int)
-    df = mapValues(df, {
-      'Iris-setosa': 0,
-      'Iris-versicolor': 1,
-      'Iris-virginica': 2
-    })
-    // train test split
-    const { X_train, y_train, X_test, y_test } = trainTestSplit({
-      df: df,
-      inputCols,
-      outputCols,
-      testSize: .25
-    });
-
-    const X = df.select(...inputCols).slice()
-
-    // *** DO STUFF HERE ***
-
-  } catch (err) {
-    console.log(err);
-  }
-
-}
-
-// ---
-// Simple linear regression
-// ---
 
 const basicLinearRegression = () => {
-  const data = {
-    x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    y: [2.1, 3.9, 5.7, 8.3, 10.0, 12.3, 13.8, 16.0, 18.5, 20.0]
-  }
-  const regression = new SimpleLinearRegression(data.x, data.y);
+  // f(x) = 2x
+  const x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  const y = [2.1, 3.9, 5.7, 8.3, 10.0, 12.3, 13.8, 16.0, 18.5, 20.0]
+  const lr = new SimpleLinearRegression(x, y);
 
-  console.log('regression.slope', regression.slope)
-  console.log('regression.intercept', regression.intercept)
-  console.log('regression.coefficients', regression.coefficients)
-  console.log('regression.predict(3)', regression.predict(3))
-  console.log('regression.computeX(4.0)', regression.computeX(4.0))
-  console.log('regression.score(data.x, data.y)', regression.score(data.x, data.y))
+  const slope = round(lr.slope, 2)
+  console.log('slope:', slope)
 
-  // export to json
-  const jsonLR = regression.toJSON();
+  const intercept = round(lr.intercept, 2)
+  console.log('intercept:', intercept)
+
+  const coefficients = lr.coefficients.map(n => round(n, 2)) // sorted by degree, asc
+  console.log('coefficients:', coefficients)
+
+  const prediction = round(lr.predict(3), 2)
+  console.log('predict(3): ', prediction)
+
+  const computedX = round(lr.computeX(4.0), 2)
+  console.log('computeX(4.0):', computedX)
+
+  const score = mapValues(lr.score(x, y), v => round(v, 2))
+  console.log('regression.score(x, y):', score)
+
+  // Export/import
+  const jsonLR = lr.toJSON();
   const loadedLR = SimpleLinearRegression.load(jsonLR)
-  console.log('loadedLR.predict(5)', loadedLR.predict(5))
-}
 
-// ---
-// Polynomial regression
-// ---
+  const predictionFromLoaded = round(loadedLR.predict(5), 2)
+  console.log('predict(5):', predictionFromLoaded)
+}
 
 const basicPolynomialRegression = () => {
-  const data = {
-    x: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
-    y: [25.2, 16.3, 9.1, 4.2, 1.0, 0.1, 1.2, 4.3, 9.5, 16.3, 25.3],
-    degree: 5 // maximum degree of polynomial
-  }
-  const regression = new PolynomialRegression(data.x, data.y, data.degree);
+  // f(x) = x^3
+  const x = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+  const y = [-125.2, -64.3, -27.1, -8.2, -1.0, 0.0, 1.2, 8.3, 27.5, 64.3, 125.3]
+  const degree = 3 // maximum degree of polynomial
+  const pr = new PolynomialRegression(x, y, degree);
 
-  console.log('regression.coefficients', regression.coefficients) // sorted by degree, asc
-  console.log('regression.predict(3)', regression.predict(3))
-  console.log('regression.score(data.x, data.y)', regression.score(data.x, data.y))
-  console.log('regression.toString(3)', regression.toString(3)) // human readable version
+  const coefficients = pr.coefficients.map(n => round(n, 2)) // sorted by degree, asc
+  console.log('coefficients:', coefficients)
 
-  // export to json
-  const jsonPR = regression.toJSON();
+  const prediction = round(pr.predict(3), 2)
+  console.log('predict(3):', prediction)
+
+  const score = mapValues(pr.score(x, y), v => round(v, 2))
+  console.log('score(x, y):', score)
+
+  const humanReadable = pr.toString(3) // human readable version (precision)
+  console.log('toString(3):', humanReadable)
+
+  // Export/import
+  const jsonPR = pr.toJSON();
   const loadedPR = PolynomialRegression.load(jsonPR)
-  console.log('loadedPR.predict(5)', loadedPR.predict(5))
+
+  const predictionFromLoaded = round(loadedPR.predict(5), 2)
+  console.log('predict(5):', predictionFromLoaded)
 }
-
-// ---
-// Multivariate linear regression
-// ---
-
-// *** CHANGE TO CONTINUOUS OUTPUT VARIABLE ***
 
 const basicMultivariateLinearRegression = () => {
-  const mlr = new MLR(X_train.toArray(), y_train.toArray());
+  const df = pl.readCSV('./data/usa-housing.csv')
+  const columns = df.columns
+  const inputCols = columns.filter(c => !['Price', 'Address'].includes(c))
+  const outputCols = ['Price']
 
-  console.log('mlr.predict(X_test.toArray()[0])', mlr.predict(X_test.toArray()[0]))
-  // console.log('mlr.score(X_test.toArray(), y_test.toArray())', mlr.score(X_test.toArray(), y_test.toArray()))
+  // Split
+  const { X_train, y_train, X_test, y_test } = trainTestSplit(df, inputCols, outputCols, .6)
 
-  // export to json
+  // Train
+  const mlr = new MLR(X_train, y_train)
+
+  // Test
+  const predictions = X_test.map(inputs => mlr.predict(inputs))
+
+  console.log('predicted:', flatten(predictions).slice(0, 5).map(n => round(n, 2)))
+  console.log('actual', flatten(y_test).slice(0, 5).map(n => round(n, 2)))
+
+  const rmse = getRmse(flatten(predictions), flatten(y_test))
+  console.log('rmse:', round(rmse, 2))
+
+  // Export/import
   const jsonMLR = mlr.toJSON();
   const loadedMLR = MLR.load(jsonMLR)
-  console.log('loadedMLR.predict(X_test.toArray()[0])', loadedMLR.predict(X_test.toArray()[0]))
-}
 
-// ---
-// Robust polynomial regression (supervised)
-// ---
-
-// *** NOT WORKING WELL, UNEXPECTED BEHAVIOR ***
-
-const basicRobustPolynomialRegression = () => {
-  const data = {
-    x: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
-    y: [25.2, 16.3, 9.1, 4.2, 1.0, 0.1, 1.2, 4.3, 9.5, 16.3, 25.3],
-    degree: 2 // degree of polynomial
+  const first = X_test[0].map(n => round(n, 1))
+  const predicted = {
+    ...zipObject(inputCols, first),
+    'Price (expected)': round(loadedMLR.predict(first)[0], 1),
+    'Price (actual)': round(y_test[0][0], 1)
   }
-
-  const rpr = new RobustPolynomialRegression(data.x, data.y, data.degree);
-  rpr.predict(3);
-  console.log('rpr.predict(3)', rpr.predict(3))
-  console.log('rpr.score(data.x, data.y)', rpr.score(data.x, data.y))
-
-  // export to json
-  const jsonRPR = rpr.toJSON();
-  const loadedRPR = RobustPolynomialRegression.load(jsonRPR)
-  console.log('loadedRPR.predict(5)', loadedRPR.predict(5))
+  console.log('prediction from loaded model', predicted)
 }
-
-// ---
-// Confusion matrix
-// ---
 
 const basicConfusionMatrix = () => {
-  const trueLabels = [0, 1, 0, 1, 1, 0];
+  const actualLabels = [0, 1, 0, 1, 1, 0];
   const predictedLabels = [1, 1, 1, 1, 0, 0];
 
   // The order of the arguments are important !!!
-  const CM2 = ConfusionMatrix.fromLabels(trueLabels, predictedLabels);
-  console.log(CM2.getAccuracy()); // 0.5
-  console.log(CM2.getMatrix());
-  console.log(CM2.getTrueCount()); // correct predictions
-  console.log(CM2.getFalseCount()); // wrong predictions
+  const CM2 = ConfusionMatrix.fromLabels(actualLabels, predictedLabels);
+  console.log("actual:", actualLabels)
+  console.log("predicted:", predictedLabels)
+  console.log("accuracy:", CM2.getAccuracy()); // 0.5
+  console.log("matrix:", CM2.getMatrix());
+  console.log("true (correct) predictions:", CM2.getTrueCount()); // correct predictions
+  console.log("false (wrong) predictions:", CM2.getFalseCount()); // wrong predictions
 }
 
-// ---
-// KNN (supervised)
-// ---
-
 const basicKNN = () => {
-  const knn = new KNN(X_train.toArray(), y_train.toArray());
-  console.log('knn.predict(X_test.toArray())', knn.predict(X_test.toArray()));
+  let df = pl.readCSV('./data/iris.csv')
+  const columns = df.columns
+  const inputCols = columns.filter(c => c !== 'species')
+  const outputCols = ['species']
 
-  // json (loaded model is messed up)
-  const jsonKNN = knn.toJSON();
-  const loadedKNN = KNN.load(jsonKNN)
-  console.log('loadedKNN.predict(X_test.toArray()[0]', loadedKNN.predict(X_test.toArray()))
+  /*
+  // Convert categorical column
+  const speciesMap = {
+    'Setosa': 0,
+    'Versicolor': 1,
+    'Virginica': 2,
+  }
+  const mappedSpecies = mapArray(df.getColumn('species').toArray(), speciesMap)
+  df = df.withColumn(pl.Series("species", mappedSpecies, pl.UInt8))
+  */
+
+  // Split
+  const { X_train, y_train, X_test, y_test } = trainTestSplit(df, inputCols, outputCols, .6)
+
+  // Train
+  const knn = new KNN(X_train, y_train, { k: 3 });
+
+  // Test
+  const predictedLabels = flatten(knn.predict(X_test))
+  const actualLabels = flatten(y_test)
+  const CM2 = ConfusionMatrix.fromLabels(actualLabels, predictedLabels);
+  console.log('knn.predict(X_test):');
+  console.log("predictedLabels:", predictedLabels.slice(0, 10))
+  console.log("actualLabels:", actualLabels.slice(0, 10))
+  console.log("accuracy:", round(CM2.getAccuracy(), 2)); // 0.5
+  console.log("matrix:", CM2.getMatrix());
+  console.log("correct predictions:", CM2.getTrueCount()); // correct predictions
+  console.log("wrong predictions:", CM2.getFalseCount()); // wrong predictions
 }
 
 // ---
@@ -209,11 +164,7 @@ const basicKNN = () => {
 // multinomial -- discrete input data
 // gaussian -- normal distribution, continuous input data
 
-const basicNaiveBayes = () => {
-  const modelNB = new GaussianNB();
-  modelNB.train(X_train.toArray(), y_train.toArray());
-  console.log('modelNB.predict(X_test);', modelNB.predict(X_test.toArray()));
-}
+// TODO
 
 // ---
 // Decision tree classifier (supervised)
@@ -222,6 +173,8 @@ const basicNaiveBayes = () => {
 // install -- npm i --save ml-cart
 // docs -- https://github.com/mljs/decision-tree-cart
 
+// TODO
+
 // ---
 // Random forest classifier (supervised)
 // ---
@@ -229,15 +182,13 @@ const basicNaiveBayes = () => {
 // install -- npm i --save ml-random-forest
 // docs -- https://github.com/mljs/random-forest
 
+// TODO
+
 // ---
 // PCA (unsupervised)
 // ---
 
-const basicPCA = () => {
-  // pca
-  const pca = new PCA(X.toArray());
-  console.log(pca.getExplainedVariance()) // returns proportion of variance for each component (array)
-}
+// TODO
 
 // ---
 // hclust -- hierarchical clustering algorithm (unsupervised)
@@ -269,7 +220,23 @@ const basicHclust = () => {
 // centroids -- array with the resulting centroids
 // iterations -- number of iterations it took to converge
 
-const basicKmeans = () => {
-  const n = 3; // clusters
-  const result = kmeans(X.toArray(), n, {})
+// TODO
+
+const main = async () => {
+  printSectionTitle('basic linear regression')
+  basicLinearRegression()
+
+  printSectionTitle('basic polynomial regression')
+  basicPolynomialRegression()
+
+  printSectionTitle('basic multivariate linear regression')
+  basicMultivariateLinearRegression()
+
+  printSectionTitle('basic confusion matrix')
+  basicConfusionMatrix()
+
+  printSectionTitle('basic knn')
+  basicKNN()
 }
+
+main()
