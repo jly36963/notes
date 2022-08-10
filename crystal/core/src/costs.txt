@@ -1,0 +1,27 @@
+card,cost
+lathliss,8.88
+miirym,2.26
+archmage emeritus(foil),3.82
+archmage emeritus,3.43
+Ascend from Avernus,.40
+forest(kamigawa),1.20
+forest(kamigawa),1.20
+plains(kamigawa),2.50
+scion ur-dragon,7.20
+nature's lore,1.60
+boom//bust,1.0
+spark double,12
+lightning greaves,6.42
+lagrella,.5
+ghostly prison,2.4
+vivien,.62
+circle of dreams druid,5.33
+natural order,11.17
+terramorphic expanse, 2.73
+sol ring,1.22
+sol ring,1.12
+arcane signet,.87
+arcane signet,.87
+lightning greaves,6.23
+shadowborn apostle,2.21
+shadowborn apostle,3.50
