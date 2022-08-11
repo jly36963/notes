@@ -449,16 +449,6 @@ def basic_hashes
   # TODO: put
 end
 
-def basic_tuples
-  # TODO
-  # https://crystal-lang.org/api/1.5.0/Tuple.html
-end
-
-def basic_procs
-  # TODO
-  # https://crystal-lang.org/api/1.5.0/Proc.html
-end
-
 def add_i32(a : Int32, b : Int32) : Int32
   a + b
 end
@@ -523,40 +513,51 @@ def basic_classes
   puts("first_name: #{first_name}")
 end
 
-def basic_structs
-  # TODO
-  # https://crystal-lang.org/reference/1.5/syntax_and_semantics/structs.html
-  # https://crystal-lang.org/api/1.5.0/Struct.html
-end
-
-def basic_constants
-  # TODO
-  # https://crystal-lang.org/reference/1.5/syntax_and_semantics/constants.html
+enum Village
+  Leaf
+  Sand
+  Mist
+  Stone
+  Cloud
 end
 
 def basic_enums
-  # TODO
-  # https://crystal-lang.org/reference/1.5/syntax_and_semantics/enum.html
-  # https://crystal-lang.org/api/1.5.0/Enum.html
-end
+  # Enums automatically create question methods (eg: Leaf -> .leaf?)
 
-def basic_blocks
-  # TODO
-  # https://crystal-lang.org/reference/1.5/syntax_and_semantics/blocks_and_procs.html
-  # https://crystal-lang.org/reference/1.5/syntax_and_semantics/capturing_blocks.html
-  # https://crystal-lang.org/reference/1.5/syntax_and_semantics/proc_literal.html
-  # https://crystal-lang.org/reference/1.5/syntax_and_semantics/block_forwarding.html
-  # https://crystal-lang.org/reference/1.5/syntax_and_semantics/closures.html
+  village = Village::Leaf
+
+  village.leaf? # true
+
+  if village.leaf? # village == Village::Leaf
+    puts("You're from the village hidden in the leaves!")
+  else
+    puts("Is the #{village} village nice?")
+  end
 end
 
 def basic_exceptions
-  # TODO
-  # https://crystal-lang.org/reference/1.5/syntax_and_semantics/exception_handling.html
+  some_condition = true
+  begin
+    if some_condition
+      raise "Something bad happened!"
+    end
+  rescue err
+    puts "Error caught: #{err}"
+  else
+    puts "No error here!"
+  ensure
+    puts "Always executed"
+  end
+
+  # Short syntax form:
+  # If whole block would fall within begin ... end, begin/end can be omitted
 end
 
 def basic_concurrency
   # TODO
 end
+
+# TODO: tuples, procs, structs, constants, blocks
 
 def print_section_title(s : String)
   puts("\n", s.upcase, "\n")
@@ -596,29 +597,14 @@ def main
   print_section_title("basic hashes")
   basic_hashes()
 
-  print_section_title("basic tuples")
-  basic_tuples()
-
-  print_section_title("basic procs")
-  basic_procs()
-
   print_section_title("basic methods")
   basic_methods()
 
   print_section_title("basic classes")
   basic_classes()
 
-  print_section_title("basic structs")
-  basic_structs()
-
-  print_section_title("basic constants")
-  basic_constants()
-
   print_section_title("basic enums")
   basic_enums()
-
-  print_section_title("basic blocks")
-  basic_blocks()
 
   print_section_title("basic exceptions")
   basic_exceptions()

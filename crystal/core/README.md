@@ -1,8 +1,9 @@
 # crystal
 
 https://crystal-lang.org/\
-https://github.com/crystal-lang/crystal\
-https://crystal-lang.org/api/1.5.0/
+https://crystal-lang.org/reference/1.5/\
+https://crystal-lang.org/api/1.5.0/\
+https://github.com/crystal-lang/crystal
 
 ## install
 
