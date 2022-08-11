@@ -185,7 +185,7 @@ def basic_operators
 end
 
 def basic_if
-  # values are truthy unless nil, false, and null pointers
+  # Values are truthy unless nil, false, and null pointers
 
   # if, elsif, else
   name = "Kakashi"
@@ -269,8 +269,57 @@ def basic_control_flow
 end
 
 def basic_strings
-  # TODO
   # https://crystal-lang.org/api/1.5.0/String.html
+
+  # Indexing
+  "abc"[0]     # Character at
+  "abc"[0..2]  # Substring
+  "abc"[0..2]? # Substring (returns nil if start is out of bounds)
+
+  # Operators
+  "abc" * 3       # Repeat
+  "abc" + "def"   # Concatenate
+  "abc" == "abc"  # Equality
+  "abc" =~ /abc/i # Match regex
+
+  # Length
+  "abc".size # Number of unicode codepoints
+
+  # Methods (checks)
+  "".empty?                   # Is empty?
+  "  ".blank?                 # Only whitespace?
+  "abcde".ends_with?("cde")   # Ends with substring?
+  "abcde".includes?("abc")    # Includes substring?
+  "abc".matches?(/ab./)       # Matches regex?
+  "abcde".starts_with?("abc") # Starts with substring?
+
+  # Methods (case)
+  "abc".capitalize        # First upper, otherwise lower
+  "abc".upcase            # Upper
+  "abc".downcase          # Lower
+  "hello_world".camelcase # As camel-case
+  "helloWorld".underscore # As snake-case
+
+  # Methods (type conversion)
+  "abc".bytes           # As bytes; Array(UInt8)
+  "abc".bytesize        # Number of bytes; Int32
+  "abc".encode("utf-8") # Encode; Bytes
+  "0.0".to_f            # Parse float; Float64
+  "1".to_i              # Parse int; Int32
+
+  # Methods (change)
+  "abc".center(7)            # Pads edges with char (' ') until length n
+  "abc_def".chomp("_def")    # Return string with suffix removed
+  "blues".gsub("es", "rred") # Return string with substring replaced (global)
+  "abcde".gsub({'c' => 'C'}) # Return string with characters replaced (global)
+  " abc ".strip              # Remove leading/trailing instances of Char/String (' ')
+  "cba".reverse              # Reverse order
+  "abc def".split(" ")       # Split on Char/String; Array(String)
+
+  # Methods (misc)
+  "abcde".index("cde") # Index of substring start (or nil)
+  "abc".lines          # Returns lines: Array(String)
+  "abc".each_line      # Returns lines: Iterator(String)
 end
 
 def basic_arrays
@@ -288,6 +337,9 @@ def basic_arrays
   arr1[0, 2]? # start, count; returns nil if start is out of range
   arr1[0..4]  # slice (range)
   arr1[0..4]? # slice (range); returns nil if start is out of range
+
+  # Operators
+  # TODO
 
   # Push, Pop
   arr1.push(6)    # Push element to end
@@ -349,8 +401,52 @@ def basic_arrays
 end
 
 def basic_hashes
-  # TODO
   # https://crystal-lang.org/api/1.5.0/Hash.html
+  hash1 = {"Kakashi" => "Hatake", "Iruka" => "Umino", "Hiruzen" => "Sarutobi"}
+
+  # Length
+  hash1.size
+
+  # Access
+  hash1["Kakashi"]                 # Access key
+  hash1["Itachi"]?                 # Access key (nil if not found)
+  hash1.fetch("Kakashi", "Sensei") # Access key (with fallback)
+  hash1.dig("Kakashi")             # Traverse nested structure (like lodash get)
+  hash1.dig?("a", "b", "c")        # Traverse, nil if not found
+  hash1.key_for?("Umino")          # Get key for value, nil if not found
+  hash1.keys                       # Get keys; Array<K>
+  hash1.values                     # Get values; Array<V>
+
+  # Operators
+  hash1 == hash1 # Equality
+
+  # Methods (check)
+  hash1.empty?                 # Is empty?
+  hash1.has_key?("Iruka")      # Has key?
+  hash1.has_value?("Sarutobi") # Has value?
+
+  # Methods (iterate)
+  hash1.each { |k, v| puts("#{k}: #{v}") }         # Foreach (entries)
+  hash1.each_key { |k| puts("#{k}: #{hash1[k]}") } # Foreach (keys)
+  hash1.each_value { |v| puts(v) }                 # Foreach (values)
+  hash1.select { |k, _| k.size > 3 }               # Return copy that keeps passing elements
+  hash1.select("Kakashi", "Iruka")                 # Return copy with key args kept (variadic)
+  hash1.reject { |k, _| k.size > 100 }             # Return copy that drops passing elements
+  hash1.reject("Hiruzen")                          # Return copy with key args dropped (variadic)
+  hash1.transform_keys(&.upcase)                   # Return copy with keys transformed (lodash mapKeys)
+  hash1.transform_values(&.upcase)                 # Return copy with values transformed (lodash mapValues)
+
+  # Methods (type cast)
+  hash1.to_a # Array of k,v tuples
+
+  # Methods (misc)
+  hash1.clone                         # Clone hash
+  hash1.dup                           # Clone hash (not sure how it's different than clone)
+  hash1.compact                       # Return hash with nil values removed
+  hash1.clear                         # Clear hash
+  hash1.merge({"Itachi" => "Uchiha"}) # Return merged with other (other gets priority if clash)
+
+  # TODO: put
 end
 
 def basic_tuples
