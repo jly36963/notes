@@ -1,4 +1,4 @@
-# Koa
+# Typescript
 
 Basic ts usage
 
@@ -25,12 +25,14 @@ Basic ts usage
 ### Usage
 
 Install:
+
 ```sh
 # install typescript with node type annotations
 npm i -D typescript @types/node
 ```
 
 Compile:
+
 ```sh
 tsc helloworld.ts
 ```
@@ -39,5 +41,3 @@ tsc helloworld.ts
 
 [ts-node and mocha](https://stackoverflow.com/a/35661569)
 [ts, esm, and mocha](https://github.com/mochajs/mocha-examples/issues/47#issuecomment-952339528)
-
-

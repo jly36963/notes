@@ -18,7 +18,8 @@ run:
 	@crystal run $(ENTRY)
 
 build: 
-	@crystal build $(ENTRY) -o $(OUTPUT)
+	@mkdir -p bin; \
+	crystal build $(ENTRY) -o $(OUTPUT);
 
 run-build:
 	@$(OUTPUT)
@@ -27,6 +28,6 @@ format:
 	@crystal tool format
 
 install: 
-	@echo "TODO"
+	shards install
 
 

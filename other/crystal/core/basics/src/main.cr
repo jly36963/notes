@@ -1,5 +1,7 @@
 def basic_print
   puts("Hello world!")
+
+  # TODO: print, printf, sprintf
 end
 
 def basic_interpolation
@@ -511,6 +513,12 @@ def basic_classes
   kakashi = Ninja.new("Kakashi", "Hatake", 27)
   first_name = kakashi.first_name
   puts("first_name: #{first_name}")
+
+  # TODO: inheritance
+  # https://crystal-lang.org/reference/1.5/syntax_and_semantics/inheritance.html
+  # TODO: abstract classes (DI) (IOC)
+  # https://crystal-lang.org/reference/1.5/syntax_and_semantics/virtual_and_abstract_types.html
+  # https://stackoverflow.com/a/41780763
 end
 
 enum Village
@@ -553,8 +561,29 @@ def basic_exceptions
   # If whole block would fall within begin ... end, begin/end can be omitted
 end
 
-def basic_concurrency
-  # TODO
+def basic_process
+  argv = ARGV
+  puts("ARGV: #{argv}")
+
+  program_name = PROGRAM_NAME
+  puts("PROGRAM_NAME: #{program_name}")
+
+  # TODO: system, spawn
+  # # sleep
+  # sleep(1)
+
+  # # quit
+  # abort() # exit program with message, status
+  # exit() # exit program with status
+end
+
+def basic_env
+  keys = ENV.keys.size
+  puts("ENV.keys.size: #{keys}")
+  shell = ENV["SHELL"]?
+  puts("ENV[SHELL]?: #{shell}")
+  has_key = ENV.has_key?("HOME")
+  puts("has_key (HOME): #{has_key}")
 end
 
 # TODO: tuples, procs, structs, constants, blocks
@@ -563,7 +592,7 @@ def print_section_title(s : String)
   puts("\n", s.upcase, "\n")
 end
 
-def main
+def main_
   print_section_title("basic print")
   basic_print()
 
@@ -609,8 +638,11 @@ def main
   print_section_title("basic exceptions")
   basic_exceptions()
 
-  print_section_title("basic concurrency")
-  basic_concurrency()
+  print_section_title("basic process")
+  basic_process()
+
+  print_section_title("basic env")
+  basic_env()
 end
 
-main()
+main_()
