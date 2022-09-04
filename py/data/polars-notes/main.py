@@ -1,8 +1,7 @@
 from io import StringIO
 import json
 import os
-from tokenize import String
-from typing import TypedDict, List, Union
+from typing import TypedDict, List
 import polars as pl
 from pydash import chunk
 
@@ -62,6 +61,7 @@ def basic_series():
 
     # Selection:
     s5 = pl.Series("s5", [1, 2, 3] * 2)
+    print("s5:", s5.to_list())
     print("filter:", s5.filter(s5 > 1).to_list())
     print("sample:", s5.sample(frac=.5, seed=1).to_list())
     print("shuffle:", s5.shuffle(seed=1).to_list())

@@ -1,22 +1,66 @@
 import pl from 'nodejs-polars'
-import { chunk, zipObject } from 'lodash-es'
-import { printSectionTitle, range, round } from "./utils/index.js"
+import { chunk, zipObject, range, round } from 'lodash-es'
 
-// repo: https://github.com/pola-rs/polars/tree/master/nodejs-polars
-// docs: https://pola-rs.github.io/polars/nodejs-polars/html/index.html
-
-// series: https://github.com/pola-rs/polars/blob/master/nodejs-polars/polars/series/series.ts
-// df: https://github.com/pola-rs/polars/blob/master/nodejs-polars/polars/dataframe.ts
+// repo: https://github.com/pola-rs/nodejs-polars
+// docs: https://pola-rs.github.io/nodejs-polars/modules.html
 
 const basicSeries = () => {
-  const data = range(5)
-  const s = pl.Series('s1', data) //  { index: ['a', 'b', 'c', 'd', 'e'] }
-  console.log(s)
+  // Attributes
+  const s1 = pl.Series("s1", range(1, 6))
+  console.log("s1:", s1.toArray())
+  console.log("name:", s1.name)
+  console.log("dtype:", s1.dtype)
+  console.log("length:", s1.length)
 
-  // TODO: head, tail, isIn, filter, get, slice, cast, rename, sort, unique, name
-  // TODO: toArray, toJSON, values
-  // TODO: isNull, isNotNull, dropNulls, fillNull, nullCount
-  // TODO: len, min, max, mean, median, mode, quantile, sum
+  // Agg
+  const s2 = pl.Series("s2", range(1, 6)).cast(pl.Float64)
+  console.log("s2:", s2.toArray())
+  console.log("max:", s2.max())
+  console.log("min:", s2.min())
+  console.log("mean:", s2.mean())
+  console.log("median:", s2.median())
+  console.log("mode(extend 3s):", s2.cast(pl.Int32).extendConstant(3, 2).mode().toArray())
+  console.log("sum:", s2.sum())
+  // console.log("product:", s2.product()) // MISSING
+  // console.log("std:", s2.std()) // MISSING
+  // console.log("var:", s2.var()) // MISSING
+  console.log("quantile(.5):", s2.quantile(.5))
+
+  // Manipulation: cast, append, reverse, sort, set, apply
+  const s3 = pl.Series("s3", [3, 4, 5, 1, 2])
+  console.log("cast:", s3.cast(pl.Float64).toArray())
+  console.log("sort:", s3.sort().toArray())
+  // console.log("reverse:", s3.reverse().toArray()) # MISSING
+  // console.log("apply:", s3.apply(x => x + 1).toArray()) # MISSING
+
+  // Round
+  const s4 = pl.Series("s4", range(0, 10, 1.1).map(n => round(n, 1)))
+  console.log("s4:", s4.toArray())
+  console.log("ceil:", s4.ceil().toArray())
+  console.log("floor:", s4.floor().toArray())
+  console.log("round:", s4.round(0).toArray())
+  console.log("clip:", s4.clip(4, 6).toArray())
+
+  // Selection:
+  const s5 = pl.Series("s5", repeatArray([1, 2, 3], 3))
+  console.log("s5:", s5.toArray())
+  console.log("filter:", s5.filter(s5.gt(1)).toArray())
+  console.log("sample:", s5.sample({ frac: .5, seed: 1 }).toArray())
+  // console.log("shuffle:", s5.shuffle({ seed: 1 }).toArray()) // MISSING
+  console.log("slice:", s5.slice(0, 4).toArray())
+  console.log("head:", s5.head().toArray())
+  console.log("tail:", s5.tail().toArray())
+  // console.log("topK:", s5.topK(3).toArray()) // MISSING
+  console.log("unique:", s5.unique().toArray())
+
+  // Object namespaces: arr, cat, dt, str
+  // Conversion: to_arrow, to_frame, toArray, to_numpy, to_pandas
+  // Missing: drop_nans, drop_nulls, fill_nan, fill_null, interpolate
+
+  // Strings
+  // Regex: contains, ends_with, starts_with
+  // Manipulation: replace, strip, to_lowercase, to_uppercase
+
 }
 
 const NINJAS_RECORDS = [
@@ -263,3 +307,15 @@ const main = () => {
 }
 
 main()
+
+// ---
+// Utils
+// ---
+
+function printSectionTitle(s) {
+  console.log("\n" + s.toUpperCase() + "\n")
+}
+
+function repeatArray(arr, n) {
+  return Array(n).fill(arr).flat(1)
+}
