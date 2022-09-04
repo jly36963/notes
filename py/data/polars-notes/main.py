@@ -8,22 +8,76 @@ from pydash import chunk
 
 dev = os.getenv('PYTHON_ENV') != 'production'
 
+# ---
+# About
+# ---
+
+# polars user guide
+# https://pola-rs.github.io/polars-book/user-guide/introduction.html
+
+# py-polars
+# https://pola-rs.github.io/polars/py-polars/html/reference/
 
 # ---
 # Examples (Series)
 # ---
 
+
 def basic_series():
-    data = range(5)
-    s = pl.Series('s1', data)
-    print(s)
+    # Attributes
+    s1 = pl.Series("s1", range(1, 6))
+    print("s1:", s1.to_list())
+    print("name:", s1.name)
+    print("dtype:", str(s1.dtype.string_repr()))
+    print("shape[0]:", s1.shape[0])
 
-    print("sort:", pl.Series("s1", [3, 4, 5, 1, 2]).sort())
+    # Agg
+    s2 = pl.Series("s2", range(1, 6)).cast(pl.Float64)
+    print("s2:", s2.to_list())
+    print("max:", s2.max())
+    print("min:", s2.min())
+    print("mean:", s2.mean())
+    print("median:", s2.median())
+    print("mode(extend 3s):", s2.cast(pl.Int32).extend_constant(3, 2).mode().to_list())
+    print("sum:", s2.sum())
+    print("product:", s2.product())
+    print("std:", s2.std())
+    print("var:", s2.var())
+    print("quantile(.5):", s2.quantile(.5))
 
-    # TODO: head, tail, isIn, filter, get, slice, cast, rename, sort, unique, name
-    # TODO: toArray, toJSON, values
-    # TODO: isNull, isNotNull, dropNulls, fillNull, nullCount
-    # TODO: len, min, max, mean, median, mode, quantile, sum
+    # Manipulation: cast, append, reverse, sort, set, apply
+    s3 = pl.Series("s3", [3, 4, 5, 1, 2])
+    print("cast:", s3.cast(pl.Float64).to_list())
+    print("sort:", s3.sort().to_list())
+    print("reverse:", s3.reverse().to_list())
+    print("apply:", s3.apply(lambda x: x + 1).to_list())
+
+    # Round
+    s4 = pl.Series("s4", range(1, 10)).cast(pl.Float64).apply(lambda x: round(x * 1.1, 1))
+    print("s4:", s4.to_list())
+    print("ceil:", s4.ceil().to_list())
+    print("floor:", s4.floor().to_list())
+    print("round:", s4.round(0).to_list())
+    print("clip:", s4.clip(4, 6).to_list())
+
+    # Selection:
+    s5 = pl.Series("s5", [1, 2, 3] * 2)
+    print("filter:", s5.filter(s5 > 1).to_list())
+    print("sample:", s5.sample(frac=.5, seed=1).to_list())
+    print("shuffle:", s5.shuffle(seed=1).to_list())
+    print("slice:", s5.slice(4).to_list())
+    print("head:", s5.head().to_list())
+    print("tail:", s5.tail().to_list())
+    print("top_k:", s5.top_k(3).to_list())
+    print("unique:", s5.unique().to_list())
+
+    # Object namespaces: arr, cat, dt, str
+    # Conversion: to_arrow, to_frame, to_list, to_numpy, to_pandas
+    # Missing: drop_nans, drop_nulls, fill_nan, fill_null, interpolate
+
+    # Strings
+    # Regex: contains, ends_with, starts_with
+    # Manipulation: replace, strip, to_lowercase, to_uppercase
 
 # ---
 # Examples (DataFrame)
@@ -285,29 +339,15 @@ def basic_df_column_aggregation():
     # sin, cos, tan, arcsin, arccos, arctan
 
 
-def basic_df_expression_methods():
-    print("TODO")
-    # unique, n_unique, count, first
-
-
-def basic_df_conditional_expressions():
-    print("TODO")
-    # when/then/otherwise
-
-
-def basic_df_window_expressions():
-    print("TODO")
-    # https://pola-rs.github.io/polars-book/user-guide/dsl/expressions.html#window-expressions
-    # https://pola-rs.github.io/polars-book/user-guide/dsl/window_functions.html
-
-
-def basic_df_string_expressions():
-    print("TODO")
-
-
 def basic_df_expressions():
     print("TODO")
+    # Context
     # https://pola-rs.github.io/polars-book/user-guide/dsl/contexts.html
+    # Window functions
+    # https://pola-rs.github.io/polars-book/user-guide/dsl/expressions.html#window-expressions
+    # https://pola-rs.github.io/polars-book/user-guide/dsl/window_functions.html
+    # Expression API
+    # https://pola-rs.github.io/polars-book/user-guide/dsl/api.html
 
 
 def print_section_title(s: str):
