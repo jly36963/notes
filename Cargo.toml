@@ -3,6 +3,7 @@
 members = [
     "rs/core/basics",
     "rs/core/stdlib",
+    "rs/data/polars-notes",
     "rs/db/mongo-notes",
     "rs/db/postgres-notes",
     "rs/db/redis-notes",

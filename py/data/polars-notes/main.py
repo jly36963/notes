@@ -44,7 +44,7 @@ def basic_series():
     print("var:", s2.var())
     print("quantile(.5):", s2.quantile(.5))
 
-    # Manipulation: cast, append, reverse, sort, set, apply
+    # Manipulation
     s3 = pl.Series("s3", [3, 4, 5, 1, 2])
     print("cast:", s3.cast(pl.Float64).to_list())
     print("sort:", s3.sort().to_list())
