@@ -22,6 +22,12 @@ fn main() {
 
     print_section_header(String::from("basic df selection"));
     basic_df_selection();
+
+    print_section_header(String::from("basic df agg"));
+    basic_df_agg();
+
+    print_section_header(String::from("basic df mutation"));
+    basic_df_mutation();
 }
 
 fn basic_series() {
@@ -129,12 +135,7 @@ fn basic_df_creation() {
 }
 
 fn basic_df_details() {
-    let df = CsvReader::from_path(Path::new("src/data/iris.csv"))
-        .unwrap()
-        .infer_schema(None)
-        .has_header(true)
-        .finish()
-        .unwrap();
+    let df = get_iris_df();
 
     println!("get_column_names: {:?}", df.get_column_names());
     println!("dtypes: {:?}", df.dtypes());
@@ -150,14 +151,7 @@ fn basic_df_details() {
 }
 
 fn basic_df_export() {
-    let mut df = DataFrame::new(vec![
-        Series::new("a", [1, 6, 11, 16, 21]),
-        Series::new("b", [2, 7, 12, 17, 22]),
-        Series::new("c", [3, 8, 13, 18, 23]),
-        Series::new("d", [4, 9, 14, 19, 24]),
-        Series::new("e", [5, 10, 15, 20, 25]),
-    ])
-    .unwrap();
+    let mut df = get_range_df();
 
     // IO: https://docs.rs/polars/0.23.0/polars/docs/eager/index.html#io
 
@@ -215,12 +209,64 @@ fn basic_df_selection() {
     println!("head: {:?}", df.head(Some(5)));
     println!("tail: {:?}", df.tail(Some(5)));
 
-    // Mask
-    // TODO
+    // Mask (for multiple conditions, mask = cond1 | cond2)
+    let mask = df.column("sepal_length").unwrap().gt(5.0).unwrap();
+    println!(
+        "boolean mask result: {:?}",
+        df.filter(&mask).unwrap().head(Some(3))
+    );
 
-    // Using expressions
-    // TODO
+    // Expressions
+    println!(
+        "filtered: {:?}",
+        df.filter(
+            &df.column("species")
+                .unwrap()
+                .utf8()
+                .unwrap()
+                .starts_with("Versicolor")
+        )
+        .unwrap()
+        .head(Some(3))
+    );
 }
+
+fn basic_df_agg() {
+    let df = get_iris_df().drop("species").unwrap();
+
+    println!("max: {:?}", df.max());
+    println!("min: {:?}", df.min());
+    println!("mean: {:?}", df.mean());
+    println!("median: {:?}", df.median());
+    println!("sum: {:?}", df.sum());
+    println!("std: {:?}", df.std());
+    println!("var: {:?}", df.var());
+    println!(
+        "quantile(0.5): {:?}",
+        df.quantile(0.5, Default::default()).unwrap()
+    );
+}
+
+fn basic_df_mutation() {
+    let mut df = get_range_df();
+    println!("drop: {:?}", df.drop("e").unwrap());
+    println!("rename: {:?}", df.rename("e", "E").unwrap()); // in-place
+    println!(
+        "sort: {:?}",
+        df.sort(&["a", "b"], vec![false, false]).unwrap()
+    );
+    println!(
+        "sample: {:?}",
+        df.sample_frac(0.5, false, true, Some(1)).unwrap()
+    );
+}
+
+// TODO: combine
+// TODO: add columns
+// TODO: mask
+// TODO: null
+// TODO: grouping
+// TODO: partition
 
 // ---
 // Utils
@@ -233,6 +279,17 @@ pub fn get_iris_df() -> DataFrame {
         .has_header(true)
         .finish()
         .unwrap()
+}
+
+pub fn get_range_df() -> DataFrame {
+    DataFrame::new(vec![
+        Series::new("a", [1, 6, 11, 16, 21]),
+        Series::new("b", [2, 7, 12, 17, 22]),
+        Series::new("c", [3, 8, 13, 18, 23]),
+        Series::new("d", [4, 9, 14, 19, 24]),
+        Series::new("e", [5, 10, 15, 20, 25]),
+    ])
+    .unwrap()
 }
 
 pub fn print_section_header(header: String) {
