@@ -4,8 +4,10 @@ use std::collections::HashMap;
 use std::path::Path;
 
 // Docs: https://docs.rs/polars/latest/polars/
+// Features: https://docs.rs/polars/latest/polars/#compile-times-and-opt-in-features
 // Cookbooks: https://docs.rs/polars/latest/polars/index.html#cookbooks
-// DataFrame struct: https://docs.rs/polars/latest/polars/frame/struct.DataFrame.html
+// DataFrame: https://docs.rs/polars/latest/polars/frame/struct.DataFrame.html
+// ChunkedArray: https://docs.rs/polars/latest/polars/chunked_array/struct.ChunkedArray.html
 
 fn main() {
     print_section_header(String::from("basic series"));
@@ -28,6 +30,12 @@ fn main() {
 
     print_section_header(String::from("basic df mutation"));
     basic_df_mutation();
+
+    print_section_header(String::from("basic df combine"));
+    basic_df_combine();
+
+    print_section_header(String::from("basic df add column"));
+    basic_df_add_column();
 }
 
 fn basic_series() {
@@ -199,6 +207,8 @@ fn basic_df_selection() {
             .columns(["species", "sepal_length"])
             .unwrap()
     );
+    // get_columns will get all columns as Vec<&Series>
+    // select_series
     println!(
         "cell: {}",
         match df.column("species").unwrap().get(0) {
@@ -261,12 +271,43 @@ fn basic_df_mutation() {
     );
 }
 
-// TODO: combine
-// TODO: add columns
-// TODO: mask
-// TODO: null
-// TODO: grouping
-// TODO: partition
+fn basic_df_combine() {
+    let df = get_range_df();
+
+    println!("vstack: {:?}", df.clone().vstack(&df.clone()).unwrap());
+    println!(
+        "hstack: {:?}",
+        df.clone()
+            .select(&["a", "b"])
+            .unwrap()
+            .hstack(&df.clone().select(&["c", "d", "e"]).unwrap().get_columns())
+            .unwrap()
+    );
+    println!(
+        "join: {:?}",
+        df.clone()
+            .join(
+                &df.clone(),
+                ["a"],
+                ["a"],
+                JoinType::Inner,
+                Some("_r".into())
+            )
+            .unwrap()
+    );
+}
+
+fn basic_df_add_column() {
+    let mut df = get_range_df();
+
+    println!(
+        "with_column: {:?}",
+        df.with_column(Series::new("z", [0, 0, 0, 0, 0])).unwrap()
+    );
+}
+// TODO: mask (&ChunkedArray<BooleanType>, is_duplicated, is_unique)
+// TODO: null (fill_null, null_count, drop_null)
+// TODO: grouping (groupby)
 
 // ---
 // Utils

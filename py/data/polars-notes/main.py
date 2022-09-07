@@ -243,7 +243,7 @@ def basic_df_combine():
     df = pl.DataFrame(data, columns=['a', 'b', 'c', 'd', 'e'], orient="row")
 
     print(f"concat: {pl.concat([df, df])}")
-    print(f'join: ', df.join(df, how='inner', on='a', suffix='_r'))  # left_on, right_on
+    print('join:', df.join(df, how='inner', on='a', suffix='_r'))  # left_on, right_on
     print(f"hstack: {df.hstack(df.rename({'a': 'A', 'b': 'B', 'c': 'C', 'd': 'D', 'e': 'E'}))}")
     print(f"vstack: {df.vstack(df.clone())}")
 
