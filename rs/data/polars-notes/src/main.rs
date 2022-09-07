@@ -6,8 +6,11 @@ use std::path::Path;
 // Docs: https://docs.rs/polars/latest/polars/
 // Features: https://docs.rs/polars/latest/polars/#compile-times-and-opt-in-features
 // Cookbooks: https://docs.rs/polars/latest/polars/index.html#cookbooks
+
+// Series: https://docs.rs/polars/latest/polars/series/struct.Series.html
 // DataFrame: https://docs.rs/polars/latest/polars/frame/struct.DataFrame.html
 // ChunkedArray: https://docs.rs/polars/latest/polars/chunked_array/struct.ChunkedArray.html
+// GroupBy: https://docs.rs/polars/latest/polars/frame/groupby/struct.GroupBy.html
 
 fn main() {
     print_section_header(String::from("basic series"));
@@ -36,6 +39,15 @@ fn main() {
 
     print_section_header(String::from("basic df add column"));
     basic_df_add_column();
+
+    print_section_header(String::from("basic df mask"));
+    basic_df_mask();
+
+    print_section_header(String::from("basic df null"));
+    basic_df_null();
+
+    print_section_header(String::from("basic df grouping"));
+    basic_df_grouping();
 }
 
 fn basic_series() {
@@ -305,9 +317,52 @@ fn basic_df_add_column() {
         df.with_column(Series::new("z", [0, 0, 0, 0, 0])).unwrap()
     );
 }
-// TODO: mask (&ChunkedArray<BooleanType>, is_duplicated, is_unique)
-// TODO: null (fill_null, null_count, drop_null)
-// TODO: grouping (groupby)
+
+fn basic_df_mask() {
+    // TODO: &ChunkedArray<BooleanType>, is_duplicated, is_unique
+}
+
+fn basic_df_null() {
+    // TODO: fill_null, null_count, drop_null
+}
+
+fn basic_df_grouping() {
+    let df = get_iris_df().sample_n(6, false, true, Some(1)).unwrap();
+
+    let grouped = df.groupby(["species"]).unwrap();
+
+    // Keys
+    println!(
+        "keys: {:?}",
+        grouped.keys()[0]
+            .utf8()
+            .unwrap()
+            .into_no_null_iter()
+            .collect::<Vec<&str>>()
+    );
+    // Agg
+    println!("mean: {:?}", grouped.mean().unwrap());
+    // Groups
+    let groups = grouped.groups().unwrap();
+    let groups_species = groups.column("species").unwrap();
+    let groups_indices = groups.column("groups").unwrap();
+    for i in 0..groups_species.len() {
+        println!(
+            "group: {}",
+            match groups_species.get(i) {
+                AnyValue::Utf8(x) => x,
+                _ => "",
+            }
+        );
+        println!(
+            "group_df: {:?}",
+            match groups_indices.get(i) {
+                AnyValue::List(indices) => df.take(&indices.u32().unwrap()).unwrap(),
+                _ => DataFrame::default(),
+            }
+        );
+    }
+}
 
 // ---
 // Utils
