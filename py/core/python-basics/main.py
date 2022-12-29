@@ -4,7 +4,7 @@
 
 import sys
 import functools
-from typing import Union, Any
+from typing import Union, Any, Callable
 import collections
 
 # ---
@@ -677,26 +677,71 @@ def func2(func):
 
 func2(func1)
 
+
 # ---
 # Decorators
 # ---
 
+# Without @functools.wraps
 
-def my_decorator(inner_func):
-    @functools.wraps(inner_func)
-    def outer_func():
-        # before inner_func
-        print('Before inner function!')
-        # inner_func
-        inner_func()
-        # after func
-        print('After the inner function')
-    return outer_func
+def my_dec(fn: Callable) -> Callable:
+    """Wrap a func with print statements"""
+    def wrapped(*args, **kwargs):
+        """Wrapped func"""
+        print('starting')
+        res = fn(*args, **kwargs)
+        print('got the result')
+        print('returning result')
+        return res
+    return wrapped
 
 
-@my_decorator
-def my_function():
-    print("I'm the inner function!!!")
+@my_dec
+def greet(name: Union[str, None] = None) -> str:
+    """Greet someone"""
+    return f'Hello, {name or "friend"}'
+
+
+# With @functools.wraps
+# "wraps" will copy func attrs from input to return value
+# https://stackoverflow.com/a/309000
+
+
+def my_dec2(fn: Callable) -> Callable:
+    """Wrap a func with print statements"""
+    @functools.wraps(fn)
+    def wrapped(*args, **kwargs):
+        """Wrapped func"""
+        print('starting')
+        res = fn(*args, **kwargs)
+        print('got the result')
+        print('returning result')
+        return res
+    return wrapped
+
+
+@my_dec2
+def greet2(name: Union[str, None] = None) -> str:
+    """Greet someone"""
+    return f'Hello, {name or "friend"}'
+
+
+def basic_decorators():
+    # Without functools.wraps
+    res1 = greet('Kakashi')
+    print('\n')
+    print(greet.__name__)  # wrapped
+    print(greet.__doc__)  # Wrapped func
+    print(res1)  # Hello, Kakashi
+    print('\n')
+
+    # With functools.wraps
+    res2 = greet('Iruka')
+    print('\n')
+    print(greet2.__name__)  # greet2
+    print(greet2.__doc__)  # Greet someone
+    print(res2)  # Hello, Iruka
+
 
 # ---
 # Built-in functions and constants

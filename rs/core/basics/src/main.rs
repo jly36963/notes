@@ -53,6 +53,9 @@ fn main() {
     utils::print_section_header(String::from("basic options"));
     examples::basic_options();
 
+    utils::print_section_header(String::from("basic results"));
+    examples::basic_results();
+
     utils::print_section_header(String::from("basic tuples"));
     examples::basic_tuples();
 

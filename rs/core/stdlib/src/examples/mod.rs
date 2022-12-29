@@ -121,6 +121,11 @@ pub fn basic_env() -> () {
     let var_after_remove = env::var(key).unwrap_or("".into());
     let vars = env::vars();
 
+    // env::consts
+    let arch = env::consts::ARCH;
+    let os = env::consts::OS;
+    let family = env::consts::FAMILY;
+
     // Print results
     println!("args:");
     for a in args {
@@ -143,6 +148,7 @@ pub fn basic_env() -> () {
     println!("env var (after set): {}", var_after_set);
     println!("env var (after remove): {}", var_after_remove);
     println!("vars count: {}", vars.count());
+
     /*
     println!("vars:");
     for v in vars {
@@ -150,6 +156,9 @@ pub fn basic_env() -> () {
         println!("{}: {}", k, v);
     }
     */
+    println!("arch: {}", arch);
+    println!("os: {}", os);
+    println!("family: {}", family);
 }
 
 /// Basic io usage

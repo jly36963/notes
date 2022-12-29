@@ -326,26 +326,146 @@ pub fn basic_referencing() -> () {
 }
 
 /// Basic option enum usage
-/// Option is an enum that represents Some() or None. It requires unwrapping
+/// Option is an enum that represents Some() or None.
+/// Using inner values requires unwrapping
 pub fn basic_options() -> () {
-    // option + match + code block
+    // match (block)
     let x1: Option<i32> = Some(2);
     match x1 {
         Some(x) => println!("x is {}", x),
         None => println!("x is null"),
     };
-    // option + match + assignment
+
+    // match (assign)
     let _x2: i32 = match Some(2) {
         Some(x) => x,
         None => 0,
     };
-    // option + if let + assignment
+
+    // if let
     let _x3 = if let Some(x) = Some(2) { x } else { 0 };
-    // option + is_some + unwrap (discouraged)
+
+    // and
+    Some(2).and(Some(3)); // Some(3)
+    Some(2).and::<i32>(None); // None
+    None::<i32>.and(Some(3)); // None
+    None::<i32>.and::<i32>(None); // None
+
+    // and_then (Some: apply func; None: do nothing)
+    Some(2).and_then(|n| Some(n + 2));
+
+    // filter (Some: None if fails predicate; None: None)
+    Some(2).filter(|n| n % 2 == 0);
+
+    // or
+    Some(2).or(Some(3)); // Some(3)
+    Some(2).or(None); // Some(2)
+    None::<i32>.or(Some(3)); // Some(3)
+    None::<i32>.or(None); // None
+
+    // or_else (Some: Some; None: use func for value)
+    Some(2).or_else(|| Some(3));
+
+    // xor
+    Some(2).xor(Some(3)); // None
+    Some(2).xor(None); // Some(2)
+    None::<i32>.xor(Some(3)); // Some(3)
+    None::<i32>.xor(None); // None
+
+    // get_or_insert (insert value if option is None, then return mutable reference)
+    Some(2).get_or_insert(3); // &2
+
+    // get_or_insert_with
+    None::<i32>.get_or_insert_with(|| 3); // &3
+
+    // is_some & is_none
     let o4 = Some(2);
-    let _x4 = if o4.is_some() { o4.unwrap() } else { 0 };
-    // option + unwrap_or
+    let mut _x4: i32;
+    _x4 = if o4.is_some() { o4.unwrap() } else { 0 };
+    _x4 = if o4.is_some() { 0 } else { o4.unwrap() };
+
+    // map
+    Some(2).map(|n| n + 2); // Some(4)
+
+    // map_or (map with fallback value)
+    Some(2).map_or(0, |n| n + 3); // Some(5)
+
+    // map_or_else (None func, Some func)
+    Some(2).map_or_else(|| 0, |n| n + 3);
+
+    // unwrap_or
     let _x5 = Some(2).unwrap_or(0);
+}
+
+/// Basic result enum usage
+/// Result is an enum that represents Ok() or Err().
+/// Using inner values requires unwrapping
+pub fn basic_results() -> () {
+    let fp = "./Makefile";
+    let r = std::fs::read_to_string(fp);
+
+    // match
+    match r {
+        Ok(s) => println!("Makefile: {}", s),
+        Err(e) => println!("Error while reading file ({}): {}", fp, e),
+    }
+
+    // and
+    #[allow(unused_must_use)] // Normally, results must be used
+    {
+        // and
+        // All results in this example are of type Result<i32, &str)
+        Ok::<i32, &str>(5).and(Ok(3)); // Ok(3)
+        Ok::<i32, &str>(5).and(Err::<i32, &str>("Oops")); // Err
+        Err::<i32, &str>("Oops").and(Ok(3)); // Err
+        Err::<i32, &str>("Oops").and(Err::<i32, &str>("Oops")); // Err
+
+        // or
+        // All results in this example are of type Result<i32, &str)
+        Ok::<i32, &str>(5).or(Ok::<i32, &str>(3)); // Ok(3)
+        Ok::<i32, &str>(5).or(Err::<i32, &str>("Oops")); // Ok(5)
+        Err::<i32, &str>("Oops").or(Ok::<i32, &str>(3)); // Ok(3)
+        Err::<i32, &str>("Oops").or(Err::<i32, &str>("Oops")); // Err
+
+        // map
+        Ok::<i32, &str>(3).map(|n| n + 3);
+
+        // map_err
+        Err::<i32, String>("Oops".into()).map_err(|e| format!("error: {}", e));
+
+        // map_or
+        Ok::<i32, &str>(3).map_or(0, |n| n + 3);
+
+        // map_or_else
+        Ok::<i32, &str>(3).map_or_else(|_e| 0, |n| n + 3);
+
+        // is_err & is_ok
+        Ok::<i32, &str>(3).map(|n| n + 3);
+
+        let res: Result<i32, &str> = Ok(2);
+        let mut _i: i32;
+        _i = if res.is_ok() { res.unwrap() } else { 0 };
+        _i = if res.is_err() { 0 } else { res.unwrap() };
+
+        // ok & err (converts to Option)
+        Ok::<i32, &str>(3).ok().unwrap_or(2);
+        Err::<i32, &str>("Oops").err().unwrap_or("Barnacles!");
+
+        // unwrap_or_else
+        Err::<i32, &str>("Oops").unwrap_or_else(|_e| 3);
+
+        // unwrap_or_default (default value of type)
+        Ok::<i32, &str>(3).unwrap_or_default(); // 0
+
+        // unwrap_or
+        Ok::<i32, &str>(3).unwrap_or(2);
+
+        // unwrap (panicks if Err)
+        Ok::<i32, &str>(3).unwrap();
+
+        // expect
+        Ok::<i32, &str>(3).expect("Oops, result wasn't ok");
+    }
 }
 
 /// Basic tuple usage

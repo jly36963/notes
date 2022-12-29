@@ -3,7 +3,7 @@
 - CompTIA -- computing technology industry association
 - most big tech corporations are part of CompTIA
 - CompTIA A+ -- most popular IT exam.
-  - 220 1001 -- core 1 
+  - 220 1001 -- core 1
   - 220 1002 -- core 2
 
 ## troubleshooting theory
@@ -17,26 +17,32 @@
 
 ## desktop (internal)
 
-- motherboard -- 
-- chipset -- 
+- motherboard -- TODO
+- chipset -- TODO
 - cpu -- central processing unit
   - ALU (arithmetic logic unit) -- performs arithmetic and logical operations
-  - control unit -- extracts instructions from memory, decodes/executes them. calls on ALU.
-  - registers -- storage. supply operands to ALU and store results of operations.
-  - cache (l1, l2, l3) -- storage. smaller, faster, closer to processor core than RAM.
+  - control unit -- extracts instructions from memory, decodes/executes them.
+    calls on ALU.
+  - registers -- storage. supply operands to ALU and store results of
+    operations.
+  - cache (l1, l2, l3) -- storage. smaller, faster, closer to processor core
+    than RAM.
   - I/O unit -- interface between CPU and I/O devices.
 - thermal paste -- heat conductor between cpu and cooling system
-- heat sync -- between cpu and fan (air cooling part) (increase surface area, help cooling)
+- heat sync -- between cpu and fan (air cooling part) (increase surface area,
+  help cooling)
 - fans --
 - liquid cooling system -- connect cpu to fan (coolant as thermal conductor)
-- RAM --
-- drives -- 
+- RAM -- TODO
+- drives -- TODO
   - hdd -- magnetic storage (read/write head)
-  - ssd -- static storage (MOSFET -- NPN transistor with control gate and floating gate.)
-- power supply -- 
-- front panel connectors -- 
-- expansion slot (PCIe) -- houses expansion cards. (PCIe is most frequently used)
-- video card -- 
+  - ssd -- static storage (MOSFET -- NPN transistor with control gate and
+    floating gate.)
+- power supply --
+- front panel connectors --
+- expansion slot (PCIe) -- houses expansion cards. (PCIe is most frequently
+  used)
+- video card -- TODO
 
 ## cpu
 
@@ -53,10 +59,10 @@
   - CPU understands instructions using an internal "code book"
   - cores have pipelines that use instructions to process/store/output data
 
-- clock -- controls speed of operations 
+- clock -- controls speed of operations
   - quartz crystal oscillator
   - motherboards operate at 100x MHz
-  - modern CPUs operate at  1x GHz
+  - modern CPUs operate at 1x GHz
   - clock multiplying fixes this.
   - overclocking increases clock rate, but at a risk.
 
@@ -94,13 +100,13 @@
   - always use thermal paste between cpu and cooling system
   - different setup for every cooling system.
   - pay attention to orientation
-  - fan requires power. plug into 4-pin connector (usually labeled cpu fan). all motherboards have this
+  - fan requires power. plug into 4-pin connector (usually labeled cpu fan). all
+    motherboards have this
 
 - liquid cooling system
   - two hoses -- one in (cool), one out (hot)
   - liquid goes through radiator veins
   - fans are blowing through radiator to cool liquid
-
 
 ## RAM
 
@@ -112,7 +118,8 @@
   - PC Speed rating -- I/O speed rating * 8 (bytes --> bits)
 
 - rating
-  - DDR2/DDR3/DDR4 speed ratings will be prefixed with DDRX- (ddr speed) and PCX- (pc speed)
+  - DDR2/DDR3/DDR4 speed ratings will be prefixed with DDRX- (ddr speed) and
+    PCX- (pc speed)
 
 - SDRAM -- synchronous DRAM. synchronized with clock. 168 pins, 2 notches.
 - DDR SDRAM -- double data rate SDRAM. 184 pins, 1 notch
@@ -133,22 +140,26 @@
   - double-sided RAM for other capacities (2, 8, ...)
 
 - channels -- slots for ram sticks
-  - look at motherboard book for arrangements (which slots to use, based on number of sticks)
-  - use same speed/size for all RAM. (you MUST use same speed in any given channel.)
+  - look at motherboard book for arrangements (which slots to use, based on
+    number of sticks)
+  - use same speed/size for all RAM. (you MUST use same speed in any given
+    channel.)
 
 - parity / ECC -- reduntant parity bit
   - most RAM have 8 chips (9 if ECC)
   - will function, even if (no more than) one chip fails.
-  - protects against data corruption by automatically detecting and correcting memory errors
+  - protects against data corruption by automatically detecting and correcting
+    memory errors
   - some motherboards can use ECC, some can't, and some require ECC
 
-- SPD chip (serial presence detect) -- identifies the module to the BIOS during POST (characteristics/timings)
-
+- SPD chip (serial presence detect) -- identifies the module to the BIOS during
+  POST (characteristics/timings)
 
 # motherboard (BIOS)
 
 - BIOS
-  - BIOS -- stored in firmware (built into the motherboard) that allows for communication to assumed hardware.
+  - BIOS -- stored in firmware (built into the motherboard) that allows for
+    communication to assumed hardware.
   - BIOS chip contains:
     - power-on-self-test (POST) to check assumed hardware before booting OS.
     - services -- BIOS programs that enable hardware to function.
@@ -166,12 +177,11 @@
 - system setup
   - customize the changeable parts of BIOS.
   - initiated during booot (hold specific key -- ie: Delete or F2)
-  - security 
+  - security
     - an administrator password can be set (prevent unauthorized system setup).
     - a user password can be set (prevent unauthorized OS boot).
     - disable boot options
     - disable hardware (ie: front USB ports)
-      
 
 - firmware
   - real-time clock-battery keeps sytem time without external power
@@ -179,10 +189,12 @@
   - 'reset system setup' for defaults
   - flash the ROM chip to update firmware
     - flash ROM to fix bugs and add new features to BIOS
-    - this can ruin a motherboard. (some motherboards have a second/backup BIOS.)
+    - this can ruin a motherboard. (some motherboards have a second/backup
+      BIOS.)
     - make sure power does not run out.
-    
-- CMOS battery (CMOS RAM) -- small memory to store config details and BIOS settings.
+
+- CMOS battery (CMOS RAM) -- small memory to store config details and BIOS
+  settings.
   - leaking/failing CMOS battery can slow system clock and cause other problems.
   - CR2032 -- standard CMOS battery. provides power to RTC and CMOS.
 
@@ -190,7 +202,8 @@
 
 # motherboards (form factors)
 
-- form factor -- standardization of motherboards. ensures part interchangeability
+- form factor -- standardization of motherboards. ensures part
+  interchangeability
   - dimensions
   - power supply type
   - location of mounting holes
@@ -198,7 +211,7 @@
 
 - ATX -- most common form factor
   - 12" x 9.6"
-- MicroATX 
+- MicroATX
   - 9.6" x 9.6"
 - Mini-ITX
   - 6.7" x 6.7"
@@ -209,36 +222,43 @@
 
 # motherboard (chipsets)
 
-- motherboards support specific chipsets. 
+- motherboards support specific chipsets.
 - chipsets define supported hardware.
   - RAM capacity, USB capabilities, etc.
 
-- originally, there were individual chips for everything (hard drive, floppy drive, sound card, serial ports, etc)
+- originally, there were individual chips for everything (hard drive, floppy
+  drive, sound card, serial ports, etc)
 - chipsets -- dedicated chips that take on each of these responsibilities.
   - northbridge/southbridge
     - originally -- northbridge (cpu), southbridge (USB ports).
-    - now -- CPUs handle northbridge responsibilities. chipsets are now just the southbridge.
+    - now -- CPUs handle northbridge responsibilities. chipsets are now just the
+      southbridge.
 
 # motherboard (tour)
 
 - motherboards come with cables, standard connectors, and more
 
-- SATA cables -- connect (SATA) hard drives to the motherboard (SATA HDD connectors).
+- SATA cables -- connect (SATA) hard drives to the motherboard (SATA HDD
+  connectors).
 - power connectors -- (the 2x4 grid thing)
-- voltage regulators and capacitors -- adjusts/cleans power/voltage that is delivered to different components
-  - capacitors -- flat on top is good. swollen/exploded capacitors signify a dead motherboard
-- expansion slot -- 
-  - PCIe -- (most frequently used) explansion slot technology. (successor to PCI)
-    - expansion bus that uses serial connections. sends data on one wire, receives on on wire.
+- voltage regulators and capacitors -- adjusts/cleans power/voltage that is
+  delivered to different components
+  - capacitors -- flat on top is good. swollen/exploded capacitors signify a
+    dead motherboard
+- expansion slot --
+  - PCIe -- (most frequently used) explansion slot technology. (successor to
+    PCI)
+    - expansion bus that uses serial connections. sends data on one wire,
+      receives on on wire.
     - 16 lane (x16) -- full size slot (high bandwidth -- ie: graphics card)
-    - single lane (x1) -- smaller PCIe slot (lower bandwidth -- ie: hard drive, network)
-    - 4 lane (x4) -- 
+    - single lane (x1) -- smaller PCIe slot (lower bandwidth -- ie: hard drive,
+      network)
+    - 4 lane (x4) --
     - 8 lane (x8)
 - USB connector -- connects to dongle (which has external USB ports)
 - USB port -- USB ports on motherboard
 - serial port
 - vga connector
-
 
 # system unit (case) (tour)
 
@@ -252,11 +272,13 @@
   - mid-tower -- 18" x 8" x 18". ATX motherboard (ATX, micro-ATX)
   - Mini-ITX -- 15" x 4" x 13" Mini-ITX motherboard
 
-- standoffs -- keeps motherboard above case. (motherboards probably have their own as well)
+- standoffs -- keeps motherboard above case. (motherboards probably have their
+  own as well)
 - pass-throughs -- ?
 - hard drive bays/mounts -- area for hard drives (most common for HDD is 5.25")
 - ssd mounts -- area for SSD to mount (2.5 inch SATA)
-- power supply (area) -- where power supply mounts in. (doesn't really have a name)
+- power supply (area) -- where power supply mounts in. (doesn't really have a
+  name)
 
 # motherboard (mount/install)
 
@@ -276,11 +298,13 @@
 
 - cable connecitons
   - soldered power supply -- fixed cables. (possibly higher energy efficiency)
-  - modular power supply -- detachable cables and ports. (convenient, less cable clutter)
+  - modular power supply -- detachable cables and ports. (convenient, less cable
+    clutter)
 
 - connectors
   - standard connector to motherboard -- 20 (or 24) pin ATX + 4-8 pin P4.
-  - ATX12V -- extension to original ATX power that allow for additional power to motherboard.
+  - ATX12V -- extension to original ATX power that allow for additional power to
+    motherboard.
   - Molex -- oldest power supply (4 pin) (12V and 5V)
   - SATA power connector -- primarily for hard drives (flat) (15 pin)
   - PCIe connector -- used for video cards. (6 pin)
@@ -291,13 +315,14 @@
   - in a perfect world:
     - W = V * A
   - in the real world
-    - W = V * A + entropy 
+    - W = V * A + entropy
     - there is entropy in the system (power lost)
     - get more watts than you think you need, to get appropriate volts.
     - use a wattage calculator (then add 10-20%)
   - power rating
     - 80 plus rating -- guaranteed 80% efficiency at all watt usage rates.
-    - these ratings have higher efficiences: bronze, silver, gold, platinum, titanium
+    - these ratings have higher efficiences: bronze, silver, gold, platinum,
+      titanium
 
 # cooling
 
@@ -340,7 +365,8 @@
 
 - ATA protocol (advanced technology attachment) -- "LBA language"
   - protocol used to communicate with drives.
-- SATA (Serial ATA) -- computer bus interface. connects host bus adapters to mass storage devices.
+- SATA (Serial ATA) -- computer bus interface. connects host bus adapters to
+  mass storage devices.
   - SATA connector -- connects drive to motherboard (l-shaped)
   - SATA uses 1 wire to transfer data.
 - NVMe (non-volatile memory express) protocol
@@ -349,7 +375,7 @@
 - old school
   - parallel ATA
   - SCSI (small computer system interface)
-  - modern "scuzzy" 
+  - modern "scuzzy"
     - SAS (serial attached sSCSI)
     - iSCSI -- SCSI over ethernet
 
@@ -372,22 +398,23 @@
     - ssd --> die --> plane --> block --> page
     - block = 128 pages = 512KB
 
-- eSATA -- 
-- eSATA expansion card -- 
+- eSATA --
+- eSATA expansion card --
 
 # boot order
 
 - when a system boots, it looks for a bootable device
 
 - set boot order in system setup
-  - set order for storage devices to be searched. 
+  - set order for storage devices to be searched.
   - boot order is defined in the CMOS system setup
 
 # mass storage (RAID)
 
 - RAID -- redundant array of inexpensive disks
   - hardware RAID requires a controller to configure the RAID arrays
-  - hardware RAID has its own BIOS, with special system setup to configure array.
+  - hardware RAID has its own BIOS, with special system setup to configure
+    array.
   - completed array looks like a single drive to the OS.
 - go in system setup to change drives from AHCI --> RAID
   - reboot, press specified keys to configure raid
@@ -398,7 +425,8 @@
 
 - striping -- spread data across multiple drives. increase read/write speed
 - mirroring -- redundancy. identical data saved to two drives.
-- parity -- a third disk is used to store XOR results of the first two. fault tolerance for striping
+- parity -- a third disk is used to store XOR results of the first two. fault
+  tolerance for striping
 
 - RAID config
   - 0 -- striping (min 2 drives)
@@ -409,7 +437,7 @@
   - 01 -- stripe/mirror (min 4 drives) (ab ab)
   - 10 -- stripe/mirror (min 4 drives) (aa bb)
   - 05
-  - 50 
+  - 50
   - 06
   - 60
 
@@ -418,13 +446,17 @@
 # optical media
 
 - disk anatomy
-  - track -- single, continuous, grooved track that spirals outward. holds recorded data (light)
+  - track -- single, continuous, grooved track that spirals outward. holds
+    recorded data (light)
   - sector -- track is divided into sectors for data organization.
-  - pits -- when data is written to disc, a laser beam creates dark, non-reflective areas on the disk
+  - pits -- when data is written to disc, a laser beam creates dark,
+    non-reflective areas on the disk
 - reading
-  - low intensity laser beam reads the disc. 
-  - transitions between pits/lands represent 1s, space between transitions are 0s.
-  - pits/lands don't represent 0s and 1s, the transitions and space between transitions do.
+  - low intensity laser beam reads the disc.
+  - transitions between pits/lands represent 1s, space between transitions are
+    0s.
+  - pits/lands don't represent 0s and 1s, the transitions and space between
+    transitions do.
 
 - optical media types
   - cd -- compact disc
@@ -456,7 +488,6 @@
 - optical media readers
   - SATA connection
 
-
 # usb
 
 - standards
@@ -480,7 +511,7 @@
     - thunderbolt 2 -- 20Gbps (mini displayport)
     - thunderbolt 3 -- 40Gbps (USB Type C)
   - lightning -- charging, data transfer, etc
-      - exclusive to apple (usually iOS) (iphone 5 and after connector)
+    - exclusive to apple (usually iOS) (iphone 5 and after connector)
 
 - colors
   - white -- usb 1.1
@@ -490,7 +521,8 @@
   - red -- charging ports (sometimes?)
 
 - understanding USB
-  - usb controller -- chip/device that allows the motherboard to communicate with the USB device
+  - usb controller -- chip/device that allows the motherboard to communicate
+    with the USB device
     - when a usb device is connected, it becomes subservient to the controller
   - connectors
     - A connector -- connects to host controller (downstream connection)
@@ -498,7 +530,8 @@
   - hub
     - usb device --> root hub --> controller
     - root hubs for different speeds
-    - usb ports connected to a root hub that supports usb 3.1 will probably be blue.
+    - usb ports connected to a root hub that supports usb 3.1 will probably be
+      blue.
     - southbridge usually has controllers for multiple versions (1.1, 2.0, 3.1)
   - drivers
     - computers need drivers to operate hardware (ie: USB devices).
@@ -516,7 +549,8 @@
 
 - keyboards use either USB or PS/2 (PS/2 -- keyboard purple, mouse green)
 - mice almost exclusively use USB
-- kvm switches (keyboard video mouse) -- enable multiple computers to share I/O devices
+- kvm switches (keyboard video mouse) -- enable multiple computers to share I/O
+  devices
 
 # expansion slot
 
@@ -526,7 +560,8 @@
 - screw mounting bracket onto case
 
 - with graphics card:
-  - check that graphics card can match monitor resolution (if using card for graphics)
+  - check that graphics card can match monitor resolution (if using card for
+    graphics)
   - make sure to use all screws when mounting
   - connect power supply
   - system setup to select primary graphics card.
@@ -559,7 +594,8 @@
   - backlight
     - CCFL (cold cathode flourescent lamp) -- first backlight
     - LED (light emitting diodes) -- more frequently used backlight
-      - light emitting diode -- organic compound that emits light in response to current
+      - light emitting diode -- organic compound that emits light in response to
+        current
   - LCD tech
     - TN (twisted nematic)
     - IPS (in plane switching)
@@ -572,7 +608,8 @@
       - how fast a pixel goes from black --> white --> black
 
 - OLED (organic light emitting diode)
-  - OLED screens don't require a backlight, because a single diode emits both light and color
+  - OLED screens don't require a backlight, because a single diode emits both
+    light and color
   - extremely thin, flexible, and even rollable.
 
 - DLP (digital light processing) -- used more in projectors
@@ -616,7 +653,7 @@
 
 - connectors
   - vga (video graphics array) -- analog signal. 15 pins (3 rows). usually blue.
-  - dvi (digital visual interface) -- digital signal. 
+  - dvi (digital visual interface) -- digital signal.
     - requires configuration
     - link
       - single link -- two groups of pins with space between
@@ -629,7 +666,6 @@
   - displayport -- digital
   - mini-displayport -- digital
 
-
 # networking
 
 - MAC vs IP
@@ -637,20 +673,22 @@
   - IP -- logical
 
 - LAN
-  - LAN (Local Area Network) 
+  - LAN (Local Area Network)
   - ethernet
     - LAN uses ethernet to connect computers.
     - ethernet requires data to be transferred in chunks (frames).
   - identification
     - devices are uniquely identified by MAC (media access control) address
-    - MAC addresses consist of 12 hexidecimal numbers (12 hex * 4 bits/hex = 48 bits)
+    - MAC addresses consist of 12 hexidecimal numbers (12 hex * 4 bits/hex = 48
+      bits)
     - view MAC address
       - windows -- ipconfig
       - unix -- ifconfig
   - check frame
-    - FCS (frame check sequence) -- error-detecting code added to a frame in communication.
-  - frame -- 
-    - chunks of 1500 bytes. 
+    - FCS (frame check sequence) -- error-detecting code added to a frame in
+      communication.
+  - frame --
+    - chunks of 1500 bytes.
     - destination MAC, source MAC, data, FCS
     - OS manages frames.
 
@@ -668,11 +706,12 @@
 
 - WAN (wide area network)
   - routers connect multiple LANs together in a WAN
-  - routers use logical addressing (IP addressing) to distinguish between local/remote traffic
+  - routers use logical addressing (IP addressing) to distinguish between
+    local/remote traffic
 
 # network cables
 
-- ethernet 
+- ethernet
   - speed: 10BaseT (10 Mbps baseband twisted pair), 1000BaseT, 10Gb base T
   - materials: copper, fiber-optic
 - coaxial
@@ -685,7 +724,7 @@
     - telephone: RJ-11
 - shielded twisted pair
   - more robust than regular twisted pair
-- fiber optic: 
+- fiber optic:
   - light, rather than electrical pulses
   - methods of propogating light signal
     - multimode: LED.
@@ -701,7 +740,6 @@
   - plenum -- any type of cable with fire-resistant jacket
   - ok to use in ceiling or floor cavity
 
-
 # crimp network cables
 
 - crimping cables
@@ -712,8 +750,10 @@
   - cut off ~1" of jacket
   - untwist wire pairs
   - line up wires
-    - TIA 568A -- green(w), green(s), yellow(w), blue(s), blue(w), yellow(s), brown(w), brown(s)
-    - TIA 568B -- yellow(w), yellow(s), green(w), blue(s), blue(w), green(s), brown(w), brown(s)
+    - TIA 568A -- green(w), green(s), yellow(w), blue(s), blue(w), yellow(s),
+      brown(w), brown(s)
+    - TIA 568B -- yellow(w), yellow(s), green(w), blue(s), blue(w), green(s),
+      brown(w), brown(s)
     - blue and brown don't change
   - orientation
     - straight through -- same order on both sides
@@ -764,13 +804,15 @@
     - dynamic IP address
       - DHCP (dynamic host configuration protocol) server
         - device gets turned on, makes request to DHCP server.
-        - server (often a gateway router) will assign IP, subnet mask, default gateway
+        - server (often a gateway router) will assign IP, subnet mask, default
+          gateway
         - four parts to DHCP conversation: discover, offer, request, acknowledge
       - APIPA (automatic private IP addressing)
         - fallback if no DHCP (client can't find server)
         - most OS have this
         - always a 169.254.x.x address
-  - ranges -- each of the following types have different ranges of IP address options
+  - ranges -- each of the following types have different ranges of IP address
+    options
     - public -- open to the internet
     - private -- private network only.
     - loopback -- your device (127.0.0.1)
@@ -803,24 +845,25 @@
   - default gateway (long distance calls)
 
 - rogue DHCP server
-  - DHCP server that isn't controlled by admin/staff. 
+  - DHCP server that isn't controlled by admin/staff.
   - rogue server offers new gateway and IP addresses to devices.
-  - as the default gateway, it has full control over every packet sent to/from the connected device.
+  - as the default gateway, it has full control over every packet sent to/from
+    the connected device.
   - man-in-the-middle-attacks
 
 # NAT
 
-- gateway router 
+- gateway router
   - connection to LAN (internal)
   - connection to WAN (external -- to ISP)
 
 - NAT (network address translation)
-  - reduces number of IP addresses by encapsulating (private) IP addresses in LANs
+  - reduces number of IP addresses by encapsulating (private) IP addresses in
+    LANs
 
 - NAT + gateway
   - router will have public IP address
   - devices in LAN will have private IP addresses
-
 
 # ports
 
@@ -848,7 +891,6 @@
     - 443 https
     - 445 smb/cifs
     - 3389 rdp
-
 
 - IP address -- which computer
 - port -- which service
@@ -878,7 +920,7 @@
   - DNS uses a hierarchical organization to resolve FQDNs to IP
   - DNS server will resolve FQDN to IP address
     - computer and DNS will both cache the result
-   
+
 - hosts file -- before DNS.
 
 - DNS records
@@ -910,13 +952,17 @@
 
 - routing table
   - tells router where to forward IP packets
-  - every routing table has a default gateway that sends all data unless otherwise specified
+  - every routing table has a default gateway that sends all data unless
+    otherwise specified
 
-- a SOHO router is usually combined with a switch, wireless access point, or modem.
+- a SOHO router is usually combined with a switch, wireless access point, or
+  modem.
 
 - router will send out DHCP range to LAN connected devices
-- router usually has an upstream DHCP server (gives them an IP address, subnet mask, default gateway, and DNS info)
-- router is a DHCP client. it can be given a static address ('ipconfig' will show default gateway as such)
+- router usually has an upstream DHCP server (gives them an IP address, subnet
+  mask, default gateway, and DNS info)
+- router is a DHCP client. it can be given a static address ('ipconfig' will
+  show default gateway as such)
 - default gateway is usually the router
 
 # advanced router configuration
@@ -924,24 +970,25 @@
 - QoS (quality of service)
   - specify allocation of bandwidth
   - based on IP, MAC, or port
-  - options might be as follows (fastest to slowest): exempt, premium, express, standard, bulk
+  - options might be as follows (fastest to slowest): exempt, premium, express,
+    standard, bulk
 
-- UPnP (universal plug and play)
-  - 
+- ## UPnP (universal plug and play)
 - Link Layer Discovery Protocol
   - windows default
 - SNMP (simple network management protocol)
   - tool for network administrators to get details about switch/router/etc
 
-
 # VLAN
 
 - managed switch -- more expensive, additional features (VLAN among them)
-  - VLAN -- has physical switch that creates separate network switches (separate LANs)
+  - VLAN -- has physical switch that creates separate network switches (separate
+    LANs)
   - customize VLAN
-    - switches usually only have MAC address. read manual or look online about giving it IP address.
+    - switches usually only have MAC address. read manual or look online about
+      giving it IP address.
     - in his example, the managed switch uses DHCP to get IP address.
-    - use IP address in broswer to manage switch via GUI (firmware interface). 
+    - use IP address in broswer to manage switch via GUI (firmware interface).
       - may require password
     - allocate ports to seperate VLANs
   - port security
@@ -949,7 +996,7 @@
 
 # wireless networking
 
-- IEEE 802.11 -- (most popular) wireless standard 
+- IEEE 802.11 -- (most popular) wireless standard
 - WAP (wireless access point) -- bridge between wired network and wireless.
 
 - IEEE 802.11 modes
@@ -962,22 +1009,28 @@
   - via USB connection
 
 - antenna types
-  - omnidirectional -- radiates and receives energy equally well in all directions.
-  - dipole -- omnidirectional antennas pointing in opposite directions. propogates horizontally
-  - patch -- half a sphere (ie: if you are against a wall. equal reach in all directions away from wall.)
+  - omnidirectional -- radiates and receives energy equally well in all
+    directions.
+  - dipole -- omnidirectional antennas pointing in opposite directions.
+    propogates horizontally
+  - patch -- half a sphere (ie: if you are against a wall. equal reach in all
+    directions away from wall.)
   - highly directional -- specific direction.
-      - parabolic antenna functions similarly.
+    - parabolic antenna functions similarly.
 
 - wifi standard
   - IEEE 802.11
     - based on ISM radio bands (industrial, scientific, and medical)
-    - 2.5 GHz -- 2.412 - 2.484 GHz. 14 channels (sometimes less channels, based on area)
-    - 5 GHz --  5.150 - 5.875 GHz. weird channel setup. 36-64, 100-144, 149-165, many are skipped.
+    - 2.5 GHz -- 2.412 - 2.484 GHz. 14 channels (sometimes less channels, based
+      on area)
+    - 5 GHz -- 5.150 - 5.875 GHz. weird channel setup. 36-64, 100-144, 149-165,
+      many are skipped.
   - extensions to IEEE 802.11
     - 802.11a -- 54 Mbps, 5 GHz
     - 802.11b -- 11 Mbps, 2.4 GHz
     - 802.11g -- 54 Mbps, 2.4 GHz (backwards compatible with 802.11b)
-    - 802.11n -- 100 Mbps, 2.4 & 5 GHz (backwards compatible with all) (MIMO -- multiple in / multiple out)
+    - 802.11n -- 100 Mbps, 2.4 & 5 GHz (backwards compatible with all) (MIMO --
+      multiple in / multiple out)
       - wifi 4
     - 802.11ac -- fast, (2.4 GHz backward compatibility) (multiple user MIMO)
       - wifi 5
@@ -995,9 +1048,11 @@
   - wireless clients can scan the 802.11 spectrum to find available SSIDs
   - select SSID and enter password to connect
   - clients create profiles that store SSIDs/passwords.
-  - saved connection isn't working, you might need to forget network. (password or IP config change, etc)
+  - saved connection isn't working, you might need to forget network. (password
+    or IP config change, etc)
 
-- WMN (wireless mesh network) -- increases reach of signal using nodes (organized in mesh topology)
+- WMN (wireless mesh network) -- increases reach of signal using nodes
+  (organized in mesh topology)
   - gateway (router), mesh router (node), mesh client (connected device).
   - nodes increase range/coverage
   - security
@@ -1005,14 +1060,14 @@
     - built in, 3rd party encryption
 
 - other wireless mediums
-  - RFID (radio frequency identification) -- 
+  - RFID (radio frequency identification) --
     - mostly used in industrial settings.
     - sticker gets powered by scanner and transmits signal back to scanner.
     - low power, must be very close
   - NFC (near field communication)
     - type of RFID
     - "tap to pay", "tap to print"
-  - bluetooth -- 
+  - bluetooth --
     - similar to 802.11
     - designed to only connect 2 devices
     - PAN (personal area network)
@@ -1023,14 +1078,14 @@
 
 - wireless troubleshooting
   - profiles will cause errors if SSID/password has changed
-  - low RF signal, no connectivity. 
+  - low RF signal, no connectivity.
     - move closer to source
     - adjust antennas
     - increase transmit power.
     - limit number of devices
     - remove things causing interference
-  - wifi analyzer can find interference from devices using ISM bands (baby monitors, microwave, etc)
-
+  - wifi analyzer can find interference from devices using ISM bands (baby
+    monitors, microwave, etc)
 
 # internet
 
@@ -1044,23 +1099,27 @@
 - internet tiers
   - internet is composed of many interconnected organizations
     - peering -- providers allowing each other to pass through traffic.
-      - symbiotic relationship that allows each provider to have increased coverage
-    - network operation centers -- 3rd party building that host / allow for peering
+      - symbiotic relationship that allows each provider to have increased
+        coverage
+    - network operation centers -- 3rd party building that host / allow for
+      peering
   - Tier 1 -- providers that do not pay anyone (may use peering)
   - Tier 2 -- providers that pay some Tier 1s but also peer
   - Tier 3 -- providers that pay Tier 1 / Tier 2 providers.
 
 - dialup connections
   - POTS -- plain old telephone service
-    - first generation internet -- using a system that sends analog to send digital 
-    - modem (example) -- RJ-11 input, RJ-11 output (to phone), DB-25 serial output (to computer)
+    - first generation internet -- using a system that sends analog to send
+      digital
+    - modem (example) -- RJ-11 input, RJ-11 output (to phone), DB-25 serial
+      output (to computer)
     - supports 56 Kbps speeds
   - idk what these are for
     - PSTN -- public switched telephone network
     - ISDN
 
 - broadband connection
-  - DSL (digital subscriber line) -- 
+  - DSL (digital subscriber line) --
     - DSL terminal adapter ("DSL modem")
     - DSL speed
       - asymmetric -- faster download, slower upload
@@ -1068,7 +1127,7 @@
     - many DSL require PPPoE (point to popint protocol over ethernet)
 
 - cable
-  - uses DOCSIS protocol (data over cable service interface specification) 
+  - uses DOCSIS protocol (data over cable service interface specification)
 
 - satellite
   - good for remote locations
@@ -1084,7 +1143,8 @@
   - stateful (different rules for inbound/outbound traffic)
 
 - home routers often allow outbound port 80, but not inbound
-  - web appliation will send request (ie -- source port: 14321, destination port: 80)
+  - web appliation will send request (ie -- source port: 14321, destination
+    port: 80)
 - web servers will allow inbound port 80
 
 # communication
@@ -1097,8 +1157,10 @@
   - ftp site -- starts with "ftp" (ie: ftp://some-domain.com)
   - ftp server
   - passive/active mode
-    - passive -- request (source: 14161, dest: 21), response (source: 21, dest: 14161)
-    - active -- request (source: 14161, dest 21), response (source: 14161, dest: 20)
+    - passive -- request (source: 14161, dest: 21), response (source: 21,
+      dest: 14161)
+    - active -- request (source: 14161, dest 21), response (source: 14161,
+      dest: 20)
     - active is a lot faster, but firewall might block response.
       - port triggering (router) helps overcome this.
       - add trigger, specify trigger port (21) and external port (20)
@@ -1128,14 +1190,16 @@
 
 # IoT
 
-- IoT -- internet capability to devices not traditionally associated with the internet
+- IoT -- internet capability to devices not traditionally associated with the
+  internet
   - most common connections: 802.11, Zigbee, Z-wave
   - requires a hub to link to the IoT devices
   - Google Home, Amazon Alexa, Apple Siri add voice capabilities to IoT
 
 # virtualization
 
-- virtual machine -- self-contained computer, running within a host operating system.
+- virtual machine -- self-contained computer, running within a host operating
+  system.
 - hypervisor -- host that runs virtual machines
   - type 1 -- hardware, hypervisor (OS), VMs
     - examples -- VMware ESXi, Microsoft Hyper-V, KVM
@@ -1147,10 +1211,10 @@
 
 - virtualization must be enabled in system setup
 
-
 # cloud
 
-- cloud computing -- using a network of remote servers to store/manage/process data
+- cloud computing -- using a network of remote servers to store/manage/process
+  data
   - network is accessible via IP
   - enables elasticity, scaling, and resource pooling
 
@@ -1169,7 +1233,8 @@
 - cloud based applications
   - cloud storage -- access to synchronized saved files
   - move management to the cloud (email)
-  - virtual desktops -- consistent workspace, accessible from any (authenticated) device
+  - virtual desktops -- consistent workspace, accessible from any
+    (authenticated) device
   - virtual application streaming -- access to apps without installing them
 
 # laptops
@@ -1184,7 +1249,8 @@ TODO
   - run a host-based firewall
 - network based security
   - IDS (intrusion detection system) (less used)
-  - IPS (intrusion prevention systems) (more frequently used) (expensive) (needs central administration)
+  - IPS (intrusion prevention systems) (more frequently used) (expensive) (needs
+    central administration)
     - endpoint management
   - UTM (unified threat management)
     - network firewall

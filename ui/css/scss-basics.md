@@ -1,37 +1,31 @@
-// ---
-// CSS AND SCSS (SASS)
-// ---
+# SCSS
 
-// ---
-// NPM, SCSS, & PREPROCESSING
-// ---
+## NPM, SCSS, & PREPROCESSING
 
-// npm install node-sass --save
-// create 'main.scss' file in 'scss' directory of project.
-// write scss
-// under scripts (in package.json):
-  // "compile:scss": "node-sass scss/main.scss css/style.css"
-// "npm run compile:scss" in terminal
-// adding a '-w' flag to the compile:scss script will make node-sass watch for updates
-// live-server can also be used to detect changes to scss files.
+- npm install node-sass --save
+- create 'main.scss' file in 'scss' directory of project.
+- write scss
+- under scripts (in package.json):
+  - "compile:scss": "node-sass scss/main.scss css/style.css"
+- "npm run compile:scss" in terminal
+- adding a '-w' flag to the compile:scss script will make node-sass watch for
+  updates
+- live-server can also be used to detect changes to scss files.
 
-// ---
-// CSS PRINCIPLES
-// ---
+## CSS Principles
 
-// CSS should be in the head (style tag) or in an external file
-// CSS overwrites itself (duplicate properties will overwrite previous ones)
-// child elements inherit properties from parent divs (in some cases)
+- CSS should be in the head (style tag) or in an external file
+- CSS overwrites itself (duplicate properties will overwrite previous ones)
+- child elements inherit properties from parent divs (in some cases)
 
-// 3 principles of good HTML/CSS
-  // RESPONSIVE DESIGN
-  // MAINTAINABLE/SCALABLE
-  // WEB PERFORMANCE
+- 3 principles of good HTML/CSS
+  - RESPONSIVE DESIGN
+  - MAINTAINABLE/SCALABLE
+  - WEB PERFORMANCE
 
-// ---
-// BASIC RESET (UNIVERSAL SELECTOR)
-// ---
+## Basic reset (universal selector)
 
+```scss
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -47,58 +41,56 @@ body {
   color: #777;
   box-sizing: border-box; // include margin & border in width/height
 }
+```
 
-// ---
-// BUILD MEANINGFUL CLASSNAMES
-// ---
+## Build meaningful classnames
 
-// block element modifier -- BEM format
+Composition:
 
+- BEM format: block, element, modifier
+
+```scss
 .block {}
 .block__element {}
 .block__element--modifier {}
+```
 
-// example
+Example
+
+```scss
 .recipe {}
 .recipe__stat {}
 .recipe__stat--key {}
 .recipe__stat--value {}
+```
 
-// ---
-// SASS FEATURES
-// ---
+## SCSS Features
 
-// features
+- variables
+  - store reusable values
+- nesting
+  - nest selectors inside of one another
+- operators
+  - math operations inside of CSS
+- partials and imports
+  - write CSS in modules
+- mixins
+  - write reusable pieces of CSS code
+- functions
+  - dynamically produce values
+- extends
+  - make different selectors inherit common declarations
 
-// variables
-  // store reusable values
-// nesting
-  // nest selectors inside of one another
-// operators
-  // math operations inside of CSS
-// partials and imports
-  // write CSS in modules
-// mixins
-  // write reusable pieces of CSS code
-// functions
-  // dynamically produce values
-// extends
-  // make different selectors inherit common declarations
+## Sass and SCSS (SYNTAX)
 
+- sass -- indentation sensitive, no brackets/semi-colons
+- SCSS -- preserves original CSS syntax
 
-// ---
-// Sass and SCSS (SYNTAX)
-// ---
+js comments work (`//` instead of `/* comment */`)
 
-// sass -- indentation sensitive, no brackets/semi-colons
-// SCSS -- preserves original CSS syntax
+## SCSS variables
 
-// js comments work (instead of /* comment */)
-
-// ---
-// SCSS VARIABLES
-// ---
-
+```scss
 $c-primary: #55f;
 $c-secondary: #2a6;
 $c-tertiary: #f55;
@@ -109,13 +101,13 @@ $c-light: #eee;
 .box-1 {
   background-color: $c-p;
 }
+```
 
-// ---
-// NESTED SELECTORS
-// ---
+## Nested selectors
 
 // use '&' when using pseudo-classes in nested selectors
 
+```scss
 .container {
   padding: 3rem;
 
@@ -128,13 +120,13 @@ $c-light: #eee;
     }
   }
 }
+```
 
-// ---
-// ADVANCED NESTING
-// ---
+## Advanced nesting
 
-// classes: '.header', '.header__logo-box'
+classes: '.header', '.header__logo-box'
 
+```scss
 .header {
   background: $c-primary;
 
@@ -165,21 +157,19 @@ $c-light: #eee;
   &--white { /*something */ }
   &--animated { /*something */ }
 }
+```
 
+## RGBA with hex
 
-// ---
-// RGBA WITH HEX
-// ---
-
+```scss
 box-1 {
   background: rgba($c-tertiary, .8)  // in scss, rgba can accept hex
 }
+```
 
+## Color functions (SCSS)
 
-// ---
-// COLOR FUNCTIONS (SCSS)
-// ---
-
+```scss
 .btn-main {
   background-color: $c-secondary;
 
@@ -190,11 +180,11 @@ box-1 {
     background-color: lighten($c-secondary, 15%);
   }
 }
+```
 
-// ---
-// SCSS MIXINS (with arguments, default arguments)
-// ---
+## SCSS mixins (with arguments, default arguments)
 
+```scss
 @mixin clearfix {
   &::after {
     content: "";
@@ -214,11 +204,11 @@ box-1 {
 a {
   @include style-link-text(#eee);
 }
+```
 
-// ---
-// SCSS FUNCTIONS
-// ---
+## SCSS functions
 
+```scss
 @function divide($numerator, $denominator) {
   @return $numerator / $denominator;
 }
@@ -226,11 +216,11 @@ a {
 box-1 {
   margin: divide(3, 2) * 1rem;
 }
+```
 
-// ---
-// EXTENDS (using placeholder) (like mixins, but produces DRY code)
-// ---
+## Extends (using placeholder) (like mixins, but produces DRY code)
 
+```scss
 %btn-placeholder {
   padding: 1rem;
   display: inline-block;
@@ -248,25 +238,28 @@ btn-alternate {
   @extend %btn-placeholder;
   background-color: $c-secondary;
 }
+```
 
-// ---
-// 7-1 PATTERN
-// ---
+## 7-1 PATTERN
 
-// 7 folders, 1 main Sass file
-  // main.scss
-  // base
-  // components
-  // layout
-  // pages
-  // themes
-  // abstracts
-  // vendors
+- 7 folders, 1 main Sass file
+  - main.scss
+  - base
+  - components
+  - layout
+  - pages
+  - themes
+  - abstracts
+  - vendors
 
-// naming convention of files
-  // _functions.scss, _home.scss, _header.scss
+- naming convention of files
+  - _functions.scss, _home.scss, _header.scss
 
-// main.scss
+### Example
+
+main.scss
+
+```scss
 @import "abstracts/functions";
 @import "abstracts/mixins";
 @import "abstracts/variables";
@@ -291,12 +284,11 @@ btn-alternate {
 @import "pages/login";
 @import "pages/dashboard";
 @import "pages/profile";
+```
 
+## Not (pseudo-selector)
 
-// ---
-// NOT (PSEUDO-SELECTOR)
-// ---
-
+```scss
 .row {
   background-color: #eee;
 
@@ -304,22 +296,22 @@ btn-alternate {
     margin-bottom: 4rem; // mb for all .row except last-child
   }
 }
+```
 
-// ---
-// ATTRIBUTE SELECTOR (advanced)
-// ---
+## Attribute selector (advanced)
 
+```scss
 // select all elements whose class begins with 'col-'
 [class^="col-"] {}
 // select all elements whose class ends with 'col-'
 [class$="col-"] {}
 // select all elements whose class contains 'col-'
 [class*="col-"] {}
+```
 
-// ---
-// CUSTOM GRID WITH FLOATS
-// ---
+## Custom grid with floats
 
+```scss
 // variables (abstracts/variables)
 $grid-width: 72rem; // px to rem: 1140/16 = 71.25rem
 $grid-gutter-h: 2rem;
@@ -380,23 +372,20 @@ $grid-gutter-v: 2rem;
     }
   }
 }
+```
 
-
-// ---
-// MEDIA QUERIES (BREAKPOINTS)
-// ---
+# Media queries (breakpoints)
 
 // best practice is to create a breakpoints based on content.
 
-// predefined breakpoints (based on devices) that work pretty well:
-  // phone (<600), tablet-portrait (<900), tablet-landscape (<1200), desktop (<1800)
+// predefined breakpoints (based on devices) that work pretty well: // phone
+(<600), tablet-portrait (<900), tablet-landscape (<1200), desktop (<1800)
 
-// ---
-// SCSS & MEDIA QUERIES (NESTING)
-// ---
+## Scss & media queries (nesting)
 
 // without mixin (good)
 
+```scss
 .box-1 {
   font-size: 1.2rem;
 
@@ -404,11 +393,11 @@ $grid-gutter-v: 2rem;
     font-size: 1rem;
   }
 }
+```
 
-// ---
-// SCSS & MEDIA QUERIES (MIXIN)
-// ---
+## Scss & media queries (mixin)
 
+```scss
 // abstracts/mixins
 @mixin rd-phone {
   @media (max-width: 600px) { @content };
@@ -431,11 +420,11 @@ html {
     font-size: 1rem;
   }
 }
+```
 
-// ---
-// SCSS & MEDIA QUERIES (MEDIA QUERY MANAGER) (BEST)
-// ---
+## Scss & media queries (media query manager) (best)
 
+```scss
 // abstracts/mixins
 @mixin rd($device) {
   @if $device == phone {
@@ -469,21 +458,18 @@ html {
     font-size: 110%;
   }
 }
+```
 
-// ---
-// SCSS RESPONSIVE IMAGES
-// ---
+# SCSS responsive images
 
-// responsive images improve performance and design.
-  // resolution switching (decrease resolution on smaller screen)
-  // density switching (different image for high/low resolution screens)
-  // art direction (serving an alternate/altered image for smaller screens)
+// responsive images improve performance and design. // resolution switching
+(decrease resolution on smaller screen) // density switching (different image
+for high/low resolution screens) // art direction (serving an alternate/altered
+image for smaller screens)
 
+# SCSS & flexbox (display: flex;)
 
-// ---
-// SCSS & FLEXBOX (display: flex;)
-// ---
-
+```scss
 * {
   margin: 0;
   padding: 0;
@@ -507,13 +493,12 @@ html {
   margin: 1rem;
   color: $c-light;
 }
+```
 
-// ---
-// SCSS & CSS-GRID
-// ---
+// --- // SCSS & CSS-GRID // ---
 
+```scss
 .container {
   display: grid;
 }
-
-
+```
