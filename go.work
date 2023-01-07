@@ -1,0 +1,24 @@
+go 1.18
+
+use (
+	./go/core/basics
+	./go/core/cobra
+	./go/core/concurrency
+	./go/core/generics
+	./go/core/lo
+	./go/core/standard-packages
+	./go/core/structures
+	./go/data/golearn-notes
+	./go/data/gonum-notes
+	./go/data/gota-notes
+	./go/db/gorm-example
+	./go/db/mongo-example
+	./go/db/pg-example
+	./go/db/redis-example
+	./go/db/squirrel-example
+	./go/testing/gomega-notes
+	./go/web/atreugo
+	./go/web/fasthttp
+	./go/web/gin
+	./go/web/gorilla
+)

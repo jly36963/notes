@@ -2,71 +2,6 @@
 // golang
 // ---------
 
-/*
-
-# in `.zprofile`
-
-# set $GOPATH and add to PATH
-export GOPATH="$HOME/go"
-PATH="$GOPATH/bin:$PATH"
-
-*/
-
-// ---
-// terms
-// ---
-
-// predeclared identifiers
-// bool, byte, complex64, complex128, error, float32, float64, int, int8, int16, int32, int64
-// rune, string, uint, uint8, uint32, uint64,
-
-// alias
-// byte -- uint8
-// rune -- int32
-
-// constants
-// true false iota
-
-// zero value
-// nil
-
-// functions
-// append, cap, close, complex, copy, delete, imag, len,
-// make, new, panic, print, println, real, recover
-
-// keywords
-// break, case, chan, const, continue, default, defer, else, fallthrough, for
-// func, go, goto, if, import, interface, map, package, range, return, select,
-// struct, switch, type, var
-
-// ---
-// operators
-// ---
-
-/*
-
-math
-+ - * / %
-
-assignment
-= :=
--= += *= /+ %=
-&= ^= |=
-
-increment
-++ --
-
-bitwise
->> << & | ^ &^
-
-logical
-&& || !
-
-comparison
-== != <= >=
-
-*/
-
 // ---
 // assignment
 // ---
@@ -121,6 +56,7 @@ fmt.Sprintf("number: %.2f", 2.20254)
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os/exec"
 	"runtime"
@@ -128,71 +64,66 @@ import (
 )
 
 func main() {
-	// runtime
-	fmt.Println(strings.ToUpper("runtime details"))
+	printSectionTitle("runtime details")
 	getRuntimeDetails()
 
-	// functions
-	fmt.Println(strings.ToUpper("functions"))
-	add(1, 2)
+	printSectionTitle("functions")
+	basicFunctions()
 
-	// functions (multiple returns)
-	fmt.Println(strings.ToUpper("functions (multiple returns)"))
-	getSumAndProduct(3, 4) // x,y := getSumAndProduct(3,4)
+	printSectionTitle("functions (tuple returns)")
+	basicTupleReturn()
 
-	// functions (anonymous)
-	fmt.Println(strings.ToUpper("anonymous functions"))
-	subtract(3, 2)
+	printSectionTitle("function literals")
+	basicFunctionLiteral()
 
-	// functions (variadic)
-	fmt.Println(strings.ToUpper("variadic functions"))
-	getSum(1, 2, 3, 4)           // any number of arguments
-	getSum([]int{1, 2, 3, 4}...) // spread slice
+	printSectionTitle("variadic args")
+	basicVariadicArgs()
 
-	// functions (currying)
-	fmt.Println(strings.ToUpper("currying"))
-	addTwoNumbers(3)(5)
+	printSectionTitle("currying")
+	basicCurrying()
 
-	// scope (closure)
-	fmt.Println(strings.ToUpper("scope / closure"))
-	scopedGreet()
+	printSectionTitle("closure (scope)")
+	basicClosure()
 
-	// functions (recursion)
-	fmt.Println(strings.ToUpper("recursion"))
-	getFibSequenceTo(20)
+	printSectionTitle("recursion")
+	basicRecursion()
 
-	// functions (defer)
-	fmt.Println(strings.ToUpper("defer"))
-	deferredGreet("Hiruzen")
+	printSectionTitle("defer")
+	basicDefer()
 
-	// bash commands
-	fmt.Println(strings.ToUpper("bash commands"))
+	printSectionTitle("bash commands")
 	runBashCommands([]string{"ls", "date", "pwd"})
 
-	// bash commands (args)
-	fmt.Println(strings.ToUpper("bash commands (args)"))
+	printSectionTitle("bash commands (args)")
 	runBashCommandsWithArgs([][]string{
 		{"ls", "-a"},
 		{"echo", "hello there!!"},
 		{"go", "version"},
 	})
 
-	// control flow (if)
-	fmt.Println(strings.ToUpper("if, else if, else"))
+	printSectionTitle("if, else if, else")
 	greet("Kakashi")
 
-	// control flow (for loop)
-	fmt.Println(strings.ToUpper("for loop"))
-	printNames([]string{"Kakashi", "Hiruzen", "Iruka", "Yamato", "Itachi", "Hashirama"})
+	printSectionTitle("for loop")
+	basicForLoop()
 
-	// control flow (switch)
-	fmt.Println(strings.ToUpper("switch"))
-	getSnackbarColor("success")
+	printSectionTitle("range")
+	basicRange()
 
+	printSectionTitle("switch")
+	basicSwitch()
 }
 
 // ---
-// runtime details
+// Helpers
+// ---
+
+func printSectionTitle(s string) {
+	fmt.Println("\n", strings.ToUpper(s), "\n")
+}
+
+// ---
+// Runtime details
 // ---
 
 func getRuntimeDetails() {
@@ -211,43 +142,55 @@ func getRuntimeDetails() {
 }
 
 // ---
-// functions
+// Functions
 // ---
-
-// short variable declarations can only exist inside functions
 
 func add(a, b int) int {
-	sum := a + b // short variable declaration
-	fmt.Println(sum)
-	return sum
+	return a + b
+}
+
+func basicFunctions() {
+	res := add(1, 2)
+	fmt.Println(res)
 }
 
 // ---
-// functions (multiple returns)
+// Functions (multiple returns)
 // ---
 
-func getSumAndProduct(a int, b int) (sum int, product int) {
-	sum = a + b
-	product = a * b
-	fmt.Println(sum)
-	fmt.Println(product)
-	return
+func safeDivide(a, b int) (quotient float64, err error) {
+	if b == 0 {
+		return 0, errors.New("Please do not divide by zero")
+	}
+	return float64(a) / float64(b), nil
 }
 
-// x,y := getSumAndProduct(3,4)
+func basicTupleReturn() {
+	q, err := safeDivide(5, 3)
+	if err != nil {
+		fmt.Println("Oops, something went wrong")
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(q)
 
-// ---
-// anonymous functions (function literal)
-// ---
-
-var subtract = func(a, b int) int {
-	difference := a + b
-	fmt.Println(difference)
-	return difference
 }
 
 // ---
-// variadic functions (example -- sum)
+// Function literal
+// ---
+
+func basicFunctionLiteral() {
+	var subtract = func(a, b int) int {
+		return a - b
+	}
+
+	res := subtract(3, 2)
+	fmt.Println(res)
+}
+
+// ---
+// Variadic functions
 // ---
 
 func getSum(nums ...int) int {
@@ -259,23 +202,40 @@ func getSum(nums ...int) int {
 	return total
 }
 
+func basicVariadicArgs() {
+	var res int
+
+	// Variadic
+	res = getSum(1, 2, 3, 4)
+	fmt.Println(res)
+
+	// Spread slice
+	ints := []int{1, 2, 3, 4}
+	res = getSum(ints...)
+	fmt.Println(res)
+}
+
 // ---
-// currying
+// Currying
 // ---
 
 func addTwoNumbers(a int) func(b int) int {
 	return func(b int) int {
-		sum := a + b
-		fmt.Println(sum)
-		return sum
+		return a + b
 	}
 }
 
+func basicCurrying() {
+	addThree := addTwoNumbers(3)
+	res := addThree(5)
+	fmt.Println(res)
+}
+
 // ---
-// closure
+// Closure
 // ---
 
-func scopedGreet() {
+func basicClosure() {
 	g1 := "Hello Hashirama"
 	{
 		g1 := "Hello Itachi"
@@ -285,47 +245,38 @@ func scopedGreet() {
 }
 
 // ---
-// recursion
+// Recursion
 // ---
 
-// iterative > tail recursion > recursion
-
-// helper
-func fibHelper(n, first, second int) int {
-	if n == 0 {
-		return first
-	}
-	return fibHelper(n-1, second, first+second)
-}
-
-// recursive function
 func fib(n int) int {
-	return fibHelper(n, 0, 1)
-}
-
-// get fib sequence
-func getFibSequenceTo(n int) []int {
-	sequence := []int{}
-	for i := 0; i < n; i++ {
-		sequence = append(sequence, fib(i))
+	if n <= 1 {
+		return n
 	}
-	fmt.Println(sequence)
-	return sequence
+	return fib(n-1) + fib(n-2)
+}
+
+func basicRecursion() {
+	n := 20
+	res := fib(20)
+	fmt.Println("fib " + string(n) + " is " + string(res))
 }
 
 // ---
-// function (defer)
+// Function (defer)
 // ---
 
-func deferredGreet(name string) string {
-	defer fmt.Println("How have you been?")            // third
-	defer fmt.Println("It's nice to see you!")         // second
-	fmt.Println(fmt.Sprintf("Hello there, %s!", name)) // first
-	return ":D"
+func deferredGreet(name string) {
+	defer fmt.Println("How have you been?")    // third
+	defer fmt.Println("It's nice to see you!") // second
+	fmt.Printf("Hello there, %s!", name)       // first
+}
+
+func basicDefer() {
+	deferredGreet("Hiruzen")
 }
 
 // ---
-// bash commands
+// Bash commands
 // ---
 
 func runBashCommands(commands []string) {
@@ -341,7 +292,7 @@ func runBashCommands(commands []string) {
 }
 
 // ---
-// bash commands with args
+// Bash commands with args
 // ---
 
 func runBashCommandsWithArgs(commands [][]string) {
@@ -357,7 +308,7 @@ func runBashCommandsWithArgs(commands [][]string) {
 }
 
 // ---
-// if, else if, else
+// Conditionals (if, else if, else)
 // ---
 
 func greet(name string) {
@@ -366,90 +317,52 @@ func greet(name string) {
 	} else if name == "Yamato" {
 		fmt.Println("Hey Tenzo!")
 	} else {
-		fmt.Println(fmt.Sprintf("Hello %v!", name))
+		fmt.Printf("Hello %v!", name)
 	}
 }
 
 // ---
-// for loop
+// For loop
 // ---
 
-func printNames(names []string) {
+func greetLoop(names []string) {
 	for i := 0; i < len(names); i++ {
-		fmt.Println(names[i])
+		fmt.Println("Hello,", names[i])
 	}
 }
 
+func basicForLoop() {
+	greetLoop([]string{"Kakashi", "Hiruzen", "Iruka", "Yamato", "Itachi", "Hashirama"})
+}
+
 // ---
-// switch
+// Range
 // ---
 
-func getSnackbarColor(alertType string) string {
-	var color string
-	switch alertType {
-	case "info":
-		color = "gray"
-		break
-	case "success":
-		color = "green"
-		break
-	case "error":
-		color = "red"
-		break
-	case "warning":
-		color = "yellow"
-		break
+func greetRange(names []string) {
+	for _, name := range names {
+		fmt.Println("Hello,", name)
+	}
+}
+
+func basicRange() {
+	greetRange([]string{"Kakashi", "Hiruzen", "Iruka", "Yamato", "Itachi", "Hashirama"})
+}
+
+// ---
+// Switch
+// ---
+
+// Breaks are likely unnecessary, switch logic completes on first match
+
+func basicSwitch() {
+	a := 1
+	switch a {
+	case 1:
+		fmt.Println("Hello!!")
+	case 2:
+		fmt.Println("Hola!!")
 	default:
-		color = "gray"
+		fmt.Println("Oi!!")
 	}
-	fmt.Println(color)
-	return color
 }
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---

@@ -1,6 +1,6 @@
-// ---------
-// golang (structures)
-// ---------
+// ---
+// Concurrency
+// ---
 
 package main
 
@@ -32,11 +32,7 @@ func main() {
 }
 
 // ---
-// shorthand function names
-// ---
-
-// ---
-// wait groups
+// Wait groups
 // ---
 
 // wg -- allow for go-routines to finish (while wg counter is not 0)
@@ -61,7 +57,7 @@ func wgPrintStrings(s []string) {
 }
 
 // ---
-// wait groups (mutex)
+// Wait groups (mutex)
 // ---
 
 // mutex (mutual exclusion) -- locking mechanism
@@ -86,7 +82,7 @@ func countToMutex(n int, numOfGR int) {
 			mutex.Lock() // lock variable
 			counter++
 			mutex.Unlock() // unlock variable
-			fmt.Println(fmt.Sprintf("%s: %d, Counter: %d", name, i, counter))
+			fmt.Printf("%s: %d, Counter: %d", name, i, counter)
 		}
 		wg.Done()
 	}
@@ -121,7 +117,7 @@ func countToAtomic(n int, numOfGR int) {
 		for i := 0; i < iterations; i++ {
 			time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
 			atomic.AddInt64(&counter, 1)
-			fmt.Println(fmt.Sprintf("%s: %d, Counter: %d", name, i, atomic.LoadInt64(&counter)))
+			fmt.Printf("%s: %d, Counter: %d", name, i, atomic.LoadInt64(&counter))
 		}
 		wg.Done()
 	}

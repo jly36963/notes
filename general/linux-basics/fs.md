@@ -1,12 +1,10 @@
-# ------------
-# files and fs
-# ------------
+# FS
 
+## Move/Copy/Remove
 
-# ------------
-# move/copy/remove
-# ------------
+Move
 
+```bash
 # mv (file)
 mv -i file1.txt file2.txt # rename (confirm before overwrite)
 mv file1.txt dir1/ # move file to child directory
@@ -17,32 +15,45 @@ mv dir2 dir1 # move dir2 into dir1 (dir1 exists)
 mv dir2 dir1/dir2 # move dir2 into dir1 (dir1 exists)
 mv dir2 dir1/dir3 # move and rename (dir3 DNE)
 mv dir2 dir1/dir3/ # move and rename (dir3 DNE)
+```
 
+Copy
+
+```bash
 # cp
 cp -i file.txt file2.txt # copy file (confirm before overwrite)
 cp -r dir1 dir2 # copy dir (recursive)
+```
 
+Remove
+
+```bash
 # rm
 rm -i file.txt # remove file (asks for confirmation (usually the default behavior))
 rm -f file.txt # remove file (force)
 rm -rf dir1 # remove directory (recursive) (force)
+```
 
-# ------------
-# locate (works on files) (uses mlocate db)
-# ------------
+## Locate
 
+works on files.\
+uses mlocate db.
+
+```bash
 locate *.txt # find all files ending in '.txt'
 locate -i *.txt # case insensitive
 locate -i -l 10 *.txt # case insensitive, limit results to 10
 locate -S # data about mlocate db (the locate program's db)
 locate -e *.txt # check existance (db might not be current)
+```
 
-# ------------
-# FIND (works on files/dirs) (operates directly on OS)
-# ------------
+## Find
 
-# find
-    # recursive by default
+works on files/dirs.\
+operates directly on OS.\
+find is recursive by default
+
+```bash
 # print (default)
 find ./ -name file.txt # find file in directory
 find ./ -name *.txt # find (wildcard)
@@ -51,7 +62,7 @@ find ./ -size +10M # find (size) (greater than 10MB)
 find ./ -name file.txt -delete
 
 # find
-    # works on selected dir and it's descendent dirs/files
+# works on selected dir and it's descendent dirs/files
 find # find all files/dirs/subdirs in current dir
 find ~/Desktop/ # find in desktop
 find . -maxdepth 1 # find in current dir
@@ -68,92 +79,94 @@ mkdir haystack
 mkdir haystack/folder{1..500}
 touch haystack/folder{1..500}/file{1.100}
 find haystack -type f "needle.txt" -exec mv {} ~/Desktop \;
+```
 
-# ------------
-# get all files
-# ------------
+## Get all files
 
+```bash
 # copy all files from current directory to '~/Desktop/dir1'
 find . -maxdepth 1 -type f -exec cp {} ~/Desktop/dir1 \;
 # same, but ask permission for each
 find . -maxdepth 1 -type f -ok cp {} ~/Desktop/dir1 \;
+```
 
+## Partitioning & fs
 
+- data is stored on disk drives that are logically divided into partitions
+  - partition --
+  - file system --
 
+- boot
+  - partition info is stored on the disk in a small region called the MBR or
+    GPT.
+  - this info is used by the OS at boot time
+    - BIOS/UEFI scans disks for MBR/GPT
+    - identifies boot disk
+    - loads boot loader in memory
+    - reads partitino table and looks for '/boot' partition.
 
-# ------------
-# partitioning and fs
-# ------------
+- MBR (master boot record) for BIOS systems
+  - resident on the first sector of the boot disk.
+  - limited to addressing space of 2TB (due to 32-bit nature and 512-byte sector
+    size)
+  - non-redundant -- records can't be replicated.
+  - can only create four primary partitions on a single disk
+    - one of the four can be an extended partition and hold an arbitrary number
+      of logical partitions.
+  - limitations of MBR led to the development of GPT
+- GPT (GUID partition table) for UEFI systems
+  - increasing number of >2TB disks on x86 computers, a new 64-bit partitioning
+    standard was made.
+  - GPT -- new partitioning standard. integrated into UEFI firmware.
+  - allowed for the following:
+    - 128 partitions, disks much greater than 2TB, UEFI firmware, 4KB sector,
+      redundancy of data
 
-# data is stored on disk drives that are logically divided into partitions
-    # partition -- 
-    # file system -- 
+- tools
+  - parted
+    - understands both MBR and GPT
+  - gdisk
+    - designed to support GPT format only
+  - fdisk
+    - MBR only (doesn't understand GPT), cannot address space exceeding 2TB
+  - LVM -- logical volume manager
+    - widely used for managing disk storage
 
-# boot
-    # partition info is stored on the disk in a small region called the MBR or GPT.
-    # this info is used by the OS at boot time
-        # BIOS/UEFI scans disks for MBR/GPT
-        # identifies boot disk
-        # loads boot loader in memory
-        # reads partitino table and looks for '/boot' partition.
+- LVM
+  - provides an abstraction layer between the fs and the physical storage
+  - allows for resizing
+  - enables fs to span multiple physical disks
+  - can use random disk space
+  - move from one disk to another without taking the fs offline
+  - before LVM, running out of disk space usually meant:
+    - installing new hard drive
+    - booting to recovery / single-user mode
+    - creating a partition and a fs on the new hard drive
+    - using temporary mount oints to move the data from the fs to a larger one
+    - changing the content of the /etc/fstab file to reflect the new partition
+    - rebooting to remount the new fs on the correct mount point.
+  - LVM allows for
+    - the ability to add disk space to a logical volume and its fs while
+      mounted/active
+    - collection of multiple physical hard drives / partitions into a single
+      volume group
+    - reduction of a logical volume
+    - mirroring of the logical volume
+    - moving from one storage disk without taking the system offline
 
-# MBR (master boot record) for BIOS systems
-    # resident on the first sector of the boot disk.
-    # limited to addressing space of 2TB (due to 32-bit nature and 512-byte sector size)
-    # non-redundant -- records can't be replicated.
-    # can only create four primary partitions on a single disk 
-        # one of the four can be an extended partition and hold an arbitrary number of logical partitions.
-    # limitations of MBR led to the development of GPT
-# GPT (GUID partition table) for UEFI systems
-    # increasing number of >2TB disks on x86 computers, a new 64-bit partitioning standard was made. 
-    # GPT -- new partitioning standard. integrated into UEFI firmware.
-    # allowed for the following: 
-        # 128 partitions, disks much greater than 2TB, UEFI firmware, 4KB sector, redundancy of data
+- structure
+  - physical hard drive -> physical volume -> volume group -> logical volume ->
+    fs
 
-# tools
-    # parted
-        # understands both MBR and GPT
-    # gdisk
-        # designed to support GPT format only
-    # fdisk
-        # MBR only (doesn't understand GPT), cannot address space exceeding 2TB
-    # LVM -- logical volume manager
-        # widely used for managing disk storage
+## Parted
 
-# LVM
-    # provides an abstraction layer between the fs and the physical storage
-    # allows for resizing
-    # enables fs to span multiple physical disks
-    # can use random disk space
-    # move from one disk to another without taking the fs offline
-    # before LVM, running out of disk space usually meant:
-        # installing new hard drive
-        # booting to recovery / single-user mode
-        # creating a partition and a fs on the new hard drive
-        # using temporary mount oints to move the data from the fs to a larger one
-        # changing the content of the /etc/fstab file to reflect the new partition
-        # rebooting to remount the new fs on the correct mount point.
-    # LVM allows for
-        # the ability to add disk space to a logical volume and its fs while mounted/active
-        # collection of multiple physical hard drives / partitions into a single volume group
-        # reduction of a logical volume
-        # mirroring of the logical volume
-        # moving from one storage disk without taking the system offline
+- parted -- managing storage
+  - view, add, check, modify, copy, resize, delete partitions
+  - understands MBR and GPT schemes
 
-# structure
-    # physical hard drive -> physical volume -> volume group -> logical volume -> fs
+- create MBR or GPT partition table and a partition
 
-
-# ------------
-# parted
-# ------------
-
-# parted -- managing storage
-    # view, add, check, modify, copy, resize, delete partitions
-    # understands MBR and GPT schemes
-
-# create MBR or GPT partition table and a partition
-
+```bash
 # create MBR table and partition
 lsblk # see the disk
 parted /dev/sdb # start parted program 
@@ -174,21 +187,21 @@ mklabel gpt # create GPT partition (in parted program)
 # comfirm 
 parted /dev/sdb print
 grep sdb /proc/partitions
+```
 
-# ------------
-# creating PVs, VGs, LVs
-# ------------
+## Creating PVs, VGs, LVs
 
-# adding a new LV -- https://opensource.com/business/16/9/linux-users-guide-lvm
-    # new hard drive
-    # create partition on HD
-    # create PV
-    # assign PV to a VG (or create VG)
-    # create LV from space in the VG
-    # create fs on new LV
-    # add appropriate entries to /etc/fstab for mounting the fs
-    # mount fs
+- adding a new LV -- https://opensource.com/business/16/9/linux-users-guide-lvm
+  - new hard drive
+  - create partition on HD
+  - create PV
+  - assign PV to a VG (or create VG)
+  - create LV from space in the VG
+  - create fs on new LV
+  - add appropriate entries to /etc/fstab for mounting the fs
+  - mount fs
 
+```bash
 # physical volume (PV)
 lsblk # check disks
 pvcreate /dev/sdb # create a PV
@@ -220,11 +233,11 @@ df -h # check fs and mount point. These will be used later
 
 # unmount
 umount /mnt/new_mnt # use mnt point or device file (/dev/vg1/lv1)
+```
 
-# ------------
-# extend VG and LV
-# ------------
+## Extend VG and LV
 
+```bash
 # extend VG
 lsblk # check for available disk ('sdc' in example)
 pvcreate /dev/sdc # create physical volume
@@ -274,24 +287,25 @@ vgremove vg1 # remove VG
 pvs # check PVs
 pvremove /dev/sdd # remove PV
 lsblk # check disks
+```
 
-# ------------
-# CURL
-# ------------
+## Curl
 
+```bash
 curl url # make get request (standard out)
 curl -I url # get headers
 curl -I --http2 -s url | grep HTTP # check if website supports http/2
 curl -L url # make get request, follow redirects
 curl -O url # download (assumes fn)
 curl -o fn url # download (specify fn)
+```
 
-# ------------
-# archive / compression
-# ------------
+## Archive / Compression
 
-# compression
-    # use tar -z if you want to archive/compress multiple files together
+- compression
+- use tar -z if you want to archive/compress multiple files together
+
+```bash
 gzip file.txt
 gunzip file.txt.gz
 bzip2 file.txt
@@ -303,27 +317,28 @@ tar -zxvf archive.tar.gz # extract (gzip) (extract) (verbose) (specify filename)
 
 # make backup (of "dir")
 tar -cvzf "dir-$(date +%m-%d-%y).tar.gz" "./dir"
+```
 
+## Links
 
-# ------------
-# soft / hard links
-# ------------
+- Soft or hard
+- use hard link whenever possible
 
-# use hard link whenever possible
+- inode (index node) -- kernels recognize filenames as a numeric identifier
+  (inode)
+- link -- pointer to another file
+  - symbolic link (soft)
+    - similar to shortcut in windows
+    - unique inodes
+    - can span multiple fs
+  - hard link
+    - associates one or more files with a sigle inode number (same inode)
+    - changing a file will affect hard-liked files
+    - deleting, renaming, moving the original file will not affect hard link
+    - only valid within the same fs
 
-# inode (index node) -- kernels recognize filenames as a numeric identifier (inode)
-# link -- pointer to another file
-    # symbolic link (soft)
-        # similar to shortcut in windows
-        # unique inodes
-        # can span multiple fs
-    # hard link 
-        # associates one or more files with a sigle inode number (same inode)
-        # changing a file will affect hard-liked files 
-        # deleting, renaming, moving the original file will not affect hard link
-        # only valid within the same fs
-
-
+```bash
 ll -i file1.txt # get inode
 ln -s file1 file2 # create soft link
 ln file1 file2 # create hard link
+```
