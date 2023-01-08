@@ -1,18 +1,15 @@
 # ---
-# variables
+# Variables
 # ---
-
-# KNEX = node_modules/.bin/knex
 
 ENTRY="main.go"
 OUTPUT="bin/app.exe"
 
 # ---
-# commands
+# Commands
 # ---
 
-dev: 
-	air
+.PHONY: run build run-build lint install
 
 run: 
 	go run $(ENTRY)

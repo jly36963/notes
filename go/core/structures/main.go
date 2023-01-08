@@ -10,16 +10,19 @@ import (
 	"math"
 	"reflect"
 	"strings"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func main() {
 	// pointers
 	printSectionTitle("pointers")
-	usePointer()
+	basicPointers()
 
 	// strings
 	printSectionTitle("strings")
-	useStringFunctions()
+	basicStrings()
 
 	// maps
 	printSectionTitle("maps")
@@ -82,7 +85,7 @@ fmt.Println(*p) // value (dereferenced)
 
 */
 
-func usePointer() {
+func basicPointers() {
 	// value
 	a := 3
 	// function to change value at location in memory
@@ -101,7 +104,8 @@ func usePointer() {
 // strings
 // ---
 
-func useStringFunctions() {
+func basicStrings() {
+
 	// examples
 	examples := []interface{}{
 		// whitespace
@@ -115,10 +119,9 @@ func useStringFunctions() {
 		// replace
 		strings.ReplaceAll("Hey there Kakashi", "Kakashi", "Kaka sensei"), // Hey there Kaka sensei
 		// case
-		strings.ToLower("Hey there Kakashi"),                // hey there kakashi
-		strings.ToUpper("Hey there Kakashi"),                // HEY THERE KAKASHI
-		strings.Title(strings.ToLower("Hey there Kakashi")), // Hey There Kakashi
-		strings.ToTitle("Hey there Kakashi"),                // HEY THERE KAKASHI (wtf)
+		strings.ToLower("Hey there Kakashi"),                      // hey there kakashi
+		strings.ToUpper("Hey there Kakashi"),                      // HEY THERE KAKASHI
+		cases.Title(language.English).String("Hey there Kakashi"), // Hey There Kakashi
 	}
 	// iterate
 	for _, e := range examples {
@@ -142,7 +145,7 @@ func iterateMap() {
 		"Iruka":      "Umino",
 	}
 	for k, v := range names {
-		fmt.Println(fmt.Sprintf("%s %s", k, v))
+		fmt.Println(k, v)
 	}
 }
 
@@ -216,8 +219,8 @@ func copyArray() {
 	arrRef := &arr
 
 	// view type
-	fmt.Println(fmt.Sprintf("%T", arrCopy))
-	fmt.Println(fmt.Sprintf("%T", arrRef))
+	fmt.Println(reflect.TypeOf(arrCopy))
+	fmt.Println(reflect.TypeOf(arrRef))
 }
 
 // ---
@@ -327,42 +330,38 @@ type jonin struct {
 }
 
 func useJson() {
-	// struct instance
+	// Marshal struct to bytes
 	kakashi := jonin{
 		Fn:  "Kakashi",
 		Ln:  "Hatake",
 		Age: 46,
 	}
-	// marshal
 	bytes, err := json.Marshal(kakashi)
 	if err != nil {
-		fmt.Println(fmt.Sprintf("error: %s", err))
-	}
-	// unmarshal -- src (bytes), destination (struct)
-	var kakashi2 jonin
-	if err = json.Unmarshal(bytes, &kakashi2); err != nil {
-		fmt.Println(fmt.Sprintf("error: %s", err))
+		fmt.Println(err)
 		return
 	}
+	fmt.Println(kakashi)
+	fmt.Println(string(bytes))
 
-	// re-marshal (check work)
-	bytes, err = json.Marshal(kakashi2)
+	// Unmarshal bytes to struct, then marshal again
+	if err = json.Unmarshal(bytes, &kakashi); err != nil {
+		fmt.Println(err)
+		return
+	}
+	bytes, err = json.Marshal(kakashi)
 	if err != nil {
-		fmt.Println(fmt.Sprintf("error: %s", err))
+		fmt.Println(err)
 		return
 	}
+	fmt.Println(kakashi)
+	fmt.Println(string(bytes))
 
-	// unmarshal (again)
-	var kakashi3 jonin
-	if err = json.Unmarshal(bytes, &kakashi3); err != nil {
-		fmt.Println(fmt.Sprintf("error: %s", err))
+	// Unmarshal again
+	if err = json.Unmarshal(bytes, &kakashi); err != nil {
+		fmt.Println(err)
+		return
 	}
 
 	fmt.Println(kakashi)
-	fmt.Println(string(bytes))
-	fmt.Println("")
-	fmt.Println(kakashi2)
-	fmt.Println(string(bytes))
-	fmt.Println("")
-	fmt.Println(kakashi3)
 }

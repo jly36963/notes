@@ -268,7 +268,7 @@ func basicRecursion() {
 func deferredGreet(name string) {
 	defer fmt.Println("How have you been?")    // third
 	defer fmt.Println("It's nice to see you!") // second
-	fmt.Printf("Hello there, %s!", name)       // first
+	fmt.Println("Hello there " + name + "!")   // first
 }
 
 func basicDefer() {
@@ -317,7 +317,7 @@ func greet(name string) {
 	} else if name == "Yamato" {
 		fmt.Println("Hey Tenzo!")
 	} else {
-		fmt.Printf("Hello %v!", name)
+		fmt.Println("Hello " + name + "!")
 	}
 }
 

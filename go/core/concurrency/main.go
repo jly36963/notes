@@ -6,173 +6,282 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
+	"math"
 	"strings"
 	"sync"
-	"sync/atomic"
 	"time"
+
+	"github.com/samber/lo"
 )
 
 func main() {
-	// wait groups
-	fmt.Println(strings.ToUpper("wait groups"))
-	wgPrintStrings([]string{"Kakashi", "Itachi", "Shisui", "Hashirama"})
+	// ---
+	// Wait Group
+	// ---
 
-	// wait groups (mutex)
-	fmt.Println(strings.ToUpper("wait groups (mutex)"))
-	countToMutex(40, 4)
+	printSectionTitle("wait group (read)")
+	basicWGRead()
 
-	// wait groups (atomic)
-	fmt.Println(strings.ToUpper("wait groups (atomic)"))
-	countToAtomic(40, 4)
+	printSectionTitle("wait group (read) (chunked)")
+	basicWGChunkRead()
 
-	fmt.Println(strings.ToUpper(""))
-	fmt.Println(strings.ToUpper(""))
-	fmt.Println(strings.ToUpper(""))
+	printSectionTitle("wait group (map)")
+	basicWGMap()
+
+	printSectionTitle("wait group (map) (chunked)")
+	basicWGChunkMap()
+
+	printSectionTitle("wait group (map) (reduce)")
+	basicWGChunkReduce()
+
+	// ---
+	// Channel
+	// ---
+
+	printSectionTitle("channels")
+	basicChannels()
 }
 
 // ---
-// Wait groups
+// Helpers
 // ---
 
-// wg -- allow for go-routines to finish (while wg counter is not 0)
-// wg.Add -- add to wg counter
-// wg.Done -- decrement wg counter
-// wg.Wait -- block until wg counter is 0
-
-func wgPrinter(a string) {
-	wg := sync.WaitGroup{}
-	fmt.Println(a)
-	wg.Done() // reduce wg count by one
+func printSectionTitle(s string) {
+	fmt.Println("\n" + strings.ToUpper(s) + "\n")
 }
 
-func wgPrintStrings(s []string) {
+// ---
+// Wait groups (read)
+// ---
+
+func basicWGRead() {
+	names := []string{"Kakashi", "Itachi", "Shisui", "Hashirama"}
+
+	// Waitgroup count should be equal to number of go-routines
 	wg := sync.WaitGroup{}
-	delta := len(s) // number of go-routines / wg needed
-	wg.Add(delta)   // add to wg counter
-	for _, str := range s {
-		go wgPrinter(str) // create go-routine (don't forget 'wg.Done()')
+	delta := len(names)
+	wg.Add(delta)
+
+	// Iterate through names, starting a goroutine for each
+	for _, name := range names {
+		go (func(name string) {
+			defer wg.Done()
+			time.Sleep(10 * time.Millisecond)
+			fmt.Println(name)
+		})(name)
 	}
 	wg.Wait()
 }
 
 // ---
-// Wait groups (mutex)
+// Wait groups (chunk) (read)
 // ---
 
-// mutex (mutual exclusion) -- locking mechanism
-// only one go-routine can do their critical section at a time
-// prevent race conditions -- don't let multiple go-routines work on the same variable at once.
+// Use 4 goroutines to iterate through and read elements
+// In this example, order will not be preserved
 
-func countToMutex(n int, numOfGR int) {
+func basicWGChunkRead() {
+	numbers := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+
+	threads := 4
+	chunkSize := int(math.Ceil(float64(len(numbers)) / float64(threads)))
+	chunks := lo.Chunk(numbers, chunkSize)
+	if len(chunks) != threads {
+		panic("Chunk and thread counts should be equal")
+	}
 	wg := sync.WaitGroup{}
+	wg.Add(threads)
+
+	for _, chunk := range chunks {
+		go (func(chunk []int) {
+			for _, n := range chunk {
+				time.Sleep(10 * time.Millisecond)
+				fmt.Println(n)
+			}
+			wg.Done()
+		})(chunk)
+	}
+	wg.Wait()
+}
+
+// ---
+// Wait groups (map)
+// ---
+
+// Use goroutines to map a slice (preserve order)
+
+func basicWGMap() {
+	names := []string{"Kakashi", "Itachi", "Shisui", "Hashirama"}
+	result := make([]string, len(names))
+
+	// Waitgroup count should be equal to number of go-routines
+	wg := sync.WaitGroup{}
+	delta := len(names)
+	wg.Add(delta)
+
+	// Iterate through names, starting a goroutine for each
+	for i, name := range names {
+		go (func(i int, name string) {
+			time.Sleep(10 * time.Millisecond)
+			res := strings.ToUpper(name)
+			result[i] = res
+			wg.Done()
+		})(i, name)
+	}
+	wg.Wait()
+
+	fmt.Println(result)
+}
+
+// ---
+// Wait groups (chunk) (map)
+// ---
+
+// Use 4 goroutines to map slice (order preserved)
+
+func basicWGChunkMap() {
+	numbers := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	count := len(numbers)
+	results := make([]int, count)
+
+	threads := 4
+	chunkSize := int(math.Ceil(float64(count) / float64(threads)))
+	wg := sync.WaitGroup{}
+	wg.Add(threads)
+
+	for chunkIdx := 0; chunkIdx < threads; chunkIdx++ {
+		start := chunkIdx * chunkSize
+		stop := (chunkIdx + 1) * chunkSize
+		if stop > count {
+			// Don't go out of range (last chunk is partial)
+			stop = count
+		}
+		go (func(src *[]int, dst *[]int, start, stop int) {
+			for idx := start; idx < stop; idx++ {
+				time.Sleep(10 * time.Millisecond)
+				res := numbers[idx] * 2
+				results[idx] = res
+			}
+			wg.Done()
+		})(&numbers, &results, start, stop)
+	}
+	wg.Wait()
+
+	fmt.Println(results)
+}
+
+// ---
+// Wait groups (chunk) (reduce)
+// ---
+
+// Use 4 goroutines to reduce with
+// Lock access on shared value during critical section
+// This is to prevent race condition during read/write
+
+func basicWGChunkReduce() {
+	numbers := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	count := len(numbers)
+	result := 1
+
+	threads := 4
+	chunkSize := int(math.Ceil(float64(count) / float64(threads)))
 	mutex := sync.Mutex{}
-	// shared state
-	var counter int
-	// iterations
-	iterations := n / numOfGR
-	if n%numOfGR != 0 {
-		fmt.Println("Number must be evenly divisible by number of go-routines")
-		return
-	}
-	// go-routine function
-	incrementor := func(name string, iterations int) {
-		for i := 0; i < iterations; i++ {
-			time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
-			mutex.Lock() // lock variable
-			counter++
-			mutex.Unlock() // unlock variable
-			fmt.Printf("%s: %d, Counter: %d", name, i, counter)
-		}
-		wg.Done()
-	}
-	// execution
-	wg.Add(numOfGR)
-	for i := 0; i < numOfGR; i++ {
-		name := fmt.Sprintf("GR%d", i)
-		go incrementor(name, iterations)
-	}
-	wg.Wait()
-
-}
-
-// ---
-// wait groups (atomic)
-// ---
-
-// atomic methods change the variable using its location in memory.
-
-func countToAtomic(n int, numOfGR int) {
 	wg := sync.WaitGroup{}
-	// shared state
-	var counter int64
-	// iterations
-	iterations := n / numOfGR
-	if n%numOfGR != 0 {
-		fmt.Println("Number must be evenly divisible by number of go-routines")
-		return
-	}
-	// go-routine function
-	incrementor := func(name string, iterations int) {
-		for i := 0; i < iterations; i++ {
-			time.Sleep(time.Duration(rand.Intn(20)) * time.Millisecond)
-			atomic.AddInt64(&counter, 1)
-			fmt.Printf("%s: %d, Counter: %d", name, i, atomic.LoadInt64(&counter))
+	wg.Add(threads)
+
+	for chunkIdx := 0; chunkIdx < threads; chunkIdx++ {
+		start := chunkIdx * chunkSize
+		stop := (chunkIdx + 1) * chunkSize
+		if stop > count {
+			// Don't go out of range (last chunk is partial)
+			stop = count
 		}
-		wg.Done()
-	}
-	// execution
-	wg.Add(numOfGR)
-	for i := 0; i < numOfGR; i++ {
-		name := fmt.Sprintf("GR%d", i)
-		go incrementor(name, iterations)
+		go (func(src *[]int, dst *int, start, stop int) {
+			for idx := start; idx < stop; idx++ {
+				time.Sleep(10 * time.Millisecond)
+				curr := numbers[idx]
+				// Lock access to shared variable
+				mutex.Lock()
+				acc := *dst       // Read shared value
+				*dst = acc * curr // Set shared value
+				fmt.Println(fmt.Sprintf("%d * %d = %d", acc, curr, *dst))
+				mutex.Unlock()
+			}
+			wg.Done()
+		})(&numbers, &result, start, stop)
 	}
 	wg.Wait()
+
+	fmt.Println(result)
 }
 
 // ---
-// channels (basics)
+// Wait groups (atomic)
 // ---
 
-// use channels when you need to access the return values from concurrent processes
-// channel with multiple values -- first in, first out
+// Atomic mutations can prevent race conditions for read/write
+// Eg: atomic.AddInt64(&counter, 1)
 
-/*
+// TODO
 
-// make channel (buffer channel)
-c := make(chan int)
+// ---
+// Channels (basics)
+// ---
 
-// put value on channel
-go func() {
-	c <- 42
+// Still don't really understand the use case, nor how it works
+
+func basicChannels() {
+	type ControlMsg int
+	const (
+		DoExit = iota
+		ExitOk
+	)
+	type Job struct {
+		data int
+	}
+	type Result struct {
+		result int
+		job    Job
+	}
+
+	doubler := func(jobs <-chan Job, results chan<- Result, control chan ControlMsg) {
+		for {
+			select {
+			case msg := <-control:
+				switch msg {
+				case DoExit:
+					fmt.Println("Exit goroutine")
+					control <- ExitOk
+					return
+				default:
+					panic("unhandled control message")
+				}
+			case job := <-jobs:
+				results <- Result{result: job.data * 2, job: job}
+			}
+		}
+	}
+
+	jobs := make(chan Job, 50)
+	results := make(chan Result, 50)
+	control := make(chan ControlMsg) // Unbuffered
+
+	go doubler(jobs, results, control)
+
+	for i := 0; i < 30; i++ {
+		jobs <- Job{i}
+	}
+
+	for {
+		select {
+		case result := <-results:
+			fmt.Println(result)
+		case <-time.After(500 * time.Millisecond):
+			fmt.Println("Timed out")
+			control <- DoExit
+			<-control // Wait for channel response (unbuffered/blocking)
+			fmt.Println("Done")
+			return
+		}
+	}
 }
-
-//  get value from channel
-fmt.Println(<-c)
-
-*/
-
-/*
-
-// channel types
-c := make(chan int) // receive and send (bidirectional)
-cr := make(<-chan int) // receive
-cs := make(chan<- int) // send
-
-*/
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
-
-// ---
-//
-// ---
