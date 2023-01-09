@@ -230,8 +230,8 @@ def basic_control_flow
   # Case (value)
   a = "a"
   case a
-  when "a",
-       puts "a case"
+  when "a"
+    puts "a case"
   when "b", "c"
     puts "b or c case"
   else

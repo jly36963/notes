@@ -1,8 +1,22 @@
 # Git
 
+## Cheat Sheets
+
+- https://education.github.com/git-cheat-sheet-education.pdf
+- https://www.atlassian.com/git/tutorials/atlassian-git-cheatsheet
+
+## Setup
+
+```bash
+# Set name (so that your changes can be identified)
+git config --global user.name "[firstname lastname]"
+# Set email
+git config --global user.email "[valid-email]"
+```
+
 ## Repo
 
-```sh
+```bash
 # creates a new repository. it sets up all the files/directories that Git will use to keep track of everything. (they will all be stored in a directory `.git`. this is the repository.)  
 git init
 # current status
@@ -22,7 +36,7 @@ git ls-tree --full-tree -r HEAD
 
 ## Commit
 
-```sh
+```bash
 # adds all files in current directory. (staging index)
 git add .
 # commit  
@@ -39,7 +53,7 @@ git tag -a -m [message] [tagname] [SHA] # adds a tag to a past commit.
 
 ## Branch
 
-```sh
+```bash
 # list branches  
 git branch 
 # create and switch to branch 
@@ -58,7 +72,7 @@ git log --oneline --graph --all
 
 ## Merge
 
-```sh
+```bash
 # merges changes from the named branch into the current branch, and creates a new commit.
 git merge [branchname] 
 # undoes a merge.
@@ -67,7 +81,7 @@ git reset --hard HEAD^
 
 ### Commit revision
 
-```sh
+```bash
 # amend commit (if files have been edited/saved/staged prior to the amend, git will update the files in the commit as well.)  
 git commit --amend -m [message] 
 # undoes changes in named commit. (added content will be deleted, deleted content will be re-added, and replaced content will be un-replaced.)  
@@ -85,3 +99,7 @@ git reset [flag] [reference]
   # after merge, `^` means first parent, `^2` means second parent
   # `HEAD~6` 6 generations back on the same branch. (ignore divergent branches.)
 ```
+
+## Ignoring files
+
+TODO: gitignore patterns

@@ -181,13 +181,15 @@ func basicWGChunkMap() {
 func basicWGChunkReduce() {
 	numbers := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	count := len(numbers)
-	result := 1
+	type Result struct {
+		value int
+		sync.Mutex
+	}
+	result := Result{1, sync.Mutex{}}
 
 	threads := 4
 	chunkSize := int(math.Ceil(float64(count) / float64(threads)))
-	mutex := sync.Mutex{}
 	wg := sync.WaitGroup{}
-	wg.Add(threads)
 
 	for chunkIdx := 0; chunkIdx < threads; chunkIdx++ {
 		start := chunkIdx * chunkSize
@@ -196,23 +198,24 @@ func basicWGChunkReduce() {
 			// Don't go out of range (last chunk is partial)
 			stop = count
 		}
-		go (func(src *[]int, dst *int, start, stop int) {
+		wg.Add(1)
+		go (func(src *[]int, dst *Result, start, stop int) {
 			for idx := start; idx < stop; idx++ {
 				time.Sleep(10 * time.Millisecond)
 				curr := numbers[idx]
 				// Lock access to shared variable
-				mutex.Lock()
-				acc := *dst       // Read shared value
-				*dst = acc * curr // Set shared value
-				fmt.Println(fmt.Sprintf("%d * %d = %d", acc, curr, *dst))
-				mutex.Unlock()
+				result.Lock()
+				acc := dst.value       // Read shared value
+				dst.value = acc * curr // Set shared value
+				fmt.Println(fmt.Sprintf("%d * %d = %d", acc, curr, dst.value))
+				result.Unlock()
 			}
 			wg.Done()
 		})(&numbers, &result, start, stop)
 	}
 	wg.Wait()
 
-	fmt.Println(result)
+	fmt.Println(result.value)
 }
 
 // ---
@@ -281,6 +284,9 @@ func basicChannels() {
 			control <- DoExit
 			<-control // Wait for channel response (unbuffered/blocking)
 			fmt.Println("Done")
+			close(jobs)
+			close(results)
+			close(control)
 			return
 		}
 	}
