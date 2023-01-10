@@ -75,3 +75,102 @@ Further goals:
     - employee, contractor, etc
   - competitors
     - unlikely, as laws are often deterrent
+
+## Risk identification / assessment
+
+Threats and vulnerabilities are often looked at together
+
+### Vulnerabilities
+
+- Look through assets, determine associated vulnerabilities
+- resources
+  - NIST SP 800-30
+  - cve.mitre.org
+    - common vulnerabilities and exposure database
+    - massive database, lots of vulnerability details
+  - nessus
+    - program run on LAN to generate vulnerability report
+  - pen testing
+    - a service for vulnerability assessment
+
+### Threats
+
+- adversarial
+  - intentionally doing bad things
+  - eg: hacker, malware
+- accidental
+  - someone has rights/permissions and accidentally messes things up
+- structural
+  - equipment failure
+  - eg: power goes out, camera stops working, etc
+- environmental:
+  - eg: fires, earthquakes, flooding, etc
+
+## Risk response
+
+- mitigation: doing something to reduce likelihood/impact of risk
+- transference: offloading risk onto a third party
+- acceptance: benefit is less significant than effort to address
+- avoidance: don't do risky thing at all
+
+## Risk framework
+
+Two popular ones:
+
+- NIST Risk Management Framework Special Publication 800-37
+- ISACA risk IT Framework
+
+## Security controls
+
+- deterrent
+  - deter threat
+- preventative
+  - prevent threat
+- detective
+  - recognize threat
+- corrective
+  - mitigate impact of manifested threat
+- compensative
+  - hacky or stop-gap solution to above control functions
+
+### Interesting security controls
+
+- principle of least privilege
+- separation of duties
+- multi-person control
+- mandatory vacation
+- job rotation
+
+## Defense
+
+defense in depth: layered security
+
+- redundancy: repeating the same controls
+- diversity: using a variety of controls
+
+- security control types
+  - administrative
+  - physical
+  - technical
+
+- control diversity: using (multiple) different types of security controls
+- vendor diversity: implementing security controls from different vendors
+
+## IT security governance
+
+- IT security governance: influences how an ort conducts IT security
+
+- laws and regulations
+  - HIPAA
+- standards
+  - government standars (eg: NIST)
+  - industry standards (eg: PCI-DSS)
+- best practices
+  - eg: microsoft best practices
+- common sense
+
+## Documents
+
+- policies: document that defines how a group does something
+- organizational standard: define the acceptable level of perf of a policy
+- organizations might mix/combine the two
