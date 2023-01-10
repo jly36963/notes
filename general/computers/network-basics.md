@@ -1,5 +1,25 @@
 # Network
 
+## Network models
+
+- Used to represent how networks function
+- OSI model is supplanted by TCP/IP model
+
+- OSI seven-layer model
+  - layers
+    - physical -- electrical/phsyical repr of system
+    - data link -- node-to-node transfer (sublayers: MAC/LLC)
+    - network -- routing (eg: IP)
+    - transport - when/where/how to send data (eg: TCP/UDP)
+    - session -- session coordination between computers
+    - presentation -- conversion of network to app-usable format
+    - application -- user app/api
+- TCP/IP model
+  - network interface -- physical & data link (eg: MAC addrs, network cards)
+  - internet -- network (eg: IP addrs and routers)
+  - transport -- transport (eg: TCP/UDP)
+  - application -- app/pres/session layers
+
 ## IPv4
 
 - 4 numbers (0-255) with `.` delimiter
@@ -187,10 +207,24 @@ detailed:
     - fallback route on routing table (address 0.0.0.0 with best metric)
     - usually pointed to the upstream router (eg: ISP)
 
-- Misc
-  - Switches filter/forward traffic based on MAC address
-  - Most home "routers" also double as a modem/switch/WAP/etc
-    - They will often have only two connections: LAN and WAN. (gateway router)
+- Switches filter/forward traffic based on MAC address
+
+#### SOHO Router
+
+- default port: 192.168.0.1 or 192.168.1.1 (usually)
+- default username/password listed in manual
+- router portal: configure router, WAP, access, firewall, etc
+- factory reset: 30/30/30 (hold reset: on/plugged in, unplugged, on/plugged in)
+- usually a DHCP server by default
+- Most home "routers" also double as a modem/switch/WAP/etc
+  - They will often have only two connections: LAN and WAN. (gateway router)
+
+#### Enterprise Router
+
+- is only a router (other devices used for WAP, firewall, switch, etc)
+- bandwidth is ~100x of a SOHO router
+- tend to not have web GUI like SOHO router
+- to be good at using Cisco routers, get Cisco CCNA/CCNP certs
 
 ### Ports
 
@@ -199,7 +233,7 @@ detailed:
   - http server will usually use 80 or 443
 - client will randomly use ports between 1024 and 65535
 
-### NAT
+#### NAT
 
 - NAT: network address translation
   - private IP address is translated to public IP address
