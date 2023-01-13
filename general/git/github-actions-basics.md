@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     # Steps to run
     steps:
-      # Step name and script to run
+      # Step name and command to run
       - name: Hello World
         run: echo "Hello World!"
       # Multiline script
@@ -64,3 +64,41 @@ jobs:
           echo "Hello friend!"
           echo "How have you been?"
 ```
+
+### Simple workflow triggers (events)
+
+docs:
+https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
+
+- repo-related triggers:
+  - push
+  - pull_request
+  - create
+  - fork
+- other
+  - workflow_dispatch: manual trigger
+  - repository_dispatch: REST API request trigger
+  - schedule: CRON-ish
+  - workflow_call: called by other workflows
+
+```yml
+name: My Workflow 2
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    types: [ assigned, opened ]
+jobs:
+  my-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: On Push
+        run: echo "Pushed!"
+```
+
+## Filter patterns
+
+cheat sheet:
+https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet

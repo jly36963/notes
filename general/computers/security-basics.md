@@ -174,3 +174,105 @@ defense in depth: layered security
 - policies: document that defines how a group does something
 - organizational standard: define the acceptable level of perf of a policy
 - organizations might mix/combine the two
+
+- acceptable use policy
+  - what a person can/cannot do on company assets
+- data sensitivity & classification policies
+  - define importance/nature of data
+- access control policies
+  - define how to get access to data/resources
+- password policy
+  - strength of pw, recovery, repeated bad logins,
+- care and use of equipment
+  - maintenance, stewardship, etc
+- privacy
+  - what will be done with private stuff (both internal and external)
+- personnel policy
+  - background checks, clearances, mandatory vactions, job rotation
+
+## Frameworks
+
+Framework sources:
+
+- regulatory
+- non-regulatory
+- national standards
+- international standards
+- industry-specific
+
+Popular frameworks:
+
+- NIST SP800-37
+  - national standard and regulatory
+- ISACA IT infrastructure
+  - non-regulatory
+- ISO 27000
+  - international
+
+### NIST
+
+6 steps:
+
+- categorize
+  - categorize information systems
+- select
+  - select security controls
+- implement
+  - implement security controls
+- assess
+  - assess security controls
+  - Due diligence: will it work how we want it to?
+- authorize
+  - authorize controls
+- monitor
+  - monitor control
+  - is it performing as expected? any side-effects?
+
+## Quantitative risk calculations
+
+- asset value
+  - cost of item, replacement service, lost revenue, etc
+- exposure factor
+  - what percentage of asset is lost by incident
+- single loss expectancy (SLE)
+  - asset_value * exposure_factor
+- annualized rate of occurence (ARO)
+  - in a year, what's the probability of a particular incident
+- annualized loss expectancy (ALE)
+  - SLE * ARO
+
+- use mitigation, avoidance, etc to reduce ALE
+
+- MTTR: mean time to repair
+  - downtime between failure and working again
+- MTTF: mean time to failure
+  - uptime between working and (next) failure
+  - usually applied to things that CANT be fixed
+- MTBF: mean time betwen failure
+  - time during one cycle of downtime & uptime
+  - usually applied to something that can be repaired
+
+### BIA
+
+- BIA: business impact analysis
+  - Three steps:
+  - determine mission processes and recovery criticality
+  - identify resource requirements
+  - identify recover priorities for system resources
+
+- impact
+  - property, people, finance, reputation
+
+- PII: personally identifiable information
+
+- metrics/assessment
+  - PIA: privacy impact assessment
+    - estimates the cost of loss of personal privacy or proprietary data
+  - PTA: privacy threshold assessment
+  - RTO: recovery time objective
+    - min time to restore critical systems
+    - max downtime allowed without substantial impact
+  - RPO: recovery point objective
+    - max data that can be lost without substantial impact
+
+## Organizing Data

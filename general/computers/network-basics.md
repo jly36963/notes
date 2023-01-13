@@ -5,22 +5,77 @@
 - Used to represent how networks function
 - OSI model is supplanted by TCP/IP model
 
+- explanation:
+  - https://www.udemy.com/course/comptia-network-cert-n10-007-the-total-course/learn/lecture/10961792#content
+
 - OSI seven-layer model
   - layers
-    - physical -- electrical/phsyical repr of system
-    - data link -- node-to-node transfer (sublayers: MAC/LLC)
-    - network -- routing (eg: IP)
+    - physical: electrical/phsyical repr of system
+    - data link: node-to-node transfer (sublayers: MAC/LLC)
+    - network: routing (eg: IP)
     - transport - when/where/how to send data (eg: TCP/UDP)
-    - session -- session coordination between computers
-    - presentation -- conversion of network to app-usable format
-    - application -- user app/api
+    - session: session coordination between computers
+    - presentation: conversion of network to app-usable format
+    - application: the network api for an app (eg: http, ftp, smtp, dns)
 - TCP/IP model
-  - network interface -- physical & data link (eg: MAC addrs, network cards)
-  - internet -- network (eg: IP addrs and routers)
-  - transport -- transport (eg: TCP/UDP)
-  - application -- app/pres/session layers
+  - network interface (link): physical, data link (eg: MAC addrs, network cards)
+  - internet: network (eg: IP addrs and routers)
+  - transport: transport (eg: TCP/UDP)
+  - application: app/pres/session layers
 
-## IPv4
+### Frames & Packets
+
+- frame: discrete chunk of data
+  - up to ~1500 bytes
+- network interface cards (NIC)
+  - receive data, convert to frames, and send to network
+  - receive frames, data is pulled and sent to the app
+- packets are always encapsulated within some kind of frame
+- frames have frame check sequence (FCS)
+  - FCS is four-octet cyclic redundancy check (CRC)
+
+### MAC Address
+
+- MAC address: 48-bit identifier for a NIC (physical address)
+- 12 hex characters * 4 bits each = 48 bit
+  - OEM: first three pairs, unique ID: last 3 pairs
+- Frames have dst and src MAC addresses
+- Broadcast vs unicast
+  - unicast: known dst, addressed to single device
+  - broadcast: unknown dst, sent to every device in broadcast domain
+    - MAC Adress: `ff-ff-ff-ff-ff-ff`
+    - broadcast domain: group of computers that hear each other's broadcasts
+
+### IP Addressing
+
+- most predominant version of logical addressing is IP addessing
+- when communicating outside broadcast domain, frame includes an IP address
+  - IP packet is part of the frame
+    - src/dst IP addrs and data
+- default gateway: connection to router
+  - a router connects multiple LANs
+
+### Packets and Ports
+
+- port: virtual point where network connections start and end
+- ports are software-based and managed by a computer's OS
+- ports allow computers to distinguish traffic from multiple processes
+
+## TCP/IP Basics
+
+- TCP: transmission control protocol
+  - connection-oriented conversation between two computers
+  - ensures data arrives complete and in order
+    - uses sequence number to notate order for multiple TCP packets
+    - sequence number increases by the number of bytes sent.
+    - acknowledgment number: number of bytes received
+- UDP: user datagram protocol
+  - connection-less
+  - data is sent and _hopefully_ received
+    - faster, but doesn't guarantee completeness
+  - http/3 uses QUIC, multiplexed transport protocol built on UDP
+
+### IPv4
 
 - 4 numbers (0-255) with `.` delimiter
   - 4 bytes or octets
@@ -200,7 +255,7 @@ detailed:
     - contents
       - address (network ID/destination): IP address of destination
       - subnet (netmask): used to map destination address to the right network
-      - gateway (next hop): next IP address to which the packed is forwarded
+      - gateway (next hop): next IP address to which the packet is forwarded
       - interface: outgoing interface that accepts to the destination
       - metric: rating (lower is better) used to determine optimal path
   - default route
@@ -258,3 +313,343 @@ detailed:
   - if outgoing on certain ports, allow incoming on certain ports
   - eg: ftp client uses port 21, ftp server responds on 20
 - DMZ (SOHO): allow all unsolicited traffic to be forwarded to a certain address
+
+### Static vs dynamic routes
+
+- static route: manually configured and persistent
+
+- dynamic route:
+  - networking technique that provides optimal data routing (best path)
+  - dynamic routing allows routers to adjust their route tables
+  - this brings all routers back to convergence
+    - convergence: all router tables reflect all routes
+
+- metric
+  - which route is preferable?
+  - MTU: maximum transmission unit
+    - in a particular frame, how much data can you hold?
+    - ethernet frame is 1500 B, but not all paths use ethernet
+  - bandwidth
+  - cost
+  - latency
+
+#### Dynamic routing
+
+- dynamic routing protocols
+  - methods for achieving convergence
+    - distance vector
+      - routing decisions (best path) are made based on distance (usually hops)
+        - DV protocols send entire RTs to directly-connected neighbors
+          - updates on regular interval (if unit goes down, diverged until next)
+        - eg: RIP (v1 and v2), IGRP
+    - link-state
+      - shortest-path-first protocols
+        - complete picture of network topology
+        - Three tables: neighbors, topology of entire internet, actual RT
+      - uses advertising for a much faster re-convergence process
+      - examples: OSPF, IS-IS
+
+- AS: autonomous system
+  - one organization that has control of their own particular routers
+
+- routing protocols can be broken up into two groups:
+  - IGP: interior gateway protocols
+  - EGP: exterior gateway protocols
+
+#### Dynamic routing protocol examples
+
+- IGP:
+  - RIP (v2): routing information protocol
+    - distance vector
+    - fixed interval of updating RTs
+      - will take a while to reach convergence
+    - uses hop count to determine best path
+    - RIPv2 can handle CIDR-based network, unlike v1 (only classful)
+    - 15 hop limit
+  - OSPF: open shortest path first
+    - link-state
+    - most used IGF protocol
+    - LSR algorithm
+    - painful to set up
+    - how it works
+      - routers in area share an area id
+      - designated router and backup designated router
+      - link state advertisements
+    - converges very quickly (faster than RIP)
+  - IS-IS: intermediate system to intermediate system
+    - link-state
+  - EIGRP: enhanced interior gateway routing protocol
+    - distance vector
+- EGP
+  - BGP: border gateway protocol
+  - path-vector (hybrid with aspects from distance-vector and link-state)
+  - primary protocol (and cornerstone) of the internet
+    - it's how the the internet, a huge/incredible network, is connected
+  - EGP used to communicate between autonomous systems
+  - ASN: autonomous system number
+    - 32-bit number, looks like (but is unrelated to) IP address
+    - each AS has an ASN that identifies it
+      - internet has ~20k ASes
+    - used when data is moving from one AS to another
+      - eg: one big ISP needs to route data to another big ISP
+      - interconnection facilities:
+        - so ISP can share traffic to achieve complete interconnection
+
+## TCP/IP applications
+
+### TCP & UDP
+
+- TCP & UDP work at transport layer (OSI)
+
+- PDU: protocol data units
+  - info used by the different protocols provided in frame segments
+
+- ethernet frame
+  - dst/src mac, dst/src ip, dst/src port, sequence, ack, data, fcs
+- IP packet
+  - dst/src ip, dst/src port, sequence, ack, data
+- TCP segment & UDP datagrame
+  - dst/src port, sequence, ack, data
+
+- UDP: connectionless
+- TCP: connection oriented
+  - 2-way communication
+  - initiated by 3-way handshake
+    - process
+      - client sends SYN packet
+      - server responsds with SYN/ACK
+      - client sends ACK
+    - result
+      - connection is opened
+      - remains open until disconnect or timeout
+
+### ICMP & IGMP
+
+- ICMP & IGMP work at network layer (OSI) or internet layer (TCP/IP)
+
+- ICMP: Internet Control Message Protocol
+  - packet: type and checksum
+  - eg: ping, ARP
+- IGMP: Internet Group Management Protocol
+  - packet: type, checksum, group addr, src addr
+  - provides multicasting support
+    - multicast IP addr: 224.x.x.x
+    - one source, many subscribed to multicast IP addr (?)
+
+### FTP
+
+- FTP: file transfer protocol
+  - ports 20, 21
+
+### SMTP
+
+- SMTP: simple mail transfer protocol
+  - port 25
+  - sending email
+- POP3: post office protocol v3
+  - port 110
+  - receiving email
+  - downloads email from server to single computer, then deletes on server
+- IMAP: internet message access protocol v4
+  - port 143
+  - receiving email
+  - stores message on server, synchronizes message across multiple devices
+
+### Telnet and SSH
+
+- manage and access devices remotely
+
+- telnet:
+  - port 23
+  - uses plain text
+- SSH:
+  - port 22
+  - encrypted data over secure channel
+  - putty: popular ssh program
+
+## DNS
+
+### FQDN
+
+- DNS: domain name service
+  - resolve IP addrs based on a FQDN
+  - FQDN: fully qualified domain name
+
+Example: mobile.twitter.com/home
+
+- DNS root zone
+  - eg: "."
+  - generally implied, omitted in most applications
+- top-level domain (TLD)
+  - eg: ".com"
+- second-level domain (SLD)
+  - eg: "twitter"
+- subdomain
+  - eg: "mobile"
+- path, query params, fragment
+
+### DNS Server
+
+- DNS: resolving (mapping) FQDNs to IP addrs
+- DNS server responds to DNS queries
+- how it works
+  - DNS recursor (resolver) receives query from DNS client
+  - it interacts with other DNS servers to hunt down the correct IP addr
+    - server makes client requests to 3 other types of servers
+    - root DNS server, TLD nameserver, authoritative nameserver
+  - DNS recursor returns the IP address of the origin server to DNS client
+- caching
+  - DNS recursors often cache the result for a limited time.
+  - TTL for a DNS record is often 24-48 hours
+- redundancy
+  - ISPs will often have backup recursive resolvers
+  - root DNS servers and TLD nameservers have multiple instances
+- third-party
+  - google: 8.8.8.8
+  - cloudflare: 1.1.1.1
+
+### Dynamic DNS
+
+- DDNS: give stable domain name to dynamic IP address (eg: DHCP-provided)
+  - ISPs can/will change IP addrs for your local network
+  - DDNS provider will update IP info
+
+## Securing TCP/IP
+
+- CIA of security: confidentiality, integrity, availability
+
+- encryption
+  - obfuscate data (cleartext -> ciphertext) with an algorithm and key
+  - symmetric encryption
+    - same key to encrypt/decrypt
+    - eg: AES, RC4
+  - asymmetric encryption
+    - different keys to encrypt/decrypt
+      - public: to encrypt
+      - private: to decrypt
+    - eg: RSA (Rivest-Shamir-Adleman)
+    - for two people to communicate, they must exchange public keys
+
+- certificates and trust
+  - digital signature used to show relation between public/private keys
+  - third-party certificate authority used to establish trust
+    - certificates include public key and >1 digital signature
+  - PKI: public key infrastructure
+    - uses hierarchical structure with root servers
+  - errors
+    - expired cert
+    - self-signed cert
+  - technologies to check validity of cert
+    - CRL
+    - OCSP
+
+- hash algorithm
+  - creates a fixed-size hash value
+  - great way to verify that data hasn't been changed
+  - eg (secure): sha2-256, sha3-256
+    - high security level, low collision level
+  - eg (cryptographically broken): sha1, md5
+
+- auth:
+  - identification & authentication
+    - are they who they say they are
+  - authorization
+    - do they have permission to do something
+
+- authentication factors
+  - something you know (eg: password, pin, captcha, security questions)
+  - something you have (eg: smart card, cryptographic id device)
+  - something you are (eg: fingerprint, face)
+  - something you do (eg: speed of typing)
+  - somewhere you are (eg: detecting credit card fraud by location)
+
+- federated trust:
+  - trust established within a federation enables sharing/trusting of info
+  - federation: independent but mutually-trusting realms
+  - eg: Azure AD auth (SSO, federated systems)
+
+- MFA: multi-factor auth
+  - requires multiple auth factors
+
+- ACL: access control list
+  - three types:
+    - MAC: mandatory access control
+      - labels
+    - DAC: discretionary access control
+      - creators have control over permissions
+    - RBAC: role-based access control
+      - users -> groups -> rights/permissions
+
+- AAA: authentication, authorization, accounting
+  - radius
+    - radius supplicant, client, and server
+    - uses udp ports 1812,1813 or 1645,1646
+    - radius database may reside outside radius server
+  - TACACS+: cisco proprietary AAA product
+    - tacacs+ user, client, server
+    - tcp port 49
+
+- PPP: point-to-point protocol
+  - one-to-one connection
+  - data link (OSI layer 2)
+- PPPoE
+  - one-to-many connections
+
+- kerberos:
+  - designed to do authentication for LANs
+  - MSFT proprietary tech (requires windows server)
+  - kerberos key distribution center
+    - set up windows server to be domain controller
+    - 2 services
+      - AS: authentication service
+      - TGS: ticket-granting service
+    - client sends hash with values username/pw
+    - server returns TGT token (ticket-granting ticket)
+      - TGT issues tokens based on timestamp
+      - 8 hours is common
+  - designed for wired networks
+  - timestamp logic requires that all computers use same time
+- EAP: extensible authentication protocol
+  - flexible
+  - provides extensibility for wireless/wired IEEE 802.1X and PPP
+  - framework that allows networking vendors to install new auth methods
+    - EAP methods
+  - eg: EAP-PSK, PEAP, EAP-TLS (and TTLS)
+
+- SSO
+  - Windows active directory
+    - for windows domain networks (LAN)
+  - SAML: security assertion markup language
+    - SSO across sites using SAML identity provider
+
+## Advanced networking devices
+
+### IP Tunneling
+
+- tunneling:
+  - providing encryption for a service that normally isn't encrypted
+  - many internet protocols are unencrypted
+
+- VPN: virtual private network
+  - tunnel connection for remote computers to get to a designated endpoint
+  - multiple types: PPTP, L2TP/IPsec, SSTP, IKEv2
+  - client-to-site VPN connects remote computer to a local network
+  - site-to-site VPN connects distant networks into a single network.
+
+- VLAN: virtual LAN
+  - takes a broadcast domain and splits into two or more domains
+    - using software to split a LAN, rather than physical reorganization
+  - requires a managed switch
+    - unmanaged switches have are cheaper but have less features
+    - managed switches have IP addresses for conn/config
+      - VLAN & managed switch require configuration setup
+    - trunking allows propogation of a VLAN across multiple switches
+    - Cisco
+      - managed switches have CNA (cisco network assistant)
+      - VTP: VLAN trunk protocol
+        - one switch notifies other switches of VLAN
+        - trunk ports move traffic from all VLANs between switches
+          - dynamic desireable
+  - InterVLAN routing
+    - allowing VLANs to communicate with each other
+    - virtualization of router functionality (on higher-end sswitches)
