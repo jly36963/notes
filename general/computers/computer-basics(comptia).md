@@ -86,7 +86,7 @@
       - ama4
       - tr4
 
-# installing a new CPU
+## installing a new CPU
 
 - safety
   - motherboard must match cpu socket, speed, and architecture
@@ -155,7 +155,7 @@
 - SPD chip (serial presence detect) -- identifies the module to the BIOS during
   POST (characteristics/timings)
 
-# motherboard (BIOS)
+## motherboard (BIOS)
 
 - BIOS
   - BIOS -- stored in firmware (built into the motherboard) that allows for
@@ -200,7 +200,7 @@
 
 - clear CMOS jumper -- short two poles (connect for 30s) to reset BIOS settings.
 
-# motherboards (form factors)
+## motherboards (form factors)
 
 - form factor -- standardization of motherboards. ensures part
   interchangeability
@@ -220,7 +220,7 @@
 
 - I/O shield -- used to cover/support I/O ports. most conform to form factors.
 
-# motherboard (chipsets)
+## motherboard (chipsets)
 
 - motherboards support specific chipsets.
 - chipsets define supported hardware.
@@ -234,7 +234,7 @@
     - now -- CPUs handle northbridge responsibilities. chipsets are now just the
       southbridge.
 
-# motherboard (tour)
+## motherboard (tour)
 
 - motherboards come with cables, standard connectors, and more
 
@@ -260,7 +260,7 @@
 - serial port
 - vga connector
 
-# system unit (case) (tour)
+## system unit (case) (tour)
 
 - cases:
   - different sizes
@@ -280,7 +280,7 @@
 - power supply (area) -- where power supply mounts in. (doesn't really have a
   name)
 
-# motherboard (mount/install)
+## motherboard (mount/install)
 
 - mount I/O shield on system unit. pay attention to orientation.
 - install standoffs
@@ -291,7 +291,7 @@
   - connect front panel (power button, reset, etc)
   - questions? refer to motherboard/case documentations
 
-# power supply
+## power supply
 
 - power supply -- step-down transformer. convert AC power to DC power
   - 3 types of supplied power -- 12V (yellow), 5V (red), 3.3V (orange)
@@ -324,7 +324,7 @@
     - these ratings have higher efficiences: bronze, silver, gold, platinum,
       titanium
 
-# cooling
+## cooling
 
 - if (overheat) reboot();
 
@@ -340,7 +340,7 @@
 - fans can be controlled through firmware or software.
   - speed, warning beeps, when to turn on, etc.
 
-# power supply troubleshooting
+## power supply troubleshooting
 
 - power supply is the most likely thing to fail
 - voltage will drop if PSU is unhealthy
@@ -350,12 +350,12 @@
   - quick death -- burning smell, smoke.
   - slow death -- intermittent problems
 
-# cpu + graphics
+## cpu + graphics
 
 - intel -- all CPUs are CPUs
 - AMD -- graphics built in ? (APU) : (CPU);
 
-# mass storage device
+## mass storage device
 
 - OS sees mass storage as a string of logical block addresses.
 
@@ -401,7 +401,7 @@
 - eSATA --
 - eSATA expansion card --
 
-# boot order
+## boot order
 
 - when a system boots, it looks for a bootable device
 
@@ -409,7 +409,7 @@
   - set order for storage devices to be searched.
   - boot order is defined in the CMOS system setup
 
-# mass storage (RAID)
+## mass storage (RAID)
 
 - RAID -- redundant array of inexpensive disks
   - hardware RAID requires a controller to configure the RAID arrays
@@ -443,7 +443,7 @@
 
 - hot spare -- specify a spare drive to be used on another's failure
 
-# optical media
+## optical media
 
 - disk anatomy
   - track -- single, continuous, grooved track that spirals outward. holds
@@ -488,7 +488,7 @@
 - optical media readers
   - SATA connection
 
-# usb
+## usb
 
 - standards
   - USB 1.1 (1.5 Mbps or 12 Mbps)
@@ -545,14 +545,14 @@
     - disable USB ports
     - USB lock (software) -- selectively monitor and prevent unauthorized usage
 
-# keyboard, mouse, kvm
+## keyboard, mouse, kvm
 
 - keyboards use either USB or PS/2 (PS/2 -- keyboard purple, mouse green)
 - mice almost exclusively use USB
 - kvm switches (keyboard video mouse) -- enable multiple computers to share I/O
   devices
 
-# expansion slot
+## expansion slot
 
 - remove protective cover
 - put card in to appropraite PCIe slot
@@ -567,7 +567,7 @@
   - system setup to select primary graphics card.
   - update drivers (windows or manufacturer drivers)
 
-# i/o peripherals
+## i/o peripherals
 
 - memory cards
   - sd
@@ -585,7 +585,7 @@
   - add correct driver (update too)
   - new devices installation is a common cause for BSOD
 
-# monitor
+## monitor
 
 - resolution -- dimensions of pixels (individual picture elements)
 
@@ -615,7 +615,7 @@
 - DLP (digital light processing) -- used more in projectors
   - grid of tiny mirrors
 
-# LCD/CCFL monitor (anatomy)
+## LCD/CCFL monitor (anatomy)
 
 - LCD screen
 - backlight unit -- distributes light from the CCFL (tubes) or LED backlights
@@ -625,7 +625,7 @@
 - inverter -- DC back to AC power (for fluorescent lights)
   - LED doesn't need inverter
 
-# projectors
+## projectors
 
 - technologies
   - DLP
@@ -641,7 +641,7 @@
   - keystone -- trapezoid
   - skew -- parallelogram
 
-# graphics card
+## graphics card
 
 - GPU (graphics processing unit) -- video card
 - GPUs have their own memory
@@ -666,7 +666,7 @@
   - displayport -- digital
   - mini-displayport -- digital
 
-# networking
+## networking
 
 - MAC vs IP
   - MAC -- physical
@@ -709,7 +709,7 @@
   - routers use logical addressing (IP addressing) to distinguish between
     local/remote traffic
 
-# network cables
+## network cables
 
 - ethernet
   - speed: 10BaseT (10 Mbps baseband twisted pair), 1000BaseT, 10Gb base T
@@ -734,13 +734,19 @@
 - CAT ratings
   - cat 5 -- 100Mbps
   - cat 5e -- 1Gbps
-  - cat 6 -- 1Gbps (100m) or 10Gbps (55m)
-  - cat 6a -- 10Gbps (100m)
-- plenum ratings
-  - plenum -- any type of cable with fire-resistant jacket
-  - ok to use in ceiling or floor cavity
+  - cat 6 -- 1Gbps for 100m or 10Gbps for 55m
+  - cat 6a -- 10Gbps for 100m (currently the most-used)
+  - cat 7 -- 10 Gbps for 100m, shielded
+- fire ratings
+  - plenum
+    - cable with fire-resistant jacket
+    - ok to use in ceiling or floor cavity
+  - riser
+    - run between floors in a building
+  - pvc (non-plenum)
+    - no fire protection
 
-# crimp network cables
+## crimp network cables
 
 - crimping cables
   - items
@@ -761,7 +767,7 @@
   - crimp
     - to maintain CAT rating. crimp location must be within .5" of last twist
 
-# structured cabling
+## structured cabling
 
 - rack
   - switch
@@ -787,7 +793,7 @@
   - tone generator/probe to differentiate cables
   - TDR for testing runs
 
-# IP
+## IP
 
 - ARPANET formed (basis for internet)
 - TCP/IP adopted as protocol for ARAPNET/internet
@@ -851,7 +857,7 @@
     the connected device.
   - man-in-the-middle-attacks
 
-# NAT
+## NAT
 
 - gateway router
   - connection to LAN (internal)
@@ -865,7 +871,7 @@
   - router will have public IP address
   - devices in LAN will have private IP addresses
 
-# ports
+## ports
 
 - ports
   - range
@@ -897,7 +903,7 @@
 
 - request -- dest IP, source IP, dest port, source port, data
 
-# TCP, UDP, and ICMP
+## TCP, UDP, and ICMP
 
 - TCP/IP -- transmission control protocol / internet protocol
   - connection oriented protocol
@@ -911,7 +917,7 @@
   - TCP segment
   - UDP datagram
 
-# DNS
+## DNS
 
 - FQDN (fully qualified domain name)
   - 256 character limit
@@ -932,7 +938,7 @@
   - alternative DNS servers can be used
   - nslookup -- tool to verify DNS server is running
 
-# windows naming
+## windows naming
 
 - netbios/netbt -- naming system for LAN
 
@@ -946,7 +952,7 @@
     - security, central administration
     - good for enterprise environments, expensive
 
-# routers
+## routers
 
 - router -- filter and forward traffic (based on IP addresses)
 
@@ -965,7 +971,7 @@
   show default gateway as such)
 - default gateway is usually the router
 
-# advanced router configuration
+## advanced router configuration
 
 - QoS (quality of service)
   - specify allocation of bandwidth
@@ -973,13 +979,13 @@
   - options might be as follows (fastest to slowest): exempt, premium, express,
     standard, bulk
 
-- ## UPnP (universal plug and play)
+- UPnP (universal plug and play)
 - Link Layer Discovery Protocol
   - windows default
 - SNMP (simple network management protocol)
   - tool for network administrators to get details about switch/router/etc
 
-# VLAN
+## VLAN
 
 - managed switch -- more expensive, additional features (VLAN among them)
   - VLAN -- has physical switch that creates separate network switches (separate
@@ -994,7 +1000,7 @@
   - port security
     - disable ports based on MAC address
 
-# wireless networking
+## wireless networking
 
 - IEEE 802.11 -- (most popular) wireless standard
 - WAP (wireless access point) -- bridge between wired network and wireless.
@@ -1087,7 +1093,7 @@
   - wifi analyzer can find interference from devices using ISM bands (baby
     monitors, microwave, etc)
 
-# internet
+## internet
 
 - networks
   - LAN (local area network) -- group of locally connected computers
@@ -1136,7 +1142,7 @@
 - 802.11
   - use an antenna to connect to a tower
 
-# firewalls and servers
+## firewalls and servers
 
 - firewall -- primary function is to block specified ports
   - clients and servers use firewalls
@@ -1147,7 +1153,7 @@
     port: 80)
 - web servers will allow inbound port 80
 
-# communication
+## communication
 
 - http -- 80
 - https -- 443
@@ -1178,7 +1184,7 @@
       - receive emails from a remote server to local email client
       - downloaded locally and removed from email server
 
-# VPN
+## VPN
 
 - VPN (virtual private network)
   - use the internet to create a private connection to a remote network
@@ -1188,7 +1194,7 @@
     - VPN protocols include PPTP, L2TP, IPsec
   - VPN routers will often require specific client software
 
-# IoT
+## IoT
 
 - IoT -- internet capability to devices not traditionally associated with the
   internet
@@ -1196,7 +1202,7 @@
   - requires a hub to link to the IoT devices
   - Google Home, Amazon Alexa, Apple Siri add voice capabilities to IoT
 
-# virtualization
+## virtualization
 
 - virtual machine -- self-contained computer, running within a host operating
   system.
@@ -1211,7 +1217,7 @@
 
 - virtualization must be enabled in system setup
 
-# cloud
+## cloud
 
 - cloud computing -- using a network of remote servers to store/manage/process
   data
@@ -1237,11 +1243,11 @@
     (authenticated) device
   - virtual application streaming -- access to apps without installing them
 
-# laptops
+## laptops
 
 TODO
 
-# securing computers
+## securing computers
 
 - host based security
   - patch your software (OS and application)

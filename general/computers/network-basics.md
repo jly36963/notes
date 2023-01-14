@@ -5,9 +5,6 @@
 - Used to represent how networks function
 - OSI model is supplanted by TCP/IP model
 
-- explanation:
-  - https://www.udemy.com/course/comptia-network-cert-n10-007-the-total-course/learn/lecture/10961792#content
-
 - OSI seven-layer model
   - layers
     - physical: electrical/phsyical repr of system
@@ -60,6 +57,134 @@
 - port: virtual point where network connections start and end
 - ports are software-based and managed by a computer's OS
 - ports allow computers to distinguish traffic from multiple processes
+
+## Cables and Topology
+
+- topology: physical and logical arrangment of nodes/connections in a network
+  - bus
+  - ring
+  - star
+  - star-bus (primary topology used today)
+  - mesh (fully- vs partially-meshed)
+
+- cabling
+  - coaxial
+    - two conductors, one center point, tubular conducting layer
+    - RG specifies thickness of conductors, insulation, and shielding
+    - TV/cable use RG-59 or RG-6
+  - twisted-pair
+    - most common cabling for networks today
+    - shielded vs unshielded (STP vs UTP)
+      - shielded is more expensive, has metal/foil that blocks EMI, stiffer
+    - in networks, most commonly
+      - 4 twisted pairs
+      - RJ-45 connector
+    - CAT ratings
+      - determine speed over distance, shielding, etc
+    - T568A and T568B:
+      - how wires meet connector
+      - different positions for orange and green
+      - T568B is most commonly used, T568A is seen as better
+  - fiber-optic
+    - duplex cables: one to send, one to receive
+    - mode
+      - device and cable mode must match
+      - multimode
+        - carries LED light signals
+      - single-mode
+        - carries laser signals
+        - bidi (bidirectional)
+          - two different laser colors on same cable
+    - connectors
+      - older, separate cables
+        - ST: push in, turn
+        - SC: push in
+        - FC: screws in
+      - newer, joined
+        - LC
+        - MT-RJ
+    - contact & polishing
+      - PC: physical contact (slightly rounded)
+      - UPC: ultra physical contact (more rounded)
+      - APC: angled physical contact (7-degree angle cut)
+
+- fire ratings
+  - plenum
+    - cable with fire-resistant jacket
+    - ok to use in ceiling or floor cavity
+  - riser
+    - run between floors in a building
+  - pvc (non-plenum)
+    - no fire protection
+
+## Ethernet Basics
+
+- Ethernet: defined by IEEE 802.3 standard
+  - standard versions: 802.3a, 802.3b, 802.3i, ...
+  - ethernet frame
+    - composition:
+      - preamble: tells receiving system that frame is starting
+      - SFD: state frame delimiter, signifies dst MAC begins at next byte
+      - dst/src MAC addrs: physical addresses of sending/receiving systems
+      - type: ether (data) type
+      - data and pad: payload data, padded if less than 46 bytes
+      - FCS: frame check sequence, 32-bit CRC
+    - 64 - 1522 octets (bytes)
+    - vast majority of data on internet is on ethernet
+  - jumbo frame
+    - up to 9000 bytes
+
+- MTU: maximum transmission unit
+
+- Ethernet history
+  - 10Base5 (10 Mbps, base, for 500m)
+    - network goes down if ethernet breaks
+  - Token Ring
+    - expensive, but more robust
+  - 10BaseT (10 Mbps, base, <100m between switch and node)
+    - fundamental network topology that later versions of ethernet use
+    - no more than 1024 nodes
+    - Cat3 or better UTP cable
+  - 100BaseT (100 Mbps ethernet)
+    - around the time of two fundamental changes
+      - hub -> switch
+      - half duplex -> full duplex (sending & receiving at same time)
+    - standards: 100BaseTX compeated with and beat out 100BaseT4
+  - 1000BaseT:
+    - standards:
+      - 1000BaseCX: twinax coax
+      - 1000BaseSX: fiber-optic (multimode)
+      - 1000BaseLX: fiber-optic (single-mode)
+      - 1000BaseT: UTP
+  - 10GBaseT:
+    - standards:
+      - 10GBaseSR: fiber-optic (multimode)
+      - 10GBaseLR: fiber-optic (single-mode)
+      - 10GBaseER: fiber-optic (single-mode)
+      - also SW, LW, EW for SONET networks
+
+- ethernet cable
+  - composition
+    - UTP cable, terminated with RJ-45 (8P8C) connectors
+    - 4 twisted pairs, arrange to T568A or T568B, crimp into connector
+  - combinations
+    - straight-through -- same on both ends
+      - majority are straight-through
+    - crossover -- one T568A end and one T568B end
+      - connect switches directly with crossover cables
+
+- MSA: multisource agreement
+  - allow a switch to support mutliple types of fiber-optic connectors
+  - GBIC: gigabit interface converter (for ST and SC connector modules)
+  - SFP(+): small form-factor pluggable (for LC and MT-RJ)
+
+- switch problems
+  - looping
+    - STP will turn off ports
+  - flooding
+    - flood guard will turn of ports
+  - speed mismatch
+    - match switch speeds to avoid slowdown
 
 ## TCP/IP Basics
 
@@ -397,6 +522,15 @@ detailed:
 
 ## TCP/IP applications
 
+- tools
+  - wireshark: TODO
+  - netstat: TODO
+- application
+  - webservers: TODO
+  - FTP: TODO
+  - email (and securing email): TODO
+  - Telnet and SSH
+
 ### TCP & UDP
 
 - TCP & UDP work at transport layer (OSI)
@@ -513,6 +647,11 @@ Example: mobile.twitter.com/home
 - DDNS: give stable domain name to dynamic IP address (eg: DHCP-provided)
   - ISPs can/will change IP addrs for your local network
   - DDNS provider will update IP info
+
+### Hosts file
+
+- hosts file takes precedence over DNS
+- text file with mappings of ip addr to domain
 
 ## Securing TCP/IP
 
@@ -653,3 +792,130 @@ Example: mobile.twitter.com/home
   - InterVLAN routing
     - allowing VLANs to communicate with each other
     - virtualization of router functionality (on higher-end sswitches)
+
+### QoS
+
+- QoS: Quality of Service
+- traffic shaping: optimize/guarantee performance by delaying other kinds
+
+### IDS
+
+- firewall
+  - allow/block traffic based on defined security rules
+- IDS: intrusion detection system
+  - detects intrusion, notifies
+  - out-of-band (traffic does not go through IDS)
+- IPS: intrusion prevention system
+  - detects intrusion, takes action
+  - actively stops or rejects
+  - in-band (traffic goes through IPS)
+
+### Proxy
+
+- forward proxy server
+  - obfuscates client
+  - client -> proxy -> firewall -> internet -> firewall -> server
+  - application-specific (eg: web, ftp, VoIP)
+  - uses: caching, content filtering
+- transparent proxy
+- reverse proxy server
+  - obfuscates server
+  - client -> firewall -> internet -> firewall -> proxy -> server
+  - uses: security, handle DoS attacks, load balancing, caching
+
+### Load balancing
+
+TODO
+
+## IPv6
+
+- IPv4 is 32-bit
+  - limited to ~4.3 billion addresses
+  - .58 billion reserved, 3.7 billion usable
+
+- IPv6 is 128-bit
+  - 3.4 * 10^38
+
+- smallest subnet mask is /64
+  - only subnet is /64, with the exception of VLSM
+  - VLSM: variable-length subnet mask
+
+- 8 segments (4 hex each), 7 colon delimiters
+  - drop leading zeros in each segment
+  - replace one group of all-zero segments with `::`
+
+- IPv6 allows data to move much faster through the internet
+  - aggregation
+- NDP: neighbor discovery protocol
+  - eliminates the need for NAT, ARP, and DHCP
+  - how it works
+    - discovery messages are ICMP v6
+    - router discovery
+      - router solicitation
+        - request for router advertisement msg
+      - router advertisement
+        - IPv6 router message to advertise presense
+        - inform other IPv6 devices about important IPv6 link params
+          - eg: default gateway, network prefix, prefix length, MTU, etc
+    - neighbor discovery
+      - neighbor solicitation
+        - sent by IPv6 device:
+          - to resolve the link-layer (MAC) addr of a neighbor
+          - to verify reachability of cached link-layer (MAC) addr
+          - for DAD (duplicate address detection)
+        - multicast, not broadcast
+      - neighbor advertisement
+        - response to solicitation
+        - unsolicited msg to announce a change in link-layer (MAC) addr
+    - redirect message
+      - inform host of a better next hop
+
+- 2 addresses
+  - link local address
+    - generated by IPv6-capable host on startup
+  - internet address
+    - given by gateway router
+
+- link local address
+  - 2 parts
+    - first: fe80:0000:0000:0000
+    - second:
+      - EUI-64
+        - mac address, split in half, with `ff-fe` in middle, flip 7th bit
+      - randomizer
+        - randomly generated 64-bit number
+
+- DHCPv6
+  - TODO
+
+- temporary IPv6 addresses
+  - for security reasons
+  - apps sometimes request temporary IP addr
+  - this is easily supported by IPv6 stateless auto configuration
+
+### IPv4 and IPv6
+
+- dual-stack: running both IPv4 and IPv6
+
+- ISPs in general do not provide IPv6 to their customers
+  - we can't do native IPv6
+  - tunneling protocol required to get on IPv6 internet
+
+## Remote connectivity
+
+- telephone
+- optical
+- dial-up
+  - telephone line
+- DSL: digital subscriber line
+  - telephone line
+  - faster than dialup
+- cable
+  - tv line
+  - faster than DSL
+- satellite
+  - modem -> dish -> satellite
+  - for remote locations
+  - lower bandwidth, higher latency
+- ISDN
+- BPL
