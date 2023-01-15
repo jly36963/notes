@@ -919,3 +919,303 @@ TODO
   - lower bandwidth, higher latency
 - ISDN
 - BPL
+
+## Wireless Networking
+
+- 802.11 IEEE standard
+- radio waves to transmit information between individual wireless nodes
+- WAP: wireless access point
+- SSID: service set identifier
+  - word/phrase used to connect wireless devices to the WAP
+- modes
+  - infrastructure mode: using a WAP
+  - ad-hoc
+- BSSID: basic service set identifier
+- ESSID: extended service set identifier
+- bands:
+  - 2.4 GHz
+    - channels 1-11
+  - 5.0 GHz
+    - a lot of channels
+- wireless NIC
+- CSMA/CA: carrier sense multiple access collision avoidance
+  - prevent wireles collisions
+- OFDM: orthogonal frequency-division multiplexing
+
+- extensions
+  - 802.11b
+    - 11 Mbps, 2.4 GHz (14 channels) (3 non-overlapping)
+  - 802.11a
+    - 54 Mbps, 5.0 GHz
+  - 802.11g
+    - 54 Mbps, 2.4 GHz
+    - first widely-used extension
+  - 802.11n
+    - 108-300 Mbps, 2.4/5.0 GHz
+    - introduced MIMO
+    - configuration headaches
+  - 802.11ac
+    - 1 Gbps (not precise), 5.0 GHz (ac) and 2.4 GHz (b) (3 antennas each)
+    - MU-MIMO current fastest extensions: 802.11n and 802.11ac
+
+- antennas
+  - types
+    - omni: single antenna, spherical pattern
+    - dipole: 2 antennas, opposite directions. donut pattern
+    - patch: half-sphere pattern, mounted on surface (eg: external wall)
+    - yagi (directional): fresnel lens pattern (football shape)
+    - parabolic (directional):
+  - distance (strength) is dependent on gain (dBi)
+
+- auth
+  - open/shared
+  - closed
+    - WEP: wired equivalent privacy
+      - 68-bit and 128-bit key (really 40 and 104 bits)
+      - crackable, flaw in key scheduling algorithm of RC4 cipher
+      - unfortunately, people still use WEP (eg: ~10% of Houston)
+    - WPA: wi-fi protected access
+      - WPA + TKIP
+      - improved on WEP's initialization vector issue
+      - better, but still crackable
+    - WPA2
+      - replaced RC4 with AES encryption (block cypher)
+      - CCMP-AES: counter mode + CBC-MAC that uses AES
+
+- security mechanisms
+  - change default password on WAP
+  - disable SSID broadcast
+  - use MAC filtering
+  - separate SSIDs with different configuration, VLANs, etc
+  - client isolation (shared broadcast domain -> can't see each other)
+
+- power
+  - A/C power adapter
+  - PoE: power over ethernet
+    - PoE WAP requires PoE switch or PoE injector
+    - original extension 802.3af
+      - 15.4 watts
+    - later extension 802.3at
+      - 30 watts
+
+- wireless network threats
+  - rogue AP: unauthorized access point (eg: plugging a WAP into wired network)
+  - evil twin: rogue AP with private SSID
+  - evil twin + 802.11 jammer (against federal law)
+  - deauthentication attack
+  - WPS: wi-fi protected setup
+    - one-button setup of wireless devices
+    - convenient
+    - easily hackable, can be a security threat
+  - wardriving and warchalking (old)
+
+- signal and environment
+  - reflection: signal bounces off surface (eg: metal)
+  - refraction: signal bends through surface (eg: glass)
+  - absorption: signal absorbed by surface (eg: concrete)
+  - attenuation: signal weakens over distance
+
+- problems
+  - over capacity
+  - jitter
+  - incorrect antenna types and placement
+
+## Virtualization
+
+- virtualization: using a virtual version of something (eg: os, server, storage)
+
+- VM: virtual machine
+  - a virtual env (software) used to run programs (like a physical computer)
+  - the virtual env uses hardware resources of the host computer
+- hypervisor: virtual machine monitor
+  - type 1 (bare metal): runs directly on hardware, independent of host OS
+  - type 2 (hosted): runs on top of host OS
+
+- VM options
+  - VMWare
+  - MSFT hypervisor
+  - VirtualBox (Oracle)
+
+## Cloud
+
+- clouds
+  - private: members only
+  - public: available to anyone
+  - hybrid: has both private and public parts
+    - contracted management
+  - community
+
+- services
+  - PaaS: platform as a service (eg: heroku, AWS elastic beanstalk)
+  - SaaS: software as a service (eg: MS office 365)
+  - IaaS: infrastructure as a service (eg: AWS EC2)
+
+## NAS and SAN
+
+TODO
+
+## Cellular networking
+
+- options
+  - cellular WAN
+    - HSPA/HSPA+ (3g and 4g)
+    - LTE (4g and 5g)
+  - WiMAX
+    - 802.16 IEEE standard
+
+- tethering
+  - taking cell signal and sharing connection
+
+### Other mobile technologies
+
+- home automation
+  - z-wave
+  - zigbee
+- health devices
+  - ANT/ANT+
+- bluetooth
+- NFC: near-field communication
+- RFID: radio-frequency identification
+  - various standards
+- infrared
+
+## Real-world networks
+
+TODO:
+
+- power management
+- unified communication
+- documentation
+- contingency planning
+- predicting hardware failure
+- backups
+
+### Network types
+
+- LAN: local area network
+  - eg: switch with multiple nodes connected
+  - WLAN: wireless LAN
+- WAN: wide area network
+  - multiple connected networks
+  - large, can span multiple countries
+  - the internet is a WAN
+- PAN: personal area network
+  - eg: bluetooth
+- CAN: campus area network
+  - interconnected buildings
+  - smaller than WAN
+- MAN: metropolitan area network
+  - medium-sized, covers a city/town
+
+### Network design
+
+- assess customer needs
+- consider documentation, compatability with existing software/hardware
+- involve security early and assess external connectivity
+
+## Managing risk
+
+TODO
+
+## Protecting network
+
+### Attacks
+
+- DoS: denial of service
+  - volume attack
+    - flooded with requests
+    - eg: ping flood, udp flood
+  - protocol attack
+    - exploiting protocol
+    - eg: SYN flood (TCP SYN attack)
+    - arguably the most common DoS attack
+  - application attack
+    - exploiting weakness in app
+    - eg: slow loris attack
+
+- amplification attack
+- DDoS: distributed DoS
+
+### Malware
+
+- virus: malicious code, made to spread, that affects computer operations
+
+- types
+  - adware: software that generates/displays unwanted advertisements
+  - spyware: malware that hides itself and leaks data
+  - trojan: provides some functionality but has hidden, bad processes
+    - RAT: remote access trojan
+  - ransomeware: locking resources until paid
+  - logic bomb: event-triggered malware
+  - rootkit: gets admin/escalated privileges to do powerful things
+  - backdoor: undocumented method of accessing a computer system
+  - keyloggers: recording/leaking keystrokes
+  - man in the middle: third-party interception of two-party conversation
+
+- characteristics
+  - polymorphic: changes itself to confuse anti-malware software
+  - armored: hard for anti-malware to detect/fix
+
+### Social engineering
+
+- dumpster diving
+- shoulder surfing
+- phishing/smishing
+
+### Firewalls
+
+- firewall: filters traffic, based on some criteria
+  - network firewall protects a network
+    - located on edge of network (near gateway/router)
+    - hardware firewall
+  - host firewall
+    - host-based software firewall on individual units
+  - state
+    - stateless: focus on individual packet (src, dst, params)
+    - stateful: monitor all aspects of traffic streams
+    - firewalls can be configured as stateless and/or stateful
+    - possible to have context- and application-aware firewalls
+      - DPI: deep-packet inspection (runs on 7th layer of OSI model)
+
+- UTM: unified threat managment
+  - firewall with other built-in features
+
+- DMZ: demilitarized zone
+  - subnetwork containing the exposed/outward-facing services
+  - used to separate public/private subnetworks for better security control
+  - honeypot: invite attacks (inside DMZ) to capture info for security research
+  - honeynet: decoy network to attract attackers (network of honeypots)
+
+- bastion host: machine that is directly connected to the public internet
+
+### Hardening devices
+
+- don't use privileged accounts if you don't need them
+- change default login credentials
+- role separation
+- use ACLs
+- patch/update firmware
+- driver updates
+- don't use EOL OS/packages
+- disable (and/or turn off) unused ports/devices
+- signature/credential management
+- vulnerability assessment (software/service)
+- pen testing
+
+### Physical security controls
+
+TODO
+
+### Testing network security
+
+- free scan tools
+  - Nessus
+  - nmap
+
+## Network monitoring
+
+TODO
+
+## Network troubleshooting
+
+TODO
