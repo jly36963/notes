@@ -1,1 +1,0 @@
-jt -t onedork -f roboto -fs 10 -nfs 10 -tfs 10 -dfs 8 -ofs 10 -lineh 120 -tf roboto -nf roboto -T -N -kl
