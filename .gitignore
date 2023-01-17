@@ -1,29 +1,25 @@
-# secrets
+# Secrets
 **/.env
 **/*.pem
 
-# node
-**/node_modules/
+# Node
+**/node_modules
 **/build
 
-# python
+# Python
 **/__pycache__
 **/.venv/
 
-# go
-**/*.exe
-**/tmp
-
-# rust
+# Rust
 **/target/
 
 # vscode
 **/.vscode/
 
-# mac
+# Mac
 **/.DS_Store
 
-# ssr
+# SSR
 **/__sapper__
 **/.next
 **/.nuxt

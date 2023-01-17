@@ -20,22 +20,22 @@ MIGRATIONS_PATH="./dal/pg/migrations"
 default:
 	install build run-build
 
-dev: 
-	air
-
-run: 
+dev:
 	go run $(ENTRY)
 
-build: 
+run:
+	go run $(ENTRY)
+
+build:
 	go build -o $(OUTPUT)
 
 run-build:
 	./$(OUTPUT)
 
-lint: 
+lint:
 	go fmt ./...
 
-install: 
+install:
 	go get -d ./...
 
 # ---

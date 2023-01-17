@@ -3,7 +3,7 @@
 ## install
 
 ```bash
-go get -u github.com/go-resty/resty
+go get -u github.com/go-resty/resty/v2
 ```
 
 ## startup

@@ -11,22 +11,22 @@ OUTPUT="bin/app.exe"
 # commands
 # ---
 
-dev: 
-	air
+dev:
+	go run $(ENTRY)
 
-run: 
+run:
 	GIN_MODE=release go run $(ENTRY)
 
-build: 
+build:
 	go build -o $(OUTPUT)
 
 run-build:
 	./$(OUTPUT)
 
-lint: 
+lint:
 	go fmt ./...
 
-install: 
+install:
 	go get -d ./...
 
 

@@ -17,6 +17,10 @@ use (
 	./go/db/redis-example
 	./go/db/squirrel-example
 	./go/testing/gomega-notes
+	./go/utility-pkgs/gift-notes
+	./go/utility-pkgs/govalidator-notes
+	./go/utility-pkgs/resty-notes
+	./go/utility-pkgs/sling-notes
 	./go/web/atreugo
 	./go/web/fasthttp
 	./go/web/gin

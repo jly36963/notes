@@ -1,15 +1,12 @@
 package main
 
 import (
-	// standard packages
-
 	"encoding/json"
 	"fmt"
 	"runtime"
 	"strings"
 
-	// external packages
-	"github.com/go-resty/resty"
+	resty "github.com/go-resty/resty/v2"
 )
 
 // ---

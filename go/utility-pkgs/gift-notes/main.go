@@ -1,7 +1,6 @@
 package main
 
 import (
-	// standard packages
 	"fmt"
 	"image"
 	"image/jpeg"
@@ -10,7 +9,6 @@ import (
 	"runtime"
 	"strings"
 
-	// external packages
 	"github.com/asaskevich/govalidator"
 	"github.com/disintegration/gift"
 )
@@ -20,43 +18,46 @@ import (
 // ---
 
 func main() {
-	// runtime
+	// Runtime
 	getRuntimeDetails()
-	// brightness
+	// Brightness
 	useBrighten()
-	// color balance
+	// Color balance
 	useColorBalance()
-	// colorize
+	// Colorize
 	useColorize()
-	// contrast
+	// Contrast
 	useContrast()
-	// convolution
+	// Convolution
 	useConvolution()
-	// crop
-	// gamma
+	// Crop
+	// TODO
+	// Gamma
 	useGamma()
-	// gaussian blur
+	// Gaussian blur
 	useGaussianBlur()
-	// grayscale
+	// Grayscale
 	useGrayscale()
-	// invert
+	// Invert
 	useInvert()
-	// maximum, mean, median, minimum
-	// resize
+	// Maximum, mean, median, minimum
+	// TODO
+	// Resize
 	useResize()
-	// resize to fill, resize to fit
-	// saturation
+	// Resize to fill, resize to fit
+	// TODO
+	// Saturation
 	useSaturation()
-	// sepia
+	// Sepia
 	useSepia()
-	// sigmoid
+	// Sigmoid
 	useSigmoid()
-	// sobel
+	// Sobel
 	useSobel()
-	// threshold
+	// Threshold
 	useThreshold()
-	// unsharp mask
-
+	// Unsharp mask
+	// TODO
 }
 
 // ---
@@ -170,8 +171,7 @@ func brightenImage(path string, brightness float32) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(gift.Brightness(brightness))
+	g := gift.New(gift.Brightness(brightness)) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -214,8 +214,7 @@ func balanceColor(path string, red, green, blue float32) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(gift.ColorBalance(red, green, blue))
+	g := gift.New(gift.ColorBalance(red, green, blue)) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -250,9 +249,9 @@ func colorize(path string, hue, saturation, percentage float32) {
 
 	// validate params
 	params := []ColorizeParam{
-		ColorizeParam{Name: "hue", Value: hue, Min: 0, Max: 360},
-		ColorizeParam{Name: "saturation", Value: saturation, Min: 0, Max: 100},
-		ColorizeParam{Name: "percentage", Value: percentage, Min: 0, Max: 100},
+		{Name: "hue", Value: hue, Min: 0, Max: 360},
+		{Name: "saturation", Value: saturation, Min: 0, Max: 100},
+		{Name: "percentage", Value: percentage, Min: 0, Max: 100},
 	}
 	for _, param := range params {
 		if !govalidator.InRangeFloat32(param.Value, param.Min, param.Max) {
@@ -274,8 +273,7 @@ func colorize(path string, hue, saturation, percentage float32) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(gift.Colorize(hue, saturation, percentage))
+	g := gift.New(gift.Colorize(hue, saturation, percentage)) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -316,8 +314,7 @@ func contrast(path string, percentage float32) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(gift.Contrast(percentage))
+	g := gift.New(gift.Contrast(percentage)) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -353,8 +350,7 @@ func convolveEdge(path string) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(
+	g := gift.New(
 		gift.Convolution(
 			[]float32{
 				-1, -1, -1,
@@ -366,7 +362,7 @@ func convolveEdge(path string) {
 			false, // abs
 			0,     // delta
 		),
-	)
+	) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -413,10 +409,7 @@ func gamma(path string, gamma float32) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(
-		gift.Gamma(gamma),
-	)
+	g := gift.New(gift.Gamma(gamma)) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -452,8 +445,7 @@ func blurImage(path string, sigma float32) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(gift.GaussianBlur(sigma))
+	g := gift.New(gift.GaussianBlur(sigma)) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -489,10 +481,7 @@ func grayscale(path string) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(
-		gift.Grayscale(),
-	)
+	g := gift.New(gift.Grayscale()) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -529,10 +518,7 @@ func invert(path string) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(
-		gift.Invert(),
-	)
+	g := gift.New(gift.Invert()) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -635,10 +621,7 @@ func saturation(path string, percentage float32) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(
-		gift.Saturation(percentage),
-	)
+	g := gift.New(gift.Saturation(percentage)) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -679,10 +662,7 @@ func sepia(path string, percentage float32) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(
-		gift.Sepia(percentage),
-	)
+	g := gift.New(gift.Sepia(percentage)) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -727,10 +707,7 @@ func sigmoid(path string, midpoint, factor float32) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(
-		gift.Sigmoid(midpoint, factor),
-	)
+	g := gift.New(gift.Sigmoid(midpoint, factor)) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -749,7 +726,7 @@ func sigmoid(path string, midpoint, factor float32) {
 
 func useSigmoid() {
 	printSectionTitle("gift (sigmoid)")
-	sepia("img/lion.jpg", 40)
+	sigmoid("img/lion.jpg", .5, .1) // TODO: Sanity check args
 }
 
 // ---
@@ -766,10 +743,7 @@ func sobel(path string) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(
-		gift.Sobel(),
-	)
+	g := gift.New(gift.Sobel()) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -810,10 +784,7 @@ func threshold(path string, percentage float32) {
 		return
 	}
 	// transform image
-	var g *gift.GIFT
-	g = gift.New(
-		gift.Threshold(percentage),
-	)
+	g := gift.New(gift.Threshold(percentage)) // *gift.GIFT
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file

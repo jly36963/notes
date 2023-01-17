@@ -1,12 +1,10 @@
 package main
 
 import (
-	// standard packages
 	"fmt"
 	"runtime"
 	"strings"
 
-	// external packages
 	"github.com/asaskevich/govalidator"
 )
 
