@@ -40,12 +40,16 @@ git log -p # Git log with diffs
 git ls-tree --full-tree -r HEAD
 ```
 
-## Current changes
+## Committing current changes
 
 ```bash
 # Check
 git status # Show status (changes/staged/not tracked/etc)
-git diff # Show unstaged file changes
+git diff # Show unstaged changes
+git diff --staged # Show staged changes
+git diff HEAD # staged & unstaged
+git diff <branch1>..<branch2> # Compare branches (b2 against b1)
+git diff <commit1>..<commit2> # Compare commits (b2 against b1)
 
 # Add files to staging index
 git add . # All files in directory (recursively)
@@ -66,10 +70,25 @@ git reset --soft HEAD~1 # Last commit
 git reset --soft <sha> # Undo every commit since specified sha
 ```
 
+## Stashing
+
+```bash
+# Stash current changes (put changes on stack)
+git stash
+git stash push
+# Pop last stash on stack (bring changes back)
+git stash pop
+# List stash entries
+git stash list
+# Remove a stash entry
+git stash drop <stash>
+# Clear stash
+git stash clear
+```
+
 ### Untrack files now in .gitignore
 
 ```bash
-# remove files now in gitignore
 git rm -r --cached .
 git add .
 ```
@@ -88,16 +107,19 @@ git tag -a -m [message] [tagname] [SHA] # adds a tag to a past commit.
 # List branches
 git branch
 # Create and switch to branch
-git checkout -b <branchname>
+git checkout -b <new-branch-name>
 # Create branch
 git branch <name>
 # Switch active branch
+git switch <branch-name>
 git checkout <branch-name>
 git checkout - # Switch to previous branch
 # Will create a new branch at the given SHA.
-git branch <branchname> <SHA>
+git branch <new-branch-name> <SHA>
+# Rename
+git branch -m <new-name>
 # Deletes a branch (to force deletion, use `-D` instead.)
-git branch -d <branchname>
+git branch -d <branch-name>
 ```
 
 ## Merging
@@ -135,10 +157,16 @@ git reset [flag] [reference]
 TODO: .gitignore patterns
 
 ```bash
-# Ignore file
-**/.DS_Store
-# Ignore matching subdirectory
-**/node_modules/
+# File
+.DS_Store
+# Direct subdirectory
+/node_modules
+# Any matching subdirectory
+**/node_modules
+# Matching file extension
+*.whl
+# Character permutations
+[Bb]uild
 ```
 
 ## Advice
