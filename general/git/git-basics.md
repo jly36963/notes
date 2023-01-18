@@ -19,6 +19,10 @@ https://git-scm.com/doc
 git config --global user.name <first-and-last-name>
 # Set email
 git config --global user.email <email-addr>
+# Set default branch name (on init)
+git config --global init.defaultBranch main
+# View config
+git config --list
 ```
 
 ## Initialize a repository
@@ -40,7 +44,11 @@ git log -p # Git log with diffs
 git ls-tree --full-tree -r HEAD
 ```
 
-## Committing current changes
+## Committing changes
+
+Working tree -> staging area -> committed
+
+### View changes
 
 ```bash
 # Check
@@ -50,13 +58,21 @@ git diff --staged # Show staged changes
 git diff HEAD # staged & unstaged
 git diff <branch1>..<branch2> # Compare branches (b2 against b1)
 git diff <commit1>..<commit2> # Compare commits (b2 against b1)
+```
 
+### Staging and committing
+
+```bash
 # Add files to staging index
 git add . # All files in directory (recursively)
 git add <filenames..> # Add specific file(s)
 
 # Remove from staging index
 git rm <filenames..> # Add specific file(s)
+
+# Revert changes
+git restore <files..> # Revert unstaged changes
+git restore --staged <files..> # Unstage changes
 
 # Commit
 git commit -m "Commit message here."
@@ -131,30 +147,7 @@ git merge [branchname]
 git reset --hard HEAD^
 ```
 
-### Commit revision
-
-```bash
-# amend commit (if files have been edited/saved/staged prior to the amend, git will update the files in the commit as well.)
-git commit --amend -m [message]
-# undoes changes in named commit. (added content will be deleted, deleted content will be re-added, and replaced content will be un-replaced.)
-git revert [SHA]
-# git reset will move the head and current branch back to the chosen ancestor. where the recent commits go depends on the flag.
-  # `--soft` moves recent commits to staging index.
-  # `--mixed` moves recent commits to working directory. (default)
-  # `--hard` deletes recent commits.
-git reset [flag] [reference]
-
-# referring to a parent:
-  # `HEAD^`, `HEAD~`, or `HEAD~1`.
-# referring to a grandparent:
-  # `HEAD^^` or `HEAD~2`
-  # after merge, `^` means first parent, `^2` means second parent
-  # `HEAD~6` 6 generations back on the same branch. (ignore divergent branches.)
-```
-
 ## Ignoring files
-
-TODO: .gitignore patterns
 
 ```bash
 # File

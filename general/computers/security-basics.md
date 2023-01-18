@@ -530,3 +530,20 @@ Popular frameworks:
     - OpenPGP
 
 ### Hashing
+
+- hashing: transforming input data into another value algorithmically
+  - output is usually fixed-length
+  - process is one-way, deterministic
+
+- hash types
+  - md5: message digest 5
+    - 128 bit hash
+    - broken, collisions
+  - SHA1: secure hash algorithm
+    - family of hash algorithms
+    - developed by NIS
+    - 160-bit hashes
+    - broken, collisions
+  - SHA2
+    - eg: SHA-256, SHA-512
+    - lower level of collisions
