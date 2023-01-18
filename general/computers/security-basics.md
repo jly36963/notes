@@ -503,6 +503,19 @@ Popular frameworks:
   - smaller keys than RSA
   - faster key generation than RSA (arguably)
 
+#### Trust and certificates
+
+- You might (not) be talking to the intended party
+- digital signature
+  - signing algorithm(message, private key) -> signature
+  - signature-verifying algorithm(public key, signature, message) -> verified
+- Third-party certificate authorities are used to establish trust
+- certificate contains public key, digital signature, and CA digital signature
+  - self-signed won't have CA signature
+
+- PKI: public key infrastructure
+  - hierarchy: CA -> intermediate CA -> me
+
 ### PGP and GPG
 
 - PGP: pretty good privacy
@@ -547,3 +560,19 @@ Popular frameworks:
   - SHA2
     - eg: SHA-256, SHA-512
     - lower level of collisions
+  - RIPEMD
+    - 128, 160, 256
+    - not as popular as SHA2
+
+- HMAC: hashbased message authentication code
+  - used to verify integrity of data and authenticity of message
+    - hash involves data and shared key
+    - only the intended party should have access to the shared key
+  - composition
+    - cryptographic key and encryption algorithm
+    - hash function
+
+## Steganography
+
+- Hiding data within data
+- Commonly done by encoding data into images

@@ -22,7 +22,7 @@ git push --force
 ## Method 2
 
 ```bash
-# Undo commits back to (and including) id
+# Undo commits back to id
 git reset --soft <id>
 # Get off feature branch
 git checkout develop
