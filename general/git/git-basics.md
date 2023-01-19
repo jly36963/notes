@@ -143,8 +143,43 @@ git branch -d <branch-name>
 ```bash
 # Merge specified branch into current branch
 git merge [branchname]
-# Undoes a merge (NOTE: be careful with this)
-git reset --hard HEAD^
+```
+
+## Tags
+
+[docs](https://git-scm.com/book/en/v2/Git-Basics-Tagging)
+
+- types
+  - lightweight tags: just a label
+  - annotated tags: includes extra metadata
+    - author name/email, date, tagging msg
+- rules
+  - must be unique
+
+```bash
+# View tags
+git tag
+git tag -l "*alpha*" # tags containing "alpha"
+
+# Create annotated tag
+git tag -a <tag> # Opens editor to add message
+git tag -a -m <msg> <tag> # Inline message
+git tag -a -m "msg here" v2.4.1
+git tag -a -m <msg> <tag> <commit-sha>  # Tag a specified commit
+# Show tag
+git show v2.4.1
+
+# Delete tag
+git tag -d <tagname>
+
+# Push tags
+git push origin --tags # Push all tags (idempotent)
+git push origin <tagname> # Push a tag
+
+# View diff between tags
+git diff <tag1> <tag2>
+# Checkout to tag (detached head)
+git checkout <tag>
 ```
 
 ## Ignoring files

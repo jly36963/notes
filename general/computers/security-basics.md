@@ -513,8 +513,26 @@ Popular frameworks:
 - certificate contains public key, digital signature, and CA digital signature
   - self-signed won't have CA signature
 
+#### PKI
+
+- CA: certificate authority
 - PKI: public key infrastructure
   - hierarchy: CA -> intermediate CA -> me
+    - root certificate at top of structure
+    - root certificate system -> designated intermediary CA
+  - standards
+    - no unified standard
+    - PKCS: public-key cryptography standards
+      - invented by RSA Corporation
+      - PKCS-7 is a way to store certs as individual files
+      - PKCS-12 stores certificates and private keys as a package
+  - CRL: certificate revocation list
+    - browsers can check CRL to check for revoked certificates
+    - CDP: CRL distribution points
+      - web server where a CA publishes CRLs
+    - CRL might be lagged
+  - OCSP: online certificate status protocol
+    - similar to CRL but real-time
 
 ### PGP and GPG
 
@@ -572,7 +590,34 @@ Popular frameworks:
     - cryptographic key and encryption algorithm
     - hash function
 
-## Steganography
+### Steganography
 
 - Hiding data within data
 - Commonly done by encoding data into images
+
+### Cryptographic attacks
+
+- passwords storage
+  - not stored as plain text
+  - usually hashed
+
+- crytographic attacks
+  - typically attempts to hack hashes
+    - can't reverse a hash
+    - hashing attacks are comparative attacks
+    - generating hashes and comparing to stored hashes
+    - complex passwords make cryptographic attacks harder
+  - have to get access to list of hashes
+  - types
+    - brute force
+    - dictionary
+    - rainbow table
+  - salt
+    - arbitrary, fixed value
+    - added to a password before hashing
+    - salted hashes are harder to crack
+  - key stretching
+    - insert a random set of chars to increase the size of the password hash
+    - algorithms
+      - bcrypt
+      - PBKDF2
