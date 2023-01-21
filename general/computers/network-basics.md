@@ -710,8 +710,9 @@ Example: mobile.twitter.com/home
 - MFA: multi-factor auth
   - requires multiple auth factors
 
-- ACL: access control list
-  - three types:
+- access control
+  - ACL: access control list
+  - three strategies:
     - MAC: mandatory access control
       - labels
     - DAC: discretionary access control

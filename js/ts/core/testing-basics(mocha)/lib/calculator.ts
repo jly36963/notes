@@ -45,7 +45,7 @@ export default class Calculator {
     const mean = this.getMean(numbers);
     const sumOfSquaredDiffs = numbers.reduce(
       (acc, curr) => acc + Math.pow(curr - mean, 2),
-      0,
+      0
     );
     const populationSize = completeSample ? n : n - 1;
     const std = Math.sqrt(sumOfSquaredDiffs / populationSize);
@@ -58,7 +58,7 @@ export default class Calculator {
 
   /** Pretend to get a random integer asynchronously */
   async randInt(max: number): Promise<number> {
-    await new Promise(r => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, 100));
     return Math.ceil(Math.random() * max);
   }
 }

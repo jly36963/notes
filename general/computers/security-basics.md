@@ -621,3 +621,43 @@ Popular frameworks:
     - algorithms
       - bcrypt
       - PBKDF2
+
+## Identity and access management
+
+- auth:
+  - identification & authentication
+    - are they who they say they are
+  - authorization
+    - do they have permission to do something
+
+- authentication factors
+  - something you know (eg: password, pin, captcha, security questions)
+  - something you have (eg: smart card, cryptographic id device)
+  - something you are (eg: fingerprint, face)
+  - something you do (eg: speed of typing)
+  - somewhere you are (eg: detecting credit card fraud by location)
+
+- authorization
+  - permissions
+    - applied to resources
+  - rights and privileges
+    - assigned at system level
+  - strategies
+    - least privilege
+    - separation of duty
+
+- access control
+  - ACL: access control list
+    - access is defined by ACL
+    - implicit deny: denied unless explicitly permitted
+  - three strategies:
+    - MAC: mandatory access control
+      - labels
+    - DAC: discretionary access control
+      - creators have control over permissions
+    - RBAC: role-based access control
+      - users -> groups -> rights/permissions
+
+- password security
+  - password security policy
+    - complexity, expiration, history

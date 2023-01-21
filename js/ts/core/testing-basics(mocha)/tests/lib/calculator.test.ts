@@ -6,7 +6,7 @@ import Calculator from "../../lib/calculator.js";
 
 describe("Calculator", () => {
   let c: Calculator;
-  let randIntStub: sinon.SinonStubbedMember<typeof c.randInt>
+  let randIntStub: sinon.SinonStubbedMember<typeof c.randInt>;
 
   beforeEach(() => {
     // Setup
@@ -17,7 +17,7 @@ describe("Calculator", () => {
 
   afterEach(() => {
     // Restore stub
-    randIntStub.restore()
+    randIntStub.restore();
   });
 
   it("add", () => {
@@ -43,7 +43,7 @@ describe("Calculator", () => {
   });
   it("divide", () => {
     const result = c.divide(1, 2);
-    const expected = .5;
+    const expected = 0.5;
     assert.strictEqual(result, expected);
     expect(result).to.equal(expected);
     jestExpect(result).toBe(expected);
@@ -74,14 +74,14 @@ describe("Calculator", () => {
       const result = c.getStd([1, 2, 3, 4]);
       const expected = 1.2909944487358056;
       assertAlmostEquals(result, expected);
-      expect(result).to.be.closeTo(expected, .0001);
+      expect(result).to.be.closeTo(expected, 0.0001);
       jestExpect(result).toBeCloseTo(expected, 4);
     });
     it("complete sample", () => {
       const result = c.getStd([1, 2, 3, 4], true);
       const expected = 1.118033988749895;
       assertAlmostEquals(result, expected);
-      expect(result).to.be.closeTo(expected, .0001);
+      expect(result).to.be.closeTo(expected, 0.0001);
       jestExpect(result).toBeCloseTo(expected, 4);
     });
   });
