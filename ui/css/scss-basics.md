@@ -1,8 +1,8 @@
 # SCSS
 
-## NPM, SCSS, & PREPROCESSING
+## NPM, SCSS, and Preprocesing
 
-- npm install node-sass --save
+- `npm i sass`
 - create 'main.scss' file in 'scss' directory of project.
 - write scss
 - under scripts (in package.json):
@@ -16,12 +16,12 @@
 
 - CSS should be in the head (style tag) or in an external file
 - CSS overwrites itself (duplicate properties will overwrite previous ones)
-- child elements inherit properties from parent divs (in some cases)
+- Child elements inherit properties from parent divs (in some cases)
 
 - 3 principles of good HTML/CSS
-  - RESPONSIVE DESIGN
-  - MAINTAINABLE/SCALABLE
-  - WEB PERFORMANCE
+  - Responsive design
+  - Maintainable/scalable
+  - Web performance
 
 ## Basic reset (universal selector)
 
@@ -81,12 +81,13 @@ Example
 - extends
   - make different selectors inherit common declarations
 
-## Sass and SCSS (SYNTAX)
+## Sass and SCSS (Syntax)
 
-- sass -- indentation sensitive, no brackets/semi-colons
+- Sass -- indentation sensitive, no brackets/semi-colons
 - SCSS -- preserves original CSS syntax
 
-js comments work (`//` instead of `/* comment */`)
+- JS-style comments work
+  - `//` or `/* ... */`
 
 ## SCSS variables
 
@@ -374,14 +375,14 @@ $grid-gutter-v: 2rem;
 }
 ```
 
-# Media queries (breakpoints)
+## Media queries (breakpoints)
 
 // best practice is to create a breakpoints based on content.
 
 // predefined breakpoints (based on devices) that work pretty well: // phone
 (<600), tablet-portrait (<900), tablet-landscape (<1200), desktop (<1800)
 
-## Scss & media queries (nesting)
+### SCSS & media queries (nesting)
 
 // without mixin (good)
 
@@ -395,7 +396,7 @@ $grid-gutter-v: 2rem;
 }
 ```
 
-## Scss & media queries (mixin)
+### SCSS & media queries (mixin)
 
 ```scss
 // abstracts/mixins
@@ -422,7 +423,7 @@ html {
 }
 ```
 
-## Scss & media queries (media query manager) (best)
+### SCSS & media queries (media query manager) (best)
 
 ```scss
 // abstracts/mixins
@@ -460,14 +461,14 @@ html {
 }
 ```
 
-# SCSS responsive images
+## SCSS responsive images
 
 // responsive images improve performance and design. // resolution switching
 (decrease resolution on smaller screen) // density switching (different image
 for high/low resolution screens) // art direction (serving an alternate/altered
 image for smaller screens)
 
-# SCSS & flexbox (display: flex;)
+## SCSS & flexbox (display: flex;)
 
 ```scss
 * {
@@ -495,10 +496,12 @@ image for smaller screens)
 }
 ```
 
-// --- // SCSS & CSS-GRID // ---
+## SCSS & CSS-GRID
 
 ```scss
 .container {
   display: grid;
 }
 ```
+
+TODO

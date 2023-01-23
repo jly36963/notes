@@ -91,7 +91,7 @@ li:first-child {} /* first child */
 li:last-child {} /* last child */
 li:nth-child(3) {} /* third child */
 li:nth-child(3n+0) {} /* every third child */
-li:nth-child(5n+3) {} /* 3, 8, 13, 18 */
+li:nth-child(5n+3) {} /* 3, 8, 13, 18 ... */
 li:nth-child(odd) {} /* odd children */
 li:nth-child(even) {} /* even children */
 ```
