@@ -1,36 +1,24 @@
 # Typescript
 
-## About
-
-### Notes
+### References
 
 [docs](https://www.typescriptlang.org/)
 [playground](https://www.typescriptlang.org/play/index.html)
 [tsconfig docs](https://www.typescriptlang.org/tsconfig/)
 [cheatsheets](https://www.typescriptlang.org/cheatsheets)
 
-### Making it work
-
-[ts-node and mocha](https://stackoverflow.com/a/35661569)
-[ts, esm, and mocha](https://github.com/mochajs/mocha-examples/issues/47#issuecomment-952339528)
-
-### Install
-
-Install:
+### Command line
 
 ```sh
-# install dev dependencies (ts, node type annotations)
+# Install dev dependencies (ts, node type annotations)
 npm i -D typescript @types/node
-```
-
-## Compiling
-
-```sh
+# Create tsconfig
+tsc --init
 # Compile
 tsc helloworld.ts
 ```
 
-## Usage
+## Syntax and usage
 
 ### Basic types
 
@@ -76,22 +64,36 @@ function greetPerson(person: string): string {
 }
 ```
 
-### Type
+### Objects
 
-Type aliases
+Types alias vs interface:
+
+- interface
+  - describe the shape of objects
+  - extending: `extends` keyword
+  - declaration merge when defined multiple times
+  - `implements` typically used with interface
+    - eg: class implements interface
+  - `extends` typically used with class or interface
+    - eg: interface extends interface, class extends class
+  - typically used for object literals or functions
+- type alias
+  - alias for a type (or combination of types)
+  - extending: `&`
+  - implements/extends can't be used with union type
+  - can't be declared multiple times
+  - typically used for primitives, literals, union, tuple, array, or funcs
+
+#### Type Aliases
 
 ```ts
 type nil = null | undefined;
 const n: nil = null;
 ```
 
-### Interface
+#### Interface
 
 ```ts
-// ---
-// Interface
-// ---
-
 interface Person {
   firstName: string;
   lastName: string;
@@ -107,68 +109,6 @@ const person = {
   age: 27,
 };
 console.log(greetPerson(person));
-
-// ---
-// Extends
-// ---
-
-interface Ninja extends Person {
-  village: string;
-}
-const ninja: Ninja = { ...person, village: "hidden leaf" };
-console.log(greetPerson(ninja));
-
-// ---
-// Read only (prevents re-assignment)
-// ---
-
-interface Student {
-  readonly firstName: string;
-  readonly lastName?: string;
-}
-const greetStudent = (person: Student) => {
-  const { firstName, lastName } = person;
-  return lastName ? `Hello, ${firstName} ${lastName}!` : `Hello, ${firstName}!`;
-};
-console.log(greetStudent({ firstName: "Iruka" }));
-
-// ---
-// Extra properties
-// ---
-
-interface Friend {
-  firstName: string;
-  lastName?: string;
-  [propName: string]: any; // Allow additional properties
-}
-
-// ---
-// Indexable types
-// ---
-
-interface ArrayOfStrings {
-  [index: number]: string; // an index of type number will return a string value.
-}
-
-// ---
-// Interface as function (use as a type for a callback param)
-// ---
-
-interface SearchFunc {
-  (source: string, subString: string): boolean;
-}
-
-// ---
-// Hybrid types (function and object)
-// ---
-
-// TODO
-
-interface Counter {
-  (start: number): string;
-  interval: number;
-  reset(): void;
-}
 ```
 
 ### Utility Types
@@ -208,10 +148,6 @@ type params = Parameters<(string) => string>; // Param types of func
 type output = ReturnType<(string) => string>; // Return type of func
 ```
 
-### Generics
-
-TODO
-
 ### Type narrowing
 
 - typeof guards
@@ -223,22 +159,45 @@ TODO
 - discriminated union
   - literal property (discriminant) to switch against
 
+### Generics
+
+[docs](https://www.typescriptlang.org/docs/handbook/2/functions.html#generic-functions)
+
+### Interfaces (in-depth)
+
+Eg: extends, readonly, extra properties, indexable types
+
+[docs](https://www.typescriptlang.org/docs/handbook/2/objects.html)
+
+### Functions (in-depth)
+
+Eg: hybrid types (object type with call signature)
+
+[docs](https://www.typescriptlang.org/docs/handbook/2/functions.html)
+[hybrid types](https://www.typescriptlang.org/docs/handbook/interfaces.html#hybrid-types)
+
 ### Type declarations
 
-TODO
+[docs](https://www.typescriptlang.org/docs/handbook/2/type-declarations.html)
 
 ### Typescript modules
 
-TODO
+[docs](https://www.typescriptlang.org/docs/handbook/modules.html)
 
-### Modules and import/export
+### Implements and Extends
 
-TODO
+[implements docs](https://www.typescriptlang.org/docs/handbook/2/classes.html#implements-clauses)
+[extends docs](https://www.typescriptlang.org/docs/handbook/2/classes.html#extends-clauses)
+[implements vs extends](https://stackoverflow.com/a/38834997)
 
-### Webpack
+Extends signifies inheritance.\
+Implements signifies matching shape.
 
-TODO
+### Satisfies
 
-### React
+[docs](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#the-satisfies-operator)
 
-TODO
+## Webpack and React
+
+[webpack docs](https://webpack.js.org/guides/typescript/)\
+[ts & react docs](https://www.typescriptlang.org/docs/handbook/react.html)

@@ -2,6 +2,18 @@
 
 Github actions are typically used to automate CI/CD on incoming code changes.
 
+## Setup
+
+- Access tokens must have workflow permissions
+  - Settings > Developer settings (bottom) > Personal access tokens
+  - token must have "workflows" checked (in order to update workflows)
+  - token must have "repo" access (in order to push to repo)
+
+## Resources
+
+[sdras/awesome-actions](https://github.com/sdras/awesome-actions)
+[building/testing node](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs)
+
 ## Basics
 
 - workflows
@@ -37,7 +49,7 @@ https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-f
   - Choose from existing workflows:
     - suggested, deployment, security, CI, automation, pages, etc
 
-### Workflow file basics
+## Workflow file basics
 
 This is a manual job.\
 It can be run from the "Actions" page.
@@ -58,14 +70,29 @@ jobs:
       # Step name and command to run
       - name: Hello World
         run: echo "Hello World!"
-      # Multiline script
+      # Multiline script command
       - name: Greeting
         run: |
           echo "Hello friend!"
           echo "How have you been?"
 ```
 
-### Simple workflow triggers (events)
+## Runners
+
+- Ubuntu
+  - ubuntu-latest
+  - ubuntu-22.04
+- Mac
+  - macos-latest
+  - macos-12
+- Windows
+  - windows-latest
+  - windows-2022
+
+Runners list their installed software.\
+[Ubuntu example](https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md)
+
+## Workflow triggers (events)
 
 docs:
 https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
@@ -80,6 +107,10 @@ https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
   - repository_dispatch: REST API request trigger
   - schedule: CRON-ish
   - workflow_call: called by other workflows
+
+Eg: `on: push` or `on: [push, workflow_dispatch]`
+
+### Triggers example
 
 ```yml
 name: My Workflow 2
@@ -102,3 +133,91 @@ jobs:
 
 cheat sheet:
 https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
+
+## Actions
+
+Actions vs commands:
+
+- Action:
+  - An app that performs a frequently-repeated task
+  - `uses` keyword
+  - official or community
+- Command:
+  - A user-defined shell command
+  - `run` keyword
+
+### Actions example
+
+```yaml
+name: Test Node Project
+on:
+  pull_request:
+    types: [ assigned, opened ]
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Pull code
+        uses: actions/checkout@v3
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
+      - name: Install deps
+        run: npm ci
+      - name: Test code
+        run: npm test
+```
+
+### Popular actions
+
+- checkout
+  - https://github.com/actions/checkout
+- set up node
+  - https://github.com/actions/setup-node
+
+## Jobs
+
+Multiple jobs are run in parallel by default.\
+To run sequentially, use `needs` keyword.\
+Eg: `needs: test` or `needs: [lint, test]`
+
+```yaml
+name: Deploy Node Project
+on:
+  push:
+    branches:
+      - master
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Pull code
+        uses: actions/checkout@v3
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
+      - name: Install deps
+        run: npm ci
+      - name: Test code
+        run: npm test
+  deploy:
+    needs: test
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Pull code
+        uses: actions/checkout@v3
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
+      - name: Install deps
+        run: npm ci
+      - name: Build project
+        run: npm run build
+      - name: Deploy
+        run: echo "TODO add deploy logic"
+```
+
+## Expressions

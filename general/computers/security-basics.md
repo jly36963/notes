@@ -661,3 +661,13 @@ Popular frameworks:
 - password security
   - password security policy
     - complexity, expiration, history
+
+- linux file permissions
+  - creator/owner, group, other
+  - rwx: read, write, execute
+    - read: view contents of file or directory
+    - write: modify contents of file or directory
+    - execute: execute a file, cd into directory
+  - chmod to change permissions
+  - chown to change ownership
+  - passwd to change password
