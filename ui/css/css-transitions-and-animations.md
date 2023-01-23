@@ -1,89 +1,228 @@
 # CSS Animations, Transitions, and Transforms
 
+Animations vs transitions:
+
+- Animation: how the properties of an element change over a duration
+- Transition: how the element changes between two states (eg: on/off hover)
+
 ## Keyframes Animations
 
 ### Keyframes example 1
 
-```css
-.box {
-  background: #333;
-  width: 200px;
-  height: 200px;
-  position: relative;
-  animation-duration: 3s;
-  animation-timing-function: ease-in; /* linear, ease-in, ease-out, ease-in-out */
-  animation-delay: 0s; /* delay animation */
-  animation-iteration-count: 1; /* 1, 2, 3, ... infinite */
-  animation-direction: normal; /* normal, alternate, alternate-reverse */
-  animation-fill-mode: forwards; /* none, forwards, backwards, both */
-  animation-play-state: running; /* running, paused */
-  animation-name: animate1;
-  /* or */
-  /* duration, timing-function, delay, iteration-count, direction, fill-mode, play-state, name */
-  animation: 4s linear 0s infinite normal forwards running animate1;
+Box that grows, moves (down/right), and becomes transparent. Repeats.
 
-}
+```html
+<html>
+  <head>
+    <style>
+      .box {
+        background: #333;
+        width: 200px;
+        height: 200px;
+        position: relative;
+        animation-duration: 3s;
+        animation-timing-function: ease-in; /* linear, ease-in, ease-out, ease-in-out */
+        animation-delay: 0s; /* delay animation */
+        animation-iteration-count: 1; /* 1, 2, 3, ... infinite */
+        animation-direction: normal; /* normal, alternate, alternate-reverse */
+        animation-fill-mode: forwards; /* none, forwards, backwards, both */
+        animation-play-state: running; /* running, paused */
+        animation-name: animate1;
+        /* or */
+        /* duration, timing-function, delay, iteration-count, direction, fill-mode, play-state, name */
+        animation: 4s linear 0s infinite normal forwards running animate1;
+      }
 
-@keyframes animate1 {
-  from {
-    width: 200px;
-    height: 200px;
-    background: #333;
-    top: 0;
-    left: 0;
-  }
-  to {
-    width:500px;
-    height: 500px;
-    background: #fff;
-    top: 300px;
-    left: 300px;
-  }
-}
+      @keyframes animate1 {
+        from {
+          width: 200px;
+          height: 200px;
+          background: #333;
+          top: 0;
+          left: 0;
+        }
+        to {
+          width: 500px;
+          height: 500px;
+          background: #fff;
+          top: 300px;
+          left: 300px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box"></div>
+  </body>
+</html>
 ```
 
 ### Keyframes example 2
 
-```css
-.box {
-  background: #333;
-  width: 200px;
-  height: 200px;
-  position: relative;
-  top: 0;
-  left: 0;
-  border: 2px solid #333;
-  border-radius: 0;
-  /* duration, timing-function, delay, iteration-count, direction, fill-mode, play-state, name */
-  animation: 4s linear 0s infinite normal forwards running animate2;
-}
+Flexbox-centered shape that oscillates between black/white circle/square
 
-@keyframes animate2 {
-  25% {
-    background: #eee;
-    top: 0;
-    left: 300px;
-    border-radius: 50%;
-  }
-  50% {
-    background: #333;
-    top: 300px;
-    left: 300px;
-    border-radius: 0%;
-  }
-  75% {
-    background: #eee;
-    top: 300px;
-    left: 0;
-    border-radius: 50%;
-  }
-  100% {
-    background: #333;
-    top: 0;
-    left: 0;
-    border-radius: 0%;
-  }
-}
+```html
+<html>
+  <head>
+    <style>
+      :root {
+        --animated-box-size: 10em;
+        --box-color-1: #333;
+        --box-color-2: #eee;
+      }
+
+      .container {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+      }
+      .box {
+        background: var(--box-color-1);
+        width: var(--animated-box-size);
+        height: var(--animated-box-size);
+        border-radius: 0;
+        /* duration, timing-function, delay, iteration-count, direction, fill-mode, play-state, name */
+        animation: 2s linear 0s infinite normal forwards running animate1;
+      }
+
+      @keyframes animate1 {
+        50% {
+          background: var(--box-color-2);
+          border-radius: 50%;
+        }
+        100% {
+          background: var(--box-color-1);
+          border-radius: 0%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box"></div>
+    </div>
+  </body>
+</html>
+```
+
+### Keyframes example 3
+
+Flexbox-centered shape that oscilates between circle/wide-oval/circle/tall-oval.
+
+```html
+<html>
+  <head>
+    <style>
+      :root {
+        --animated-box-size: 10em;
+        --box-color-1: #333;
+      }
+
+      .container {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+      }
+      .box {
+        background: var(--box-color-1);
+        width: var(--animated-box-size);
+        height: var(--animated-box-size);
+        border-radius: 50%;
+        /* duration, timing-function, delay, iteration-count, direction, fill-mode, play-state, name */
+        animation: 2s ease-in-out 0s infinite normal forwards running animate1;
+      }
+
+      @keyframes animate1 {
+        25% {
+          width: calc(var(--animated-box-size) * 1.5);
+        }
+        50% {
+          width: var(--animated-box-size);
+          height: var(--animated-box-size);
+        }
+        75% {
+          height: calc(var(--animated-box-size) * 1.5);
+        }
+        100% {
+          width: var(--animated-box-size);
+          height: var(--animated-box-size);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box"></div>
+    </div>
+  </body>
+</html>
+```
+
+### Keyframes example 4
+
+Circle that moves in square pattern.
+
+```html
+<html>
+  <head>
+    <style>
+      :root {
+        --animated-box-size: 10em;
+        --box-color: #333;
+      }
+
+      .container {
+        width: 100vw;
+        height: 100vh;
+        padding: 10%;
+        box-sizing: border-box;
+      }
+      .box {
+        background: var(--box-color);
+        width: var(--animated-box-size);
+        height: var(--animated-box-size);
+        position: relative;
+        border-radius: 50%;
+        /* duration, timing-function, delay, iteration-count, direction, fill-mode, play-state, name */
+        animation: 4s linear 0s infinite normal forwards running animate1;
+      }
+
+      @keyframes animate1 {
+        0% {
+          top: 0%;
+          left: 0%;
+        }
+        25% {
+          top: 0%;
+          left: calc(100% - var(--animated-box-size));
+        }
+        50% {
+          top: calc(100% - var(--animated-box-size));
+          left: calc(100% - var(--animated-box-size));
+        }
+        75% {
+          top: calc(100% - var(--animated-box-size));
+          left: 0%;
+        }
+        100% {
+          top: 0%;
+          left: 0%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box"></div>
+    </div>
+  </body>
+</html>
 ```
 
 ## Transitions

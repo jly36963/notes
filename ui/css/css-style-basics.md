@@ -156,8 +156,8 @@ body {
   - `vh` (percentage, viewport height)
 - em and rem
   - 1 em is the same as the font-size of the current element
-  - the default font-size for html pages is 16 (before CSS styling is applied)
-  - font size is inherited, and that can make em confusing
+  - the default font-size for html pages is 16px (before CSS styling is applied)
+  - font size is inherited, and that can make `em` confusing
   - rem works like em, but it will always use the default base font-size
     - to affect rem: (html { font-size: 10px; })
 

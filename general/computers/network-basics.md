@@ -520,6 +520,16 @@ detailed:
       - interconnection facilities:
         - so ISP can share traffic to achieve complete interconnection
 
+#### Traceroute
+
+On mac/linux the following will show hops from src to dst:
+
+```bash
+traceroute google.com`
+```
+
+`tracert` on windows
+
 ## TCP/IP applications
 
 - tools
