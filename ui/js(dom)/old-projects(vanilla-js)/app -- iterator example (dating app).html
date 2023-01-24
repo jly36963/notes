@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Profile Scroller</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+      integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 mx-auto text-center">
+          <h1 class="mb-3">Profile Scroller</h1>
+          <div id="imageDisplay"></div>
+          <br />
+          <div id="profileDisplay"></div>
+          <br />
+          <button id="next" class="btn btn-dark btn-block">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+      integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+      integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      const data = [
+        {
+          name: "John Doe",
+          age: 32,
+          gender: "male",
+          lookingfor: "female",
+          location: "Boston MA",
+          image: "https://randomuser.me/api/portraits/men/82.jpg",
+        },
+        {
+          name: "Jen Smith",
+          age: 26,
+          gender: "female",
+          lookingfor: "male",
+          location: "Miami FL",
+          image: "https://randomuser.me/api/portraits/women/82.jpg",
+        },
+        {
+          name: "William Johnson",
+          age: 38,
+          gender: "male",
+          lookingfor: "female",
+          location: "Lynn MA",
+          image: "https://randomuser.me/api/portraits/men/83.jpg",
+        },
+      ];
+
+      const profiles = profileIterator(data);
+
+      // Call first profile
+      nextProfile();
+
+      // Next Event
+      document.getElementById("next").addEventListener("click", nextProfile);
+
+      // Next Profile Display
+      function nextProfile() {
+        const currentProfile = profiles.next().value;
+
+        if (currentProfile !== undefined) {
+          document.getElementById("profileDisplay").innerHTML = `
+            <ul class="list-group">
+              <li class="list-group-item">Name: ${currentProfile.name}</li>
+              <li class="list-group-item">Age: ${currentProfile.age}</li>
+              <li class="list-group-item">Location: ${currentProfile.location}</li>
+              <li class="list-group-item">Preference: ${currentProfile.gender} looking for ${currentProfile.lookingfor}</li>
+            </ul>
+          `;
+
+          document.getElementById(
+            "imageDisplay"
+          ).innerHTML = `<img src="${currentProfile.image}">`;
+        } else {
+          // No more profiles
+          window.location.reload();
+        }
+      }
+
+      // Profile Iterator
+      function profileIterator(profiles) {
+        let nextIndex = 0;
+
+        return {
+          next: function () {
+            return nextIndex < profiles.length
+              ? { value: profiles[nextIndex++], done: false }
+              : { done: true };
+          },
+        };
+      }
+    </script>
+  </body>
+</html>

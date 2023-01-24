@@ -158,6 +158,8 @@
 
 ### Grid (spanning cols and rows)
 
+TODO: update
+
 ```css
 .grid {
   display: grid;
