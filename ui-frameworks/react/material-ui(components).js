@@ -1,6 +1,8 @@
-// ---------------
+// ---
 // material-ui components
-// ---------------
+// ---
+
+// TODO: update/refactor
 
 `
 npm install @material-ui/core --save
@@ -9,16 +11,16 @@ npm install @material-ui/icons --save
 npm install @material-ui/lab --save
 `
 
-// ---------------
-// ---------------
+// ---
+// ---
 // layout components
-// ---------------
-// ---------------
+// ---
+// ---
 
 // box (wrapper component) (mui/system)
 import { Box } from '@material-ui/core';
 
-<Box 
+<Box
   component="div" // div, span
   // border
   border={1}
@@ -44,13 +46,13 @@ import { Box } from '@material-ui/core';
   // shadows
   boxShadow={1} // 0, 1, 2, 3
   // sizing
-  width="50%" // 1/2 (values 0 - 1), 300 (pixels), "75%" 
-  height="100%" // 1/2 (values 0 - 1), 300 (pixels), "75%" 
+  width="50%" // 1/2 (values 0 - 1), 300 (pixels), "75%"
+  height="100%" // 1/2 (values 0 - 1), 300 (pixels), "75%"
   maxWidth={600}
   minWdith={400}
   maxHeight={400}
   minHeight={200}
-  // spacing 
+  // spacing
     // like bootstrap: m, mt, mb, ml, mr, mx, my. p, ...
     // unless string:
       // in theme, specify 'spacing'.
@@ -86,15 +88,15 @@ import { Hidden } from '@material-ui/core';
 <Hidden only={['sm','md']}>...</Hidden>
 
 
-// ---------------
-// ---------------
+// ---
+// ---
 // input components
-// ---------------
-// ---------------
+// ---
+// ---
 
 // buttons
 import { Button } from '@material-ui/core';
-<Button 
+<Button
   variant="contained" // contained, outlined, text (text if this prop isn't provided)
   color="default" // primary, secondary, default (default if this prop isn't provided)
   classname={classes.button}
@@ -106,8 +108,8 @@ import { Button } from '@material-ui/core';
 
 // grouped buttons
 import { Button, ButtonGroup } from '@material-ui/core';
-<ButtonGroup 
-  size="small" 
+<ButtonGroup
+  size="small"
   aria-label="small outlined button group"
   variant="contained" // contained, outlined, text, default (text if this prop isn't provided)
   color="default" // primary, secondary, default (default if this prop isn't provided)
@@ -227,7 +229,7 @@ const FloatingActionButtons = () => {
         color="default" // primary, secondary, default (default if 'color' prop omitted)
         aria-label="add" // add, edit, delete, etc
         className={classes.fab}
-        size="medium" // small, medium, large, medium (default if this prop isn't provided)     
+        size="medium" // small, medium, large, medium (default if this prop isn't provided)
         disabled // disabled if 'disabled' prop provided
       >
         <AddIcon /> {/* <AddIcon /> <EditIcon /> <NavigationIcon /> <DeleteIcon /> */}
@@ -275,8 +277,8 @@ import AlarmIcon from '@material-ui/icons/Alarm';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 
-<IconButton 
-  className={classes.button} 
+<IconButton
+  className={classes.button}
   aria-label="delete"
   color="default"
 >
@@ -340,7 +342,7 @@ import Favorite from '@material-ui/icons/Favorite';
 
 <FormControlLabel
   control={<Checkbox icon={<FavoriteBorder />} // heart-shape checkbox
-  checkedIcon={<Favorite />} 
+  checkedIcon={<Favorite />}
   value="checkedH" />}
   label="Custom icon"
 />
@@ -491,18 +493,18 @@ const RadioButtonsGroup = () => {
       <FormControl component="fieldset" className={classes.formControl}>
         <FormLabel component="legend">Favorite Ninja</FormLabel>
         <RadioGroup aria-label="gender" name="gender1" value={value} onChange={handleChange}>
-          <FormControlLabel 
-            value="kakashi" 
-            control={<Radio />} 
+          <FormControlLabel
+            value="kakashi"
+            control={<Radio />}
             label="Kakashi" />
-          <FormControlLabel 
-            value="konohamaru" 
-            control={<Radio />} 
+          <FormControlLabel
+            value="konohamaru"
+            control={<Radio />}
             label="Konohamaru" />
-          <FormControlLabel 
+          <FormControlLabel
             value="hiruzen"
-            disabled 
-            control={<Radio />} 
+            disabled
+            control={<Radio />}
             label="Hiruzen" />
           <FormControlLabel
             value="disabled"
@@ -550,9 +552,9 @@ const simpleSelect = () => {
     setLabelWidth(inputLabel.current.offsetWidth);
   }, []);
   const handleChange = (e) => {
-    setFormData({ 
-      ...formData, 
-      [e.target.name]: e.target.value 
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
     });
   }
 
@@ -634,7 +636,7 @@ const discreteSlider = () => {
         valueLabelDisplay="auto"
         marks={marks}
       />
-      
+
     </div>
   )
 }
@@ -656,9 +658,9 @@ const Switches = () => {
     <FormGroup row>
       <FormControlLabel
         control={
-          <Switch 
-            checked={formValues.switchA} 
-            onChange={e => handleChange(e)} 
+          <Switch
+            checked={formValues.switchA}
+            onChange={e => handleChange(e)}
             value="A"
             color="primary"
           />
@@ -761,11 +763,11 @@ const TextFields = () => {
   // https://material-ui.com/components/transfer-list/#enhanced-transfer-list
 
 
-// ---------------
-// ---------------
+// ---
+// ---
 // navigation components
-// ---------------
-// ---------------
+// ---
+// ---
 
 // bottom navigation
   // https://material-ui.com/components/bottom-navigation/
@@ -834,15 +836,15 @@ const sideList = side => (
       <Button onClick={handleDrawer('left', true)}>Open Left</Button>
       <Button onClick={handleDrawer('right', true)}>Open Right</Button>
       {/* drawer components */}
-      <Drawer 
-        open={drawerValues.side === 'left' && drawerValues.side === true} 
+      <Drawer
+        open={drawerValues.side === 'left' && drawerValues.side === true}
         onClose={handleDrawer('left', false)}
       >
         {sideList('left')}
       </Drawer>
-      <Drawer 
-        anchor="right" 
-        open={drawerValues.side === 'right' && drawerValues.side === true} 
+      <Drawer
+        anchor="right"
+        open={drawerValues.side === 'right' && drawerValues.side === true}
         onClose={handleDrawer('right', false)}
       >
         {sideList('right')}
@@ -1000,11 +1002,11 @@ const Stepper = () => {
 // tabs
   // https://material-ui.com/components/tabs/
 
-// ---------------
-// ---------------
+// ---
+// ---
 // surface components
-// ---------------
-// ---------------
+// ---
+// ---
 
 // app bar (simple)
 import React from 'react';
@@ -1078,7 +1080,7 @@ export default function PaperSheet() {
   );
 }
 
-// card 
+// card
   // use these to display content/actions for a single topic.
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -1376,11 +1378,11 @@ export default function MediaControlCard() {
   // https://material-ui.com/components/expansion-panels/
 
 
-// ---------------
-// ---------------
+// ---
+// ---
 // feedback components
-// ---------------
-// ---------------
+// ---
+// ---
 
 // progress (spinners)
   // https://material-ui.com/components/progress/
@@ -1856,11 +1858,11 @@ const classes = useStyles2();
 }
 
 
-// ---------------
-// ---------------
+// ---
+// ---
 // data display components
-// ---------------
-// ---------------
+// ---
+// ---
 
 // avatar (image)
 import React from 'react';
@@ -2689,8 +2691,8 @@ const ReactVirtualizedTable = () => {
 // tooltip
   // disabled -- wrap a span around disabled button, then wrap tooltip around the span.
 import Tooltip from '@material-ui/core/Tooltip';
-<Tooltip 
-  title="Delete" 
+<Tooltip
+  title="Delete"
   aria-label="add"
   placement="bottom" // top, bottom, left, right (top-start, top-end,  ...)
 >
@@ -2701,7 +2703,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-<Typography 
+<Typography
   variant="body1" // h1, h2, h3, h4, h5, h6, subtitle1, subtitle2, body1, body2, caption, buton, overline, inherit
   component="h2" //
   classes={}
@@ -2715,26 +2717,26 @@ import { makeStyles } from '@material-ui/core/styles';
   Text here
 </Typography>
 
-// ---------------
-// ---------------
+// ---
+// ---
 // lab components
-// ---------------
-// ---------------
+// ---
+// ---
 
 // skeleton (placeholder for future elements) (syntax)
 {
   loading ? (
-    <Skeleton 
+    <Skeleton
       variant="rect" // text, rect, circle
-      width={210} 
-      height={118} 
+      width={210}
+      height={118}
     />
   ) : (
     <img style={{ width: 210, height: 118 }} alt={item.title} src={item.src} />
   )
 }
 
-// skeleton 
+// skeleton
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -2826,11 +2828,11 @@ export default function YouTube() {
 }
 
 
-// ---------------
-// ---------------
+// ---
+// ---
 // icons
-// ---------------
-// ---------------
+// ---
+// ---
 
 // list of icons -- https://material-ui.com/components/material-icons/
 
@@ -2839,196 +2841,7 @@ export default function YouTube() {
 
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 
-<DeleteOutlinedIcon 
+<DeleteOutlinedIcon
   color="inherit" // inherit, primary, secondary, action, error, disabled
   fontSize="default" // inherit, default, small, large
 />
-
-
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-
-
-// ---------------
-//
-// ---------------
-
-

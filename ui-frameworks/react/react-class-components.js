@@ -2,26 +2,26 @@
 // react class components
 // ---------------
 
+// TODO: update/refactor
 
 // ---------------
 // example (class)
 // ---------------
 
-
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 class Counter extends Component {
   // constructor
   constructor(props) {
     // super
-      // calls the constructor of its parent
-      // must be called in subclasses (if constructor is called) for 'this' to work properly
-      // pass props to constructor and parent constructor to avoid bugs when using 'this.props.xxx'
-    super(props); 
+    // calls the constructor of its parent
+    // must be called in subclasses (if constructor is called) for 'this' to work properly
+    // pass props to constructor and parent constructor to avoid bugs when using 'this.props.xxx'
+    super(props);
 
     // state
     this.state = {
-      count: 0
+      count: 0,
     };
     // bind context (this)
     this.incrementCount = this.incrementCount.bind(this);
@@ -29,21 +29,21 @@ class Counter extends Component {
   }
   // class methods
   incrementCount() {
-    this.setState({ count: this.state.count + 1 }) // shallow merge (update only the properties specified)
+    this.setState({ count: this.state.count + 1 }); // shallow merge (update only the properties specified)
   }
-  decrementCount() {   
-    this.setState({ count: this.state.count - 1 }) // shallow merge (update only the properties specified)
+  decrementCount() {
+    this.setState({ count: this.state.count - 1 }); // shallow merge (update only the properties specified)
   }
   // render
   render() {
     // jsx
     return (
       <>
-        <button onClick={() => this.incrementCount()}> + </button>        
-        <button onClick={() => this.decrementCount()}> - </button>      
-        <p>Count: {this.state.count}</p>  
+        <button onClick={() => this.incrementCount()}> + </button>
+        <button onClick={() => this.decrementCount()}> - </button>
+        <p>Count: {this.state.count}</p>
       </>
-    )
+    );
   }
 }
 
@@ -53,20 +53,20 @@ class Counter extends Component {
 
 class Counter extends Component {
   // state
-  state = { count: 0 }; 
+  state = { count: 0 };
   // class property & arrow function (no need to bind 'this')
-  incrementCount = () => this.setState({ count: this.state.count + 1 }); 
+  incrementCount = () => this.setState({ count: this.state.count + 1 });
   // setState + callback
-  incrementCountWithCallback = () => this.setState(
-    { count: this.state.count + 1 }, // state to update
-    () => console.log(this.state.count) // callback once state has updated
-  ); 
+  incrementCountWithCallback = () =>
+    this.setState(
+      { count: this.state.count + 1 }, // state to update
+      () => console.log(this.state.count) // callback once state has updated
+    );
   // update state using previous state (prevState + prevProps)
-  incrementCountWithPrevState = () => this.setState(
-    (prevState, prevProps) => ({
-      count: prevState.count + 1
-    })
-  )
+  incrementCountWithPrevState = () =>
+    this.setState((prevState, prevProps) => ({
+      count: prevState.count + 1,
+    }));
   // render
   render() {
     // jsx
@@ -75,7 +75,7 @@ class Counter extends Component {
         <button onClick={this.incrementCount}> + </button>
         <p>{this.state.count}</p>
       </div>
-    )
+    );
   }
 }
 
@@ -86,40 +86,39 @@ class Counter extends Component {
 class Numbers extends Component {
   // state
   state = {
-    numbers: [1,2,3,4,5]
-  }
+    numbers: [1, 2, 3, 4, 5],
+  };
 
   removeNumber = (n) => {
-    const filteredNumbers = this.state.numbers.filter(number => number !== n);
+    const filteredNumbers = this.state.numbers.filter((number) => number !== n);
     this.setState({ numbers: filteredNumbers });
-  }
+  };
 
   render() {
     return (
       <>
-        {this.state.numbers.map(number => (
-          <Number 
+        {this.state.numbers.map((number) => (
+          <Number
             number={number}
             key={number}
             removeNumber={this.removeNumber}
           />
         ))}
       </>
-    )
+    );
   }
 }
 
 const Number = (props) => {
   const { number, removeNumber } = props;
-  console.log(removeNumber)
+  console.log(removeNumber);
   return (
     <p>
       Number: {number}
       <span onClick={() => removeNumber(number)}>x</span>
     </p>
-  )
-}
-
+  );
+};
 
 // ---------------
 // example (children) (composition)
@@ -130,18 +129,17 @@ const Wrapper = (props) => {
     <div className={`super-important-class border-${props.color}`}>
       {props.children}
     </div>
-  )
-}
+  );
+};
 
 const WelcomeDialogue = (props) => {
   return (
-    <Wrapper color='gray'>
+    <Wrapper color="gray">
       <h1>Welcome!</h1>
       <p>Thank you for visiting!</p>
     </Wrapper>
-  )
-}
-
+  );
+};
 
 // ---------------
 // example (mount/unmount)
@@ -149,8 +147,8 @@ const WelcomeDialogue = (props) => {
 
 class Timer extends Component {
   state = {
-    time: 0
-  }
+    time: 0,
+  };
 
   // start timer on mount
   componentDidMount() {
@@ -158,21 +156,19 @@ class Timer extends Component {
       () => this.setState({ time: this.state.time + 1 }),
       1000
     );
-  };
+  }
 
   // clear timer on unmount (prevent memory leak)
   componentWillUnmount() {
-    clearInterval(this.timerID)
-  };
+    clearInterval(this.timerID);
+  }
 
   render() {
     return (
       <div>
-        <p>
-          time: {this.state.time} seconds
-        </p>
+        <p>time: {this.state.time} seconds</p>
       </div>
-    )
+    );
   }
 }
 
@@ -182,8 +178,8 @@ class Timer extends Component {
 
 class User extends Component {
   state = {
-    user: null
-  }
+    user: null,
+  };
   // lifecycle methods
   componentDidMount() {
     // async function -- fetch and update state
@@ -202,28 +198,27 @@ class User extends Component {
   // class methods
   fetchUser = async () => {
     try {
-      const apiResponse = await fetch('https://jsonplaceholder.typicode.com/users/1');
+      const apiResponse = await fetch(
+        "https://jsonplaceholder.typicode.com/users/1"
+      );
       const user = await apiResponse.json();
       return { data: user, error: null };
     } catch (err) {
       return { data: null, error: err };
     }
-  }
+  };
   // render
   render() {
     // jsx
     return (
       <div>
         {this.state.user && Object.keys(this.state.user).length && (
-          <p>
-            Name: {this.state.user.name}
-          </p>
+          <p>Name: {this.state.user.name}</p>
         )}
       </div>
-    )
+    );
   }
 }
-
 
 // ---------------
 // example (lifecycle)
@@ -232,38 +227,38 @@ class User extends Component {
 // https://reactjs.org/docs/state-and-lifecycle.html#adding-lifecycle-methods-to-a-class
 
 // mounting
-  // render phase
-    // constructor
-    // render
-  // commit phase
-    // react interacts with DOM / refs
-    // component did mount
+// render phase
+// constructor
+// render
+// commit phase
+// react interacts with DOM / refs
+// component did mount
 // updating (new props, setState, forceUpdate)
-  // render phase
-    // render
-  // commit phase
-    // react interacts with DOM / refs
-    // componentDidUpdate
+// render phase
+// render
+// commit phase
+// react interacts with DOM / refs
+// componentDidUpdate
 
 class App extends Component {
   state = {
-    count: 1
-  }
+    count: 1,
+  };
 
   // lifecycle methods
   componentDidMount() {
-    console.log('componentDidMount') // when component mounts (useful for fetching)
+    console.log("componentDidMount"); // when component mounts (useful for fetching)
   }
   componentDidUpdate() {
-    console.log('componentDidUpdate') // when component updates
+    console.log("componentDidUpdate"); // when component updates
   }
   componentWillUnmount() {
-    console.log('componentWillUnmount') // when component unmounts (useful for cleanup)
+    console.log("componentWillUnmount"); // when component unmounts (useful for cleanup)
   }
 
   // optimization
   shouldComponentUpdate(nextProps, nextState) {
-    console.log('shouldComponentUpdate') // decide if compoment should go through update phase
+    console.log("shouldComponentUpdate"); // decide if compoment should go through update phase
     const shouldUpdate = this.props.count !== nextState.count; // only update component if different
     return shouldUpdate;
   }
@@ -273,10 +268,9 @@ class App extends Component {
       <div>
         <p>Count: {this.state.count}</p>
       </div>
-    )
+    );
   }
 }
-
 
 // ---------------
 // rest
@@ -285,121 +279,5 @@ class App extends Component {
 // if passing multiple props to children, use rest operator
 
 const Parent = ({ id, ...other }) => {
-  <Child id={id} {...other} />
-}
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
-// ---------------
-// 
-// ---------------
-
-
-
-
-
+  <Child id={id} {...other} />;
+};

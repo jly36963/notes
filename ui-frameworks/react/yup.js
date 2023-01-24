@@ -2,6 +2,8 @@
 // yup
 // ------------
 
+// TODO: update/refactor
+
 // install
 `
 npm i --save yup
@@ -115,19 +117,3 @@ const yupValidate = async (obj) => {
 
 yupValidate(kakashi1);
 yupValidate(kakashi2);
-
-// ------------
-//
-// ------------
-
-// ------------
-//
-// ------------
-
-// ------------
-//
-// ------------
-
-// ------------
-//
-// ------------
