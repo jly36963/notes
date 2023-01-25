@@ -13,3 +13,11 @@ Initialize CRA project with typescript
 ```bash
 npx create-react-app my-app --template typescript
 ```
+
+## Install extra deps
+
+```bash
+npm i react-router-dom
+npm i d3
+npm i -D @types/d3
+```

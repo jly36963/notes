@@ -6,6 +6,9 @@ import Children from "./pages/children-and-composition-example";
 import MapElements from "./pages/hooks-useState-map-example";
 import Cleanup from "./pages/hooks-useEffect-cleanup-example";
 import MountFetch from "./pages/hooks-useEffect-fetch-example";
+import UseReducerExample from "./pages/hooks-useReducer-example";
+import UseContextAndUseReducerExample from "./pages/hooks-useReducer-and-useContext-example";
+import UseRefExample from "./pages/hooks-useRef-example";
 
 // TODO: DRY with paths
 
@@ -16,6 +19,12 @@ const router = createBrowserRouter([
   { path: "/hooks-useState-map-example", element: <MapElements /> },
   { path: "/hooks-useEffect-cleanup-example", element: <Cleanup /> },
   { path: "/hooks-useEffect-fetch-example", element: <MountFetch /> },
+  { path: "/hooks-useReducer-example", element: <UseReducerExample /> },
+  {
+    path: "/hooks-useReducer-and-useContext-example",
+    element: <UseContextAndUseReducerExample />,
+  },
+  { path: "/hooks-useRef-example", element: <UseRefExample /> },
 ]);
 
 function App(): JSX.Element {

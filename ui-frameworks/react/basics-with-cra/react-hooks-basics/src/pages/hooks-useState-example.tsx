@@ -4,7 +4,7 @@ interface CounterProps {
   title?: string;
 }
 
-const Counter = ({ title }: CounterProps): JSX.Element => {
+const Counter = ({ title = "useState example" }: CounterProps): JSX.Element => {
   const [count, setCount] = useState(0);
 
   // Event handlers
