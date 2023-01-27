@@ -38,7 +38,7 @@ npx preact-cli create typescript <project-name>
 
 ## Signals
 
-[docs](https://github.com/preactjs/signals/tree/main/packages/preact#preact-integration)
+[docs](https://github.com/preactjs/signals/tree/main/packages/preact#preact-integration)\
 [blog article](https://blog.logrocket.com/guide-better-state-managment-preact-signals/)
 
 ## Add-ons
