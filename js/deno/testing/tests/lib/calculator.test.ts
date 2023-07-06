@@ -1,16 +1,6 @@
-import {
-  assertAlmostEquals,
-  // testing/asserts
-  assertEquals,
-  afterEach,
-  beforeEach,
-  // testing/bdd
-  describe,
-  it,
-  // testing/mock
-  stub,
-  returnsNext,
-} from "../../deps.ts";
+import { assertAlmostEquals, assertEquals } from "testing/asserts.ts";
+import { afterEach, beforeEach, describe, it } from "testing/bdd.ts";
+import { returnsNext, stub } from "testing/mock.ts";
 import Calculator from "../../lib/calculator.ts";
 
 describe("Calculator", () => {
@@ -26,8 +16,8 @@ describe("Calculator", () => {
 
   afterEach(() => {
     // Restore stubs
-    randIntStub.restore()
-  })
+    randIntStub.restore();
+  });
 
   it("add", () => {
     const result = c.add(1, 2);
@@ -69,6 +59,6 @@ describe("Calculator", () => {
   });
   it("randInt", async () => {
     const result = await c.randInt(100);
-    assertEquals(result, 27)
+    assertEquals(result, 27);
   });
 });

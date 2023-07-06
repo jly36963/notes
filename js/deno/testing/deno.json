@@ -1,0 +1,14 @@
+{
+  "tasks": {
+    "lint": "deno lint",
+    "fmt": "deno fmt",
+    "test": "deno test",
+    "dev": "deno run  --allow-all --watch mod.ts",
+    "build": "mkdir -p build && deno bundle mod.ts ./build/mod.js",
+    "start": "deno run --allow-all ./build/mod.js"
+  },
+  "imports": {
+    "testing/": "https://deno.land/std@0.182.0/testing/",
+    "async": "https://deno.land/std@0.182.0/async/mod.ts"
+  }
+}

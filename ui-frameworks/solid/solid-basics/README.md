@@ -36,6 +36,8 @@ Keep props reactive by not destructuring them
 
 ## Functions
 
+Note: signals need to be called to read value
+
 - createSignal
   - primitive reactivity
 - createEffect

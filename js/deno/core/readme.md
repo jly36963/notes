@@ -1,112 +1,93 @@
 # Deno
 
-- docs
-  - https://deno.land/
-  - https://github.com/denoland/deno
-  - https://doc.deno.land/deno/stable
+- Docs
 
-- install
-  - https://github.com/denoland/deno#install
-  - run command
-  - use output to add deno to path
-  
-- install dvm
-  - https://github.com/justjavac/dvm
+  - [Manual](https://deno.land/manual)
+  - [Landing](https://deno.land/)
+  - [Repo](https://github.com/denoland/deno)
+  - [Deno Doc](https://doc.deno.land/deno/stable)
+  - [Std Lib](https://deno.land/std)
+  - Runtime APIs
+    - [Deno](https://deno.land/api?s=Deno)
+    - [All](https://deno.land/api)
+  - [Node to Deno cheatsheet](https://deno.land/manual/node/cheatsheet)
 
-## notes
+- Install
+  - [Install page](https://github.com/denoland/deno#install)
+  - Run command
+  - Use output to add deno to path
 
-### cli
+## CLI
+
+TODO: replace `bundle` usage as it is deprecated
+
+- [CLI](https://deno.land/manual/getting_started/command_line_interface)
+- [Additional tools](https://deno.land/manual/tools)
 
 ```zsh
-# basics
+# Common
 deno run <filepath-or-url>
 deno run [permissions..] <filepath-or-url> [args..]
+deno task <task-name>
 deno test
 deno lint
 deno fmt
 deno bundle [options] <entry> <dist>
 
-# watch (run, test, bundle, fmt)
+# Watch (run, test, bundle, fmt)
 deno run --watch
 ```
 
-### permissions
+## Permissions
 
-- fs (read)
-  - `--allow-read`
-- fs (write)
-  - `--allow-write`
-- env
-  - `--allow-env`
-- network
-  - `--allow-net`
-- subprocess
-  - `--allow-run`
-- all
-  - `--allow-all`
+| permission | flag            |
+| ---------- | --------------- |
+| fs read    | `--allow-read`  |
+| fs write   | `--allow-write` |
+| env        | `--allow-env`   |
+| network    | `--allow-net`   |
+| subprocess | `--allow-run`   |
+| all        | `--allow-all`   |
 
-### basics
+## Configuration
 
-https://deno.land/manual/examples
-
-### testing
-
-https://deno.land/manual/testing
-
-### configuration
-
-configure:
-- ts compiler
-- linting/formatting
-
+Configure the compiler, formatter, and linter.\
 https://deno.land/manual/getting_started/configuration_file
 
-### vscode
+## VSCode
 
 - install deno plugin
-- settings.json 
+- settings.json
   - `"deno.enable": true,`
 - mixed-deno projects
   - https://github.com/denoland/vscode_deno/blob/main/docs/workspaceFolders.md
-- vscode_deno 
+- vscode_deno
   - https://deno.land/manual/vscode_deno
 
-### filenames
+## Filename Conventions
 
-entry point -- mod.ts
-deps.ts & dev_deps.ts -- centralized store for external (dev) dependencies
+- mod.ts
+  - similar to index.js in node
+- deps.ts & dev_deps.ts
+  - central store for external deps
+  - [Managing deps](https://deno.land/manual/examples/manage_dependencies)
 
-### deps
+## Dependencies
 
-https://deno.land/manual/examples/manage_dependencies
+### Import maps
 
-### std
+If application code, use import maps
 
-https://deno.land/manual/standard_library
-https://deno.land/std@0.140.0
+### Deps pattern
 
-### tooling
+If library code, use deps pattern
 
-https://deno.land/manual/tools
+```ts
+// deps.ts
+export { delay } from "https://deno.land/std@0.140.0/async/mod.ts";
+```
 
-### contributing
-
-https://deno.land/manual/contributing
-
-### web platform APIs (eg: fetch)
-
-https://deno.land/manual/runtime/web_platform_apis
-
-### node compatibility
-
-https://deno.land/manual/node/compatibility_mode
-
-### node to deno
-
-https://deno.land/manual/node/cheatsheet
-
-### useful packages
-
-- oak (server) (like koa)
-- opine (server) (like express)
-
+```ts
+// mod.ts
+import { delay } from "./deps.ts";
+```

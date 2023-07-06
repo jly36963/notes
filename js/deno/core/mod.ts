@@ -126,7 +126,7 @@ const basicDenoPermissions = async () => {
   */
 };
 
-// TODO: globals -- console, atob, btoa, fetch, setInterval, setTimeout, crypto, per
+// TODO: globals -- console, fetch, crypto
 
 const printSectionTitle = (title: string) => {
   console.log("\n" + title.toUpperCase() + "\n");

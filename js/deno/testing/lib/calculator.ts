@@ -1,4 +1,4 @@
-import { delay } from "../deps.ts";
+import { delay } from "async";
 
 export default class Calculator {
   // ---

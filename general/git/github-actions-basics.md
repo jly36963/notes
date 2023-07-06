@@ -11,8 +11,9 @@ Github actions are typically used to automate CI/CD on incoming code changes.
 
 ## Resources
 
-[sdras/awesome-actions](https://github.com/sdras/awesome-actions)
-[building/testing node](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs)
+- [learn](https://docs.github.com/en/actions/learn-github-actions)
+- [sdras/awesome-actions](https://github.com/sdras/awesome-actions)
+- [building/testing node](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs)
 
 ## Basics
 
@@ -25,7 +26,7 @@ Github actions are typically used to automate CI/CD on incoming code changes.
   - run in parallel by default
   - can be conditional
 - steps
-  - shell script or action
+  - shell command/script or action
   - sequential
   - can be conditional
 
@@ -120,7 +121,7 @@ on:
       - main
       - develop
   pull_request:
-    types: [ assigned, opened ]
+    types: [assigned, opened]
 jobs:
   my-job:
     runs-on: ubuntu-latest
@@ -152,7 +153,7 @@ Actions vs commands:
 name: Test Node Project
 on:
   pull_request:
-    types: [ assigned, opened ]
+    types: [assigned, opened]
 jobs:
   test:
     runs-on: ubuntu-22.04
@@ -220,4 +221,44 @@ jobs:
         run: echo "TODO add deploy logic"
 ```
 
-## Expressions
+## Expressions, Functions, Context Objects
+
+- [Contexts](https://docs.github.com/en/actions/learn-github-actions/contexts)
+- [Expressions](https://docs.github.com/en/actions/learn-github-actions/expressions)
+
+```yaml
+run: echo "${{ toJSON(github) }}
+```
+
+## Artifacts and Outputs
+
+Artifacts for making files available to later steps.\
+Outputs for making output values available to later steps.
+
+- [Artifacts](https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts)
+- [Outputs](https://docs.github.com/en/actions/using-jobs/defining-outputs-for-jobs)
+
+## Caching dependencies
+
+Cache frequently-used files (eg: deps) to reduce network utilization, runtime, and cost.
+
+- [Caching](https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows)
+
+## Variables and Secrets
+
+- [Variables](https://docs.github.com/en/actions/learn-github-actions/variables)
+- [Secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
+
+## Control flow
+
+- [Expressions](https://docs.github.com/en/actions/learn-github-actions/expressions)
+- [Matrix](https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs)
+
+## Reusing workflows
+
+- [Reuse](https://docs.github.com/en/actions/using-workflows/reusing-workflows)
+
+## Security
+
+- [Permissions](https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs)
+- [Hardening security](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions)

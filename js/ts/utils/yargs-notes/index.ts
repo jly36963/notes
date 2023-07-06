@@ -1,4 +1,4 @@
-import yargs from 'yargs'
+import yargs from "yargs";
 
 const basicGreetPositional = () => {
   yargs("Kakashi")
@@ -14,7 +14,7 @@ const basicGreetPositional = () => {
       (argv) => {
         const { name } = argv;
         console.log(`Hello ${name}`);
-      },
+      }
     )
     .parse();
 };
@@ -41,7 +41,7 @@ const basicGreetOption = () => {
         const { name, informal } = argv;
         const greeting = informal ? `Hey there, ${name}!` : `Hello ${name}`;
         console.log(greeting);
-      },
+      }
     )
     .parse();
 };
@@ -61,7 +61,7 @@ const basicGreetAsync = async () => {
         const { name } = argv;
         await new Promise((r) => setTimeout(r, 500));
         console.log(`Hello ${name}`);
-      },
+      }
     )
     .parseAsync();
 };
@@ -87,9 +87,9 @@ const basicSubcommands = () => {
                   type: "number",
                 }),
             (argv) => {
-              const { a, b } = argv as {a: number, b: number};
+              const { a, b } = argv as { a: number; b: number };
               console.log(`${a} + ${b} = ${a + b}`);
-            },
+            }
           )
           .command(
             "sub <a> <b>",
@@ -105,9 +105,9 @@ const basicSubcommands = () => {
                   type: "number",
                 }),
             (argv) => {
-              const { a, b } = argv as {a: number, b: number};
+              const { a, b } = argv as { a: number; b: number };
               console.log(`${a} - ${b} = ${a - b}`);
-            },
+            }
           )
           .command(
             "mul <a> <b>",
@@ -123,9 +123,9 @@ const basicSubcommands = () => {
                   type: "number",
                 }),
             (argv) => {
-              const { a, b } = argv as {a: number, b: number}
+              const { a, b } = argv as { a: number; b: number };
               console.log(`${a} * ${b} = ${a * b}`);
-            },
+            }
           )
           .command(
             "div <a> <b>",
@@ -141,25 +141,24 @@ const basicSubcommands = () => {
                   type: "number",
                 }),
             (argv) => {
-              const { a, b } = argv as {a: number, b: number};
+              const { a, b } = argv as { a: number; b: number };
               console.log(`${a} / ${b} = ${a / b}`);
-            },
+            }
           )
           .command(
             "sum <nums..>",
             "sum desc",
             (yargs) =>
-              yargs
-                .positional("nums", {
-                  desc: "nums desc",
-                }),
+              yargs.positional("nums", {
+                desc: "nums desc",
+              }),
             (argv) => {
-              const { nums = [] } = argv as { nums: number[]};
+              const { nums = [] } = argv as { nums: number[] };
               const result = nums.reduce((acc, curr) => acc + curr, 0);
               console.log(`The sum of ${nums} is ${result}`);
-            },
+            }
           ),
-      (_argv) => console.log("Please choose a subcommand"),
+      (_argv) => console.log("Please choose a subcommand")
     )
     .strict();
 

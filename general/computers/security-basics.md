@@ -671,3 +671,502 @@ Popular frameworks:
   - chmod to change permissions
   - chown to change ownership
   - passwd to change password
+
+- user access management
+  - monitor and log user account activity
+    - login/logoff, db/file access, etc
+  - shared accounts are bad
+  - least-privilege permissions
+  - use dedicated service accounts (not default accounts)
+
+- AAA
+  - AAA: Authentication, Authorization, Accounting
+  - TODO: RADIUS, TACACS+
+  - Authentication
+    - Authentication methods
+      - PAP, CHAP, NTLM, Kerberos
+      - SAML, LDAP
+    - SSO
+      - Federated system
+      - LAN: Windows Active Directory
+      - SAML
+
+- network tools
+  - ping, ipconfig, netstat, ip, nslookup
+  - network scanners: nmap, zenmap (gui),
+  - protocol analyzers (sniffer/analyzer): wireshark, tcpdump
+
+- logging
+  - non-network events
+    - OS events (host startup/shutdown/reboot, service start/stop, OS update)
+    - application events (app start/stop/crash)
+    - security (logons)
+  - network events
+    - OS/system level
+    - app level
+
+## Securing individual systems
+
+- Attacks
+  - DOS
+    - Types
+      - Volume (eg: PING)
+      - Protocol (eg: SYN)
+      - Application (eg: Slowloris)
+    - DDOS: Distributed DOS
+  - Host threats
+    - Spam (email)
+    - Phishing (email)
+    - Spim (messenger)
+    - Vishing (voice)
+    - Clickjacking
+    - Typo squatting
+    - Domain hijacking
+    - Privilege escalation
+  - Man-in-the-middle
+    - ARP poisoning
+    - DNS spoofing
+    - wifi eavesdropping
+    - downgrade attack
+    - session hijacking
+
+- Resilience
+  - Scalability
+  - Elasticity
+  - Redundancy
+    - distributed allocation
+  - non-persistence (ie: snapshots)
+    - known state
+    - rollback
+
+- Physical Hardening
+  - Removable media controls (with policies)
+    - Eg: Configure optical media permissions
+  - DEP (Data Execution Prevention)
+    - Is almost always a good idea
+  - Port disabling
+    - Can be done in BIOS
+
+- Protecting electronic equipment
+  - RFI: Radio frequency interference
+  - EMI: Electromagnetic interference
+  - ESD: Electrostatic discharge
+
+- Host hardening
+  - Disabling unnecessary services
+  - Change default passwords
+  - Disable unnecessary user accounts/groups
+  - Patch management
+    - monitor, test, evaluate, deploy patch, document
+  - Anti-malware
+    - user training, procedures (best practices), monitoring
+    - IDS: Intrusion detection systems
+    - third-party anti-malware tools
+  - Host firewalls
+    - firewalls typically work at application level
+
+- Data and System Security
+  - Data integrity
+  - Speed (of access)
+  - High availability
+    - Clustering
+    - Load Balancing
+    - Virtualizing servers
+
+- Disk Encryption
+  - TPM
+
+- Hardware/Firmware security
+  - FDE: Full disk encryption
+  - Secure boot
+
+- Peripherals
+  - Bluetooth is not very secure
+  - Vulnerability via USB/SD/etc connections
+    - Hidden Wifi (eg: WAP from SD device with NIC)
+    - USB (eg: physical access via rubber duck)
+  - Turn off unnecessary ports
+  - Patch devices (updates)
+
+- Malware
+  - Virus
+  - Adware
+  - Spyware
+  - Trojan
+    - RAT: Remote-access trojan
+  - Ransomeware (crypto-malware)
+  - Logic bmob (triggered event)
+  - Rootkit (escalates privileges to execute something)
+  - Backdoor (intentional/undocumented way of gaining access to a system)
+  - Polymorphic malware
+  - Armored virus
+  - Keylogger
+
+- Network security
+  - IDS: Intrusion detection systems
+    - detect and report possible attacks
+  - IPS: Intrusion prevention system
+    - run inline with network and act on (stop) detected attacks
+  - A firewall filters, IDS notifies, IPS acts to stop
+
+- Data destruction
+  - This is not limited to hard drives (eg: physical documents)
+  - Methods
+    - wiping
+    - purging
+    - destroying
+    - shredding/pulverizing
+
+## LAN
+
+- Switches filter and forward by MAC address
+- Routers filter by IP address
+- Network Firewalls are used on a gateway router for protection
+
+- VLAN
+  - VLAN provides layer 2 separation of networks
+  - physical device that designates separate broadcast domains
+- STP: Spanning tree protocol
+
+- Network topology
+  - LAN, WAN, etc
+  - TCP/IP
+
+- Airgap: a separation of networks
+
+- Auth protocols
+  - PPP, CHAP, EAP, Radius, LEAP, EAP-Fast, PEAP
+  - EAP is frequently used in network/internet connections
+    - EAP-MD5, EAP-PSK, etc
+
+- Network firewall
+  - Filtering strategies
+    - Stateless
+    - Stateful
+  - ACL: Access control list
+
+- Proxies
+  - forward proxy: hides client
+  - reverse proxy: hides server
+
+- Honeypot
+  - emulate web server, used to deter threat actors and collect information
+  - honeynet emultes a full network
+
+- VPN: Virtual private network
+  - For connecting to a remote network securely
+  - VPN Tunnel: connection betweeen VPN endpoints
+  - Types
+    - Remote Access
+    - Site-to-site VPN: connecting multiple networks
+  - full vs split tunnel
+    - VPN for all traffic or partial traffic
+  - Setup
+    - Protocol to set up tunnel
+    - Protocol to handle auth/encryption
+  - VPN protocols
+    - PPTP, L2TP, IPsec, SSL/TLS, OpenVPN
+
+- IPsec
+  - TODO
+
+- Wireguard
+  - slighty faster, much simpler than IPsec
+
+- NIDS: Network intrusion detection system
+- NIPS: Network intrusion prevention system
+  - inline, active response, can alter the flow of network traffic
+
+- SIEM: Security information and event management
+  - SIEM tools aggregate/correlate data
+  - organize to get the time sequence of an event across logs quickly
+  - configurable notification triggers
+
+- Open Networks
+  - Dangerous, because they are insecure
+  - Use https
+  - Use VPN
+
+- WAP Vulnerabilities
+  - Unauthorized access point
+    - Rogue access point
+      - a UAP that is connected to a secure network
+      - Accidental
+      - Eg: plugging a SOHO router WAP into a wired network
+    - Evil twin
+      - MITM attack method
+      - Intentional
+      - Process
+        - Jam regular channel (with wireless jammer)
+        - People accidentally connect to evil twin on different channel
+        - Wireshark to sniff packets
+
+- Cracking 802.11
+  - WEP: Wired equivalent privacy
+    - oldest and least secure of WEP/WPA/WPA2
+    - still used by way too many people (5-15% of networks)
+    - can crack by mathematically deriving from packets
+  - WPA: Wi-fi protected access
+    - protocol
+      - WPA uses TKIP
+      - WPA2 uses AES encryption
+    - vulnerable to dictionary attack
+      - people typically use weak passwords
+    - 4-way handshake
+      - has flaw, resulting in vulnerability at initial connection
+  - WPS: Wi-fi protected setup
+    - connecting WAP and WPS-capable device with WPS button
+    - easily crackable
+      - don't use it, don't get a router that has WPS
+    - some modern routers added features to make WPS safer
+
+- Hardening Wireless
+  - TODO
+
+- WAP: Wireless access point
+  - TODO
+
+- Virtualization
+  - TODO
+
+## Secure Protocols
+
+- OSI Model (7 layers)
+- TCP/IP Model (4 layers)
+
+- IPv4 (32 bit) vs IPv6 (128-bit)
+
+- Transport protocols
+  - TCP
+    - Connection oriented
+    - 3-way handshake
+  - UDP
+    - Connectionless
+  - ICMP
+    - eg: ARP, ping
+    - single packet
+
+- Protocols and port numbers
+  - TODO
+
+- SSL/TLS
+  - Establishes secure link
+  - Originally designed for secure websites
+  - 4 main aspects of secure connection
+    - encryption, key exchange, authentication, HMAC
+  - Internet service hardening
+    - use secure protocols (SSH over telnet, SFTP/FTPS over FTP, etc)
+
+- Secure development/deployemnt operations
+  - Security automation tools
+  - Baselining
+    - Critical security objectives
+      - Encryption
+      - Input validation
+  - Consider immutable systems
+  - Infrastructure as code
+  - Proper error handling
+  - Data normalization
+  - Obfuscation
+  - Maintained code (DRY, no dead code, etc)
+  - Memory management
+  - Vetting 3rd party deps
+
+- Code quality and testing
+  - static code analysis
+  - dynamic code analysis (unit, integration, system, performance testing)
+  - staging (testing in a close-to-reality, sandboxed environment)
+  - model verification
+
+## Testing your infrastructure
+
+- Network tools
+  - Nmap (and Zenmap)
+  - MSFT Baseline Security Analyzer
+  - Tracenet
+  - Advanced IP scanner
+
+- Vulnerability assessment
+  - Tools for simple networks
+    - Nessus
+    - Nexpose
+    - OpenVAS
+  - Many tools use National Vulnerability Database (NVD) as a source
+  - Process
+    - Get authorization
+    - Typically non-intrusive
+    - Identify vulnerabilities
+    - Check for common misconfigurations
+    - Try to reduce false positives
+    - Ensure compliance
+
+- Social Engineering
+  - Boils down to people tricking people
+  - Principles
+    - Authority: impersonating someone in a position of authority
+    - Urgency
+    - Familiarity
+    - Intimidation
+    - Consensus: To convince of a general group agreement
+    - Scarcity
+    - Trust
+  - Attacks
+    - Typically fall into two categories
+      - Physical attacks
+        - Unauthorized access (unlocked computer while AFK)
+        - Shoulder surfing
+        - Tailgating
+        - Dumpster diving
+      - Virtual attacks
+        - Phishing
+          - Spear Phishing
+          - Whaling (targets senior/executive roles)
+        - Vishing
+        - Hoax
+        - Watering hole attack
+
+- Common Log Format (CLF)
+  - Ident, Authuser, date/time, req (method, path, protocol, status, bytes)
+
+- Web attacks
+  - Common website attacks
+    - Cross-site scripting (XSS)
+    - XML injection
+  - Common app attacks
+    - Injections (eg: code, command, sql, ldap injections)
+    - Overflow (eg: buffer, integer overflow)
+
+- Exploiting a target
+  - Pen test
+    - Get authorization
+    - Determine attack model
+      - white box (well-informed attacker)
+      - black box (attacker has no prior knowledge)
+      - gray box (attacker has some prior knowledge)
+    - Discover vulnerabilities (recon)
+      - Intelligence gathering: passive, semi-passive, active
+    - Exploit vulnerabilities (get data)
+      - Kali Linux (Metasploit framework, Armitage)
+      - Terms
+        - Pivot: use compromised system to attack other systems
+        - Persistence: connect again easily
+        - Privilege escalation
+
+- Vulnerability impact
+  - Embedded systems
+  - Lack of vendor support
+  - Configuration (weak configuration or misconfiguration)
+  - Improperly configured account
+  - Vulnerable business process
+    - Storing non-essential info (PII)
+  - Memory/buffer vulnerability
+  - System sprawl
+
+## Dealing with incidents
+
+- NIST 800-61 Computer Security Incident Handling Guide
+
+- Incident response process
+  - Preparation
+    - What might happen?
+    - Who will respond (and in what way)?
+  - Reporting
+    - Which reports go to whom?
+    - Escalation
+  - Practice scenarios
+  - Identification
+    - Recognize incidents as they occur
+    - Reports from users
+    - Utilizing/checking monitoring tools
+    - Watch alerts/logs
+    - Assess impact
+    - Define who's involved
+  - Containment
+    - Mitigate damage
+    - Stop attack
+    - Segregate network
+    - Shut down a system
+    - Turn off a service
+  - Eradication
+    - Remove malware
+    - Address vulnerabilities
+    - Add new controls
+  - Recovery
+    - Restore from backups
+    - Pull from snapshots
+    - Hire replacement personnel
+    - Monitor to ensure good operations
+
+- Incident response plan
+  - CIRT: Cyber incident response team
+    - A group of people who are responsible for incident response
+    - IT security, IT department, HR, legal, public relations
+    - document incident type/category definitions
+      - physical access, malware, phishing, social engineering, data access, etc
+  - Roles and responsibilities
+    - Submitting issues: users, help desk, HR, DB manager, incident hotline
+  - Reporting requirements & escalation
+    - Determine severity
+    - Clear chain of escalation (severity-based)
+    - Informing law enforcement
+  - Practice (scenarios/drills)
+  - Post-incident documenting
+
+- Digital Forensics
+  - Process of gathering data to be presented in a formal inquiry (eg: in court)
+  - Causes:
+    - Incident occurence
+    - Legal hold
+  - Chain of custody
+    - Purpose
+      - Gathering evidence
+      - Data must have high integrity
+    - Process
+      - Define the evidence
+      - Document the collection method
+      - Date/time collected
+      - People handling evidence
+      - Function of person handling evidence
+      - Location of evidence
+    - Order of volatility
+      - Memory
+      - Disk
+      - Backups
+    - Data acquisition
+      - tools for reading memory and disk
+      - write block
+      - capture system image
+      - network traffic and logs
+      - capture video
+      - take hashes
+      - take screenshots
+      - interview witnesses
+      - track man hours
+
+- Contingency planning
+  - Dealing with serious incidents
+    - Disaster recovery
+    - Business continuity
+  - Evacuation plan
+    - Backup site
+      - Cold site: weeks to bring online (no equipment, no data)
+      - Warm site: days to bring online (some equipment, no data)
+      - Hot site: hours to bring online (equipment and data synced)
+  - Order of restoration
+    - Power
+    - Wired LAN
+    - ISP link
+    - AD/DNS/DHCP servers
+    - Servers and workstations
+  - Failover
+  - Alternative processing sites
+  - Alternative business practices
+  - After-action reports
+
+- Backups
+  - Types
+    - Full (all files)
+    - Differential (changes since last full)
+    - Incremental (changes since last)
+  - Snapshots (typically for VM)
+  - Local, remote, cloud
