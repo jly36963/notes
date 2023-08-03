@@ -3,9 +3,7 @@ from dotenv import load_dotenv
 
 
 def main():
-    """
-    Load .env file into environment
-    """
+    """Load .env file into environment"""
     # Determine if development or production
     dev = os.getenv('PYTHON_ENV') != 'production'
     path = './dev.env' if dev else './.env'

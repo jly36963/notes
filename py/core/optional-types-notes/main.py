@@ -4,53 +4,41 @@ import datetime
 from uuid import UUID
 
 # ---
-# simple types
+# Simple types
 # ---
 
 
 def greet(name: str) -> str:
-    '''
-    String example
-    '''
+    '''String example'''
     return f"Hello there, {name}!"
 
 
 def sum_int(*integers: int) -> int:
-    '''
-    Integer example
-    '''
+    '''Integer example'''
     return sum(integers)
 
 
 def product(x: float, y: float) -> float:
-    '''
-    Float example
-    '''
+    '''Float example'''
     return x * y
 
 
 def is_string(value: Any) -> bool:
-    '''
-    Boolean example
-    '''
+    '''Boolean example'''
     return isinstance(value, str)
 
 
 def get_bytes(s: str) -> bytes:
-    '''
-    Bytes example
-    '''
+    '''Bytes example'''
     return s.encode('utf-8')
 
 
 def print_upper(s: str) -> None:
-    '''
-    None example
-    '''
+    '''None example'''
     print(s.upper())
 
 # ---
-# generic types
+# Generic types
 # ---
 
 
@@ -79,9 +67,7 @@ def find(f: Callable, l: List[T]) -> Union[T, None]:
 
 
 def greet2(name: Optional[str] = None) -> str:
-    '''
-    Optional example
-    '''
+    '''Optional example'''
     if name:
         return f"Hello there, {name}!"
     else:
@@ -89,9 +75,7 @@ def greet2(name: Optional[str] = None) -> str:
 
 
 def greet3(name: Union[str, None] = None) -> str:
-    '''
-    Union example
-    '''
+    '''Union example'''
     if name:
         return f"Hello there, {name}!"
     else:
@@ -99,9 +83,7 @@ def greet3(name: Union[str, None] = None) -> str:
 
 
 def safe_get(d: Dict[str, T], key: str) -> Union[T, None]:
-    '''
-    Dictionary example
-    '''
+    '''Dictionary example'''
     if not (isinstance(d, dict) and isinstance(key, str)):
         return None
 
@@ -109,21 +91,17 @@ def safe_get(d: Dict[str, T], key: str) -> Union[T, None]:
 
 
 def sort_by_id(people: List[dict]) -> List[dict]:
-    '''
-    List example
-    '''
+    '''List example'''
     people.sort(key=lambda x: x['id'])
     return people
 
 
 def pop_set(s: Set[T]) -> T:
-    '''
-    Set Example
-    '''
+    '''Set Example'''
     return s.pop()
 
 # ---
-# typed dictionary
+# Typed dictionary
 # ---
 
 
@@ -150,12 +128,12 @@ def get_ninja_name(ninja: Ninja):
 
 def update_ninja(ninja: Ninja, updates: NinjaUpdates) -> Ninja:
     """Take a ninja and override some of the user-defined fields"""
-    updated: Ninja = {**ninja, **updates}  # type: ignore
+    updated: Ninja = {**ninja, **updates}
     return updated
 
 
 # ---
-# classes
+# Classes
 # ---
 
 

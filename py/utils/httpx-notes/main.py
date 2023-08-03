@@ -32,9 +32,7 @@ async def main():
     # get
     get_result = None
     try:
-        get_result = await fetch(
-            url="https://jsonplaceholder.typicode.com/users/1",
-        )
+        get_result = await fetch(url="https://jsonplaceholder.typicode.com/users/1",)
     except Exception as e:
         print(e)
 
