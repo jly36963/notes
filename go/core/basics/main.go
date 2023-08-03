@@ -1,9 +1,9 @@
-// ---------
-// golang
-// ---------
+// ---
+// Golang
+// ---
 
 // ---
-// assignment
+// Assignment
 // ---
 
 /*
@@ -31,7 +31,7 @@ const greeting  = "Hello"
 */
 
 // ---
-// string formatting
+// String formatting
 // ---
 
 /*
@@ -127,7 +127,7 @@ func printSectionTitle(s string) {
 // ---
 
 func getRuntimeDetails() {
-	// get runtime details (string slice)
+	// Get runtime details (string slice)
 	details := []string{
 		fmt.Sprintf("os: %v", runtime.GOOS),
 		fmt.Sprintf("arch: %v", runtime.GOARCH),
@@ -160,7 +160,7 @@ func basicFunctions() {
 
 func safeDivide(a, b int) (quotient float64, err error) {
 	if b == 0 {
-		return 0, errors.New("Please do not divide by zero")
+		return 0, errors.New("please do not divide by zero")
 	}
 	return float64(a) / float64(b), nil
 }
@@ -258,7 +258,7 @@ func fib(n int) int {
 func basicRecursion() {
 	n := 20
 	res := fib(20)
-	fmt.Println("fib " + string(n) + " is " + string(res))
+	fmt.Println("fib " + fmt.Sprint(n) + " is " + fmt.Sprint(res))
 }
 
 // ---
@@ -266,9 +266,9 @@ func basicRecursion() {
 // ---
 
 func deferredGreet(name string) {
-	defer fmt.Println("How have you been?")    // third
-	defer fmt.Println("It's nice to see you!") // second
-	fmt.Println("Hello there " + name + "!")   // first
+	defer fmt.Println("How have you been?")    // Third
+	defer fmt.Println("It's nice to see you!") // Second
+	fmt.Println("Hello there " + name + "!")   // First
 }
 
 func basicDefer() {

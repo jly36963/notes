@@ -14,54 +14,34 @@ import (
 )
 
 // ---
-// main
+// Main
 // ---
 
 func main() {
-	// Runtime
 	getRuntimeDetails()
-	// Brightness
 	useBrighten()
-	// Color balance
 	useColorBalance()
-	// Colorize
 	useColorize()
-	// Contrast
 	useContrast()
-	// Convolution
 	useConvolution()
-	// Crop
-	// TODO
-	// Gamma
+	// TODO: Crop
 	useGamma()
-	// Gaussian blur
 	useGaussianBlur()
-	// Grayscale
 	useGrayscale()
-	// Invert
 	useInvert()
-	// Maximum, mean, median, minimum
-	// TODO
-	// Resize
+	// TODO: Maximum, mean, median, minimum
 	useResize()
-	// Resize to fill, resize to fit
-	// TODO
-	// Saturation
+	// TODO: Resize to fill, resize to fit
 	useSaturation()
-	// Sepia
 	useSepia()
-	// Sigmoid
 	useSigmoid()
-	// Sobel
 	useSobel()
-	// Threshold
 	useThreshold()
-	// Unsharp mask
-	// TODO
+	// TODO: Unsharp mask
 }
 
 // ---
-// helper functions (print)
+// Helper functions (print)
 // ---
 
 func bulkPrint(args ...interface{}) {
@@ -77,7 +57,7 @@ func printSectionTitle(title string) {
 }
 
 // ---
-// helper functions (file <-> image)
+// Helper functions (file <-> image)
 // ---
 
 func fileToImg(fp string) (img image.Image, err error) {
@@ -127,7 +107,7 @@ func imgToFile(img image.Image, dir, fn string) (fp string, err error) {
 // ---------
 
 // ---
-// runtime details
+// Runtime details
 // ---
 
 type RuntimeDetails struct {
@@ -153,7 +133,7 @@ func getRuntimeDetails() {
 // ---------
 
 // ---
-// brighten
+// Brighten
 // ---
 
 func brightenImage(path string, brightness float32) {
@@ -171,7 +151,7 @@ func brightenImage(path string, brightness float32) {
 		return
 	}
 	// transform image
-	g := gift.New(gift.Brightness(brightness)) // *gift.GIFT
+	g := gift.New(gift.Brightness(brightness))
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -194,7 +174,7 @@ func useBrighten() {
 }
 
 // ---
-// balance color
+// Balance color
 // ---
 
 func balanceColor(path string, red, green, blue float32) {
@@ -214,7 +194,7 @@ func balanceColor(path string, red, green, blue float32) {
 		return
 	}
 	// transform image
-	g := gift.New(gift.ColorBalance(red, green, blue)) // *gift.GIFT
+	g := gift.New(gift.ColorBalance(red, green, blue))
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -237,7 +217,7 @@ func useColorBalance() {
 }
 
 // ---
-// colorize
+// Colorize
 // ---
 
 type ColorizeParam struct {
@@ -273,7 +253,7 @@ func colorize(path string, hue, saturation, percentage float32) {
 		return
 	}
 	// transform image
-	g := gift.New(gift.Colorize(hue, saturation, percentage)) // *gift.GIFT
+	g := gift.New(gift.Colorize(hue, saturation, percentage))
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -296,7 +276,7 @@ func useColorize() {
 }
 
 // ---
-// contrast
+// Contrast
 // ---
 
 func contrast(path string, percentage float32) {
@@ -314,7 +294,7 @@ func contrast(path string, percentage float32) {
 		return
 	}
 	// transform image
-	g := gift.New(gift.Contrast(percentage)) // *gift.GIFT
+	g := gift.New(gift.Contrast(percentage))
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -337,7 +317,7 @@ func useContrast() {
 }
 
 // ---
-// convolution (edge detection)
+// Convolution (edge detection)
 // ---
 
 func convolveEdge(path string) {
@@ -362,7 +342,7 @@ func convolveEdge(path string) {
 			false, // abs
 			0,     // delta
 		),
-	) // *gift.GIFT
+	)
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -385,13 +365,13 @@ func useConvolution() {
 }
 
 // ---
-// crop
+// Crop
 // ---
 
 //
 
 // ---
-// gamma
+// Gamma
 // ---
 
 func gamma(path string, gamma float32) {
@@ -409,7 +389,7 @@ func gamma(path string, gamma float32) {
 		return
 	}
 	// transform image
-	g := gift.New(gift.Gamma(gamma)) // *gift.GIFT
+	g := gift.New(gift.Gamma(gamma))
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -432,7 +412,7 @@ func useGamma() {
 }
 
 // ---
-// gaussian blur
+// Gaussian blur
 // ---
 
 func blurImage(path string, sigma float32) {
@@ -445,7 +425,7 @@ func blurImage(path string, sigma float32) {
 		return
 	}
 	// transform image
-	g := gift.New(gift.GaussianBlur(sigma)) // *gift.GIFT
+	g := gift.New(gift.GaussianBlur(sigma))
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -468,7 +448,7 @@ func useGaussianBlur() {
 }
 
 // ---
-// grayscale
+// Grayscale
 // ---
 
 func grayscale(path string) {
@@ -481,7 +461,7 @@ func grayscale(path string) {
 		return
 	}
 	// transform image
-	g := gift.New(gift.Grayscale()) // *gift.GIFT
+	g := gift.New(gift.Grayscale())
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -504,7 +484,7 @@ func useGrayscale() {
 }
 
 // ---
-// invert
+// Invert
 // ---
 
 func invert(path string) {
@@ -518,7 +498,7 @@ func invert(path string) {
 		return
 	}
 	// transform image
-	g := gift.New(gift.Invert()) // *gift.GIFT
+	g := gift.New(gift.Invert())
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -541,13 +521,13 @@ func useInvert() {
 }
 
 // ---
-// maximum
+// Maximum
 // ---
 
 //
 
 // ---
-// resize
+// Resize
 // ---
 
 func resizeImage(path string, maxDimensionSize int) {
@@ -603,7 +583,7 @@ func useResize() {
 }
 
 // ---
-// saturation
+// Saturation
 // ---
 
 func saturation(path string, percentage float32) {
@@ -621,7 +601,7 @@ func saturation(path string, percentage float32) {
 		return
 	}
 	// transform image
-	g := gift.New(gift.Saturation(percentage)) // *gift.GIFT
+	g := gift.New(gift.Saturation(percentage))
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -644,7 +624,7 @@ func useSaturation() {
 }
 
 // ---
-// sepia
+// Sepia
 // ---
 
 func sepia(path string, percentage float32) {
@@ -662,7 +642,7 @@ func sepia(path string, percentage float32) {
 		return
 	}
 	// transform image
-	g := gift.New(gift.Sepia(percentage)) // *gift.GIFT
+	g := gift.New(gift.Sepia(percentage))
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -685,7 +665,7 @@ func useSepia() {
 }
 
 // ---
-// sigmoid
+// Sigmoid
 // ---
 
 func sigmoid(path string, midpoint, factor float32) {
@@ -707,7 +687,7 @@ func sigmoid(path string, midpoint, factor float32) {
 		return
 	}
 	// transform image
-	g := gift.New(gift.Sigmoid(midpoint, factor)) // *gift.GIFT
+	g := gift.New(gift.Sigmoid(midpoint, factor))
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -730,7 +710,7 @@ func useSigmoid() {
 }
 
 // ---
-// sobel
+// Sobel
 // ---
 
 func sobel(path string) {
@@ -743,7 +723,7 @@ func sobel(path string) {
 		return
 	}
 	// transform image
-	g := gift.New(gift.Sobel()) // *gift.GIFT
+	g := gift.New(gift.Sobel())
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -766,7 +746,7 @@ func useSobel() {
 }
 
 // ---
-// threshold
+// Threshold
 // ---
 
 func threshold(path string, percentage float32) {
@@ -784,7 +764,7 @@ func threshold(path string, percentage float32) {
 		return
 	}
 	// transform image
-	g := gift.New(gift.Threshold(percentage)) // *gift.GIFT
+	g := gift.New(gift.Threshold(percentage))
 	dstImg := image.NewRGBA(g.Bounds(srcImg.Bounds()))
 	g.Draw(dstImg, srcImg)
 	// img to file
@@ -807,7 +787,7 @@ func useThreshold() {
 }
 
 // ---
-// unsharp mask
+// Unsharp mask
 // ---
 
-//
+// TODO

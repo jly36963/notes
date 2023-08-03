@@ -1,7 +1,7 @@
 package main
 
 // ---
-// imports
+// Imports
 // ---
 
 import (
@@ -11,7 +11,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"runtime"
 	"strings"
 
 	// local packages
@@ -25,22 +24,14 @@ import (
 )
 
 func main() {
-	// runtime
-	logRuntimeDetails()
-	// dotenv
 	loadDotenv()
-	// server config
 	config := atreugo.Config{
 		Addr:         getAddr(),
 		NotFoundView: NotFoundView,
 	}
-	// server
 	r := atreugo.New(config)
-	// middleware
 	r.UseBefore(logger.PrettyLogger)
-	// routers
 	api.AddRouter(r)
-	// listen
 	err := r.ListenAndServe()
 	if err != nil {
 		panic(err)
@@ -48,26 +39,7 @@ func main() {
 }
 
 // ---
-// runtime details
-// ---
-
-func logRuntimeDetails() {
-	// get runtime details (string array)
-	details := []string{
-		fmt.Sprintf("os: %v", runtime.GOOS),
-		fmt.Sprintf("arch: %v", runtime.GOARCH),
-		fmt.Sprintf("CPUs: %v", runtime.NumCPU()),
-		fmt.Sprintf("GR: %v", runtime.NumGoroutine()),
-		fmt.Sprintf("version: %v", runtime.Version()),
-	}
-	// print each detail (for loop)
-	for _, d := range details {
-		fmt.Println(d)
-	}
-}
-
-// ---
-// load dotenv
+// Load dotenv
 // ---
 
 func loadDotenv() {
@@ -78,7 +50,7 @@ func loadDotenv() {
 }
 
 // ---
-// get addr (used in atreugo config)
+// Get addr (used in atreugo config)
 // ---
 
 func getAddr() string {
@@ -101,25 +73,22 @@ func NotFoundView(ctx *atreugo.RequestCtx) error {
 	isApi := strings.HasPrefix(path, "/api")
 	// determing if unknown api route or request for SPA
 	if isApi {
-		// payload
 		payload, _ := json.Marshal(struct {
 			Message string `json:"message"`
 		}{
 			Message: "Not found",
 		})
-		// response
+
 		ctx.SetContentType("application/json")
 		ctx.SetStatusCode(fasthttp.StatusNotFound)
 		ctx.SetBody(payload)
 	} else {
-		// payload
 		html, _ := ioutil.ReadFile("client/build/index.html")
 		payload := string(html)
-		// response
+
 		ctx.SetContentType("text/html; charset=utf-8")
 		ctx.SetStatusCode(fasthttp.StatusOK)
 		ctx.HTTPResponse(payload)
 	}
 	return nil
-
 }

@@ -43,19 +43,19 @@ const basicCallApplyBind = () => {
     health: 40,
     maxHealth: 70,
   };
-  
+
   // call
-  
+
   kakashi.increaseMaxHealth.call(yamato, 10); // arg1: which object for 'this', ...args: arguments
   kakashi.heal.call(yamato);
   console.log(yamato); // 'yamato', 90, 90
-  
+
   // bind (used in react class components -- https://reactjs.org/docs/handling-events.html )
-  
+
   const healIruka = kakashi.heal.bind(iruka);
   healIruka();
   console.log(iruka);
-}
+};
 
 // this + arrow function
 
@@ -73,7 +73,7 @@ const basicThisAndArrowFunctions = () => {
   };
   person.say()(); // person
   person.sayWindow()(); // window
-}
+};
 
 // ---
 // cloning objects
@@ -84,7 +84,7 @@ const basicCloning = () => {
   const obj2 = Object.assign({}, obj1); // assign (shallow)
   const obj3 = { ...obj1 }; // spread operator (shallow)
   const obj4 = JSON.parse(JSON.stringify(obj1)); // JSON (deep) (might cause performance issues)
-}
+};
 
 // ---
 // prototypal inheritance
@@ -106,7 +106,7 @@ const basicPrototypalInheritance = () => {
   };
   chunin.__proto__ = jonin;
   chunin.fireballJutsu();
-}
+};
 
 // ---
 //

@@ -9,18 +9,16 @@ import (
 )
 
 // ---
-// main
+// Main
 // ---
 
 func main() {
-	// runtime
 	getRuntimeDetails()
-	// govalidator
 	useGovalidator()
 }
 
 // ---
-// helper func
+// Helper func
 // ---
 
 func bulkPrint(args ...interface{}) {
@@ -35,12 +33,12 @@ func printSectionTitle(title string) {
 	fmt.Println("")
 }
 
-// ---------
-// notes
-// ---------
+// ---
+// Notes
+// ---
 
 // ---
-// runtime details
+// Runtime details
 // ---
 
 type RuntimeDetails struct {
@@ -62,7 +60,7 @@ func getRuntimeDetails() {
 }
 
 // ---
-// govalidator
+// Govalidator
 // ---
 
 func useGovalidator() {

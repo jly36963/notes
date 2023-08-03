@@ -1,40 +1,33 @@
 package main
 
 import (
-	// standard packages
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"runtime"
 	"strings"
 
-	// external packages
 	"github.com/dghubble/sling"
 )
 
+// receive (shorthand: response -> struct)
+// https://github.com/dghubble/sling#receive
+
 // ---
-// main
+// Main
 // ---
 
 func main() {
-	// runtime
-	getRuntimeDetails()
-	// Sling (Get)
 	useSlingGet()
-	// Sling (Post)
 	useSlingPost()
-	// Sling (Header)
 	useSlingGetWithHeader()
-	// Sling (Query)
 	useSlingGetWithQuery()
-	// receive (shorthand: response -> struct)
-	// https://github.com/dghubble/sling#receive
+
 }
 
 // ---
-// helper func
+// Helper func
 // ---
 
 func bulkPrint(args ...interface{}) {
@@ -49,34 +42,8 @@ func printSectionTitle(title string) {
 	fmt.Println("")
 }
 
-// ---------
-// notes
-// ---------
-
 // ---
-// runtime details
-// ---
-
-type RuntimeDetails struct {
-	Os      string `json:"os"`
-	Arch    string `json:"arch"`
-	CPUs    int    `json:"cpus"`
-	Version string `json:"version"`
-}
-
-func getRuntimeDetails() {
-	printSectionTitle("runtime")
-
-	fmt.Printf("%+v\n", RuntimeDetails{
-		Os:      runtime.GOOS,
-		Arch:    runtime.GOARCH,
-		CPUs:    runtime.NumCPU(),
-		Version: runtime.Version(),
-	})
-}
-
-// ---
-// sling
+// Sling
 // ---
 
 func useSlingGet() {
@@ -256,7 +223,5 @@ func useSlingGetWithQuery() {
 		return
 	}
 	// print results
-	bulkPrint(
-		"user", fmt.Sprintf("%+v", users),
-	)
+	bulkPrint("user", fmt.Sprintf("%+v", users))
 }

@@ -1,15 +1,12 @@
 // ---
-// regular expressions
+// Regular expressions
 // ---
 
 // ---
-// regular expressions (with metacharacters)
+// Regular expressions (with metacharacters)
 // ---
 
 const basicRegularExpressions = () => {
-  let str;
-  str = "hello world";
-
   let re;
   re = /hello/; // literal regular expression
   re = /hello/g; // global search (all instances, not just first).
@@ -48,10 +45,10 @@ const basicRegularExpressions = () => {
   // assertions
   re = /x(?=y)/; // 'x' if only followed by 'y'
   re = /x(?!y)/; // 'x' if only NOT followed by 'y'
-}
+};
 
 // ---
-// functions used with regular expressions
+// Functions used with regular expressions
 // ---
 
 const basicRegularExpressionMethods = () => {
@@ -77,4 +74,4 @@ const basicRegularExpressionMethods = () => {
   // match() -- return array [string, index, input] or null (is 're' in 'str'?)
   const result3 = str.match(re);
   console.log(result3);
-}
+};

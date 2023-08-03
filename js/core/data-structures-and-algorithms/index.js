@@ -1,84 +1,9 @@
 // ---
-// data structures and algorithms
+// Data structures and algorithms
 // ---
 
-// common structures
-// - arrays
-// - stacks
-// - queues
-// - linked lists
-// - trees
-// - tries
-// - graphs
-// - hash tables
-
-// algorithms
-// - sorting
-// - dynamic programming
-// - BFS + DFS (searching)
-// - recursion
-
 // ---
-// important developer skills
-// ---
-
-// good code
-// - readable
-// - scalable
-// -- speed (time complexity)
-// -- memory (space complexity)
-
-// good code checklist
-// - it works
-// - proper use of data structures
-// - code re-use (good organization)
-// - modular
-// - less than O(n^2) wherever possible.
-// - low space complexity
-
-// solving problems
-// - analytical skills
-// - coding skills
-// - technical skills
-// - communication skills
-
-// ---
-// time complexity / asymptotic analysis / space complexity
-// ---
-
-// asymptotic analysis -- mathematical framing of an algorithm's runtime performance
-// big O notation -- limiting behavior of a function when the argument approaches infinity
-
-// 4 rules
-// - worst case -- plan for the worst. no blue sky thinking
-// - remove constants -- as function approaches infinity, constants are negligible.
-// - different terms for different inputs -- O(a + b), O(a * b), etc
-// - drop non-dominants -- only use largest time compexity. O(n^2 + n) --> O(n^2)
-
-// time
-// - operations
-// - comparisons
-// - loops
-// - outside function calls
-
-// space
-// - variables
-// - data structures
-// - function calls
-// - allocations
-
-// cheatsheet
-// - https://www.bigocheatsheet.com/
-
-// wiki
-// - https://en.wikipedia.org/wiki/Time_complexity
-
-// reducing complexity
-// - hash maps have higher space complexity than arrays, but much better time complexity.
-// - for sorted arrays, use binary search tree to reduce time complexity.
-
-// ---
-// time complexity examples
+// Time complexity examples
 // ---
 
 const basicTimeComplexity = () => {
@@ -97,10 +22,10 @@ const basicTimeComplexity = () => {
   powerSet(data);
   // O(n!) -- factorial time (permutations)
   getPermutations(data);
-}
+};
 
 // ---
-// interesting functions
+// Interesting functions
 // ---
 
 const getPermutations = (arr) => {
@@ -151,7 +76,7 @@ const powerSet = (arr) => {
   // variable array will have no duplicates
   for (let i = 0; i < arr.length; i++) {
     obj[arr[i]] = true;
-  } 
+  }
   const array = Object.keys(obj);
   const result = [[]];
   for (let i = 0; i < array.length; i++) {
@@ -164,9 +89,9 @@ const powerSet = (arr) => {
 };
 
 const merge = (left, right) => {
-  const resultArray = []
-  const leftIndex = 0
-  const rightIndex = 0
+  const resultArray = [];
+  const leftIndex = 0;
+  const rightIndex = 0;
   // We will concatenate values into the resultArray in order
   while (leftIndex < left.length && rightIndex < right.length) {
     if (left[leftIndex] < right[rightIndex]) {
@@ -181,7 +106,7 @@ const merge = (left, right) => {
   // from either left OR the right
   return resultArray
     .concat(left.slice(leftIndex))
-    .concat(right.slice(rightIndex))
+    .concat(right.slice(rightIndex));
 };
 
 const mergeSort = (arr) => {
@@ -197,7 +122,7 @@ const mergeSort = (arr) => {
 };
 
 // ---
-// space complexity examples
+// Space complexity examples
 // ---
 
 // O(1) -- constant
@@ -209,7 +134,7 @@ const mergeSort = (arr) => {
 // O(n!) -- factorial
 
 // ---
-// time + space complexity
+// Time + space complexity
 // ---
 
 // using nested for loops to check each item
@@ -244,7 +169,7 @@ const getCommonObjects = (arr1 = [], arr2 = []) => {
 };
 
 // ---
-// data structures
+// Data structures
 // ---
 
 // arrays
@@ -256,7 +181,7 @@ const getCommonObjects = (arr1 = [], arr2 = []) => {
 // - cons: higher memory usage
 
 // ---
-// data structures (array)
+// Data structures (array)
 // ---
 
 // push -- add element to end
@@ -320,7 +245,7 @@ class MyArray {
 }
 
 // ---
-// strings and arrays
+// Strings and arrays
 // ---
 
 // strings are character arrays
@@ -338,7 +263,7 @@ const reverse = (str) => {
 const reverse2 = (str) => [...str].reverse().join("");
 
 // ---
-// data structures (hash tables)
+// Data structures (hash tables)
 // ---
 
 // hash table
@@ -406,10 +331,10 @@ const useHashTable = () => {
   people.set("yamato", "Tenzo Yamato");
   people.set("iruka", "Iruka Umino");
   people.get("kakashi"); // "Kakashi Hatake"
-}
+};
 
 // ---
-// singly linked list
+// Singly linked list
 // ---
 
 // singly linked lists are made up of nodes
@@ -502,10 +427,10 @@ const useSinglyLinkedList = () => {
   people.append("yamato");
   people.prepend("iruka");
   people.insert(2, "hiruzen");
-}
+};
 
 // ---
-// doubly linked list
+// Doubly linked list
 // ---
 
 // doubly linked lists are made up of nodes
@@ -591,10 +516,10 @@ const useDoublyLinkedList = () => {
   dll.prepend("iruka");
   console.log(dll);
   console.log(dll.get(0), dll.get(1), dll.get(2));
-}
+};
 
 // ---
-// data structures (stacks and queues)
+// Data structures (stacks and queues)
 // ---
 
 // stacks and queues are linear data structures
@@ -606,7 +531,7 @@ const useDoublyLinkedList = () => {
 // - FIFO -- first in, first out
 
 // ---
-// trees
+// Trees
 // ---
 
 // hierarchical data structure

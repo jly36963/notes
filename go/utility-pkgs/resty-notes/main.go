@@ -10,22 +10,18 @@ import (
 )
 
 // ---
-// main
+// Main
 // ---
 
 func main() {
-	// runtime
 	getRuntimeDetails()
-	// Resty (Get)
 	useRestyGet()
-	// Resty (Post)
 	useRestyPost()
-	// Resty (Query)
 	useRestyGetWithQuery()
 }
 
 // ---
-// helper func
+// Helper func
 // ---
 
 func bulkPrint(args ...interface{}) {
@@ -45,7 +41,7 @@ func printSectionTitle(title string) {
 // ---------
 
 // ---
-// runtime details
+// Runtime details
 // ---
 
 type RuntimeDetails struct {
@@ -67,7 +63,7 @@ func getRuntimeDetails() {
 }
 
 // ---
-// resty
+// Resty
 // ---
 
 func useRestyGet() {

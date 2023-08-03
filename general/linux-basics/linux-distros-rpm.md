@@ -18,7 +18,7 @@
       CentOS
 
 ```zsh
-# info 
+# info
 yum info package1
 # install
 yum update package1
@@ -88,10 +88,10 @@ zypper update
 zypper lu
 zypper up
 # list needed packages
-zypper list-packages 
+zypper list-packages
 zypper lp
 # apply patches
-zypper patch 
+zypper patch
 # list patches
 zypper patches
 # patch check

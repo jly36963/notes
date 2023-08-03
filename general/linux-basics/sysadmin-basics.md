@@ -3,23 +3,23 @@
 ## run level
 
 - run level -- state of system
-  - 0 -- shut down
-  - 1 -- single mode
-  - 2 -- multiuser (no networking)
-  - 3 -- multiuser without X (wihtout command line)
-  - 4 -- not used
-  - 5 -- X11 (GUI)
-  - 6 -- reboot system
+  - 0: shut down
+  - 1: single mode
+  - 2: multiuser (no networking)
+  - 3: multiuser without X (wihtout command line)
+  - 4: not used
+  - 5: X11 (GUI)
+  - 6: reboot system
 
 - targets -- replaced run levels (RHEL 7, Ubuntu 16.04, etc.) (systemd replaced
   sysVinit)
-  - 0 -- poweroff.target -- shut down
-  - 1 -- rescue.target -- single mode
-  - 2 -- * -- user-defined/site-specific run levels. default -- identical to 3
-  - 3 -- multi-user.target -- multiuser, non-graphical, command line
-  - 4 -- * -- user-defined/site-specific run levels. default -- identical to 3
-  - 5 -- graphical.target -- multiuser, graphical
-  - 6 -- reboot.target -- reboot
+  - 0: poweroff.target (shut down)
+  - 1: rescue.target (single mode)
+  - 2: * -- user-defined/site-specific run levels. default: identical to 3
+  - 3: multi-user.target (multiuser, non-graphical, command line)
+  - 4: * -- user-defined/site-specific run levels. default: identical to 3
+  - 5: graphical.target (multiuser, graphical)
+  - 6: reboot.target (reboot)
 
 ```sh
 # current (default) target
@@ -169,7 +169,7 @@ TODO
 ## monitor users
 
 ```sh
-# id 
+# id
 id user1 # uid, gid, groups
 # who
 who # display list of users who are currently logged in
@@ -266,7 +266,7 @@ chmod 777 . -R # give all permissions (all files) (recursive -- includes child d
 
 ```sh
 # ps (list processes)
-ps 
+ps
 ps -eafl # (every) (all) (full format) (long format)
 # get PID
 pidof bash
@@ -277,13 +277,13 @@ ps -U user1 # list all processes owned by user1
 ps -G group1 # list all processes owned by group1
 
 # htop
-    # PID (process id) USER (owner of process) PR (priority) NI (nice value) VIRT (virtual memory) 
+    # PID (process id) USER (owner of process) PR (priority) NI (nice value) VIRT (virtual memory)
     # RES (resident memory size) SHR (shared memory size) S (status) %CPU %MEM (cpu and mem used)
     # TIME (total cpu time) COMMAND (command/program)
 htop
 
 # list of control signals
-kill -l 
+kill -l
 # kill process by name (root -- any, user -- owned)
 pkill htop # soft kill
 pkill -9 htop # hard kill
@@ -294,7 +294,7 @@ kill -9 <PID> # hard kill
 
 # niceness -- inverse of priority.
     # controls execution time on CPU.
-    # between -20 (l niceness, h priority) and +19 (h niceness, l priority). 
+    # between -20 (l niceness, h priority) and +19 (h niceness, l priority).
     # default NI is 0
 ps -eafl # process info (PRI -- priority)
 htop # process info (NI -- niceness)
@@ -356,7 +356,7 @@ ssh user@ip ls ~/
     - enter passphrase (used to encrypt key, should be strong)
 
 ```sh
-ssh-keygen 
+ssh-keygen
 # ssh-keygen (specify beforehand)
 ssh-keygen -f ~/.ssh/new_key -t rsa -b 4096 # file, algorithm, bits
 

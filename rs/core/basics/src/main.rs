@@ -1,5 +1,5 @@
 // ---
-// modules
+// Modules
 // ---
 
 mod examples;
@@ -7,7 +7,7 @@ mod macros;
 mod utils;
 
 // ---
-// main
+// Main
 // ---
 
 fn main() {

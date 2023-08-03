@@ -83,7 +83,7 @@ ssh locotus.borg.domain.com
 ```bash
 # ed25519 key (not all servers support this method)
 ssh-keygen -t ed25519 -o -a 100
-# rsa key (better) 
+# rsa key (better)
 # will be prompted to specify output directory and enter/confirm passphrase
 # if no passphrase provided, key won't require password to be used.
 # two files generated in `~/.ssh/`, id_rsa (private key) and id_rsa.pub (public key)

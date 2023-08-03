@@ -110,16 +110,16 @@ hostnamectl set-hostname new_name
 nano /etc/hostname
 
 # ip addresses
-hostname -I 
+hostname -I
 
 # network config files/settings
 ls /etc/network # files (ubuntu)
 cat /etc/sysconfig/network-scripts/ifcfg-* # settings (CentOS)
 cat /etc/sysconfig/network/ifcfg-* # settings (openSUSE)
 # hosts (hostnames, IP addresses)
-cat /etc/hosts 
+cat /etc/hosts
 # resolver config file -- specifies (1) IP address of DNS server and (2) search domain
-cat /etc/resolv.conf 
+cat /etc/resolv.conf
 # name server switch (maps system identities/services with config sources)
 cat /etc/nsswitch.conf
 ```
@@ -133,7 +133,7 @@ cat /etc/nsswitch.conf
   - zypper install NetworkManager
 
 ```zsh
-nmtui 
+nmtui
 nmcli
 ```
 
@@ -186,7 +186,7 @@ yum install firewalld
 # use firewalld
 systemctl enable firewalld # start on boot
 systemctl start firewalld # start service
-systemctl status firewalls -l # 
+systemctl status firewalls -l #
 # stop firewalld
 systemctl stop firewalld
 systemctl disable firewalld
@@ -198,7 +198,7 @@ systemctl disable firewalld
 # state
 firewall-cmd --state # state of firewall (ie: running)
 # add runtime rule to allow traffic on TCP port 443
-firewall-cmd --add-port=443/tcp 
+firewall-cmd --add-port=443/tcp
 firewall-cmd --permanent --add-port=443/tcp # load this rule every server boot
 # reload
 firewall-cmd --reload

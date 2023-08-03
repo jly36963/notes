@@ -240,7 +240,8 @@ Outputs for making output values available to later steps.
 
 ## Caching dependencies
 
-Cache frequently-used files (eg: deps) to reduce network utilization, runtime, and cost.
+Cache frequently-used files (eg: deps) to reduce network utilization, runtime,
+and cost.
 
 - [Caching](https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows)
 

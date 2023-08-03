@@ -17,7 +17,7 @@ import (
 )
 
 // ---
-// main
+// Main
 // ---
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 }
 
 // ---
-// helper func (dotenv)
+// Helper func (dotenv)
 // ---
 
 func loadDotenv() {
@@ -44,7 +44,7 @@ func loadDotenv() {
 }
 
 // ---
-// providers
+// Providers
 // ---
 
 func getProviders() (p *providers.Providers, err error) {
@@ -72,7 +72,7 @@ func getProviders() (p *providers.Providers, err error) {
 }
 
 // ---
-// pg
+// Pg
 // ---
 
 func usePG(providers *providers.Providers) {
@@ -173,7 +173,7 @@ func usePG(providers *providers.Providers) {
 }
 
 // ---
-// helper func
+// Helper func
 // ---
 
 func stringify(thing ...interface{}) (str string) {

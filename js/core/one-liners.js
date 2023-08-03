@@ -1,11 +1,11 @@
 // ---
-// one liners
+// One liners
 // ---
 
 // https://1loc.dev/
 
 // ---
-// array
+// Array
 // ---
 
 // Check if every element meets condition
@@ -68,7 +68,7 @@ const partition = (arr, condition) =>
 partition([1, 2, 3, 4, 5], (n) => n % 2);
 
 // ---
-// numbers
+// Numbers
 // ---
 
 // sum of arguments
@@ -94,7 +94,7 @@ const randomInteger = (min, max) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
 // ---
-// objects
+// Objects
 // ---
 
 // check if plain object
@@ -112,7 +112,7 @@ const cloneObj1 = (obj) => ({ ...obj }); // shallow
 const cloneObj2 = (obj) => JSON.parse(JSON.stringify(obj)); // deep (might use a lot of memory)
 
 // ---
-// string
+// String
 // ---
 
 // check string

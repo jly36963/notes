@@ -1,9 +1,9 @@
 // ---
-// JAVASCRIPT
+// Javascript
 // ---
 
 // ---
-// variables
+// Variables
 // ---
 
 const basicVariables = () => {
@@ -21,7 +21,7 @@ const basicVariables = () => {
 }
 
 // ---
-// data types
+// Data types
 // ---
 
 const basicDataTypes = () => {
@@ -43,7 +43,7 @@ const basicDataTypes = () => {
 }
 
 // ---
-// operators
+// Operators
 // ---
 
 const basicOperators = () => {
@@ -84,7 +84,7 @@ const basicOperators = () => {
 }
 
 // ---
-// math
+// Math
 // ---
 
 const basicMath = () => {
@@ -103,7 +103,7 @@ const basicMath = () => {
 }
 
 // ---
-// strings
+// Strings
 // ---
 
 const basicStrings = () => {
@@ -118,7 +118,7 @@ const basicStrings = () => {
 }
 
 // ---
-// arrays
+// Arrays
 // ---
 
 const basicArrays = () => {
@@ -175,7 +175,7 @@ const basicArrays = () => {
 }
 
 // ---
-// objects
+// Objects
 // ---
 
 const basicObjects = () => {
@@ -214,7 +214,7 @@ const basicObjects = () => {
 }
 
 // ---
-// template literals
+// Template literals
 // ---
 
 const basicInterpolation = () => {
@@ -226,7 +226,7 @@ const basicInterpolation = () => {
 }
 
 // ---
-// conditionals, logic, and loops
+// Conditionals, logic, and loops
 // ---
 
 // conditional statements
@@ -259,7 +259,7 @@ const basicIfElse2 = () => {
 }
 
 // ---
-// switch
+// Switch
 // ---
 
 const basicSwitch = () => {
@@ -290,7 +290,7 @@ const basicSwitch = () => {
 }
 
 // ---
-// looping
+// Looping
 // ---
 
 // for loop
@@ -369,7 +369,7 @@ const basicForOf = () => {
 }
 
 // ---
-// functions
+// Functions
 // ---
 
 // function
@@ -415,7 +415,7 @@ const square = function (x = 0) {
 };
 
 // ---
-// object with methods
+// Object with methods
 // ---
 
 const greetings = {
@@ -454,7 +454,7 @@ const basicIIFE = () => {
       },
     };
   })();
-  
+
   console.log(counter.getCount());
   counter.increment(3);
   console.log(counter.getCount());
@@ -474,7 +474,7 @@ const basicCurry = () => {
   // curried
   const sum = add(5)(3);
   console.log(sum);
-  
+
   // partially applied
   const addThree = add(3);
   const sum2 = addThree(6);
@@ -510,7 +510,7 @@ const basicRecursion = () => {
 }
 
 // ---
-// error handling (try/catch/finally)
+// Error handling (try/catch/finally)
 // ---
 
 // try/catch/finally -- gracefully handle errors without stopping the script.
@@ -532,7 +532,7 @@ const basicErrorHandling = () => {
 }
 
 // ---
-// regular expressions (regex)
+// Regular expressions (regex)
 // ---
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
@@ -540,7 +540,7 @@ const basicErrorHandling = () => {
 //
 
 // ---
-// iterators/generators (ES6)
+// Iterators/generators (ES6)
 // ---
 
 // iterator
@@ -581,7 +581,7 @@ const basicGenerator = () => {
 }
 
 // ---
-// symbols
+// Symbols
 // ---
 
 const basicSymbols = () => {
@@ -615,7 +615,7 @@ const basicSymbols = () => {
 }
 
 // ---
-// maps (es6) (kinda like object literals)
+// Maps (es6) (kinda like object literals)
 // ---
 
 const basicMaps = () => {
@@ -669,7 +669,7 @@ const basicMaps = () => {
 }
 
 // ---
-// sets
+// Sets
 // ---
 
 const basicSets = () => {
@@ -716,7 +716,7 @@ const basicSets = () => {
 }
 
 // ---
-// classes
+// Classes
 // ---
 
 class Person {
@@ -736,10 +736,10 @@ class Ninja extends Person {
 }
 
 const basicClasses = () => {
-  const kakashi = new Ninja({ 
-    firstName: "Kakashi", 
-    lastName: "Hatake", 
-    village: "Hidden Leaf Village" 
+  const kakashi = new Ninja({
+    firstName: "Kakashi",
+    lastName: "Hatake",
+    village: "Hidden Leaf Village"
   });
   console.log(kakashi); // representation as object
   kakashi.introduce(); // use parent class method
@@ -748,7 +748,7 @@ const basicClasses = () => {
 basicClasses()
 
 // ---
-// advanced javascript
+// Advanced javascript
 // ---
 
 // javascript
@@ -786,7 +786,7 @@ basicClasses()
 // - those job/callback queue items will be returned to call stack.
 
 // ---
-// scope and hosting
+// Scope and hosting
 // ---
 
 // global scope
@@ -824,7 +824,7 @@ basicClasses()
 // - look for variable in scope
 
 // ---
-// functions
+// Functions
 // ---
 
 // expression
@@ -838,7 +838,7 @@ basicClasses()
 // - gets 'arguments' keyword. (don't use these, it slows down compiler)
 
 // ---
-// context vs scope
+// Context vs scope
 // ---
 
 // context -- value of 'this'. determined by how a function is invoked

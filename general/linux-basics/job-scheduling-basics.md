@@ -1,6 +1,6 @@
 # Job Scheduling
 
-- access
+- Access
   - by default, all users have access to crond and atd
   - configure access (crond) -- cron.allow & cron.deny files.
     - default -- deny files exist, allow files don't. This means users have full

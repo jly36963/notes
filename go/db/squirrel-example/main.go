@@ -13,13 +13,13 @@ import (
 )
 
 // ---
-// main
+// Main
 // ---
 
 func main() {
 
 	// ---
-	// setup
+	// Setup
 	// ---
 
 	getRuntimeDetails()
@@ -150,7 +150,7 @@ func main() {
 }
 
 // ---
-// helper func
+// Helper func
 // ---
 
 func loadDotenv() {
@@ -179,7 +179,7 @@ func getConnectionString() (connString string, err error) {
 }
 
 // ---
-// runtime details
+// Runtime details
 // ---
 
 // RuntimeDetails : runtime details, gets logged immediately

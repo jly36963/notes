@@ -1,19 +1,13 @@
 package main
 
 import (
-	// standard packages
-
 	"encoding/json"
 	"fmt"
 	"log"
 	"runtime"
 	"strings"
 
-	// external packages
-
 	"github.com/joho/godotenv"
-
-	// modules
 
 	"mongo-practice/dal/mongodal"
 	"mongo-practice/providers"
@@ -21,7 +15,7 @@ import (
 )
 
 // ---
-// main
+// Main
 // ---
 
 func main() {
@@ -37,7 +31,7 @@ func main() {
 }
 
 // ---
-// helper func (dotenv)
+// Helper func (dotenv)
 // ---
 
 func loadDotenv() {
@@ -48,7 +42,7 @@ func loadDotenv() {
 }
 
 // ---
-// providers
+// Providers
 // ---
 
 func getProviders() (p *providers.Providers) {
@@ -67,7 +61,7 @@ func getProviders() (p *providers.Providers) {
 }
 
 // ---
-// gorm
+// Gorm
 // ---
 
 func useMongo(providers *providers.Providers) {
@@ -162,7 +156,7 @@ func useMongo(providers *providers.Providers) {
 }
 
 // ---
-// helper func
+// Helper func
 // ---
 
 func stringify(thing ...interface{}) (str string) {

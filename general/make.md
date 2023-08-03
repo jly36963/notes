@@ -1,14 +1,14 @@
 # Makefile
 
 Resources:
-* https://devhints.io/makefile
-* https://gist.github.com/isaacs/62a2d1825d04437c6f08
-* https://www.gnu.org/software/make/manual/make.html
+
+- https://devhints.io/makefile
+- https://gist.github.com/isaacs/62a2d1825d04437c6f08
+- https://www.gnu.org/software/make/manual/make.html
 
 ## Cheatsheet
 
 ```makefile
-
 # assignment
 uglify = $(uglify)        # lazy assignment
 compressor := $(uglify)   # immediate assignment
@@ -77,9 +77,6 @@ endif
 # recursion
 deploy:
   $(MAKE) deploy2
-
-
-
 ```
 
 ## options

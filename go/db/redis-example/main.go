@@ -12,7 +12,7 @@ func main() {
 	redisDAL := redisdal.RedisDAL{}
 	redisDAL.SetUp()
 
-	// string
+	// String
 	var result interface{}
 	result = redisDAL.StringSet("name", "Kakashi", 60*1e9)
 	fmt.Printf("String SET result: %v (%T)\n", result, result)
@@ -20,7 +20,7 @@ func main() {
 	fmt.Printf("String GET result: %v (%T)\n", result, result)
 	result = redisDAL.StringDel("name")
 	fmt.Printf("String DEL result: %v (%T)\n", result, result)
-	// list
+	// List
 	result = redisDAL.ListLpush("dates", "2021-09-15")
 	fmt.Printf("List LPUSH result: %v (%T)\n", result, result)
 	result = redisDAL.ListRpush("dates", "2021-05-26")
@@ -35,7 +35,7 @@ func main() {
 	fmt.Printf("List RPOP result: %v (%T)\n", result, result)
 	result = redisDAL.ListDel("dates")
 	fmt.Printf("List DEL result: %v (%T)\n", result, result)
-	// set
+	// Set
 	for i, color := range []string{"red", "yellow", "blue", "red"} {
 		result = redisDAL.SetAdd("colors", color)
 		fmt.Printf("List SADD (%d) result: %v, (%T)\n", i, result, result)
@@ -48,7 +48,7 @@ func main() {
 	fmt.Printf("Set SISMEMBER result: %v (%T)\n", result, result)
 	result = redisDAL.SetDel("colors")
 	fmt.Printf("Set DEL result: %v (%T)\n", result, result)
-	// sorted set
+	// Sorted set
 	scoreItems := []struct {
 		score  float64
 		player string
@@ -79,7 +79,7 @@ func main() {
 }
 
 // ---
-// runtime details
+// Runtime details
 // ---
 
 // RuntimeDetails : runtime details, gets logged immediately
@@ -100,7 +100,7 @@ func getRuntimeDetails() {
 }
 
 // ---
-// utils
+// Utils
 // ---
 
 func reverseStringSlice(s []string) []string {

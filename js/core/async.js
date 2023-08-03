@@ -46,7 +46,7 @@ const _basicPromiseFetch = () => {
 const _basicAsyncAwait = async () => {
   const fetchUserAsync = async () => {
     const response = await fetch(
-      "https://jsonplaceholder.typicode.com/users/1",
+      "https://jsonplaceholder.typicode.com/users/1"
     );
     const user = await response.json();
     return user;
@@ -59,7 +59,3 @@ const _basicAsyncAwait = async () => {
     console.error(err);
   }
 };
-
-// ---
-//
-// ---

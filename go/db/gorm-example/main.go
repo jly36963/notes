@@ -1,8 +1,6 @@
 package main
 
 import (
-	// standard packages
-
 	"encoding/json"
 	"fmt"
 	"log"
@@ -10,11 +8,7 @@ import (
 	"runtime"
 	"strings"
 
-	// external packages
-
 	"github.com/joho/godotenv"
-
-	// modules
 
 	"gorm-practice/dal/pgdal"
 	"gorm-practice/providers"
@@ -22,23 +16,23 @@ import (
 )
 
 // ---
-// main
+// Main
 // ---
 
 func main() {
-	// runtime
+	// Runtime
 	getRuntimeDetails()
-	// load .env
+	// Load .env
 	loadDotenv()
-	// get providers
+	// Get providers
 	providers := getProviders()
-	// use gorm
+	// Use gorm
 	useGorm(providers)
 
 }
 
 // ---
-// helper func (dotenv)
+// Helper func (dotenv)
 // ---
 
 func loadDotenv() {
@@ -49,32 +43,32 @@ func loadDotenv() {
 }
 
 // ---
-// providers
+// Providers
 // ---
 
 func getProviders() (p *providers.Providers) {
 	p = &providers.Providers{
 		PGDAL: &pgdal.PGDAL{},
 	}
-	// connect providers
+	// Connect providers
 	var err error
 	err = p.PGDAL.GetConnection()
 	if err != nil {
 		fmt.Println("error while getting connection")
 		fmt.Println(err)
 	}
-	// run auto migrations
+	// Run auto migrations
 	_, err = p.PGDAL.AutoMigrate()
 	if err != nil {
 		fmt.Println("error during auto migration")
 		fmt.Println(err)
 	}
-	// return
+	// Return
 	return
 }
 
 // ---
-// gorm
+// Gorm
 // ---
 
 func useGorm(providers *providers.Providers) {
@@ -82,7 +76,7 @@ func useGorm(providers *providers.Providers) {
 	pg := providers.PGDAL
 
 	// ---
-	// insert ninja
+	// Insert ninja
 	// ---
 
 	insertedNinja, err := pg.InsertNinja(types.Ninja{
@@ -96,7 +90,7 @@ func useGorm(providers *providers.Providers) {
 	}
 
 	// ---
-	// select ninja
+	// Select ninja
 	// ---
 
 	ninja, err := pg.GetNinja(insertedNinja.ID)
@@ -107,7 +101,7 @@ func useGorm(providers *providers.Providers) {
 	}
 
 	// ---
-	// update ninja
+	// Update ninja
 	// ---
 
 	updatedNinja, err := pg.UpdateNinja(insertedNinja.ID, types.Ninja{FirstName: "Kaka", LastName: "Sensei"})
@@ -118,7 +112,7 @@ func useGorm(providers *providers.Providers) {
 	}
 
 	// ---
-	// insert jutsu
+	// Insert jutsu
 	// ---
 
 	insertedJutsu, err := pg.InsertJutsu(types.Jutsu{
@@ -133,7 +127,7 @@ func useGorm(providers *providers.Providers) {
 	}
 
 	// ---
-	// associate ninja/jutsu
+	// Associate ninja/jutsu
 	// ---
 
 	success, err := pg.AddKnownJutsu(insertedNinja.ID, insertedJutsu.ID)
@@ -144,7 +138,7 @@ func useGorm(providers *providers.Providers) {
 	}
 
 	// ---
-	// get ninja with jutsu
+	// Get ninja with jutsu
 	// ---
 
 	ninjaWithRelatedJutsu, err := pg.GetNinjaWithRelatedJutsu(insertedNinja.ID)
@@ -155,7 +149,7 @@ func useGorm(providers *providers.Providers) {
 	}
 
 	// ---
-	// print results
+	// Print results
 	// ---
 
 	bulkPrint(
@@ -169,7 +163,7 @@ func useGorm(providers *providers.Providers) {
 }
 
 // ---
-// helper func
+// Helper func
 // ---
 
 func stringify(thing ...interface{}) (str string) {

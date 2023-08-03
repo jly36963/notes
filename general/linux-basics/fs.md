@@ -169,7 +169,7 @@ find . -maxdepth 1 -type f -ok cp {} ~/Desktop/dir1 \;
 ```bash
 # create MBR table and partition
 lsblk # see the disk
-parted /dev/sdb # start parted program 
+parted /dev/sdb # start parted program
 help # view list of commands (in parted program)
 print # info on chosen partition (in parted program)
 mklabel msdos # create MBR partition (in parted program)
@@ -177,14 +177,14 @@ mkpart primary 1 100M # make command, type, number system, size (in parted progr
 quit # quit (in parted program)
 
 # delete MBR partition
-parted /dev/sdb 
-print 
+parted /dev/sdb
+print
 rm l # remove partition with specified system number
 
 # command for creating GPT partition
 mklabel gpt # create GPT partition (in parted program)
 
-# comfirm 
+# comfirm
 parted /dev/sdb print
 grep sdb /proc/partitions
 ```
@@ -205,7 +205,7 @@ grep sdb /proc/partitions
 # physical volume (PV)
 lsblk # check disks
 pvcreate /dev/sdb # create a PV
-pvs; pvdisplay # confirm 
+pvs; pvdisplay # confirm
 
 # volume group (VG)
 vgs # check existing volume groups
@@ -216,7 +216,7 @@ vgs; vgsdisplay # check
 lvcreate -n lv1 -L 50M vg1 # create LV (name, size, which vg)
 
 # create fs
-mkfs -t ext4 /dev/vg1/lv1 # create ext3 fs 
+mkfs -t ext4 /dev/vg1/lv1 # create ext3 fs
 blkid # get uuid (name of LV)
 e2label /dev/vg1/lv1 lv1 # add fs label
 
