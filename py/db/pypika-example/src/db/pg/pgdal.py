@@ -1,5 +1,6 @@
 from typing import Union, List, Dict, Any
 import psycopg2
+import psycopg2.extensions
 from pypika import Table, PostgreSQLQuery
 from pypika.terms import FormatParameter
 from ...types.types import NinjaNew, NinjaUpdates, Ninja, JutsuNew, JutsuUpdates, Jutsu
@@ -16,8 +17,13 @@ class PGDAL:
     def __init__(self, conn: psycopg2.extensions.connection):
         self.conn = conn
 
+    # ---
+    # Internal
+    # ---
+
     @staticmethod
     def get_dicts_from_cursor(cursor: psycopg2.extensions.cursor) -> Union[List[Dict[str, Any]], None]:
+        """Convert cursor data into dict"""
         if not cursor.description:
             return None
         columns = [desc[0] for desc in cursor.description]
@@ -33,9 +39,7 @@ class PGDAL:
         query: str,
         args: Union[list, None]
     ) -> Union[Any, None]:
-        """
-        Executes query in transaction and returns cursor result
-        """
+        """Executes query in transaction and returns cursor result"""
         conn = self.conn
         result = None
         with conn.cursor() as cursor:
@@ -49,9 +53,7 @@ class PGDAL:
         query: str,
         args: Union[list, None] = None
     ) -> Union[Any, None]:
-        """
-        Executes query in transaction and returns rows
-        """
+        """Executes query in transaction and returns rows"""
         conn = self.conn
         rows = None
         with conn.cursor() as cursor:
@@ -62,95 +64,147 @@ class PGDAL:
         return rows
 
     # ---
-    # ninjas
+    # Ninjas
     # ---
 
     def create_ninja(self, ninja_new: NinjaNew) -> Union[Ninja, None]:
-        """
-        Create a ninja and return it
-        """
+        """Create a ninja and return it"""
         table = Table(Tables.Ninjas.value)
         args: List[Any] = []
-        qb = (
-            PostgreSQLQuery
-            .into(table)
-            .columns(*ninja_new.keys())
-            .insert(*[FormatParameter() for _ in ninja_new.keys()])
+        qb = PostgreSQLQuery\
+            .into(table)\
+            .columns(*ninja_new.keys())\
+            .insert(*[FormatParameter() for _ in ninja_new.keys()])\
             .returning('*')
-        )
         args += list(ninja_new.values())
         sql = str(qb)
         rows = self.execute_query(sql, args)
         return rows[0] if (rows and len(rows)) else None
 
-    def get_ninja(self, id: str) -> Union[Ninja, None]:
-        """
-        Get a ninja by id
-        """
+    def get_ninja(self, id_: str) -> Union[Ninja, None]:
+        """Get a ninja by id"""
         table = Table(Tables.Ninjas.value)
         args: List[Any] = []
-        qb = (
-            PostgreSQLQuery
-            .from_(table)
-            .select('*')
+        qb = PostgreSQLQuery\
+            .from_(table)\
+            .select('*')\
             .where(table.id == FormatParameter())
-        )
-        args.append(id)
+        args.append(id_)
         sql = str(qb)
         rows = self.execute_query(sql, args)
         return rows[0] if (rows and len(rows)) else None
 
-    def update_ninja(self, id: str, ninja_updates: NinjaUpdates) -> Union[Ninja, None]:
-        """
-        Update a ninja by id and return it
-        """
+    def update_ninja(self, id_: str, ninja_updates: NinjaUpdates) -> Union[Ninja, None]:
+        """Update a ninja by id and return it"""
         table = Table(Tables.Ninjas.value)
         args: List[Any] = []
-        qb = (
-            PostgreSQLQuery
-            .update(table)
-            .where(table.id == FormatParameter())
-            .returning('*')
-        )
+        qb = PostgreSQLQuery\
+            .update(table)\
+            .where(table.id == FormatParameter())\
+            .returning('*')\
+
         for k, v in ninja_updates.items():
             qb = qb.set(table[k], FormatParameter())
             args.append(v)
-        args.append(id)
+        args.append(id_)
         sql = str(qb)
         rows = self.execute_query(sql, args)
         return rows[0] if (rows and len(rows)) else None
 
-    def delete_ninja(self, id: str) -> Union[Ninja, None]:
-        """
-        Delete a ninja and return it
-        """
+    def delete_ninja(self, id_: str) -> Union[Ninja, None]:
+        """Delete a ninja and return it"""
         table = Table(Tables.Ninjas.value)
         args: List[Any] = []
-        qb = (
-            PostgreSQLQuery
-            .from_(table)
-            .delete()
-            .where(table.id == FormatParameter())
+        qb = PostgreSQLQuery\
+            .from_(table)\
+            .delete()\
+            .where(table.id == FormatParameter())\
             .returning('*')
-        )
-        args.append(id)
+
+        args.append(id_)
         sql = str(qb)
         rows = self.execute_query(sql, args)
         return rows[0] if (rows and len(rows)) else None
 
+    # ---
+    # Jutsus
+    # ---
+
+    def create_jutsu(self, jutsu_new: JutsuNew) -> Union[Jutsu, None]:
+        """Create a jutsu and return it"""
+        table = Table(Tables.Jutsus.value)
+        args: List[Any] = []
+        qb = PostgreSQLQuery\
+            .into(table)\
+            .columns(*jutsu_new.keys())\
+            .insert(*[FormatParameter() for _ in jutsu_new.keys()])\
+            .returning('*')
+
+        args += list(jutsu_new.values())
+        sql = str(qb)
+        rows = self.execute_query(sql, args)
+        return rows[0] if (rows and len(rows)) else None
+
+    def get_jutsu(self, id_: str) -> Union[Jutsu, None]:
+        """Get a jutsu by id"""
+        table = Table(Tables.Jutsus.value)
+        args: List[Any] = []
+        qb = PostgreSQLQuery\
+            .from_(table)\
+            .select('*')\
+            .where(table.id == FormatParameter())
+
+        args.append(id_)
+        sql = str(qb)
+        rows = self.execute_query(sql, args)
+        return rows[0] if (rows and len(rows)) else None
+
+    def update_jutsu(self, id_: str, jutsu_updates: JutsuUpdates) -> Union[Jutsu, None]:
+        """Update a ninja by id and return it"""
+        table = Table(Tables.Jutsus.value)
+        args: List[Any] = []
+        qb = PostgreSQLQuery\
+            .update(table)\
+            .where(table.id == FormatParameter())\
+            .returning('*')
+
+        for k, v in jutsu_updates.items():
+            qb = qb.set(table[k], FormatParameter())
+            args.append(v)
+        args.append(id_)
+        sql = str(qb)
+        rows = self.execute_query(sql, args)
+        return rows[0] if (rows and len(rows)) else None
+
+    def delete_jutsu(self, id_: str) -> Union[Jutsu, None]:
+        """Delete a jutsu and return it"""
+        table = Table(Tables.Jutsus.value)
+        args: List[Any] = []
+        qb = PostgreSQLQuery\
+            .from_(table)\
+            .delete()\
+            .where(table.id == FormatParameter())\
+            .returning('*')
+
+        args.append(id_)
+        sql = str(qb)
+        rows = self.execute_query(sql, args)
+        return rows[0] if (rows and len(rows)) else None
+
+    # ---
+    # ninjas_jutsus
+    # ---
+
     def associate_ninja_and_jutsu(self, ninja_id: str, jutsu_id: str) -> None:
-        """
-        Associate a ninja and jutsu
-        """
+        """Associate a ninja and jutsu"""
         table = Table(Tables.NinjasJutsus.value)
         args: List[Any] = []
-        qb = (
-            PostgreSQLQuery
-            .into(table)
-            .columns([table.ninja_id, table.jutsu_id])
-            .insert(FormatParameter(), FormatParameter())
+        qb = PostgreSQLQuery\
+            .into(table)\
+            .columns([table.ninja_id, table.jutsu_id])\
+            .insert(FormatParameter(), FormatParameter())\
             .returning('*')
-        )
+
         args.append(ninja_id)
         args.append(jutsu_id)
         sql = str(qb)
@@ -158,20 +212,17 @@ class PGDAL:
         return
 
     def dissociate_ninja_and_jutsu(self, ninja_id: str, jutsu_id: str) -> None:
-        """
-        Dissociate a ninja and jutsu
-        """
+        """Dissociate a ninja and jutsu"""
         table = Table(Tables.NinjasJutsus.value)
         args: List[Any] = []
-        qb = (
-            PostgreSQLQuery
-            .from_(table)
-            .delete()
+        qb = PostgreSQLQuery\
+            .from_(table)\
+            .delete()\
             .where(
                 (table.ninja_id == FormatParameter()) &
                 (table.jutsu_id == FormatParameter())
             )
-        )
+
         args.append(ninja_id)
         args.append(jutsu_id)
         sql = str(qb)
@@ -179,14 +230,12 @@ class PGDAL:
         return
 
     def get_ninja_with_jutsus(self, ninja_id: str) -> Union[Ninja, None]:
-        """
-        Get ninja with associated jutsus
-        """
+        """Get ninja with associated jutsus"""
         ninjas_table = Table(Tables.Ninjas.value)
         jutsus_table = Table(Tables.Jutsus.value)
         ninjas_jutsus_table = Table(Tables.NinjasJutsus.value)
 
-        # get ninja
+        # Get ninja
         args: List[Any] = []
         qb = (
             PostgreSQLQuery
@@ -199,108 +248,24 @@ class PGDAL:
         rows = self.execute_query(sql, args)
         ninja = rows[0] if (rows and len(rows)) else None
 
-        # get jutsus
+        # Get jutsus
         args: List[Any] = []
-        qb = (
-            PostgreSQLQuery
-            .from_(jutsus_table)
-            .select("*")
+        qb = PostgreSQLQuery\
+            .from_(jutsus_table)\
+            .select("*")\
             .where(jutsus_table.id.isin(
                 PostgreSQLQuery
                 .from_(ninjas_jutsus_table)
                 .select(ninjas_jutsus_table.jutsu_id)
                 .where(ninjas_jutsus_table.ninja_id == FormatParameter())
             ))
-        )
+
         args.append(ninja_id)
         sql = str(qb)
         jutsus = self.execute_query(sql, args) or []
 
-        # result
+        # Result
         if not ninja:
             return None
         ninja['jutsus'] = jutsus
         return ninja
-
-    # ---
-    # jutsus
-    # ---
-
-    def create_jutsu(self, jutsu_new: JutsuNew) -> Union[Jutsu, None]:
-        """
-        Create a jutsu and return it
-        """
-        table = Table(Tables.Jutsus.value)
-        args: List[Any] = []
-        qb = (
-            PostgreSQLQuery
-            .into(table)
-            .columns(*jutsu_new.keys())
-            .insert(*[FormatParameter() for _ in jutsu_new.keys()])
-            .returning('*')
-        )
-        args += list(jutsu_new.values())
-        sql = str(qb)
-        rows = self.execute_query(sql, args)
-        return rows[0] if (rows and len(rows)) else None
-
-    def get_jutsu(self, id: str) -> Union[Jutsu, None]:
-        """
-        Get a jutsu by id
-        """
-        table = Table(Tables.Jutsus.value)
-        args: List[Any] = []
-        qb = (
-            PostgreSQLQuery
-            .from_(table)
-            .select('*')
-            .where(table.id == FormatParameter())
-        )
-        args.append(id)
-        sql = str(qb)
-        rows = self.execute_query(sql, args)
-        return rows[0] if (rows and len(rows)) else None
-
-    def update_jutsu(self, id: str, jutsu_updates: JutsuUpdates) -> Union[Jutsu, None]:
-        """
-        Update a ninja by id and return it
-        """
-        table = Table(Tables.Jutsus.value)
-        args: List[Any] = []
-        qb = (
-            PostgreSQLQuery
-            .update(table)
-            .where(table.id == FormatParameter())
-            .returning('*')
-        )
-        for k, v in jutsu_updates.items():
-            qb = qb.set(table[k], FormatParameter())
-            args.append(v)
-        args.append(id)
-        sql = str(qb)
-        rows = self.execute_query(sql, args)
-        return rows[0] if (rows and len(rows)) else None
-
-    def delete_jutsu(self, id: str) -> Union[Jutsu, None]:
-        """
-        Delete a jutsu and return it
-        """
-        table = Table(Tables.Jutsus.value)
-        args: List[Any] = []
-        qb = (
-            PostgreSQLQuery
-            .from_(table)
-            .delete()
-            .where(table.id == FormatParameter())
-            .returning('*')
-        )
-        args.append(id)
-        sql = str(qb)
-        rows = self.execute_query(sql, args)
-        return rows[0] if (rows and len(rows)) else None
-
-    # ---
-    # ninjas_jutsus
-    # ---
-
-    # TODO

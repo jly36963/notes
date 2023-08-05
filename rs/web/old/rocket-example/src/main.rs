@@ -135,7 +135,7 @@ fn create_user(input: UserNew) -> Json<User> {
     })
 }
 
-// catchers
+// Catchers
 // https://api.rocket.rs/v0.4/rocket/struct.Catcher.html#code-generation
 
 #[catch(404)]
@@ -147,7 +147,3 @@ fn not_found() -> &'static str {
 fn internal_error() -> &'static str {
     "Internal Error"
 }
-
-// TODO:
-// fairings -- https://rocket.rs/v0.4/guide/fairings/
-// handle files

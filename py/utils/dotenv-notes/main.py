@@ -7,11 +7,13 @@ def main():
     # Determine if development or production
     dev = os.getenv('PYTHON_ENV') != 'production'
     path = './dev.env' if dev else './.env'
+
     # Load .env into environment
     load_dotenv(
-        dotenv_path=path,
+        dotenv_path=path,  # Defaults to '.env'
         verbose=True
     )
+
     # Use env vars
     print(os.getenv('API_TOKEN'))
 

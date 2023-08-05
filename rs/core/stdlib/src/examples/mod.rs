@@ -9,12 +9,12 @@ use std::path::Path;
 use std::process::Command;
 
 /// Basic collections usage
+/// Docs: https://doc.rust-lang.org/std/collections/index.html
 pub fn basic_collections() -> () {
-    // https://doc.rust-lang.org/std/collections/index.html
     println!("TODO");
 }
 
-/// Basic fmt usage
+/// Basic fmt usage:
 /// Formatting: https://doc.rust-lang.org/std/fmt/index.html#formatting-parameters
 /// Macros: https://doc.rust-lang.org/std/fmt/index.html#related-macros
 pub fn basic_fmt() -> () {
@@ -28,8 +28,8 @@ pub fn basic_fmt() -> () {
     println!("Hey there, {}", "Kakashi");
 }
 
-/// Basic path usage
-/// path: cross-platform path manipulation
+/// Basic path usage:
+/// path is used for cross-platform path manipulation.
 pub fn basic_path() -> () {
     let path = Path::new("./a/b/c.txt");
     let parent = path.clone().parent().unwrap();
@@ -86,8 +86,8 @@ pub fn basic_path() -> () {
     println!("joined: {:?}", joined);
 }
 
-/// Basic env usage
-/// env: inspection/manipulation of the process's environment
+/// Basic env usage:
+/// env is used for inspection/manipulation of the process's environment.
 pub fn basic_env() -> () {
     // args
     let args = env::args();
@@ -232,25 +232,22 @@ pub fn basic_fs() -> () {
     // Rename file
     fs::rename(filename2, filename3).unwrap();
     // Cleanup
+    // Prefering specific deletions over potentially-dangerous `remove_dir_all`,
     fs::remove_file(filename).unwrap();
     fs::remove_file(filename3).unwrap();
     fs::remove_dir(dirname).unwrap();
-    /*
-    // If not careful, this could be really bad
-    fs::remove_dir_all(dirname).unwrap();
-     */
 }
 
-/// Basic os usage
+/// Basic os usage:
 /// os-specific extensions to std packages
 pub fn basic_os() -> () {
     println!("TODO");
 }
 
-/// Basic prelude usage
-/// prelude: list of things rust automatically imports into every rust program
-/// It reduces verbosity of imports
-/// It is kept minimal to reduce unused imports
+/// Basic prelude usage:
+/// prelude includes things rust automatically imports into every rust program.
+/// It reduces verbosity of imports.
+/// It is kept minimal to reduce unused imports.
 pub fn basic_prelude() -> () {
     println!("TODO");
 }
@@ -266,10 +263,10 @@ pub fn basic_process() -> () {
     print!("command output: {}", s);
 }
 
-/// Basic Box usage
-/// Box: a pointer type for heap allocation
-/// It is the simplest form of heap allocation in Rust
-/// It has defined size
+/// Basic Box usage:
+/// Box is a pointer type for heap allocation.
+/// It is the simplest form of heap allocation in Rust.
+/// It has defined size.
 pub fn basic_box() -> () {
     // Reference/dereference
 
@@ -281,68 +278,68 @@ pub fn basic_box() -> () {
     println!("Unboxed value: {}", val);
 }
 
-/// Basic Pin usage
-/// Pin: pins data to its location in memory (unless type has auto-trait Unpin)
+/// Basic Pin usage:
+/// Docs: https://doc.rust-lang.org/std/pin/
+/// Pin pins data to its location in memory (unless type has auto-trait Unpin).
 /// It ensures that the pointee of any pointer type has a stable location in memory.
-/// Pointee of pointer type can't be moved, can't be deallocated until drop
-/// Many types are freely moveable, Unpin auto-trait means the type doesn't care about pinning
+/// Pointee of pointer type can't be moved, can't be deallocated until drop.
+/// Many types are freely moveable, Unpin auto-trait means the type doesn't care about pinning.
 pub fn basic_pin() -> () {
-    // https://doc.rust-lang.org/std/pin/
     println!("TODO");
 }
 
-/// Basic Future usage
-/// Future: a representation of asynchronous operation
-/// It is a value that might not have finished computing yet
-/// Enables a thread to do other things while waiting for the value to be available
-/// Under the hood: it is polled, woken when ready, registered for wakeup if not yet available
-/// Poll: returns either Pending or Ready(val)
+/// Basic Future usage:
+/// Docs: https://doc.rust-lang.org/stable/std/future/trait.Future.html
+/// Future: a representation of asynchronous operation.
+/// It is a value that might not have finished computing yet.
+/// Enables a thread to do other things while waiting for the value to be available.
+/// Under the hood: it is polled, woken when ready, registered for wakeup if not yet available.
+/// Poll returns either Pending or Ready(val).
 pub fn basic_future() -> () {
-    // https://doc.rust-lang.org/stable/std/future/trait.Future.html
     println!("TODO");
 }
 
-/// Basic Rc usage
-/// rc: single-threaded reference-counting pointers
+/// Basic Rc usage:
+/// Docs: https://doc.rust-lang.org/std/rc/index.html
+/// rc: single-threaded reference-counting pointers.
 /// It provides shared ownership of a value.
-/// No immutability, put Cell/RefCell inside Rc for mutability
-/// Cloning produces a new pointer to the same allocation in the heap
-/// When the last pointer is destroyed, the stored value is dropped
-/// Rc: faster, no Send/Sync trait
-/// Arc: slower, has Send/Sync trait
+/// No immutability, put Cell/RefCell inside Rc for mutability.
+/// Cloning produces a new pointer to the same allocation in the heap.
+/// When the last pointer is destroyed, the stored value is dropped.
+/// Rc: faster, no Send/Sync trait.
+/// Arc: slower, has Send/Sync trait.
 pub fn basic_rc() -> () {
-    // https://doc.rust-lang.org/std/rc/index.html
     println!("TODO");
 }
 
 /// Basic cell usage
-/// Rust memory safety: either several immutable references or a single mutable reference
-/// Cell/RefCell: allow multiple mutable references (in a single-threaded context)
-/// For multi-threaded mutability, use sync types (Mutex, RwLock, atomic)
-/// cells provide "interior mutability", whereas typical Rust types exhibit "inherited mutability"
-/// Cell: implements interior mutability by moving values in and out of the cell
-/// RefCell: cell with reference, requires acquiring a write lock before mutating
+/// Docs: https://doc.rust-lang.org/std/cell/index.html
+/// Rust memory safety: either several immutable references or a single mutable reference.
+/// Cell/RefCell: allow multiple mutable references (in a single-threaded context).
+/// For multi-threaded mutability, use sync types (Mutex, RwLock, atomic).
+/// cells provide "interior mutability", whereas typical Rust types exhibit "inherited mutability".
+/// Cell: implements interior mutability by moving values in and out of the cell.
+/// RefCell: cell with reference, requires acquiring a write lock before mutating.
 pub fn basic_cell() -> () {
-    // https://doc.rust-lang.org/std/cell/index.html
     println!("TODO");
 }
 
-/// Basic sync usage
+/// Basic sync usage:
+/// Docs: https://doc.rust-lang.org/std/sync/index.html
+/// Docs2: https://doc.rust-lang.org/std/sync/index.html#higher-level-synchronization-objects
 pub fn basic_sync() -> () {
-    // https://doc.rust-lang.org/std/sync/index.html
-    // https://doc.rust-lang.org/std/sync/index.html#higher-level-synchronization-objects
     println!("TDOD");
 }
 
-/// Basic panic usage
+/// Basic panic usage:
+// Docs: https://doc.rust-lang.org/std/macro.panic.html
+// Docs2; https://doc.rust-lang.org/nomicon/unwinding.html
 pub fn basic_panic() -> () {
-    // https://doc.rust-lang.org/std/macro.panic.html
-    // https://doc.rust-lang.org/nomicon/unwinding.html
     println!("TDOD");
 }
 
-/// Basic Any usage
-/// Any: trait that enables dynamic typing of any 'static type through runtime reflection
+/// Basic Any usage:
+/// Any is a trait that enables dynamic typing of any 'static type through runtime reflection
 pub fn basic_any() -> () {
     let boxed: Box<dyn Any> = Box::new(3_i32);
     let actual_id = (&*boxed).type_id();

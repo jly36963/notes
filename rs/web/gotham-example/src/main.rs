@@ -17,9 +17,9 @@ use serde::{Deserialize, Serialize};
 // ---
 
 fn main() {
-    let addr = "127.0.0.1:5000";
+    let addr = "127.0.0.1:3000";
     println!("Serving on {}", addr);
-    gotham::start(addr, || Ok(get_router()));
+    gotham::start(addr, || Ok(get_router())).unwrap();
 }
 
 // ---
@@ -52,14 +52,14 @@ fn get_router() -> Router {
 // Handlers
 // ---
 
-// GET /
-// return String
+/// GET /
+/// Return "Hello!"
 pub fn get_root(state: State) -> (State, &'static str) {
     (state, "Hello!")
 }
 
-// GET /api
-// return json
+/// GET /api
+/// Return simple JSON
 pub fn get_api(state: State) -> (State, Response<Body>) {
     #[derive(Serialize, Deserialize)]
     struct Data {
@@ -73,22 +73,22 @@ pub fn get_api(state: State) -> (State, Response<Body>) {
     (state, res)
 }
 
-// GET /api/health
-// return status code
+/// GET, /api/health
+/// Return status code
 pub fn get_api_health(state: State) -> (State, Response<Body>) {
     let res = create_empty_response(&state, StatusCode::OK);
     (state, res)
 }
 
-// GET /api/health-check
-// redirect to /api/health
+/// GET /api/health-check
+/// Redirect to /api/health
 pub fn get_api_health_check(state: State) -> (State, Response<Body>) {
     let res = create_permanent_redirect(&state, "/api/health");
     (state, res)
 }
 
-// GET /api/store/search
-// return query params
+/// GET /api/store/search
+/// Return "q" query param
 pub fn get_api_store_search(mut state: State) -> (State, Response<Body>) {
     let query = StoreSearchQuery::take_from(&mut state);
     #[derive(Serialize, Deserialize)]
@@ -101,8 +101,8 @@ pub fn get_api_store_search(mut state: State) -> (State, Response<Body>) {
     (state, res)
 }
 
-// GET /api/user/:id
-// return (mock) user
+/// GET /api/user/:id
+/// Return (mock) user.
 pub fn get_api_user_id(state: State) -> (State, Response<Body>) {
     let path_params = UserIdPathParams::borrow_from(&state);
     let id = &path_params.id;
@@ -120,9 +120,9 @@ pub fn get_api_user_id(state: State) -> (State, Response<Body>) {
     (state, res)
 }
 
-// POST /api/user
-// (pretend) create new user
-// async handler example -- https://github.com/gotham-rs/gotham/blob/gotham-0.6.0/examples/handlers/simple_async_handlers_await/src/main.rs
+/// POST /api/user
+/// Pretend to create new user.
+/// Async handler example in repo: examples/handlers/simple_async_handlers_await.
 pub async fn post_api_user(mut state: State) -> HandlerResult {
     // Get body
     let body: String;
@@ -136,7 +136,7 @@ pub async fn post_api_user(mut state: State) -> HandlerResult {
     // Convert body to struct
     let user_new: UserNew;
     match serde_json::from_str(&body) {
-        Ok(u) => user_new = u, // res = create_response(&state, StatusCode::OK, mime::APPLICATION_JSON, user)
+        Ok(u) => user_new = u,
         Err(_) => {
             let res = create_empty_response(&state, StatusCode::INTERNAL_SERVER_ERROR);
             return Ok((state, res));

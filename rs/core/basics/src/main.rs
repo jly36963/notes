@@ -14,6 +14,9 @@ fn main() {
     utils::print_section_header(String::from("basic vars"));
     examples::basic_vars();
 
+    utils::print_section_header(String::from("basic const vars"));
+    examples::basic_const_vars();
+
     utils::print_section_header(String::from("basic unused variables"));
     examples::basic_unused_variables();
 

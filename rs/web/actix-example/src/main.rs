@@ -2,24 +2,25 @@ use actix_web::{get, middleware, post, web, App, HttpRequest, HttpResponse, Http
 use serde::{Deserialize, Serialize};
 
 // ---
-// main
+// Main
 // ---
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let addr = "127.0.0.1:8080";
+    let addr = "127.0.0.1:3000";
     println!("Serving on {}", addr);
+
     HttpServer::new(|| {
         App::new()
-            // logger middleware
+            // Logger middleware
             .wrap(middleware::Logger::default())
-            // limit size of payload (global config)
-            .data(web::JsonConfig::default().limit(4096))
-            // routes
+            // Limit size of payload (global config)
+            .app_data(web::JsonConfig::default().limit(4096))
+            // Add routes
             .service(get_index)
             .service(get_api)
             .service(get_api_health)
-            .service(get_api_health_check)
+            .service(web::redirect("/api/health-check", "/api/health"))
             .service(get_api_store_search)
             .service(get_api_user_id)
             .service(post_api_user)
@@ -33,15 +34,13 @@ async fn main() -> std::io::Result<()> {
 // Handlers
 // ---
 
-// GET /
-// return String
+/// Return "Hello"
 #[get("/")]
 async fn get_index(_: HttpRequest) -> &'static str {
     "Hello!"
 }
 
-// GET /api
-// return json
+/// Return simple JSON
 #[get("/api")]
 async fn get_api(_: HttpRequest) -> HttpResponse {
     #[derive(Serialize, Deserialize)]
@@ -54,44 +53,31 @@ async fn get_api(_: HttpRequest) -> HttpResponse {
     })
 }
 
-// GET /api/health
-// return status code
+/// Return 200 status code
 #[get("/api/health")]
 async fn get_api_health(_: HttpRequest) -> HttpResponse {
     HttpResponse::Ok().finish()
 }
 
-// GET /api/health-check
-// redirect to /api/health
-#[get("/api/health-check")]
-async fn get_api_health_check(_: HttpRequest) -> HttpResponse {
-    HttpResponse::Found()
-        .header("Location", "/api/health")
-        .finish()
-}
-
-// GET /api/store/search
-// return query params
-// https://stackoverflow.com/a/58055305
+/// Return query "q" param
 #[get("/api/store/search")]
 async fn get_api_store_search(query: web::Query<StoreSearchQuery>) -> HttpResponse {
-    HttpResponse::Ok().json(StoreSearchQuery { q: query.q.clone() })
+    let q = query.q.clone();
+    HttpResponse::Ok().json(StoreSearchQuery { q })
 }
 
-// GET /api/user/:id
-// return (mock) user
+/// Return (mock) user
 #[get("/api/user/{id}")]
-async fn get_api_user_id(web::Path(id): web::Path<String>) -> HttpResponse {
+async fn get_api_user_id(path: web::Path<String>) -> HttpResponse {
+    let id = path.into_inner();
     HttpResponse::Ok().json(User {
-        id: String::from(id),
+        id,
         first_name: String::from("Kakashi"),
         last_name: String::from("Hatake"),
     })
 }
 
-// POST /api/user
-// (pretend) create new user
-// https://github.com/actix/examples/blob/master/json/json/src/main.rs
+/// Pretend to create new user
 #[post("/api/user")]
 async fn post_api_user(user_new: web::Json<UserNew>) -> HttpResponse {
     HttpResponse::Ok().json(User {
@@ -102,7 +88,7 @@ async fn post_api_user(user_new: web::Json<UserNew>) -> HttpResponse {
 }
 
 // ---
-// Structs
+// Types
 // ---
 
 #[derive(Serialize, Deserialize)]

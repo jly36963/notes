@@ -16,9 +16,10 @@ members = [
     "rs/utils/reqwest-notes",
     "rs/utils/serde-notes",
     "rs/web/actix-example",
+    "rs/web/axum-example",
     "rs/web/gotham-example",
-    "rs/web/iron-example",
-    "rs/web/nickel-example",
-    "rs/web/rocket-example",
     "rs/web/warp-example",
+    # "rs/web/old/iron-example",
+    # "rs/web/old/nickel-example",
+    # "rs/web/old/rocket-example",
 ]

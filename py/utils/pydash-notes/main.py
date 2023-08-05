@@ -191,7 +191,7 @@ def basic_strings():
     # pascal_case
     pydash.pascal_case('kakashi-hatake')  # "KakashiHatake"
     # prune
-    # ...
+    # TODO
     # slugify
     pydash.slugify('Iruka Umino')  # "iruka-umino"
     # snake_case
@@ -205,7 +205,7 @@ def basic_strings():
     # to_lower
     pydash.to_lower('--Fugaku-Uchiha--')  # "--FUGAKU-UCHIHA--"
     # truncate
-    # ...
+    # TODO
     # unescape
     pydash.unescape("Hiruzen &amp; Iruka")  # "Hiruzen & Iruka"
     # upper_case

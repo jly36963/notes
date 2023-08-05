@@ -4,9 +4,6 @@ import math
 import asyncio
 import random
 
-# from numbers import Number
-# Number doesn't have operator support
-
 
 Num = int | float
 

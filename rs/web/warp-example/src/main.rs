@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::net::IpAddr;
 use std::str::FromStr;
-use warp::Filter;
+use warp::{http::Uri, Filter};
 
 // ---
 // Main
@@ -13,23 +13,22 @@ async fn main() {
     // Config
     let host = String::from("127.0.0.1");
     let ip = IpAddr::from_str(&host).unwrap();
-    let port = 5000;
+    let port = 3000;
     // Routes
-    let routes = get_routes();
+    let router = get_router();
     // Serve
     println!("Server started on {}:{}", host, port);
-    warp::serve(routes).run((ip, port)).await;
+    warp::serve(router).run((ip, port)).await;
 }
 
 // ---
 // Routes
 // ---
 
-// https://github.com/seanmonstar/warp/blob/master/examples/routing.rs
-
-fn get_routes() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+/// Get api router
+fn get_router() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     // GET /
-    // return String
+    // Return "Hello, world!"
     let hello_world = warp::path::end().map(|| "Hello, World!");
 
     // GET /api
@@ -51,7 +50,8 @@ fn get_routes() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejecti
 
     // GET /api/health-check
     // redirect to /api/health
-    // TODO
+    let redirect_get_api_health = warp::path!("api" / "health-check")
+        .map(|| warp::redirect::permanent(Uri::from_static("/api/health")));
 
     // GET /api/store/search
     // return query params
@@ -102,15 +102,15 @@ fn get_routes() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejecti
     // Catch all
     // TODO
 
-    // return routes
-    let routes = warp::get()
+    // Return routes
+    warp::get()
         .and(hello_world)
         .or(get_api)
         .or(get_api_health)
+        .or(redirect_get_api_health)
         .or(get_api_store_search)
         .or(get_api_user_id)
-        .or(post_api_user);
-    return routes;
+        .or(post_api_user)
 }
 
 // ---
