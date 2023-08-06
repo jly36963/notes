@@ -15,6 +15,7 @@ members = [
     "rs/utils/regex-notes",
     "rs/utils/reqwest-notes",
     "rs/utils/serde-notes",
+    "rs/utils/validator-notes",
     "rs/web/actix-example",
     "rs/web/axum-example",
     "rs/web/gotham-example",
