@@ -4,12 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sklearn = "*"
-pandas = "*"
-numpy = "*"
-statsmodels = "*"
-matplotlib = "*"
-seaborn = "*"
+# TODO: update
+pydash = "*"
+polars = "*"
 
 [dev-packages]
 pylint = "*"
