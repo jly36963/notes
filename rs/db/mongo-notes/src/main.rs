@@ -43,9 +43,7 @@ async fn main() {
 
     // Update one
     println!("find_one_and_update example");
-    let result = mongo_dal
-        .update_ninja_last_name(ninja._id, "Sensei".to_string())
-        .await;
+    let result = mongo_dal.update_ninja_last_name(ninja._id, "Sensei".to_string()).await;
     let ninja = result.unwrap().unwrap();
     println!("Ninja find_one_and_update result: {:#?}", ninja);
 
@@ -86,48 +84,25 @@ struct MongoDAL {
 pub trait TMongoDAL {
     async fn create_ninja(&self, ninja: NinjaNew) -> Result<Option<Ninja>, mongodb::error::Error>;
     async fn get_ninja_by_id(&self, _id: Bson) -> Result<Option<Ninja>, mongodb::error::Error>;
-    async fn update_ninja_last_name(
-        &self,
-        _id: Bson,
-        last_name: String,
-    ) -> Result<Option<Ninja>, mongodb::error::Error>;
+    async fn update_ninja_last_name(&self, _id: Bson, last_name: String) -> Result<Option<Ninja>, mongodb::error::Error>;
     async fn delete_ninja(&self, _id: Bson) -> Result<Option<Ninja>, mongodb::error::Error>;
 }
 
 #[async_trait]
 impl TMongoDAL for MongoDAL {
-    async fn create_ninja(
-        &self,
-        ninja_new: NinjaNew,
-    ) -> Result<Option<Ninja>, mongodb::error::Error> {
+    async fn create_ninja(&self, ninja_new: NinjaNew) -> Result<Option<Ninja>, mongodb::error::Error> {
         // Insert ninja
-        let result = self
-            .db
-            .collection::<NinjaNew>("ninjas")
-            .insert_one(ninja_new, None)
-            .await?;
+        let result = self.db.collection::<NinjaNew>("ninjas").insert_one(ninja_new, None).await?;
         // Get newly inserted ninja (TODO: combine into single operation?)
         let _id = result.inserted_id;
-        let result = self
-            .db
-            .collection::<Ninja>("ninjas")
-            .find_one(doc! { "_id": _id }, None)
-            .await;
+        let result = self.db.collection::<Ninja>("ninjas").find_one(doc! { "_id": _id }, None).await;
         result
     }
     async fn get_ninja_by_id(&self, _id: Bson) -> Result<Option<Ninja>, mongodb::error::Error> {
-        let result = self
-            .db
-            .collection::<Ninja>("ninjas")
-            .find_one(doc! { "_id": _id }, None)
-            .await;
+        let result = self.db.collection::<Ninja>("ninjas").find_one(doc! { "_id": _id }, None).await;
         result
     }
-    async fn update_ninja_last_name(
-        &self,
-        _id: Bson,
-        last_name: String,
-    ) -> Result<Option<Ninja>, mongodb::error::Error> {
+    async fn update_ninja_last_name(&self, _id: Bson, last_name: String) -> Result<Option<Ninja>, mongodb::error::Error> {
         let result = self
             .db
             .collection::<Ninja>("ninjas")
@@ -142,11 +117,7 @@ impl TMongoDAL for MongoDAL {
         result
     }
     async fn delete_ninja(&self, _id: Bson) -> Result<Option<Ninja>, mongodb::error::Error> {
-        let result = self
-            .db
-            .collection::<Ninja>("ninjas")
-            .find_one_and_delete(doc! { "_id": _id }, None)
-            .await;
+        let result = self.db.collection::<Ninja>("ninjas").find_one_and_delete(doc! { "_id": _id }, None).await;
         result
     }
 }

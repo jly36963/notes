@@ -38,9 +38,7 @@ fn get_router() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejecti
         struct Data {
             message: String,
         }
-        let data = Data {
-            message: "Hello!".to_string(),
-        };
+        let data = Data { message: "Hello!".to_string() };
         warp::reply::json(&data)
     });
 
@@ -50,8 +48,7 @@ fn get_router() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejecti
 
     // GET /api/health-check
     // redirect to /api/health
-    let redirect_get_api_health = warp::path!("api" / "health-check")
-        .map(|| warp::redirect::permanent(Uri::from_static("/api/health")));
+    let redirect_get_api_health = warp::path!("api" / "health-check").map(|| warp::redirect::permanent(Uri::from_static("/api/health")));
 
     // GET /api/store/search
     // return query params

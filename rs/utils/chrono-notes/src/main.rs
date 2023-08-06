@@ -41,11 +41,7 @@ fn use_chrono() {
     // shift
     let dt1 = Utc.ymd(2021, 10, 3).and_hms(0, 0, 0);
     let dt2 = dt1 + Duration::days(7);
-    println!(
-        "one week from {} is {}",
-        dt1.format("%Y-%m-%d"),
-        dt2.format("%Y-%m-%d")
-    );
+    println!("one week from {} is {}", dt1.format("%Y-%m-%d"), dt2.format("%Y-%m-%d"));
 
     // select part of datetime
     let dt = Utc.ymd(2021, 9, 15).and_hms(0, 0, 0);

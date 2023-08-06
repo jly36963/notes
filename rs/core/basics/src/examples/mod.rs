@@ -17,12 +17,7 @@ pub fn basic_vars() -> () {
     }
     let age: u8 = 27;
 
-    println!(
-        "Hey! My name is {f} {l}, and I'm {a} years old.",
-        f = first_name,
-        l = last_name,
-        a = age,
-    )
+    println!("Hey! My name is {f} {l}, and I'm {a} years old.", f = first_name, l = last_name, a = age,)
 }
 
 /// Example const usage:
@@ -483,10 +478,7 @@ pub fn basic_results() -> () {
 pub fn basic_tuples() -> () {
     let kakashi: (String, String, i32) = (String::from("Kakashi"), String::from("Hatake"), 27);
     let (first_name, last_name, age) = kakashi;
-    println!(
-        "Hello, my name is {} {}, and I am {} years old.",
-        first_name, last_name, age
-    )
+    println!("Hello, my name is {} {}, and I am {} years old.", first_name, last_name, age)
 }
 
 /// Basic array usage
@@ -543,10 +535,7 @@ struct Ninja {
 
 impl Ninja {
     fn greet(&self) {
-        println!(
-            "Hey! I'm {} {}, and I'm {} years old.",
-            self.first_name, self.last_name, self.age
-        )
+        println!("Hey! I'm {} {}, and I'm {} years old.", self.first_name, self.last_name, self.age)
     }
 }
 

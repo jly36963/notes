@@ -1,6 +1,4 @@
-use crate::utils::calculator::{
-    add, divide, get_mean, get_product, get_std, get_sum, multiply, subtract,
-};
+use crate::utils::calculator::{add, divide, get_mean, get_product, get_std, get_sum, multiply, subtract};
 
 #[test]
 fn test_add() {

@@ -81,14 +81,7 @@ fn basic_series() {
     println!("product: {}", s2.product());
     println!("std: {}", s2.f64().unwrap().std().unwrap());
     println!("var: {}", s2.f64().unwrap().var().unwrap());
-    println!(
-        "quantile(.5): {}",
-        s2.f64()
-            .unwrap()
-            .quantile(0.5, Default::default())
-            .unwrap()
-            .unwrap()
-    );
+    println!("quantile(.5): {}", s2.f64().unwrap().quantile(0.5, Default::default()).unwrap().unwrap());
 
     // Manipulation
     let s3 = Series::new("s3", [3, 4, 5, 1, 2]);
@@ -96,10 +89,7 @@ fn basic_series() {
     println!("cast: {}", s3.cast(&DataType::Float64).unwrap());
     println!("sort: {}", s3.sort(false));
     println!("reverse: {}", s3.reverse());
-    println!(
-        "apply: {}",
-        Series::from(s3.i32().unwrap().apply(|x| x + 1))
-    );
+    println!("apply: {}", Series::from(s3.i32().unwrap().apply(|x| x + 1)));
 
     // Round
     let s4: Series = Series::new("s4", 1..10)
@@ -119,10 +109,7 @@ fn basic_series() {
     let s5 = Series::new("s5", [1, 2, 3].repeat(3));
     println!("s5: {}", s5);
     println!("filter: {}", s5.filter(&s5.gt(1).unwrap()).unwrap());
-    println!(
-        "sample_frac: {}",
-        s5.sample_frac(0.5, false, true, Some(1)).unwrap()
-    );
+    println!("sample_frac: {}", s5.sample_frac(0.5, false, true, Some(1)).unwrap());
     println!("shuffle: {}", s5.shuffle(1));
     println!("slice: {}", s5.slice(0, 4));
     println!("head: {}", s5.head(Some(3)));
@@ -161,10 +148,7 @@ fn basic_df_details() {
     println!("dtypes: {:?}", df.dtypes());
     println!("shape: {:?}", df.shape());
     println!("height: {}", df.height());
-    println!(
-        "schema: {:?}",
-        df.schema().iter_names().collect::<Vec<&String>>()
-    ); // iter_fields, iter_dtypes, iter_names, iter
+    println!("schema: {:?}", df.schema().iter_names().collect::<Vec<&String>>()); // iter_fields, iter_dtypes, iter_names, iter
     println!("is_empty: {:?}", df.is_empty());
     println!("estimated_size: {:?}", df.estimated_size());
     println!("describe: {}", df.describe(None).drop("species").unwrap());
@@ -177,20 +161,13 @@ fn basic_df_export() {
 
     // To CSV
     let mut csv_bytes = Vec::new();
-    CsvWriter::new(&mut csv_bytes)
-        .has_header(true)
-        .with_delimiter(b',')
-        .finish(&mut df)
-        .unwrap();
+    CsvWriter::new(&mut csv_bytes).has_header(true).with_delimiter(b',').finish(&mut df).unwrap();
     let csv_string = String::from_utf8(csv_bytes).unwrap();
     println!("df -> csv: \n{}", csv_string);
 
     // To JSON
     let mut json_bytes = Vec::new();
-    JsonWriter::new(&mut json_bytes)
-        .with_json_format(JsonFormat::Json)
-        .finish(&mut df)
-        .unwrap();
+    JsonWriter::new(&mut json_bytes).with_json_format(JsonFormat::Json).finish(&mut df).unwrap();
     let json_string = String::from_utf8(json_bytes).unwrap();
     println!("df -> json: \n{}", json_string);
 
@@ -213,12 +190,7 @@ fn basic_df_selection() {
     println!("get -> hashmap: {:?}", row_map);
     println!("slice: {}", df.slice(1, 2));
     println!("column: {}", df.column("species").unwrap().head(Some(5)));
-    println!(
-        "columns: {:?}",
-        df.head(Some(5))
-            .columns(["species", "sepal_length"])
-            .unwrap()
-    );
+    println!("columns: {:?}", df.head(Some(5)).columns(["species", "sepal_length"]).unwrap());
     // get_columns will get all columns as Vec<&Series>
     // select_series
     println!(
@@ -233,23 +205,14 @@ fn basic_df_selection() {
 
     // Mask (for multiple conditions, mask = cond1 | cond2)
     let mask = df.column("sepal_length").unwrap().gt(5.0).unwrap();
-    println!(
-        "boolean mask result: {:?}",
-        df.filter(&mask).unwrap().head(Some(3))
-    );
+    println!("boolean mask result: {:?}", df.filter(&mask).unwrap().head(Some(3)));
 
     // Expressions
     println!(
         "filtered: {:?}",
-        df.filter(
-            &df.column("species")
-                .unwrap()
-                .utf8()
-                .unwrap()
-                .starts_with("Versicolor")
-        )
-        .unwrap()
-        .head(Some(3))
+        df.filter(&df.column("species").unwrap().utf8().unwrap().starts_with("Versicolor"))
+            .unwrap()
+            .head(Some(3))
     );
 }
 
@@ -263,24 +226,15 @@ fn basic_df_agg() {
     println!("sum: {:?}", df.sum());
     println!("std: {:?}", df.std());
     println!("var: {:?}", df.var());
-    println!(
-        "quantile(0.5): {:?}",
-        df.quantile(0.5, Default::default()).unwrap()
-    );
+    println!("quantile(0.5): {:?}", df.quantile(0.5, Default::default()).unwrap());
 }
 
 fn basic_df_mutation() {
     let mut df = get_range_df();
     println!("drop: {:?}", df.drop("e").unwrap());
     println!("rename: {:?}", df.rename("e", "E").unwrap()); // in-place
-    println!(
-        "sort: {:?}",
-        df.sort(&["a", "b"], vec![false, false]).unwrap()
-    );
-    println!(
-        "sample: {:?}",
-        df.sample_frac(0.5, false, true, Some(1)).unwrap()
-    );
+    println!("sort: {:?}", df.sort(&["a", "b"], vec![false, false]).unwrap());
+    println!("sample: {:?}", df.sample_frac(0.5, false, true, Some(1)).unwrap());
 }
 
 fn basic_df_combine() {
@@ -297,25 +251,14 @@ fn basic_df_combine() {
     );
     println!(
         "join: {:?}",
-        df.clone()
-            .join(
-                &df.clone(),
-                ["a"],
-                ["a"],
-                JoinType::Inner,
-                Some("_r".into())
-            )
-            .unwrap()
+        df.clone().join(&df.clone(), ["a"], ["a"], JoinType::Inner, Some("_r".into())).unwrap()
     );
 }
 
 fn basic_df_add_column() {
     let mut df = get_range_df();
 
-    println!(
-        "with_column: {:?}",
-        df.with_column(Series::new("z", [0, 0, 0, 0, 0])).unwrap()
-    );
+    println!("with_column: {:?}", df.with_column(Series::new("z", [0, 0, 0, 0, 0])).unwrap());
 }
 
 fn basic_df_mask() {
@@ -332,14 +275,7 @@ fn basic_df_grouping() {
     let grouped = df.groupby(["species"]).unwrap();
 
     // Keys
-    println!(
-        "keys: {:?}",
-        grouped.keys()[0]
-            .utf8()
-            .unwrap()
-            .into_no_null_iter()
-            .collect::<Vec<&str>>()
-    );
+    println!("keys: {:?}", grouped.keys()[0].utf8().unwrap().into_no_null_iter().collect::<Vec<&str>>());
     // Agg
     println!("mean: {:?}", grouped.mean().unwrap());
     // Groups

@@ -28,10 +28,7 @@ async fn main() {
         .route("/api/user/:id", get(get_api_user_id))
         .route("/api/user", post(post_api_user));
 
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    axum::Server::bind(&addr).serve(app.into_make_service()).await.unwrap();
 }
 
 // ---
@@ -67,9 +64,7 @@ async fn redirect_api_health() -> Redirect {
 
 /// GET "/api/store/search"
 /// Return query "q" param
-async fn get_api_store_search(
-    Query(query): Query<HashMap<String, String>>,
-) -> (StatusCode, Json<StoreSearchQuery>) {
+async fn get_api_store_search(Query(query): Query<HashMap<String, String>>) -> (StatusCode, Json<StoreSearchQuery>) {
     let q: String = query.get("q").unwrap_or(&"".to_string()).to_string();
     (StatusCode::OK, Json(StoreSearchQuery { q }))
 }

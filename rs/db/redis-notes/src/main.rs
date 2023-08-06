@@ -19,9 +19,7 @@ async fn main() {
     let async_redis_dal = AsyncRedisDAL { client };
 
     // Strings
-    let result = async_redis_dal
-        .string_set("name".to_string(), "Itachi".to_string())
-        .await;
+    let result = async_redis_dal.string_set("name".to_string(), "Itachi".to_string()).await;
     match result {
         Ok(r) => println!("Async string SET result: {}", r),
         Err(e) => println!("Async string SET error: {}", e),
@@ -208,12 +206,7 @@ pub trait TRedisDAL {
     // https://redis.io/commands#list
     fn list_lpush(&self, k: String, s: String) -> Result<i32, redis::RedisError>;
     fn list_rpush(&self, k: String, s: String) -> Result<i32, redis::RedisError>;
-    fn list_lrange(
-        &self,
-        k: String,
-        start: isize,
-        stop: isize,
-    ) -> Result<Vec<String>, redis::RedisError>;
+    fn list_lrange(&self, k: String, start: isize, stop: isize) -> Result<Vec<String>, redis::RedisError>;
     fn list_llen(&self, k: String) -> Result<i32, redis::RedisError>;
     fn list_lpop(&self, k: String) -> Result<String, redis::RedisError>;
     fn list_rpop(&self, k: String) -> Result<String, redis::RedisError>;
@@ -233,18 +226,8 @@ pub trait TRedisDAL {
     fn sorted_count(&self, k: String, min: i32, max: i32) -> Result<i32, redis::RedisError>;
     fn sorted_score(&self, k: String, m: String) -> Result<i32, redis::RedisError>;
     fn sorted_rank(&self, k: String, m: String) -> Result<i32, redis::RedisError>;
-    fn sorted_remrangebyrank(
-        &self,
-        k: String,
-        start: isize,
-        stop: isize,
-    ) -> Result<i32, redis::RedisError>;
-    fn sorted_range(
-        &self,
-        k: String,
-        start: isize,
-        stop: isize,
-    ) -> Result<Vec<String>, redis::RedisError>;
+    fn sorted_remrangebyrank(&self, k: String, start: isize, stop: isize) -> Result<i32, redis::RedisError>;
+    fn sorted_range(&self, k: String, start: isize, stop: isize) -> Result<Vec<String>, redis::RedisError>;
     fn sorted_del(&self, k: String) -> Result<i32, redis::RedisError>;
 
     // Hashes
@@ -282,12 +265,7 @@ impl TRedisDAL for RedisDAL {
         let mut conn = self.get_conn();
         conn.rpush(k, s)
     }
-    fn list_lrange(
-        &self,
-        k: String,
-        start: isize,
-        stop: isize,
-    ) -> Result<Vec<String>, redis::RedisError> {
+    fn list_lrange(&self, k: String, start: isize, stop: isize) -> Result<Vec<String>, redis::RedisError> {
         let mut conn = self.get_conn();
         conn.lrange(k, start, stop)
     }
@@ -352,21 +330,11 @@ impl TRedisDAL for RedisDAL {
         conn.zrank(k, m)
     }
 
-    fn sorted_remrangebyrank(
-        &self,
-        k: String,
-        start: isize,
-        stop: isize,
-    ) -> Result<i32, redis::RedisError> {
+    fn sorted_remrangebyrank(&self, k: String, start: isize, stop: isize) -> Result<i32, redis::RedisError> {
         let mut conn = self.get_conn();
         conn.zremrangebyrank(k, start, stop)
     }
-    fn sorted_range(
-        &self,
-        k: String,
-        start: isize,
-        stop: isize,
-    ) -> Result<Vec<String>, redis::RedisError> {
+    fn sorted_range(&self, k: String, start: isize, stop: isize) -> Result<Vec<String>, redis::RedisError> {
         let mut conn = self.get_conn();
         conn.zrange(k, start, stop)
     }

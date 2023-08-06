@@ -58,26 +58,12 @@ fn basic_builder() {
         .about("Simple program to greet a person")
         .subcommand_required(false)
         .arg_required_else_help(true)
-        .arg(
-            Arg::new("name")
-                .short('n')
-                .help("Name of the person to greet")
-                .default_value("friend"),
-        )
-        .arg(
-            Arg::new("count")
-                .short('c')
-                .help("Number of times to greet")
-                .default_value("1"),
-        );
+        .arg(Arg::new("name").short('n').help("Name of the person to greet").default_value("friend"))
+        .arg(Arg::new("count").short('c').help("Number of times to greet").default_value("1"));
     // Match and handle
     let matches = cmd.get_matches_from(["program", "-n", "Kakashi", "-c", "2"]);
     let name = matches.value_of("name").unwrap();
-    let count = matches
-        .value_of("count")
-        .unwrap()
-        .parse::<u8>()
-        .unwrap_or(1);
+    let count = matches.value_of("count").unwrap().parse::<u8>().unwrap_or(1);
     for _ in 0..count {
         println!("Hello {}!", name)
     }
@@ -115,12 +101,9 @@ fn basic_builder_subcommands() {
                 .arg(Arg::new("b").required(true).index(2)),
         )
         .subcommand(
-            clap::Command::new("sum").about("Sum many numbers").arg(
-                Arg::new("numbers")
-                    .required(true)
-                    .index(1)
-                    .multiple_occurrences(true),
-            ),
+            clap::Command::new("sum")
+                .about("Sum many numbers")
+                .arg(Arg::new("numbers").required(true).index(1).multiple_occurrences(true)),
         );
 
     // Match and handle subcommands

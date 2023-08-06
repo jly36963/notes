@@ -14,8 +14,8 @@ fn main() {
 
 fn basic_zlib() {
     // Zlib compress
-    let contents: String = "'Never go back on your word, and never give up.' ".to_string()
-        + "That's your ninja way -- and as your mentor, I have no business whining!";
+    let contents: String =
+        "'Never go back on your word, and never give up.' ".to_string() + "That's your ninja way -- and as your mentor, I have no business whining!";
     let contents_bytes = contents.as_bytes();
     let mut encoder = ZlibEncoder::new(Vec::new(), Compression::default());
     encoder.write_all(contents_bytes).unwrap();
@@ -27,9 +27,7 @@ fn basic_zlib() {
     // Zlib decompress
     let mut decoder = ZlibDecoder::new(&*contents_base64_decoded);
     let mut contents_uncompressed = String::new();
-    let bytes_read = decoder
-        .read_to_string(&mut contents_uncompressed)
-        .unwrap_or(0);
+    let bytes_read = decoder.read_to_string(&mut contents_uncompressed).unwrap_or(0);
 
     println!("contents: {}", contents);
     println!("contents_bytes: {:?}", contents_bytes);
@@ -42,8 +40,7 @@ fn basic_zlib() {
 
 fn basic_gzip() {
     // Gzip compress
-    let contents: String = "I have faith that there will come a time ".to_string()
-        + "when people can truly understand one another.";
+    let contents: String = "I have faith that there will come a time ".to_string() + "when people can truly understand one another.";
     let contents_bytes = contents.as_bytes();
     let mut encoder = GzEncoder::new(Vec::new(), Compression::default());
     encoder.write_all(contents_bytes).unwrap();
@@ -55,9 +52,7 @@ fn basic_gzip() {
     // Gzip decompress
     let mut decoder = GzDecoder::new(&*contents_base64_decoded);
     let mut contents_uncompressed = String::new();
-    let bytes_read = decoder
-        .read_to_string(&mut contents_uncompressed)
-        .unwrap_or(0);
+    let bytes_read = decoder.read_to_string(&mut contents_uncompressed).unwrap_or(0);
 
     println!("contents: {}", contents);
     println!("contents_bytes: {:?}", contents_bytes);

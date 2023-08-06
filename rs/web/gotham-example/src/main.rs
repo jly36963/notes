@@ -2,9 +2,7 @@
 extern crate gotham_derive;
 
 use gotham::handler::HandlerResult;
-use gotham::helpers::http::response::{
-    create_empty_response, create_permanent_redirect, create_response,
-};
+use gotham::helpers::http::response::{create_empty_response, create_permanent_redirect, create_response};
 use gotham::hyper::{body, Body, Response, StatusCode};
 use gotham::router::builder::*;
 use gotham::router::Router;
@@ -38,10 +36,7 @@ fn get_router() -> Router {
                 .with_query_string_extractor::<StoreSearchQuery>()
                 .to(get_api_store_search);
             route.scope("/user", |route| {
-                route
-                    .get("/:id")
-                    .with_path_extractor::<UserIdPathParams>()
-                    .to(get_api_user_id);
+                route.get("/:id").with_path_extractor::<UserIdPathParams>().to(get_api_user_id);
                 route.post("/").to_async(post_api_user);
             })
         })

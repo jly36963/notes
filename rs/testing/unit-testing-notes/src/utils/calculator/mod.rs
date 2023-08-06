@@ -80,9 +80,7 @@ where
         return std::f64::NAN;
     }
     let mean = get_mean(numbers);
-    let sum_of_squared_diffs: f64 = numbers
-        .into_iter()
-        .fold(0_f64, |acc, &curr| acc + (curr.into() - mean).powf(2.0));
+    let sum_of_squared_diffs: f64 = numbers.into_iter().fold(0_f64, |acc, &curr| acc + (curr.into() - mean).powf(2.0));
     let mut population_size = length;
     if !complete_sample {
         population_size = population_size - 1;

@@ -76,13 +76,7 @@ pub fn basic_path() -> () {
     }
 
     // Join
-    let joined: String = Path::new("./")
-        .join("a")
-        .join("b")
-        .join("c.txt")
-        .to_str()
-        .unwrap()
-        .into();
+    let joined: String = Path::new("./").join("a").join("b").join("c.txt").to_str().unwrap().into();
     println!("joined: {:?}", joined);
 }
 
@@ -174,8 +168,7 @@ pub fn basic_io() -> () {
         // Write to file
         // Buffer is flushed once writer is out of scope
         let mut writer = BufWriter::new(f);
-        let contents: &[u8] =
-            "You focus on the trivial, and lose sight of what is most important.".as_bytes();
+        let contents: &[u8] = "You focus on the trivial, and lose sight of what is most important.".as_bytes();
         let _bytes_written = writer.write(contents).unwrap_or(0);
     }
     {
