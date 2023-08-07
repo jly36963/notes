@@ -4,6 +4,7 @@ from typing import List, Dict
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pandas as pd
+import numpy as np
 
 
 # ---
@@ -27,6 +28,9 @@ def main():
     # Arrays
     print_section_title('basic array creation')
     basic_array_creation()
+
+    print_section_title('basic array ejection')
+    basic_array_ejection()
 
     # Tables
     print_section_title('basic table creation')
@@ -63,15 +67,30 @@ def setup():
 
 def basic_array_creation():
     """Create a basic pyarrow array"""
+    print('From normal creation')
     arr: pa.Array = pa.array([1, 2, 3, 4, 5], type=pa.int8())
     print(arr)
 
-    # TODO: from_pandas (Series),
+    print('From pandas series')
+    arr: pa.Array = pa.Array.from_pandas(pd.Series([1, 2, 3, 4, 5]))
+    print(arr)
 
 
 def basic_array_ejection():
-    print('TODO')
-    # TODO: to_pandas, to_numpy, to_pylist, to_string
+    """Eject data to another python type"""
+    arr: pa.Array = pa.array([1, 2, 3, 4, 5], type=pa.int8())
+
+    srs: pd.Series = arr.to_pandas()  # NOTE: Requires pandas installation
+    nparr: np.ndarray = arr.to_numpy()
+    list_: List[dict] = arr.to_pylist()
+    str_: str = arr.to_string()
+
+    print(json.dumps({
+        'to_pandas > to_list': srs.to_list(),
+        'to_numpy > tolist': nparr.tolist(),
+        'to_pylist': list_,
+        'to_string': str_,
+    }, indent=2))
 
 
 def basic_array_methods():
@@ -113,7 +132,13 @@ def basic_table_creation():
     })
     print(tbl)
 
-    # TODO: from_pandas
+    print('From pandas df')
+    tbl = pa.Table.from_pandas(pd.DataFrame([
+        {'first_name': 'Kakashi', 'last_name': 'Hatake', },
+        {'first_name': 'Itachi', 'last_name': 'Uchiha', },
+        {'first_name': 'Shisui', 'last_name': 'Uchiha', },
+    ]))
+    print(tbl)
 
 
 def basic_table_eject():
