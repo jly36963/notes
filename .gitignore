@@ -2,6 +2,9 @@
 **/.env
 **/*.pem
 
+# Output
+**/output
+
 # Node
 **/node_modules
 **/build
