@@ -165,9 +165,7 @@ def basic_df_attributes():
 
 def basic_df_creation():
     # create df (dictionary) (columns)
-    df = pd.DataFrame.from_dict(
-        {'col1': [0, 1, 2, 3], 'col2': ['a', 'b', 'c', 'd']}
-    )
+    df = pd.DataFrame.from_dict({'col1': [0, 1, 2, 3], 'col2': ['a', 'b', 'c', 'd']})
 
     # create df (dictionary) (rows)
     df = pd.DataFrame.from_dict(

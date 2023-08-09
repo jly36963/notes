@@ -10,7 +10,7 @@
 
 install:
 	mkdir -p .venv
-	pipenv install --dev
+	pipenv install --dev --verbose
 
 dev:
 	pipenv run python3 main.py
