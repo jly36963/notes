@@ -102,6 +102,9 @@ def main():
     print_section_title('basic df join')
     basic_df_join(spark, ninja_df)
 
+    print_section_title('basic df groupby')
+    basic_df_groupby(basic_df)
+
 # ---
 # Utils
 # ---
@@ -130,7 +133,7 @@ def df_col_to_list(df: DataFrame, colname: str) -> list:
     return df.select(colname).toPandas()[colname].tolist()
 
 
-def map_res(val):
+def map_res(val: Any) -> Any:
     """Map type to more print-friendly type"""
     if isinstance(val, DataFrame):
         return df_to_records(val)
@@ -139,17 +142,13 @@ def map_res(val):
     return val
 
 
-def pretty_print_result_map(results: dict) -> None:
+def pretty_print_result_map(results: Dict[str, Any]) -> None:
     """Convert values to more print-friendly types, then pretty print"""
     print(json.dumps({k: map_res(v) for k, v in results.items()}, indent=2))
 
 # ---
-# Examples
+# Setup
 # ---
-
-# TODO:
-# Row
-# Row.asDict()
 
 
 def setup():
@@ -160,8 +159,12 @@ def setup():
         os.makedirs(directory, exist_ok=True)
 
 
+# ---
+# Examples
+# ---
+
 def basic_create_df(spark: SparkSession) -> None:
-    """Create df from different data types"""
+    """Create pyspark df from different data types"""
     results = {
         'From List[dict]': spark.createDataFrame([
             {'first_name': 'Kakashi', 'last_name': 'Hatake', },
@@ -479,9 +482,12 @@ def basic_df_join(spark: SparkSession, ninja_df: DataFrame) -> None:
     pretty_print_result_map(results)
 
 
-# TODO
-# union
-# groupBy
+def basic_df_groupby(basic_df: DataFrame) -> None:
+    """Different ways of iterating over a dataframe"""
+    # Grouped methods: agg, apply, avg, count, max, mean, min, sum
+    results = {'groupby > count': basic_df.groupby('b').count().sort('b')}
+    pretty_print_result_map(results)
+
 
 # ---
 # Run
