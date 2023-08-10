@@ -3,10 +3,10 @@ findspark.init()  # noqa
 
 import json
 import os
-from typing import List
+from typing import Dict, List, Callable, Any, Generator, TypedDict
+import uuid
 from pyspark.sql import SparkSession, DataFrame, Column
-from pyspark.sql.types import StructType  # StructField, StringType
-import pyspark.sql.functions as pssf
+from pyspark.sql.types import StructType, StructField, StringType
 import pandas as pd
 
 # ---
@@ -90,6 +90,18 @@ def main():
     print_section_title('basic df with column')
     basic_df_with_column(basic_df)
 
+    print_section_title('basic df to')
+    basic_df_to(basic_df)
+
+    print_section_title('basic df transform')
+    basic_df_transform(basic_df)
+
+    print_section_title('basic df iter')
+    basic_df_iter(ninja_df)
+
+    print_section_title('basic df join')
+    basic_df_join(spark, ninja_df)
+
 # ---
 # Utils
 # ---
@@ -115,7 +127,6 @@ def df_to_records(df: DataFrame) -> List[dict]:
 
 def df_col_to_list(df: DataFrame, colname: str) -> list:
     """pyspark Column to python list"""
-    # TODO: use this
     return df.select(colname).toPandas()[colname].tolist()
 
 
@@ -124,7 +135,7 @@ def map_res(val):
     if isinstance(val, DataFrame):
         return df_to_records(val)
     if isinstance(val, StructType):
-        return val.json()
+        return val.simpleString()
     return val
 
 
@@ -137,6 +148,7 @@ def pretty_print_result_map(results: dict) -> None:
 # ---
 
 # TODO:
+# Row
 # Row.asDict()
 
 
@@ -346,15 +358,133 @@ def basic_df_with_column(basic_df: DataFrame) -> None:
     }
     pretty_print_result_map(results)
 
+
+def basic_df_to(basic_df: DataFrame) -> None:
+    """Reconcile rows to new schema"""
+    string_df = basic_df.select('a', 'b', 'c').to(schema=StructType([
+        StructField("a", StringType(), True),
+        StructField("b", StringType(), True),
+        StructField("c", StringType(), True),
+    ]))
+    results = {
+        'schema (before)': basic_df.schema,
+        'schema (after select/to)': string_df.schema,
+        'to': string_df,
+    }
+    pretty_print_result_map(results)
+
+
+def basic_df_transform(basic_df: DataFrame) -> None:
+    """Transform a df"""
+
+    def double_col(col: Column) -> Column:
+        """Expression to double all values in a column"""
+        return col * 2
+
+    def square_col(col: Column) -> Column:
+        """Expression to square all values in a column"""
+        return col ** 2
+
+    def map_all_cols(df: DataFrame, func: Callable) -> DataFrame:
+        """Apply a function expression over each column"""
+        return df.select([func(df[c]).alias(c) for c in df.columns])
+
+    results = {
+        'transform (square)': basic_df.transform(lambda df: map_all_cols(df, square_col)),
+        'transform (double)': basic_df.transform(lambda df: map_all_cols(df, double_col)),
+    }
+    pretty_print_result_map(results)
+
+
+def basic_df_iter(ninja_df: DataFrame) -> None:
+    """Different ways of iterating over a dataframe"""
+
+    def upper_if_string(val: Any) -> Any:
+        """Uppercase string values and return others as is"""
+        if not isinstance(val, str):
+            return val
+        return val.upper()
+
+    def df_to_upper(df: pd.DataFrame) -> pd.DataFrame:
+        """Map over all values in a dataframe, uppercasing if string"""
+        return df.applymap(upper_if_string)
+
+    def df_iterator(iterator, func: Callable) -> Generator:
+        """Given an iterator of pandas df, apply function and return df"""
+        df: pd.DataFrame
+        for df in iterator:
+            yield func(df)
+
+    results = {
+        'forEach': ninja_df.foreach(lambda r: print(r.first_name)),
+        'mapInPandas': ninja_df.mapInPandas(
+            lambda iterator: df_iterator(iterator, df_to_upper),
+            ninja_df.schema
+        ),
+        'mapInArrow': 'TODO',
+        'toLocalIterator': [row.asDict() for row in ninja_df.toLocalIterator()]
+
+    }
+    pretty_print_result_map(results)
+
+
+def basic_df_join(spark: SparkSession, ninja_df: DataFrame) -> None:
+    """
+    Join dataframes
+    Many-to-many example: ninja -> ninja_village -> village
+    """
+
+    class Village(TypedDict):
+        id: str
+        name: str
+        nation: str
+
+    village_nations: Dict[str, str] = {
+        'leaf': 'fire',
+        'sand': 'wind',
+        'cloud': 'lightning',
+        'stone': 'earth',
+        'mist': 'water',
+    }
+
+    villages: List[Village] = [
+        {'id': str(uuid.uuid4()), 'name': village, 'nation': nation}
+        for (village, nation)
+        in village_nations.items()
+    ]
+    village_ids = [v['id'] for v in villages]
+    leaf_id = village_ids[0]
+    ninja_ids: List[str] = df_col_to_list(ninja_df, 'id')
+
+    class NinjaVillage(TypedDict):
+        ninja_id: str
+        village_id: str
+
+    # In this example, they're all from the leaf village
+    ninja_villages: List[NinjaVillage] = [
+        {'ninja_id': ninja_id, 'village_id': leaf_id}
+        for ninja_id in ninja_ids
+    ]
+
+    village_df = spark.createDataFrame(villages)  # type: ignore
+    ninja_village_df = spark.createDataFrame(ninja_villages)  # type: ignore
+
+    joined_df = ninja_df\
+        .join(ninja_village_df, on=ninja_df.id == ninja_village_df.ninja_id, how='inner')\
+        .join(village_df, on=ninja_village_df.village_id == village_df.id, how='inner')\
+        .drop('id')
+
+    results = {'join': joined_df}
+
+    pretty_print_result_map(results)
+
+
 # TODO
-# to, transform,
-# toLocalIterator, forEach, map
-# union, join
+# union
 # groupBy
 
 # ---
 # Run
 # ---
-
 
 main()
