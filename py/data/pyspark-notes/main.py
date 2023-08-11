@@ -7,6 +7,7 @@ from typing import Dict, List, Callable, Any, Generator, TypedDict
 import uuid
 from pyspark.sql import SparkSession, DataFrame, Column
 from pyspark.sql.types import StructType, StructField, StringType
+import pyspark.sql.functions as pssf
 import pandas as pd
 
 # ---
@@ -60,14 +61,17 @@ def main():
     print_section_title('basic df details')
     basic_df_details(ninja_df)
 
-    print_section_title('basic df select')
-    basic_df_select(ninja_df)
+    print_section_title('basic df select columns')
+    basic_df_select_columns(ninja_df)
 
     print_section_title('basic df index')
     basic_df_index(ninja_df)
 
     print_section_title('basic df filter')
     basic_df_filter(ninja_df)
+
+    print_section_title('basic df select')
+    basic_df_select(ninja_df)
 
     print_section_title('basic df sort')
     basic_df_sort(ninja_df)
@@ -246,7 +250,7 @@ def basic_df_details(ninja_df: DataFrame) -> None:
     pretty_print_result_map(results)
 
 
-def basic_df_select(ninja_df: DataFrame) -> None:
+def basic_df_select_columns(ninja_df: DataFrame) -> None:
     """Select parts of the df"""
     # To use columns, reference it with 'str' or 'Column' type
     # Eg: 'col1', df['col1'], or df.col1
@@ -295,6 +299,23 @@ def basic_df_filter(ninja_df: DataFrame) -> None:
         'filter (multiple conditions)': ninja_df.filter(
             ninja_df.first_name.contains('a') & ninja_df.last_name.contains('a')
         )
+    }
+
+    pretty_print_result_map(results)
+
+
+def basic_df_select(df: DataFrame) -> None:
+    """Select columns using function expressions"""
+    senseis = ['Kakashi', 'Iruka']
+
+    results = {
+        'select': df.select(
+            *df.columns,
+            (df.age > 25).alias('older_than_25'),
+            (df.age + 25).alias('age_in_25_years'),
+            df.last_name.contains('Uchiha').alias('is_uchiha'),
+            pssf.when(df.first_name.isin(senseis), 'Sensei').otherwise(df.last_name).alias('nickname')
+        ),
     }
 
     pretty_print_result_map(results)
