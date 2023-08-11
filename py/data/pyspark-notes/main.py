@@ -8,6 +8,7 @@ import uuid
 from pyspark.sql import SparkSession, DataFrame, Column
 from pyspark.sql.types import StructType, StructField, StringType
 import pyspark.sql.functions as pssf
+from pyspark import RDD
 import pandas as pd
 
 # ---
@@ -108,6 +109,9 @@ def main():
 
     print_section_title('basic df groupby')
     basic_df_groupby(basic_df)
+
+    print_section_title('basic df parallelize')
+    basic_spark_parallelize(spark)
 
 # ---
 # Utils
@@ -507,6 +511,30 @@ def basic_df_groupby(basic_df: DataFrame) -> None:
     """Different ways of iterating over a dataframe"""
     # Grouped methods: agg, apply, avg, count, max, mean, min, sum
     results = {'groupby > count': basic_df.groupby('b').count().sort('b')}
+    pretty_print_result_map(results)
+
+
+def basic_spark_parallelize(spark: SparkSession) -> None:
+    """Map over array elements in a parallel fashion"""
+    sc = spark.sparkContext
+    # parallelize: List[T] -> RDD[T]
+    num_rdd: RDD = sc.parallelize([1, 2, 3, 4, 5])
+    print('foreach', num_rdd.foreach(lambda n: print(n)))
+    results = {
+        'collect': num_rdd.collect(),
+        'count': num_rdd.count(),
+        'filter': num_rdd.filter(lambda n: n > 3).collect(),
+        'first': num_rdd.first(),
+        'fold': num_rdd.fold(0, lambda acc, cur: acc + cur),
+        'map': num_rdd.map(lambda n: n * 2).collect(),
+        'mapValues (with zip)': num_rdd.zip(num_rdd).mapValues(lambda n: n * 2).collect(),
+        'max': num_rdd.max(),
+        'mean': num_rdd.mean(),
+        'min': num_rdd.min(),
+        'sum': num_rdd.sum(),
+        'stdev': num_rdd.stdev(),  # also sampleStdev, variance, sampleVariance
+        'union': num_rdd.union(num_rdd.map(lambda n: n + 5)).collect(),
+    }
     pretty_print_result_map(results)
 
 
