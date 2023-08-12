@@ -1,9 +1,7 @@
-# ---
-# arrow
-# ---
-
-# install
-# pip install arrow
+import json
+from typing import Generator, List, Dict
+from datetime import datetime, timezone
+import arrow
 
 # docs
 # https://arrow.readthedocs.io/en/stable/
@@ -14,82 +12,119 @@
 # timezones
 # https://github.com/arrow-py/arrow/blob/master/arrow/locales.py
 
-
 # ---
-# imports
+# Main
 # ---
-
-import json
-from typing import Dict, Any, Generator, List
-from datetime import datetime, timezone
-import arrow
 
 
 def main() -> None:
-    """
-    Basic usage of arrow.
-    """
-    # ---
-    # arrow basics
-    # ---
+    """Basic usage of arrow."""
+    print_section_title('basic arrow creation')
+    basic_arrow_creation()
 
-    get: arrow.Arrow = arrow.get()
-    get_from_datetime: arrow.Arrow = arrow.get(datetime.now(timezone.utc))
-    utc: arrow.Arrow = arrow.utcnow()
-    clone: arrow.Arrow = arrow.utcnow().clone()
-    format_default: str = arrow.utcnow().format()
-    format_yyyy_mm_dd: str = arrow.utcnow().format('YYYY-MM-DD')
-    arrow_to_timestamp: float = arrow.utcnow().timestamp()
-    arrow_to_datetime: datetime = arrow.utcnow().datetime
-    year: int = arrow.utcnow().year
-    month: int = arrow.utcnow().month
-    day: int = arrow.utcnow().day
-    shift: arrow.Arrow = arrow.utcnow().shift(hours=-1)
-    replace: arrow.Arrow = arrow.utcnow().replace(hour=16)
-    floor: arrow.Arrow = arrow.utcnow().floor('year')
-    ceil: arrow.Arrow = arrow.utcnow().ceil('year')
-    timezone_to: arrow.Arrow = arrow.utcnow().to('US/Pacific')
-    humanize: str = arrow.utcnow().humanize()
-    humanize_with_locale: str = arrow.utcnow().humanize(locale='is')
+    print_section_title('basic arrow format')
+    basic_arrow_format()
 
-    examples: Dict[str, Any] = {
-        # generate
-        'get': get,
-        'get_from_datetime': get_from_datetime,
-        'utc': utc,
-        'clone': clone,
-        # format
-        'format_default': format_default,
-        'format': format_yyyy_mm_dd,
-        # properties
-        'arrow_to_timestamp': arrow_to_timestamp,
-        'arrow_to_datetime': arrow_to_datetime,
-        'year': year,
-        'month': month,
-        'day': day,
-        # mutate
-        'shift': shift,
-        'replace': replace,
-        'floor': floor,
-        'ceil': ceil,
-        # timezones
-        'timezone_to': timezone_to,
-        'humanize': humanize,
-        'humanize_with_locale': humanize_with_locale,
+    print_section_title('basic arrow properties')
+    basic_arrow_properties()
+
+    print_section_title('basic arrow mutations')
+    basic_arrow_mutations()
+
+    print_section_title('basic arrow timezone')
+    basic_arrow_timezone()
+
+    print_section_title('basic arrow generator')
+    basic_arrow_generator()
+
+
+# ---
+# Utils
+# ---
+
+
+def print_section_title(string: str) -> None:
+    print(f'\n{string.upper()}\n')
+
+
+def map_res(val):
+    """Map type to more print-friendly type"""
+    if isinstance(val, datetime):
+        return repr(val)
+    if isinstance(val, arrow.Arrow):
+        return repr(val)
+    return val
+
+
+def pretty_print_result_map(results: dict) -> None:
+    """Convert values to more print-friendly types, then print"""
+    print(json.dumps({k: map_res(v) for k, v in results.items()}, indent=2))
+
+# ---
+# Examples
+# ---
+
+
+def basic_arrow_creation():
+    """Create arrow objects"""
+    results: Dict[str, arrow.Arrow] = {
+        'get': arrow.get(),
+        'get_from_datetime': arrow.get(datetime.now(timezone.utc)),
+        'utc': arrow.utcnow(),
+        'clone': arrow.utcnow().clone(),
     }
 
-    basics_output: str = json.dumps(examples, default=str, indent=2)
+    pretty_print_result_map(results)
 
-    print(
-        'Basic Usage:',
-        basics_output,
-        sep='\n'
-    )
 
-    # ---
-    # arrow generator basics (range)
-    # ---
+def basic_arrow_format():
+    """Format arrow objects to string"""
+    results: Dict[str, str] = {
+        'format_default': arrow.utcnow().format(),
+        'format': arrow.utcnow().format('YYYY-MM-DD'),
+    }
 
+    pretty_print_result_map(results)
+
+
+def basic_arrow_properties():
+    """Use properties of arrow object"""
+    results: dict = {
+        'arrow_to_timestamp': arrow.utcnow().timestamp(),
+        'arrow_to_datetime': arrow.utcnow().datetime,
+        'year': arrow.utcnow().year,
+        'month': arrow.utcnow().month,
+        'day': arrow.utcnow().day,
+    }
+
+    pretty_print_result_map(results)
+
+
+def basic_arrow_mutations():
+    """Mutate arrow object"""
+    results: Dict[str, arrow.Arrow] = {
+        'shift': arrow.utcnow().shift(hours=-1),
+        'replace': arrow.utcnow().replace(hour=16),
+        'floor': arrow.utcnow().floor('year'),
+        'ceil': arrow.utcnow().ceil('year'),
+    }
+
+    pretty_print_result_map(results)
+
+
+def basic_arrow_timezone():
+    """arrow timezone logic"""
+    results: Dict[str, arrow.Arrow | str] = {
+        'timezone_to': arrow.utcnow().to('US/Pacific'),
+        'humanize': arrow.utcnow().humanize(),
+        'humanize_with_locale': arrow.utcnow().humanize(locale='is'),
+    }
+
+    pretty_print_result_map(results)
+
+
+def basic_arrow_generator():
+    '''Example usage of arrow date generator'''
     now: arrow.Arrow = arrow.now()
     first_day_of_week: arrow.Arrow = arrow.now().floor('week')
     dates_generator: Generator[arrow.Arrow, None, None] = arrow.Arrow.range('day', first_day_of_week, now)
@@ -98,6 +133,10 @@ def main() -> None:
         generated_dates.append(day.format('YYYY-MM-DD'))  # type: ignore
     print('Generated Dates')
     print(generated_dates)
+
+# ---
+# Run
+# ---
 
 
 if __name__ == '__main__':

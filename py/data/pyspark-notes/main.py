@@ -515,7 +515,7 @@ def basic_df_groupby(basic_df: DataFrame) -> None:
 
 
 def basic_spark_parallelize(spark: SparkSession) -> None:
-    """Map over array elements in a parallel fashion"""
+    """Parallel operations on RDD objects"""
     sc = spark.sparkContext
     # parallelize: List[T] -> RDD[T]
     num_rdd: RDD = sc.parallelize([1, 2, 3, 4, 5])
