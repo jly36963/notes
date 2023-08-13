@@ -1,8 +1,15 @@
 # Airflow
 
+## Docs
+
+- https://airflow.apache.org/docs/
+- https://airflow.apache.org/docs/apache-airflow/stable/index.html
+- https://airflow.apache.org/docs/apache-airflow/stable/tutorial/index.html
+
 ## Docker
 
-https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#fetching-docker-compose-yaml
+- https://airflow.apache.org/docs/docker-stack/index.html
+- https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#fetching-docker-compose-yaml
 
 ## Installation and setup
 
@@ -13,6 +20,8 @@ pipenv install apache-airflow
 echo "AIRFLOW_HOME=${PWD}/airflow" >> .env
 # Initialize backing database (sqlite by default)
 pipenv run airflow db init
+# Keep DB up to date (after swapping/upgrading DB or upgrading airflow)
+pipenv run airflow db upgrade
 # Make directory for DAGs
 mkdir -p ./airflow/dags
 # Create user
@@ -34,13 +43,15 @@ pipenv run airflow scheduler
 
 ```bash
 # Run task
-airflow run tutorial sleep <yyyy-mm-dd>
+pipenv run airflow run tutorial sleep <yyyy-mm-dd>
+# List DAGs
+pipenv run airflow dags list
 # List tasks
-airflow list_tasks tutorial
+pipenv run airflow list_tasks tutorial
 # Pause DAG
-airflow pause tutorial
+pipenv run airflow pause tutorial
 # Unpause DAG
-airflow unpause tutorial
+pipenv run airflow unpause tutorial
 # Backfill DAG (run for past dates)
-airflow backfill tutorial -s <yyyy-mm-dd> -e <yyyy-mm-dd>
+pipenv run airflow dags backfill tutorial -s <yyyy-mm-dd> -e <yyyy-mm-dd>
 ```
