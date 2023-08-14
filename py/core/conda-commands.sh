@@ -1,22 +1,22 @@
 
 # CONDA
 
-# create conda env
+# Create conda env
 conda create --name [name_of_environment]
-# create conda env (with package included)
+# Create conda env (with package included)
 conda create -n [name_of_environment] [package_to_install]
-# create conda env with specific python version
-conda create --name [name_of_environment] python=3.5
+# Create conda env with specific python version
+conda create --name [name_of_environment] python=3.11
 
-# list all conda environments
+# List all conda environments
 conda env list
-# activate conda env
+# Activate conda env
 conda activate [name_of_environment]
-# deactivate current conda env
+# Deactivate current conda env
 conda deactivate
 
-# install python package (while in active env)
+# Install python package (while in active env)
 pip3 install [package]
-# install package (while in active env)
+# Install package (while in active env)
 conda install [package]
 

@@ -4,8 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pydash = "*"
-polars = "*"
+pandas = "*"
+seaborn = "*"
+matplotlib = "*"
+scikit-learn = "*" # sklearn
+statsmodels = "*"
 
 [dev-packages]
 pylint = "*"

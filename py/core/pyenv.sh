@@ -1,44 +1,46 @@
 
 # ---
-# pyenv
+# Pyenv
 # ---
 
-# install pyenv
+# Install pyenv
 brew install pyenv
-# initialize pyenv (follow steps)
+# Initialize pyenv (follow steps)
 pyenv init
-# install python
-pyenv install -v 3.6.5
-# uninstall
-pyenv uninstall 3.6.5
-# list versions
+# Install python
+pyenv install -v 3.11.4
+# Uninstall
+pyenv uninstall 3.11.4
+# List versions
 pyenv versions
-# which
+# Which
 pyenv which python
-# use version (global)
-pyenv global 3.6.5
+# Use version (global)
+pyenv global 3.11.4
 pyenv global system
-# use version (local)
-pyenv local 3.6.5
+# Use version (local)
+pyenv local 3.11.4
 pyenv local system
 
 # ---
-# pipenv
+# Pipenv
 # ---
 
-# install pipenv
+# Install pipenv
 pip3 install pipenv
 
-# to install deps in current directory, do either:
-    # PIPENV_VENV_IN_PROJECT=true 
-    # create `.venv` folder
+# Install package
+pipenv install pandas
 
-# install package
-pipenv install numpy
-
-# start shell
+# Start shell
 pipenv shell
 
-# start script
+# Start script
 pipenv run python3 app.py
+
+# To install from pipfile (with dev dependencies)
+pipenv install --dev
+# To install deps in current directory (.venv), do either:
+PIPENV_VENV_IN_PROJECT=true pipenv install --dev
+mkdir -p .venv; pipenv install --dev
 
