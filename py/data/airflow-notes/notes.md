@@ -12,7 +12,9 @@ DAG: Directed Acyclic Graph:
   - must be unique per airflow environment
 - Uses `.py` files
 - Specify `execution_date` (CRON) to schedule
-- Operators: TODO
+- Tags: given to DAGs to be used for filtering in the ui
+- Dynamic DAG Generation
+  - Generate DAG structure dynamically (with static number of tasks)
 
 Task:
 
@@ -20,11 +22,33 @@ Task:
 - Individual unit of code
 - Can have upstream/downstream dependencies
   - `task1 >> task2 >> task3`
+  - `task2.set_upstream(task1)` or `task1.set_downstream(task1)`
+  - also `cross_downstream`, `chain`
+- Can get context in task func using:
+  - `**kwargs` param
+    - Eg: `ti = kwargs['ti']`
+  - `ti` param
+  - `get_current_context` function
+- Control Flow
+  - Branching:
+    - Conditional choice of task
+  - Trigger rules:
+    - Conditions for DAG running task
+    - Eg: `all_success`, `none_failed`
+  - Setup/Teardown:
+    - Set setup/teardown relationships
+    - `as_setup`, `as_teardown` methods
+    - Eg: `task1.as_setup() >> task2 >> task3.as_teardown()`
+  - Latest Only:
+    - Only run task when DAG runs against the present
+- Dynamic Task Mapping
+  - Runtime creation of a variable number of tasks
+  - ie: Mapping a task to multiple inputs
 
 Operator:
 
 - Templates for predefined tasks
-  - BashOperator: execuets any bash command
+  - BashOperator: executes a bash command or template
   - PythonOperator: executes a python function
   - DummyOperator: Does nothing (never processed by executor)
   - SimpleHttpOperator: makes a network request
@@ -36,11 +60,15 @@ Operator:
   - TriggerDagRunOperator: triggers another DAG
   - EmailOperator: sends an email
   - SlackAPIOperator: sends a slack message
+- Operator tutorial
+  - https://airflow.apache.org/docs/apache-airflow/stable/howto/operator/index.html
 
 XComs (Cross communications):
 
-- communication between tasks
+- A system for communication between tasks
 - Eg: push metadata (in task1) then pull data (in task2)
+- For relatively small data
+  - If large data, store in s3 (or similar) and pass bucket/key via XCom
 
 TaskFlow:
 
@@ -54,6 +82,7 @@ Scheduling:
 - Accepts datetime object, CRON string, preset string, None (manual)
   - presets: `@hourly`, `@daily`, etc
 - Historical runs: catchup (DAG param) or backfill (CLI command)
+- Timetables: pythonic alternative to cron
 
 Connections/Hooks:
 
@@ -69,7 +98,47 @@ Executor:
 - How/where the tasks should be executed
 - Eg: Local, Celery, Kubernetes, CeleryKubernetes, Debug
 
+Providers:
+
+- provider packages for communicating with services
+
+Sensors:
+
+- Wait for something to happen
+- Great for blocking downstream tasks until something is ready
+- Eg: HttpSensor
+
+Variables:
+
+- Adding variables
+  - ui (Admin -> Variables)
+  - env vars (like `AIRFLOW_VAR_{VARIABLE_NAME}`)
+  - CLI (`airflow variables <sub-cmd>`)
+- Getting variables
+  - Eg: `foo = Variable.get("foo") # airflow.models.Variable`
+  - Args: `deserialize_json`, `default_var`
+
+## Airflow & Python
+
+DAG:
+
+- class in dag files for orchestrating tasks
+- can be used in 3 ways
+  - context manager, class as operator param, decorator
+
+default_args:
+
+- DAG param
+- dictionary of default params as kwargs for initializing operators
+- operator `default_args` will override DAG default_params
+
 ## DAG Best practices
+
+Astronomer:
+
+- https://docs.astronomer.io/learn/dag-best-practices
+
+General:
 
 - Idempotency
 - Atomicity
@@ -77,39 +146,9 @@ Executor:
 - Avoid top-level code
 - Avoid complexity
 
-## About
+## Underlying technologies
 
 - Can leverage Jinja templating
 - Uses Flask server
 - Uses sql-alchemy for DB logic
 - Uses sqlite by default, recommends postgres/mysql for prod
-
-## Hide examples
-
-In `airflow.cfg`:
-
-```
-load_examples = False
-```
-
-## Dependency example
-
-```py
-from airflow.models import DAG
-from airflow.utils.dates import days_ago
-from airflow.operators.dummy_operator import DummyOperator
-
-with DAG(
-    "my_dag",
-    start_date=days_ago(1),
-    schedule_interval=None,
-) as dag:
-    # Create tasks from operators
-    task_a = DummyOperator(task_id="task_a")
-    task_b = DummyOperator(task_id="task_b")
-    task_c = DummyOperator(task_id="task_c")
-    task_d = DummyOperator(task_id="task_d")
-    # Define dependency graph
-    task_a >> [task_b, task_c]
-    task_c >> task_d
-```

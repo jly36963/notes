@@ -2,16 +2,19 @@
 
 ## Docs
 
-- https://airflow.apache.org/docs/
-- https://airflow.apache.org/docs/apache-airflow/stable/index.html
-- https://airflow.apache.org/docs/apache-airflow/stable/tutorial/index.html
+- Docs
+  - https://airflow.apache.org/docs/
+  - https://airflow.apache.org/docs/apache-airflow/stable/index.html
+- Core concepts
+  - https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/index.html
+- Best practices
+  - https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html
+- Tutorial
+  - https://airflow.apache.org/docs/apache-airflow/stable/tutorial/index.html
 
-## Docker
+## Manual local setup
 
-- https://airflow.apache.org/docs/docker-stack/index.html
-- https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#fetching-docker-compose-yaml
-
-## Installation and setup
+### Installation and setup
 
 ```bash
 # Install airflow
@@ -32,6 +35,19 @@ pipenv run airflow users create \
   --email <email> \
   --firstname <firstname> \
   --lastname <lastname>
+```
+
+Customizing `airflow.cfg`:
+
+- Update `dags_folder` for custom path to dags folder
+- Reflect DAG file changes in ui
+  - Update `min_file_process_interval` and `dag_dir_list_interval`
+  - [Triggering dags after changes](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html#triggering-dags-after-changes)
+- Hide examples: `load_examples = False`
+
+### Start servers
+
+```bash
 # Run airflow server (default port 8080)
 # View at localhost:8080/admin
 pipenv run airflow webserver
@@ -55,3 +71,39 @@ pipenv run airflow unpause tutorial
 # Backfill DAG (run for past dates)
 pipenv run airflow dags backfill tutorial -s <yyyy-mm-dd> -e <yyyy-mm-dd>
 ```
+
+## Docker local setup
+
+### Docs
+
+- Airflow/docker docs:
+  - https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html
+- Docker compose yaml
+  - https://airflow.apache.org/docs/apache-airflow/2.7.0/docker-compose.yaml
+- Docker airflow image docs
+  - https://airflow.apache.org/docs/docker-stack/index.html
+
+### Notes
+
+- Several directories are mounted
+  - dags, logs, config, plugins
+- Needs at least 4GB RAM, preferably >8GB.
+
+- Running CLI Commands:
+  - `docker compose run airflow-worker airflow info`
+
+### Setup
+
+```bash
+# Create user
+docker compose run airflow-worker airflow users create \
+  --role Admin \
+  --username <user> \
+  --password <password> \
+  --email <email> \
+  --firstname <firstname> \
+  --lastname <lastname>
+```
+
+- Turn off examples
+  - `AIRFLOW__CORE__LOAD_EXAMPLES: 'false'`
