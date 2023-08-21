@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 pandas = "*"
-seaborn = "*"
+seaborn = "*" # sns
 matplotlib = "*"
 scikit-learn = "*" # sklearn
 statsmodels = "*"
