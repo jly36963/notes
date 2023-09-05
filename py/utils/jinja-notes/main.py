@@ -1,6 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
 from typing import Any, Dict
+
+from babel.support import Translations
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 # TODO: macro/call, filter, extends, include
@@ -26,6 +28,15 @@ def main():
 
     print_section_title("Ternary")
     basic_ternary(env)
+
+    print_section_title("Filter")
+    basic_filter(env)
+
+    print_section_title("Testing")
+    basic_testing(env)
+
+    print_section_title("i18n")
+    basic_i18n(env)
 
 
 # ---
@@ -110,17 +121,63 @@ def basic_if(env: Environment) -> None:
     print(template.render(is_morning=is_morning))
 
 
-TERNARY_TEMPLATE = '''
-Have a great {{ 'morning' if is_morning else 'day' }}!
-'''.strip()
+TERNARY_TEMPLATE = "Have a great {{ 'morning' if is_morning else 'day' }}!"
 
 
 def basic_ternary(env: Environment) -> None:
-    """If example"""
+    """Ternary example"""
     dt = datetime.now()
     is_morning = dt.hour < 12
     template = env.from_string(TERNARY_TEMPLATE)
     print(template.render(is_morning=is_morning))
+
+
+FILTER_TEMPLATE = "Patrick yells: {{ phrase|upper }}!"
+
+
+def basic_filter(env: Environment) -> None:
+    """Filter example"""
+    template = env.from_string(FILTER_TEMPLATE)
+    print(template.render(phrase="Finland"))
+
+
+TESTING_TEMPLATE = '''
+{% if name is defined %}
+Hey there {{ name }}! How are you doing?
+{% else %}
+Hey! Nice to meet you!
+{% endif %}
+'''.strip()
+
+
+def basic_testing(env: Environment) -> None:
+    """Filter example"""
+    template = env.from_string(TESTING_TEMPLATE)
+    print(template.render())
+
+
+I18N_TEMPLATE = """
+{% trans %}
+Hey there {{ name }}! How are you?
+{% endtrans %}
+"""
+
+
+def basic_i18n(env: Environment) -> None:
+    """i18n example"""
+    # Add translation extension
+    env.add_extension('jinja2.ext.i18n')
+    translations = Translations.load(
+        dirname='i18n',
+        locales=["pt", "en"]
+    )
+    env.install_gettext_translations(translations)  # type: ignore
+
+    # Not sure how to make this work
+    # Babel does not make sense to me
+    # I wish python had something simple like 'y18n'
+    template = env.from_string(I18N_TEMPLATE)
+    print(template.render(name='Kakashi'))
 
 
 # ---

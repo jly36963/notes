@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 Jinja2 = "*" # jinja2
+babel = "*"
 
 [dev-packages]
 pylint = "*"
