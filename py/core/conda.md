@@ -1,6 +1,6 @@
+# Conda
 
-# CONDA
-
+```sh
 # Create conda env
 conda create --name [name_of_environment]
 # Create conda env (with package included)
@@ -19,4 +19,4 @@ conda deactivate
 pip3 install [package]
 # Install package (while in active env)
 conda install [package]
-
+```

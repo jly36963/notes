@@ -1,4 +1,4 @@
-# FastAPI
+# Polars
 
 A simple fastapi app with examples of basic usage.
 
@@ -9,4 +9,3 @@ A simple fastapi app with examples of basic usage.
 ## Startup
 
 - `pipenv run python3 main.py`
-

@@ -48,20 +48,24 @@ Task:
 Operator:
 
 - Templates for predefined tasks
+- Operator tutorial
+  - https://airflow.apache.org/docs/apache-airflow/stable/howto/operator/index.html
+- Examples
   - BashOperator: executes a bash command or template
   - PythonOperator: executes a python function
-  - DummyOperator: Does nothing (never processed by executor)
+  - DummyOperator: does nothing (never processed by executor)
   - SimpleHttpOperator: makes a network request
+  - ShortCircuitOperator: continue if truthy, exit if falsy
+  - TriggerDagRunOperator: triggers another DAG (specified `dag_id`)
+  - BranchPythonOperator: choose downstream task(s) to execute
+    - return task_id (or list) from `python_callable` (the others are skipped)
   - SQL
     - PostgresOperator: executes a sql script
     - MySqlOperator: executes a sql script
   - AWS
     - S3: S3CopyObjectOperator, S3ListOperator, etc
-  - TriggerDagRunOperator: triggers another DAG
   - EmailOperator: sends an email
   - SlackAPIOperator: sends a slack message
-- Operator tutorial
-  - https://airflow.apache.org/docs/apache-airflow/stable/howto/operator/index.html
 
 XComs (Cross communications):
 
@@ -89,6 +93,7 @@ Connections/Hooks:
 - Connections
   - Abstraction for DAL connection
   - Stores connection url, creds, etc
+  - UI: Admin > Connections > fill form
 - Hooks
   - High-level interface for external platform operations
   - Used to build custom Operators
@@ -106,7 +111,11 @@ Sensors:
 
 - Wait for something to happen
 - Great for blocking downstream tasks until something is ready
-- Eg: HttpSensor
+- Examples
+  - PythonSensor: Waits (pokes) until `python_callable` returns `True`
+  - HttpSensor: Waits (pokes) using http GET statement
+    - By default, uses response status to determine success/fail/error
+    - Can use `response_check` func instead
 
 Variables:
 

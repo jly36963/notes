@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+
+[dev-packages]
+# Test/lint
+nose2 = "*"
+coverage = "*"
+pylint = "*"
+autopep8 = "*"
+# Docs
+sphinx = "*"
+myst-parser = "*"
+sphinx-autoapi = "*"
+pydata-sphinx-theme = "*" # furo = "*"
+sphinx-markdown-builder = "*"
+rst-to-myst = "*"
+
+[requires]
+python_version = "3.11"
