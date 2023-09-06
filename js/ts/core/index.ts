@@ -6,17 +6,17 @@
 // Declarations
 // ---
 
-const basicDeclarations = () => {
+function basicDeclarations() {
   const firstName: string = "Kakashi";
   const greeting: string = `Hello, ${firstName}!`;
   console.log(greeting);
-};
+}
 
 // ---
 // Types
 // ---
 
-const basicTypes = () => {
+function basicTypes() {
   // boolean
   const isPositive = (n: number): boolean => n > 0;
   const positive = isPositive(11);
@@ -50,13 +50,13 @@ const basicTypes = () => {
   const itachi: object = { firstName: "Itachi", lastName: "Uchiha" };
   const objKeys = readKeys(itachi);
   console.log(`object example: ${objKeys}`);
-};
+}
 
 // ---
 // Functions
 // ---
 
-const basicFunctions = () => {
+function basicFunctions() {
   // Normal function declaration
   function greetPerson(person: string): string {
     return `Hello, ${person}`;
@@ -76,7 +76,7 @@ const basicFunctions = () => {
   // Void
   const say = (message: string): void => console.log(message); // no return value
   say("hello");
-};
+}
 
 // ---
 // Union types
@@ -84,28 +84,28 @@ const basicFunctions = () => {
 
 // Type unions require type-narrowing to use type-specific properties/methods
 
-const basicUnionTypes = () => {
+function basicUnionTypes() {
   type nil = null | undefined;
   const greet = (name: string | nil) =>
     name ? `Hello ${name.trim()}!` : "Hello friend!";
   console.log(greet("Kakashi"));
-};
+}
 
 // ---
 // Literals
 // ---
 
-const basicLiterals = () => {
+function basicLiterals() {
   type DayOfWeek = "Mon" | "Tues" | "Wed" | "Thur" | "Fri" | "Sat" | "Sun";
   const day: DayOfWeek = "Fri";
   console.log(`My favorite day of the week is ${day}`);
-};
+}
 
 // ---
 // Classes
 // ---
 
-const basicClasses = () => {
+function basicClasses() {
   // Define class
   class Person {
     fullName: string;
@@ -123,13 +123,13 @@ const basicClasses = () => {
   // Instantiate class
   const kakashi = new Person("Kakashi", "Hatake");
   console.log(kakashi.greetFull());
-};
+}
 
 // ---
 // Interfaces
 // ---
 
-const basicInterfaces = () => {
+function basicInterfaces() {
   // Interface
   interface Person {
     firstName: string;
@@ -146,7 +146,7 @@ const basicInterfaces = () => {
     age: 27,
   };
   console.log(greetPerson(person));
-};
+}
 
 // ---
 // Helpers
@@ -160,7 +160,7 @@ const printSectionTitle = (title: string) => {
 // Main
 // ---
 
-const main = () => {
+function main() {
   printSectionTitle("basic declarations");
   basicDeclarations();
 
@@ -181,6 +181,6 @@ const main = () => {
 
   printSectionTitle("basic interfaces");
   basicInterfaces();
-};
+}
 
 main();
