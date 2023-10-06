@@ -46,7 +46,7 @@ const RETRY_OPTION_DEFAULTS = {
 async function fetchWithRetry(url, options, retryOptions) {
   retryOptions = {
     ...RETRY_OPTION_DEFAULTS,
-    ...retryOptions,
+    ...(retryOptions ?? {}),
   };
 
   const { retries, backoffFactor, statusForceList, allowedMethods, timeout } =
