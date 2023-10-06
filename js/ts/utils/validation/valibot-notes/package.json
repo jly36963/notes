@@ -1,0 +1,24 @@
+{
+  "name": "ts-zod-notes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "bun run index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "string-ts": "^1.1.0",
+    "valibot": "^0.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.2",
+    "eslint": "^8.50.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "gts": "^5.2.0",
+    "typescript": "^5.2.2"
+  }
+}
