@@ -1,6 +1,6 @@
 import yargs from "yargs";
 
-const basicGreetPositional = () => {
+function basicGreetPositional() {
   yargs("Kakashi")
     .command(
       "$0 [name]", // $0 denotes default command
@@ -17,9 +17,9 @@ const basicGreetPositional = () => {
       }
     )
     .parse();
-};
+}
 
-const basicGreetOption = () => {
+function basicGreetOption() {
   yargs("Kakashi -i")
     .command(
       "$0 [name]",
@@ -44,9 +44,9 @@ const basicGreetOption = () => {
       }
     )
     .parse();
-};
+}
 
-const basicGreetAsync = async () => {
+async function basicGreetAsync() {
   await yargs("Kakashi")
     .command(
       "$0 [name]",
@@ -64,9 +64,9 @@ const basicGreetAsync = async () => {
       }
     )
     .parseAsync();
-};
+}
 
-const basicSubcommands = () => {
+function basicSubcommands() {
   const program = yargs()
     .command(
       "math",
@@ -172,17 +172,17 @@ const basicSubcommands = () => {
   for (const input of inputs) {
     program.parse(input);
   }
-};
+}
 
 // ---
 // Main
 // ---
 
-const printSectionTitle = (title: string) => {
+function printSectionTitle(title: string) {
   console.log("\n" + title.toUpperCase() + "\n");
-};
+}
 
-const main = async () => {
+async function main() {
   printSectionTitle("basic greet (positional)");
   basicGreetPositional();
 
@@ -194,6 +194,6 @@ const main = async () => {
 
   printSectionTitle("basic subcommands");
   basicSubcommands();
-};
+}
 
 main();

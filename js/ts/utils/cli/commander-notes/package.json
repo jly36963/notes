@@ -5,20 +5,17 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' index.ts",
-    "run-example": "nodemon --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' example.ts",
+    "dev": "bun run index.ts",
     "build": "tsc",
-    "start": "node build/index.js",
-    "test": "mocha --require ts-node/register tests/**/*.test.ts"
+    "start": "node build/index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "yargs": "^17.7.2"
+    "commander": "^11.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.8.3",
-    "@types/yargs": "^17.0.27",
     "eslint": "^8.51.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.0.0",
