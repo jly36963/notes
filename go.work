@@ -1,4 +1,4 @@
-go 1.18
+go 1.19
 
 use (
 	./go/core/basics
@@ -6,6 +6,7 @@ use (
 	./go/core/concurrency
 	./go/core/generics
 	./go/core/lo
+	./go/core/option
 	./go/core/standard-packages
 	./go/core/structures
 	./go/data/golearn-notes
