@@ -8,7 +8,6 @@ import (
 	// standard packages
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -83,7 +82,7 @@ func NotFoundView(ctx *atreugo.RequestCtx) error {
 		ctx.SetStatusCode(fasthttp.StatusNotFound)
 		ctx.SetBody(payload)
 	} else {
-		html, _ := ioutil.ReadFile("client/build/index.html")
+		html, _ := os.ReadFile("client/build/index.html")
 		payload := string(html)
 
 		ctx.SetContentType("text/html; charset=utf-8")

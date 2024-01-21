@@ -39,6 +39,6 @@ func main() {
 		p = ":5000"
 	}
 
-	fmt.Println(fmt.Sprintf("Server starting on port %v", p))
-	http.ListenAndServe(p, r)
+	fmt.Printf("Server starting on port %v\n", p)
+	log.Fatal(http.ListenAndServe(p, r))
 }

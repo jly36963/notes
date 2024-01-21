@@ -48,5 +48,5 @@ func main() {
 
 	port := os.Getenv("PORT")
 	log.Println("port:", port)
-	r.Run() // 0.0.0.0:8080 (unless PORT in .env)
+	log.Fatal(r.Run())
 }

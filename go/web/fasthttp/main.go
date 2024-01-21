@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"runtime"
 
 	// local packages
 	"go-fasthttp/middleware/logger"
@@ -39,32 +38,13 @@ func main() {
 	if len(port) > 0 {
 		p = fmt.Sprintf(":%v", port)
 	} else {
-		p = ":5000"
+		p = ":3000"
 	}
-	fmt.Println(fmt.Sprintf("Server starting on port %v", p))
+	fmt.Printf("Server starting on port %v\n", p)
 	handler := r.Handler // *fasthttp.RequestCtx
 	handler = logger.PrettyLogger(handler)
 	handler = NotFoundHandler(handler)
-	fasthttp.ListenAndServe(p, handler)
-}
-
-// ---
-// Runtime details
-// ---
-
-func getRuntimeDetails() {
-	// get runtime details (string array)
-	details := []string{
-		fmt.Sprintf("os: %v", runtime.GOOS),
-		fmt.Sprintf("arch: %v", runtime.GOARCH),
-		fmt.Sprintf("CPUs: %v", runtime.NumCPU()),
-		fmt.Sprintf("GR: %v", runtime.NumGoroutine()),
-		fmt.Sprintf("version: %v", runtime.Version()),
-	}
-	// print each detail (for loop)
-	for _, d := range details {
-		fmt.Println(d)
-	}
+	log.Fatal(fasthttp.ListenAndServe(p, handler))
 }
 
 // ---
