@@ -757,7 +757,7 @@ func basicNetHttpGet() {
 
 	// get body
 	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body) // []byte
+	body, err := io.ReadAll(res.Body) // []byte
 	if err != nil {
 		log.Println(err)
 		return
@@ -799,7 +799,7 @@ func basicNetHttpPost() {
 
 	// get body
 	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body) // []byte
+	body, err := io.ReadAll(res.Body) // []byte
 	if err != nil {
 		log.Println(err)
 		return

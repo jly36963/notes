@@ -1,15 +1,13 @@
 import asyncio
 import json
-from typing import List, Dict, Any
+from typing import List
 from src.examples import with_for_loop, with_gather, with_sema
 
 
 async def main() -> None:
-    """
-    Basic usage of httpx
-    """
+    """Basic usage of httpx"""
     # people to be posted
-    people: List[Dict[str, Any]] = [
+    people: List[dict] = [
         {'name': 'hiruzen'},
         {'name': 'kakashi'},
         {'name': 'yamato'},
@@ -29,17 +27,12 @@ async def main() -> None:
     sema_responses = await with_sema(people)
 
     # print results
-    results = {
+
+    print(json.dumps({
         'for_loop_responses': for_loop_responses,
         'gather_responses': gather_responses,
         'sema_responses': sema_responses
-    }
-
-    print(json.dumps(
-        results,
-        default=str,
-        indent=2
-    ))
+    }, default=str, indent=2))
 
 # run main function
 asyncio.run(main())

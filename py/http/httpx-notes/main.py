@@ -1,6 +1,6 @@
-# ---------
+# ---
 # httpx
-# ---------
+# ---
 
 # install
 # pip install httpx
@@ -11,89 +11,53 @@
 # asyncio
 # https://docs.python.org/3/library/asyncio.html
 
-# trio (asyncio alternative)
-# https://trio.readthedocs.io/en/stable/
-
-# ---
-# imports
-# ---
 
 import asyncio
 import json
 from src.utils import fetch
 
 # ---
-# main
+# Main
 # ---
 
 
 async def main():
+    # Get (plain)
+    get_result = await fetch(url="https://jsonplaceholder.typicode.com/users/1",)
 
-    # get
-    get_result = None
-    try:
-        get_result = await fetch(url="https://jsonplaceholder.typicode.com/users/1",)
-    except Exception as e:
-        print(e)
-
-    # get (query)
-    get_with_query_result = None
-    try:
-        get_with_query_result = await fetch(
-            url="https://jsonplaceholder.typicode.com/users",
-            params={"limit": 5, "offset": 5}
-        )
-    except Exception as e:
-        print(e)
-
-    # get (headers)
-    get_with_headers_result = None
-    try:
-        get_with_headers_result = await fetch(
-            url="https://jsonplaceholder.typicode.com/users/1",
-            headers={
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "Token": "55DF6FCF66DB349E42272C11CD49F701EEF64FD7F842DA431C4CD252211AFD66"
-            }
-        )
-    except Exception as e:
-        print(e)
-
-    # post
-    post_result = None
-    try:
-        post_result = await fetch(
-            method="POST",
-            url="https://jsonplaceholder.typicode.com/users",
-            payload={"name": "Hiruzen Sarutobi"},
-        )
-    except Exception as e:
-        print(e)
-
-    # results
-    print(
-        "get_result", json.dumps(
-            get_result,
-            indent=2,
-            default=str  # timedelta is not json serializable
-        ),
-        "get_with_query_result", json.dumps(
-            get_with_query_result,
-            indent=2,
-            default=str
-        ),
-        "get_with_headers_result", json.dumps(
-            get_with_headers_result,
-            indent=2,
-            default=str
-        ),
-        "post_result", json.dumps(
-            post_result,
-            indent=2,
-            default=str
-        ),
-        sep="\n"
+    # get (with query)
+    get_with_query_result = await fetch(
+        url="https://jsonplaceholder.typicode.com/users",
+        params={"limit": 5, "offset": 5}
     )
 
-asyncio.run(main())
+    # get (with headers)
+    get_with_headers_result = await fetch(
+        url="https://jsonplaceholder.typicode.com/users/1",
+        headers={
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Token": "55DF6FCF66DB349E42272C11CD49F701EEF64FD7F842DA431C4CD252211AFD66"
+        }
+    )
+
+    # post
+    post_result = await fetch(
+        method="POST",
+        url="https://jsonplaceholder.typicode.com/users",
+        payload={"name": "Hiruzen Sarutobi"},
+    )
+
+    print(json.dumps({
+        "get_result": get_result,
+        "get_with_query_result": get_with_query_result,
+        "get_with_headers_result": get_with_headers_result,
+        "post_result": post_result
+    }, indent=2, default=str))
+
+# ---
+# Run
+# ---
+
+if __name__ == "__main__":
+    asyncio.run(main())
