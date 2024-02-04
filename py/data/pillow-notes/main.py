@@ -1,5 +1,8 @@
 import os
 from PIL import Image, ImageFilter
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 DATA_DIR = os.path.join('.', 'data')
 INPUT_DIR = os.path.join(DATA_DIR, 'input')
@@ -152,6 +155,35 @@ def basic_edges():
     img_embossed = img.filter(ImageFilter.SMOOTH).filter(ImageFilter.EMBOSS)
     img_embossed.save(get_output_fp('embossed.jpg'))
 
+
+def basic_pillow():
+    # PLOT IMAGE
+    # open image
+    fp1 = '../path/to/pic/filename.jpg'
+    img1 = Image.open(fp1)  # relative or absolute
+    # check type
+    print(type(img1))  # PIL.JpegImagePlugin.JpegImageFile
+    # convert to array
+    img_arr1 = np.asarray(img1)
+    # info about array
+    print(img_arr1.shape)  # (dimensions -- rows, cols, z) (rows, cols, bands)
+    # plot array as image
+    plt.imshow(img_arr1)
+
+    # PLOT IMAGE (RED BAND)
+    # get red band
+    fp1 = '../path/to/pic/filename.jpg'
+    img1 = Image.open(fp1)  # relative or absolute
+    img_arr1 = np.asarray(img1)
+    img_arr1_red = np.array(img_arr1[:, :, 0])
+    # plot array as image (cmap -- set color ramp)
+    plt.imshow(img_arr1_red, cmap='gray')
+
+    # SET OTHER COLOR BANDS TO ZERO (RED BAND VALUES ONLY)
+    fp1 = '../path/to/pic/filename.jpg'
+    img1 = Image.open(fp1)
+    img_arr1 = np.asarray(img1)
+    img_arr1[:, :, 1:] = 0
 
 # ---
 # Main

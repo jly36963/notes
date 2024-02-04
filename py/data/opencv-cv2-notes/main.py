@@ -1,356 +1,178 @@
-# ---
-# opencv-python notes
-# ---
-
-# OpenCV (Open Source Computer Vision) is written in C++ (has Python bindings)
-
-
+import os
+from typing import List
 import numpy as np
 import cv2
+import cv2.flann
 import matplotlib.pyplot as plt
-from PIL import Image
 
+# OpenCV (Open Source Computer Vision) is written in C++ (has Python bindings)
+# Docs: https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html
 
-"""
-# needed by older versions of jupyter to do plots
-%matplotlib inline
-"""
-
-
-def basic_numpy_usage():
-    # CREATE ARRAYS
-    # array from list
-    list1 = [1, 2, 3]
-    arr1 = np.array(list1)
-    type(arr1)  # numpy.ndarray
-    # array from range
-    arr1 = np.arange(0, 10, 1)  # start, stop (cuts off before), step (optional)
-    # array of zeros (2d) (uses floats)
-    np.zeros(shape=(10, 5))  # 10 rows, 5 columns
-    # array of ones (2d) (uses floats)
-    np.ones(shape=(2, 4))  # 2 rows, 4 columns
-    # array of random integers (seed makes the random integers consistent)
-    np.random.seed(101)
-    arr1 = np.random.randint(0, 100, 10)  # 10 random integers between 0 and 100
-    # copy array
-    arr1 = np.arange(0, 10, 1)
-    arr2 = arr1.copy()
-
-    # NUMPY (STATS)
-    arr1.max()  # max value
-    arr1.argmax()  # return index of max
-    arr1.min()  # min value
-    arr1.argmin()  # return index of min
-    arr1.mean()  # mean
-
-    # NUMPY (SHAPING)
-    arr1 = np.arange(0, 100).reshape(10, 10)  # array of 0-100, reshaped to 10 rows/cols
-    arr1.shape  # dimensions of array (rows, columns)
-
-    # NUMPY INDEXING/SLICING
-    arr1 = np.arange(0, 100).reshape(10, 10)
-    arr1[2, 4]  # row index 2, col index 4 (nested array: which array, which element)
-    arr1[:, 5]  # col index 5 (all intersections between rows and col index 5)
-    arr1[3, :]  # row index 3 (all intersections between cols and row index 3)
-    arr1[2:4, 3:5]  # 2d array -- rows 2 & 3, cols 3 & 4
-
-    # NUMPY ASSIGNMENT (using indexing)
-    arr1[2, 4] = 0  # assign value to one element
-    arr1[:, 5] = 0  # assign value to a slice
-    arr1[:, :] = 123  # assign value to 2d slice
-
-
-def basic_pillow():
-
-    # PLOT IMAGE
-    # open image
-    fp1 = '../path/to/pic/filename.jpg'
-    img1 = Image.open(fp1)  # relative or absolute
-    # check type
-    print(type(img1))  # PIL.JpegImagePlugin.JpegImageFile
-    # convert to array
-    img_arr1 = np.asarray(img1)
-    # info about array
-    print(img_arr1.shape)  # (dimensions -- rows, cols, z) (rows, cols, bands)
-    # plot array as image
-    plt.imshow(img_arr1)
-
-    # PLOT IMAGE (RED BAND)
-    # get red band
-    fp1 = '../path/to/pic/filename.jpg'
-    img1 = Image.open(fp1)  # relative or absolute
-    img_arr1 = np.asarray(img1)
-    img_arr1_red = np.array(img_arr1[:, :, 0])
-    # plot array as image (cmap -- set color ramp)
-    plt.imshow(img_arr1_red, cmap='gray')
-
-    # SET OTHER COLOR BANDS TO ZERO (RED BAND VALUES ONLY)
-    fp1 = '../path/to/pic/filename.jpg'
-    img1 = Image.open(fp1)
-    img_arr1 = np.asarray(img1)
-    img_arr1[:, :, 1:] = 0
 
 # ---
-# OpenCV (jupyter)
+# Constants
+# ---
+
+DATA_DIR = os.path.join('.', 'data')
+INPUT_DIR = os.path.join(DATA_DIR, 'input')
+OUTPUT_DIR = os.path.join(DATA_DIR, 'output')
+
+
+# ---
+# Main
+# ---
+
+def main():
+    print_section_title('basic_import_export')
+    basic_import_export()
+
+    print_section_title('basic_bands')
+    basic_bands()
+
+    print_section_title('basic_reverse_bands')
+    basic_reverse_bands()
+
+    print_section_title('basic_grayscale')
+    basic_grayscale()
+
+    print_section_title('basic_resize')
+    basic_resize()
+
+    print_section_title('basic_flip')
+    basic_flip()
+
+    print_section_title('basic_thresholding')
+    basic_thresholding()
+
+    print_section_title('basic_gamma_correction')
+    basic_gamma_correction()
+
+    print_section_title('basic_blurring')
+    basic_blurring()
+
+    print_section_title('basic_morphological_operators')
+    basic_morphological_operators()
+
+    print_section_title('basic_gradients')
+    basic_gradients()
+
+    print_section_title('basic_histograms')
+    basic_histograms()
+
+    print_section_title('basic_corner_detection')
+    basic_corner_detection()
+
+    print_section_title('basic_canny_edge_detector')
+    basic_canny_edge_detector()
+
+    print_section_title('basic_feature_detection')
+    basic_feature_detection()
+
+    print_section_title('basic_feature_matching')
+    basic_feature_matching()
+
+    print_section_title('basic_contour')
+    basic_contour()
+
+# ---
+# Examples
 # ---
 
 
-def basic_opencv_jupyter():
-    # PLOT IMAGE
-    # import image (and convert to array)
-    fp1 = '../path/to/pic/filename.jpg'
-    img1 = cv2.imread(fp1)
-    type(img1)  # numpy.ndarray (if fp1 doesn't exist, type will be 'NoneType')
+def basic_import_export():
+    fp = get_input_fp('polaris.jpg')
+    img: np.ndarray = cv2.imread(fp)
+    cv2.imwrite(get_output_fp('polaris.jpg'), img)
+    print('...')
+
+
+def basic_bands():
+    fp = get_input_fp('polaris.jpg')
+    img: np.ndarray = cv2.imread(fp)
+
     # matplotlib expects RGB, opencv uses BGR. this function makes the image RGB
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    plt.imshow(img1)
 
-    # REVERSE ORDER OF BANDS (BGR TO RGB)
-    fp1 = '../path/to/pic/filename.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = np.flip(img1, 2)  # reverse the z axis (args -- image, axis)
-    plt.imshow(img1)
+    img1 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    cv2.imwrite(get_output_fp('polaris-bands-rgb.jpg'), img1)
 
-    # PLOT GRAYSCALE IMAGE
-    fp1 = '../path/to/pic/filename.jpg'
-    img1 = cv2.imread(fp1, cv2.IMREAD_GRAYSCALE)
-    print(img1.shape)  # (rows, cols) (no longer a z dimension)
-    plt.imshow(img1, cmap='gray')
+    img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HLS)
+    cv2.imwrite(get_output_fp('polaris-bands-hsl.jpg'), img2)
 
-    # RESIZE IMAGE (shape -- rows/cols, resize -- x/y )
-    fp1 = '../path/to/pic/filename.jpg'
-    img1 = cv2.imread(fp1)
-    print(img1.shape)  # (rows, cols, bands)
-    img1 = cv2.resize(img1, (500, 500))  # source, dimensions (x & y)
-    plt.imshow(img1)
+    print('...')
 
-    # RESIZE IMAGE (ratio)
-    fp1 = '../path/to/pic/filename.jpg'
-    img1 = cv2.imread(fp1)
-    print(img1.shape)  # (rows, cols, bands)
+
+def basic_reverse_bands():
+    fp = get_input_fp('polaris.jpg')
+    img: np.ndarray = cv2.imread(fp)
+    # Reverse the z axis (args -- image, axis))
+    img = np.flip(img, 2)
+    cv2.imwrite(get_output_fp('polaris-reverse-bands.jpg'), img)
+    print('...')
+
+
+def basic_grayscale():
+    fp = get_input_fp('polaris.jpg')
+    img: np.ndarray = cv2.imread(fp, cv2.IMREAD_GRAYSCALE)
+    cv2.imwrite(get_output_fp('polaris-gray.jpg'), img)
+    print('...')
+
+
+def basic_resize():
+    fp = get_input_fp('polaris.jpg')
+    img: np.ndarray = cv2.imread(fp)
+
+    img1 = cv2.resize(img, (500, 500))  # source, dimensions (x & y)
+    cv2.imwrite(get_output_fp('polaris-resize.jpg'), img1)
+
     x = .5  # width multiplier
     y = .5  # height multiplier
-    img1 = cv2.resize(img1, (0, 0), img1, x, y)  # source, zeros tuple, source, x, y
-    plt.imshow(img1)
+    img2 = cv2.resize(img, (0, 0), img, x, y)  # source, zeros tuple, source, x, y
+    cv2.imwrite(get_output_fp('polaris-resize-2.jpg'), img2)
 
-    # FLIP IMAGE
-    fp1 = '../path/to/pic/filename.jpg'
-    img1 = cv2.imread(fp1)
-    print(img1.shape)  # (rows, cols, bands)
-    img1 = cv2.flip(img1, 0)  # 0 -- flip rows (y), 1 -- flip columns (x), 2 flip bands
-    plt.imshow(img1)
-
-    # WRITE FILE
-    # import file
-    fp1 = '../path/to/pic/filename.jpg'
-    img1 = cv2.imread(fp1)
-    # save file
-    cv2.imwrite('image_name.jpg', img1)  # output name, image to write
+    print('...')
 
 
-def basic_opencv_python_scripts():
-
-    # SHOW FILE
-    fp1 = '../path/to/pic/filename.jpg'
-    img1 = cv2.imread(fp1)
-    cv2.imshow('Window_Name', img1)  # open window
-    cv2.waitKey()  # wait until window is closed
-
-    # SHOW FILE (v2)
-    fp1 = '../path/to/pic/filename.jpg'
-    img1 = cv2.imread(fp1)
-    while True:
-        # open window
-        cv2.imshow('Window_Name', img1)
-        # if 1 ms has passed and the escape key is pressed, break
-        if cv2.waitKey(1) & OxFF == 27:
-            break
-    # destroy windows
-    cv2.destroyAllWindows()
-
-
-def basic_opencv_drawing_on_images():
-    # CREATE IMG
-    img1 = np.zeros(shape=(500, 500, 3), dtype=np.int16)
-    print(img1.shape)
-
-    # DRAW
-    # rectangle (pt1 & pt2 are the corners)
-    cv2.rectangle(img1, pt1=(10, 10), pt2=(490, 490), color=(255, 255, 255), thickness=5)
-    # circles
-    cv2.circle(img1, center=(250, 250), radius=90, color=(255, 255, 255), thickness=20)
-    cv2.circle(img1, center=(250, 250), radius=50, color=(255, 255, 255), thickness=20)
-    cv2.circle(img1, center=(250, 250), radius=20, color=(255, 255, 255), thickness=-1)
-    # straight line
-    cv2.line(img1, pt1=(100, 250), pt2=(400, 250), color=(255, 255, 255), thickness=5)
-    cv2.line(img1, pt1=(250, 100), pt2=(250, 400), color=(255, 255, 255), thickness=5)
-    # polygon
-    vertices = np.array([[100, 100], [100, 400], [400, 400], [400, 100]])
-    pts = vertices.reshape(-1, 1, 2)  # shape (4,2) to (4,1,2)
-    cv2.polylines(img1, [pts], isClosed=True, color=(255, 255, 255), thickness=5)
-
-    # plot image
-    plt.imshow(img1)
-
-
-def draw_circle(event, x, y, flags, param):
-    if event == cv2.EVENT_LBUTTONDOWN:
-        cv2.circle(img1, center=(x, y), radius=50, color=(255, 255, 255), thickness=5)
-    elif event == cv2.EVENT_RBUTTONDOWN:
-        cv2.circle(img1, center=(x, y), radius=25, color=(255, 255, 255), thickness=5)
-
-
-def basic_opencv_draw_image_with_mouse():
-    # connect callback function
-    cv2.namedWindow(winname='window_name')
-    cv2.setMouseCallback('window_name', draw_circle)
-
-    # SHOW IMAGE
-    img1 = np.zeros((500, 500, 3))
-    while True:
-        cv2.imshow('window_name', img1)
-        if cv2.waitKey(20) & 0xFF == 27:
-            break
-    cv2.destroyAllWindows()
-
-# ---
-# OpenCV (drawing on image with a mouse) (rectangles)
-# ---
-
-
-def basic_opencv_draw_rectangle_with_mouse():
-    # when creating rectangles, drag from top left to bottom right
-
-    # variables used
-    img = np.zeros((512, 512, 3))  # black image
-    drawing = False  # mouse button down -- True, mouse button up -- False
-    ix, iy = -1, -1
-
-    # draw rectangle (callback function)
-    # TODO: integrate globals: ix, iy, drawing
-    def draw_rectangle(event, x, y, flags, params):
-        if event == cv2.EVENT_LBUTTONDOWN:
-            # get x, y coordinates
-            drawing = True
-            ix, iy = x, y  # store start position
-        elif event == cv2.EVENT_MOUSEMOVE:
-            # create rectangle
-            if drawing == True:
-                cv2.rectangle(img, (ix, iy), (x, y), (255, 255, 255))
-        elif event == cv2.EVENT_LBUTTONUP:
-            drawing = False
-            cv2.rectangle(img, (ix, iy), (x, y), (255, 255, 255))
-
-    cv2.namedWindow(winname='image')
-    cv2.setMouseCallback('image', draw_rectangle)
-
-    # open window/image
-    while True:
-        cv2.imshow('image', img)
-        if cv2.waitKey(20) & 0xFF == 27:
-            # escape key pressed
-            break
-    # destroy windows
-    cv2.destroyAllWindows()
-
-
-def basic_rgb_to_hsl():
-    # HSL -- hue (color), saturation (intensity), lightness (brightness)
-
-    # RGB TO HSL
-    # import image
-    fp1 = '../path/to/pic/filename.jpg'
-    img1 = cv2.imread(fp1)
-    # convert
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2HLS)
-    # plot image
-    plt.imshow(img1)
-
-# ---
-# OpenCV (blending and pasting images)
-# ---
-
-
-def basic_blending_and_pasting():
-
-    # weighted blending
-    # pixel = α * pixel1 + β * pixel2 + γ
-
-    # BLEND IMAGES (different size)
-    # import images
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    fp2 = '../path/to/pic/filename2.jpg'
-    img2 = cv2.imread(fp2)
-    img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
-    # resize (resize img2 to dimensions of img1)
-    print(img1.shape, img2.shape)  # before
-    dimensions = img1.shape  # rows, cols, bands
-    img2 = cv2.resize(img2, (dimensions[1], dimensions[0]))  # x, y
-    print(img1.shape, img2.shape)  # after
-    # blend
-    img3 = cv2.addWeighted(src1=img1, alpha=.6, src2=img2, beta=.4, gamma=0)
-    # plot blended image
-    plt.imshow(img3)
-
-    # OVERLAY IMAGES
-    # skipped this part
-
-    # MASKING & OVERLAYING IMAGES
-    # skipped this part
-
-# ---
-# OpenCV (thresholding)
-# ---
+def basic_flip():
+    fp = get_input_fp('polaris.jpg')
+    img: np.ndarray = cv2.imread(fp)
+    # flipCode: 0 -- flip rows (y), 1 -- flip columns (x), 2 flip bands (z)
+    img = cv2.flip(img, 0)
+    cv2.imwrite(get_output_fp('polaris-flip.jpg'), img)
+    print('...')
 
 
 def basic_thresholding():
-    # https://docs.opencv.org/3.2.0/d7/d4d/tutorial_py_thresholding.html
+    fp = get_input_fp('orchid.jpg')
+    img = cv2.imread(fp, cv2.IMREAD_GRAYSCALE)
 
-    # THRESHOLDING
-    # import image (grayscale)
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1, 0)
-    # threshold (returns tuple)
-    thresh_val1, output_img1 = cv2.threshold(src=img1, thresh=110, maxval=255, type=cv2.THRESH_BINARY)
-    # plot image
-    plt.imshow(output_img1, cmap='gray')
+    _, img1 = cv2.threshold(img, thresh=100, maxval=255, type=cv2.THRESH_BINARY)
+    cv2.imwrite(get_output_fp('orchid-threshold.jpg'), img1)
 
-    # ADAPTIVE THRESHOLDING
-    # import image (grayscale)
-    fp2 = '../path/to/pic/filename2.jpg'
-    img2 = cv2.imread(fp2, 0)
-    # threshold
-    output_img2 = cv2.adaptiveThreshold(
-        src=img2, maxValue=255, adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C, thresholdType=cv2.THRESH_BINARY,
-        blockSize=5, C=8)
-    # plot image
-    plt.imshow(output_img2, cmap='gray')
-
-# ---
-# OpenCV (gamma correction)
-# ---
+    img2 = cv2.adaptiveThreshold(
+        img,
+        maxValue=255,
+        adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        thresholdType=cv2.THRESH_BINARY,
+        blockSize=11,
+        C=2
+    )
+    cv2.imwrite(get_output_fp('orchid-threshold-adaptive.jpg'), img2)
+    print('...')
 
 
 def basic_gamma_correction():
-    # GAMMA CORRECTION
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # gamma correction (pixel value ^ gamma)
-    gamma = 3/4  # 0 < gamma < 1 (brighter), gamma > 1 (darker)
-    img1 = np.power(img1/255, gamma)  # (I/255)^γ
-    # plot image
-    plt.imshow(img1)
-
-# ---
-# OpenCV (blurring and smoothing images)
-# ---
+    fp = get_input_fp('orchid.jpg')
+    img: np.ndarray = cv2.imread(fp)
+    # 0 < γ < 1 (brighter), γ > 1 (darker)
+    gamma = 3/4
+    # (I/255) ^ γ
+    img = ((img / 255) ** gamma) * 255
+    # img = np.power(img/255, gamma)  # type: ignore
+    cv2.imwrite(get_output_fp('orchid-gamma.jpg'), img)
+    print('...')
 
 
-def basic_blurring_and_smoothing():
+def basic_blurring():
 
     # BLUR (concept)
     # basically takes a weighted average of a pixel with its surrounding pixels.
@@ -360,126 +182,66 @@ def basic_blurring_and_smoothing():
     # (.125) (.25) (.125)
     # (.0625) (.125) (.0625)
 
-    # BLUR (manual kernel)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # blur image
-    kernel = np.ones(shape=(3, 3), dtype=np.float32)/9
-    img2 = cv2.filter2D(src=img1, ddepth=-1, kernel=kernel, anchor=(-1, -1))
-    # plot image
-    plt.imshow(img2)
+    fp = get_input_fp('polaris.jpg')
+    img: np.ndarray = cv2.imread(fp)
 
-    # BLUR (built in kernel)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # blur image
-    img2 = cv2.blur(src=img1, ksize=(3, 3))
-    # plot image
-    plt.imshow(img2)
+    # Manual kernel
+    manual_kernel = np.ones((3, 3), dtype=np.float32)/9
+    img1 = cv2.filter2D(img, ddepth=-1, kernel=manual_kernel, anchor=(-1, -1))
+    cv2.imwrite(get_output_fp('polaris-blur-manual.jpg'), img1)
 
-    # BLUR (gaussian)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # blur image
-    img2 = cv2.GaussianBlur(src=img1, ksize=(3, 3), sigmaX=10)  # sigmaY (stddev) is assumed
-    # plot image
-    plt.imshow(img2)
+    # Built-in kernel
+    img2 = cv2.blur(src=img, ksize=(3, 3))
+    cv2.imwrite(get_output_fp('polaris-blur-builtin.jpg'), img2)
 
-    # BLUR (median)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # blur image
-    img2 = cv2.medianBlur(src=img1, ksize=3)
-    # plot image
-    plt.imshow(img2)
+    # Gaussian
+    img3 = cv2.GaussianBlur(img, ksize=(3, 3), sigmaX=10)  # sigmaY (std) is assumed
+    cv2.imwrite(get_output_fp('polaris-blur-gaussian.jpg'), img3)
 
-    # BLUR (bilateral filtering)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # blur image
-    img2 = cv2.bilateralFilter(src=img1, d=9, sigmaColor=75, sigmaSpace=75)
-    # plot image
-    plt.imshow(img2)
+    # Median
+    img4 = cv2.medianBlur(src=img, ksize=3)
+    cv2.imwrite(get_output_fp('polaris-blur-median.jpg'), img4)
 
-# ---
-# OpenCV (morphological operators)
-# ---
+    # Bilateral
+    img5 = cv2.bilateralFilter(src=img, d=9, sigmaColor=75, sigmaSpace=75)
+    cv2.imwrite(get_output_fp('polaris-blur-bilateral.jpg'), img5)
+
+    print('...')
 
 
 def basic_morphological_operators():
+    fp = get_input_fp('beach.jpg')
+    img = cv2.imread(fp)
 
-    # ERODE (decrease white area)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # erode boundaries
-    kernel = np.ones((3, 3), dtype=np.uint8)
-    img2 = cv2.erode(src=img1, kernel=kernel, iterations=1)
-    # plot image
-    plt.imshow(img2)
+    # Erode (decrease white area)
+    erode_kernel = np.ones((5, 5), dtype=np.uint8)
+    img1 = cv2.erode(img, erode_kernel, iterations=1)
+    cv2.imwrite(get_output_fp('beach-erode.jpg'), img1)
 
-    # DILATE (increase white area)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # dilate boundaries
-    kernel = np.ones((3, 3), dtype=np.uint8)
-    img2 = cv2.dilate(src=img1, kernel=kernel, iterations=1)
-    # plot image
-    plt.imshow(img2)
+    # Dilate (increase white area)
+    dilate_kernel = np.ones((5, 5), dtype=np.uint8)
+    img2 = cv2.dilate(img, dilate_kernel, iterations=1)
+    cv2.imwrite(get_output_fp('beach-dilate.jpg'), img2)
 
-    # OPENING (erode, then dilate) (remove white noise)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # dilate boundaries
-    kernel = np.ones((3, 3), dtype=np.uint8)
-    img2 = cv2.morphologyEx(src=img1, op=cv2.MORPH_OPEN, kernel=kernel, iterations=1)
-    # plot image
-    plt.imshow(img2)
+    # Opening (erode, then dilate) (remove white noise)
+    opening_kernel = np.ones((5, 5), dtype=np.uint8)
+    img3 = cv2.morphologyEx(img, op=cv2.MORPH_OPEN, kernel=opening_kernel, iterations=1)
+    cv2.imwrite(get_output_fp('beach-opening.jpg'), img3)
 
-    # CLOSING (dilate, then erode) (remove black noise)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # dilate boundaries
-    kernel = np.ones((3, 3), dtype=np.uint8)
-    img2 = cv2.morphologyEx(src=img1, op=cv2.MORPH_CLOSE, kernel=kernel, iterations=1)
-    # plot image
-    plt.imshow(img2)
+    # Closing (dilate, then erode) (remove black noise)
+    closing_kernel = np.ones((5, 5), dtype=np.uint8)
+    img4 = cv2.morphologyEx(img, op=cv2.MORPH_CLOSE, kernel=closing_kernel, iterations=1)
+    cv2.imwrite(get_output_fp('beach-closing.jpg'), img4)
 
-    # MORPHOLOGICAL GRADIENT (dilation - erosion)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # dilate boundaries
-    kernel = np.ones((3, 3), dtype=np.uint8)
-    img2 = cv2.morphologyEx(src=img1, op=cv2.MORPH_GRADIENT, kernel=kernel, iterations=1)
-    # plot image
-    plt.imshow(img2)
+    # Morphological Gradient (dilation - erosion)
+    morph_gradient_kernel = np.ones((5, 5), dtype=np.uint8)
+    img5 = cv2.morphologyEx(img, op=cv2.MORPH_GRADIENT, kernel=morph_gradient_kernel, iterations=1)
+    cv2.imwrite(get_output_fp('beach-morph-gradient.jpg'), img5)
 
-# ---
-# OpenCV (gradients)
-# ---
+    print('...')
 
 
 def basic_gradients():
-
     # image gradient is a directional change in the intensity/color of an image
     # sobel feldman operator is used to try and approximate the derivative
     # normalized x-gradient -- shows vertical edges
@@ -497,35 +259,22 @@ def basic_gradients():
     # 0 0 0
     # -1 -2 -1
 
-    # GRADIENTS (sobel x)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1, 0)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # gradient (x)
-    img2 = cv2.Sobel(src=img1, ddepth=cv2.CV_64F, dx=1, dy=0, ksize=5)
-    # plot image
-    plt.imshow(img2, cmap='gray')
+    fp = get_input_fp('polaris.jpg')
+    img: np.ndarray = cv2.imread(fp, 0)
 
-    # GRADIENTS (sobel y)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1, 0)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # gradient (x)
-    img2 = cv2.Sobel(src=img1, ddepth=cv2.CV_64F, dx=0, dy=1, ksize=5)
-    # plot image
-    plt.imshow(img2, cmap='gray')
+    # Sobel x
+    img1 = cv2.Sobel(src=img, ddepth=cv2.CV_64F, dx=1, dy=0, ksize=5)
+    cv2.imwrite(get_output_fp('polaris-gradients-sobel-x.jpg'), img1)
 
-    # GRADIENTS (Laplacian) (laplace operator)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1, 0)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # gradient (x)
-    img2 = cv2.Laplacian(src=img1, ddepth=cv2.CV_64F, ksize=5)
-    # plot image
-    plt.imshow(img2, cmap='gray')
+    # Sobel y
+    img2 = cv2.Sobel(src=img, ddepth=cv2.CV_64F, dx=0, dy=1, ksize=5)
+    cv2.imwrite(get_output_fp('polaris-gradients-sobel-y.jpg'), img2)
+
+    # Laplacian
+    img3 = cv2.Laplacian(src=img, ddepth=cv2.CV_64F, ksize=5)
+    cv2.imwrite(get_output_fp('polaris-gradients-laplacian.jpg'), img3)
+
+    print('...')
 
 # ---
 # OpenCV (histograms)
@@ -533,648 +282,443 @@ def basic_gradients():
 
 
 def basic_histograms():
-    # HISTOGRAM (one band)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    # compute histogram (B G R)
-    hist1 = cv2.calcHist(images=[img1], channels=[0], mask=None, histSize=[256], ranges=[0, 256])
-    # plot histogram
-    plt.plot(hist1)
+    fp = get_input_fp('beach.jpg')
+    img = cv2.imread(fp)
 
-    # HISTOGRAM (3 bands)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    # enumerate through bands
+    # Histogram (one band)
+    # TODO: fix
+    hist1 = cv2.calcHist(images=[img], channels=[0], mask=None, histSize=[256], ranges=[0, 256])
+    cv2.imwrite(get_output_fp('beach-histogram-one-band.jpg'), hist1)
+
+    # Histogram (three bands)
     color = ('b', 'g', 'r')
     for i, c in enumerate(color):
-        hist = cv2.calcHist(images=[img1], channels=[i], mask=None, histSize=[256], ranges=[0, 256])
+        hist = cv2.calcHist(images=[img], channels=[i], mask=None, histSize=[256], ranges=[0, 256])
         plt.plot(hist, color=c)
+    plt.savefig(get_output_fp('beach-histogram-three-bands.png'))
+    plt.clf()
 
-    # HISTOGRAM (with mask) (converted to RGB before histogram)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # mask
-    mask = np.zeros(shape=img1.shape[:2], dtype=np.uint8)  # rows, cols, but not bands
-    mask[50:-50, 50:-50] = 255  # rows slice, cols slice (assuming rows/cols > 50)
-    img1m = cv2.bitwise_and(src1=img1, src2=img1, mask=mask)
-    # show
-    # plt.imshow(img1m)
-    # histogram
-    color = ('r', 'g', 'b')
-    for i, c in enumerate(color):
-        hist = cv2.calcHist(images=[img1m], channels=[i], mask=mask, histSize=[256], ranges=[0, 256])
-        plt.plot(hist, color=c)
+    # Histogram equalization (grayscale)
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img_eq = cv2.equalizeHist(img_gray)
+    cv2.imwrite(get_output_fp('beach-histogram-equalization-gray.jpg'), img_eq)
 
-    # HISTOGRAM EQUALIZATION (grayscale)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1, 0)
-    # equalize
-    img2 = cv2.equalizeHist(img1)
-    # plot image
-    plt.imshow(img2, cmap='gray')
+    # Histogram equalization (color)
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    img_hsv[:, :, 2] = cv2.equalizeHist(img_hsv[:, :, 2])
+    img_eq_color = cv2.cvtColor(img_hsv, cv2.COLOR_HSV2BGR)
+    cv2.imwrite(get_output_fp('beach-histogram-equalization-color.jpg'), img_eq_color)
 
-    # HISTOGRAM EQUALIZATION (color)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2HSV)
-    # equalize (HSV insead of BGR (value is needed))
-    img1[:, :, 2] = cv2.equalizeHist(img1[:, :, 2])
-    # convert back to rgb
-    img1 = cv2.cvtColor(img1, cv2.COLOR_HSV2RGB)
-    # plot image
-    plt.imshow(img1)
-
-# ---
-# OpenCV (video)
-# ---
-
-# skipped this section
-
-# ---
-# OpenCV (template matching)
-# ---
-
-
-def basic_template_matching():
-
-    # CCOEFF, CCORR -- max value is the top left corner (of template)
-    # SQDIFF -- min value is the top left corner (of template)
-
-    # to draw rectangle around match
-    # get top left corner,
-    # use dimensions of template to get bottom right corner
-    # cv2.rectangle(img1, pt1=top_left, pt2=bottom_right, color=(255,255,255), thickness=5)
-
-    # TEMPLATE MATCHING
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    # create smaller image
-    img2 = img1[50:-50, 50:-50]
-    # template match
-    img3 = cv2.matchTemplate(image=img1, templ=img2, method=cv2.TM_CCOEFF)
-    img3 = cv2.matchTemplate(image=img1, templ=img2, method=cv2.TM_CCOEFF_NORMED)
-    img3 = cv2.matchTemplate(image=img1, templ=img2, method=cv2.TM_CCORR)
-    img3 = cv2.matchTemplate(image=img1, templ=img2, method=cv2.TM_CCORR_NORMED)
-    img3 = cv2.matchTemplate(image=img1, templ=img2, method=cv2.TM_SQDIFF)
-    img3 = cv2.matchTemplate(image=img1, templ=img2, method=cv2.TM_SQDIFF_NORMED)
-    # get values from resulting heatmap
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(img3)
-    # plot image (subplot)
-    plt.subplot(2, 2, 1)  # rows, cols, index
-    plt.imshow(img1)
-    plt.title('image')
-    plt.subplot(2, 2, 2)
-    plt.imshow(img2)
-    plt.title('template')
-    plt.subplot(2, 2, 3)
-    plt.imshow(img3)
-    plt.title('heatmap result from template matching')
-    # plot
-    plt.show()
-
-# ---
-# OpenCV (corner detection)
-# ---
+    print('...')
 
 
 def basic_corner_detection():
-    # corner -- junction of two edges (edges -- sudden change in image brightness)
+    # edges -- sudden change in image brightness
+    # corner -- junction of two edges
 
-    # CORNER DETECTION
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img0 = cv2.imread(fp1)
-    img0 = cv2.cvtColor(img0, cv2.COLOR_BGR2RGB)
-    # create grayscale image for corner detection
-    img1 = cv2.cvtColor(img0, cv2.COLOR_RGB2GRAY)
-    # convert values to floats
-    img1 = np.float32(img1)
-    # harris corner detection
-    img2 = cv2.cornerHarris(src=img1, blockSize=2, ksize=3, k=0.04)
-    img2 = cv2.dilate(img2, None)
-    # highlight corners on original image
-    img0[img2 > 0.01*img2.max()] = [0, 255, 0]
-    # plot images
-    plt.subplot(2, 2, 1)
-    plt.imshow(img2, cmap='gray')
-    plt.title('corners')
-    plt.subplot(2, 2, 2)
-    plt.imshow(img0)
-    plt.title('highlighted')
+    fp = get_input_fp('tree.jpg')
+    img: np.ndarray = cv2.imread(fp)
+    img_gray: np.ndarray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img_gray = np.float32(img_gray)  # type: ignore
 
-    # SHI-TOMASI CORNER DETECTION
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img0 = cv2.imread(fp1)
-    img0 = cv2.cvtColor(img0, cv2.COLOR_BGR2RGB)
-    # create grayscale image for corner detection
-    img1 = cv2.cvtColor(img0, cv2.COLOR_RGB2GRAY)
-    # shi-tomasi corner detection
-    img2 = cv2.goodFeaturesToTrack(image=img1, maxCorners=50, qualityLevel=0.01, minDistance=10)
-    # draw on corners
-    img2 = np.int0(img2)
-    for c in img2:
+    # Harris
+    img_corners = cv2.cornerHarris(img_gray, blockSize=2, ksize=3, k=0.04)
+    img_corners = cv2.dilate(img_corners, None)  # type: ignore
+    cv2.imwrite(get_output_fp('tree-corners-harris.jpg'), img_corners)
+    img_highlighted = img.copy()
+    img_highlighted[img_corners > 0.01*img_corners.max()] = [0, 255, 0]
+    cv2.imwrite(get_output_fp('tree-corners-harris-highlighted.jpg'), img_highlighted)
+
+    # Shi-Tomasi
+    img_corners_st: np.ndarray = cv2.goodFeaturesToTrack(img_gray, maxCorners=50, qualityLevel=0.01, minDistance=10)
+    img_corners_st = np.intp(img_corners_st)  # type:ignore
+    img_highlighted_st = img.copy()
+    for c in img_corners_st:
         x, y = c.ravel()
-        cv2.circle(img0, (x, y), radius=10, color=(0, 255, 0), thickness=-1)
-    # plot images
-    plt.imshow(img0)
+        cv2.circle(img_highlighted_st, (x, y), radius=10, color=(0, 255, 0), thickness=-1)
+    cv2.imwrite(get_output_fp('tree-corners-shi-tomasi-highlighted.jpg'), img_highlighted_st)
 
-# ---
-# OpenCV (canny edge detector)
-# ---
+    print('...')
 
 
 def basic_canny_edge_detector():
-
     # intensity gradient < threshold1 -- not an edge
     # intensity gradient > threshold2 -- edge
     # intensity gradient between thresholds -- possibly (if connected to an edge pixel)
+    fp = get_input_fp('tree.jpg')
+    img = cv2.imread(fp)
 
-    # CANNY EDGE DETECTOR
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    # blur (remove noise)
-    img1 = cv2.blur(src=img1, ksize=(5, 5))
-    # edge detection
-    img2 = cv2.Canny(image=img1, threshold1=100, threshold2=150)
-    # plot image
-    plt.imshow(img2)
+    # thresholds (used later)
+    median = np.median(img)  # median pixel value # type: ignore
+    thresh1 = int(max(0, median*.8))  # between median and 0
+    thresh2 = int(min(255, median*1.2))  # between median and 255
 
-    # CANNY EDGE DETECTOR (using median pixel value)
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    # get median pixel value
-    median1 = np.median(img1)
-    # calculate thresholds based on median
-    img1_t1 = int(max(0, median1*.8))  # between median and 0
-    img1_t2 = int(min(255, median1*1.2))  # between median and 255
-    # blur (remove noise)
-    img1 = cv2.blur(src=img1, ksize=(5, 5))
-    # edge detection
-    img2 = cv2.Canny(image=img1, threshold1=img1_t1, threshold2=img1_t2)
-    # plot image
-    plt.imshow(img2)
+    img_blurred = cv2.blur(src=img, ksize=(5, 5))
+
+    # Canny edge detector (regular)
+    img_edges = cv2.Canny(image=img_blurred, threshold1=100, threshold2=150)
+    cv2.imwrite(get_output_fp('tree-canny-edge-detector.jpg'), img_edges)
+
+    # Canny edge detector (thresholds based on median)
+    img_edges_manual = cv2.Canny(image=img_blurred, threshold1=thresh1, threshold2=thresh2)
+    cv2.imwrite(get_output_fp('tree-canny-edge-detector-manual.jpg'), img_edges_manual)
+
+    print('...')
 
 
-# ---
-# OpenCV (grid detection)
-# ---
+def basic_feature_detection():
+    fp = get_input_fp('tree.jpg')
+    img = cv2.imread(fp, 0)
 
-# skipped this section
-# use a grid pattern to track distortion and movement
-# cv2.findChessboardCorners
-# cv2.findCirclesGrid
+    def fd_orb_harris_corner():
+        orb_config = {
+            'edgeThreshold': 15,
+            'patchSize': 31,
+            'nlevels': 8,
+            'fastThreshold': 20,
+            'scaleFactor': 1.2,
+            'scoreType': cv2.ORB_HARRIS_SCORE,
+            'nfeatures': 5000,
+            'firstLevel': 0
+        }
+        orb = cv2.ORB_create(**orb_config)
+        key_points, descriptors = orb.detectAndCompute(img, None)
+        img_kp = cv2.drawKeypoints(img, key_points, None, color=(0, 255, 0), flags=0)
+        cv2.imwrite(get_output_fp('tree-feature-detection-orb-harris-corner.jpg'), img_kp)
 
-# ---
-# OpenCV (grid detection)
-# ---
+    fd_orb_harris_corner()
 
-# skipped section -- breaking changes in syntax
+    def fd_kaze_blob():
+        kaze = cv2.KAZE_create()
+        key_points, descriptors = kaze.detectAndCompute(img, None)
+        img_kp = cv2.drawKeypoints(img, key_points, None, color=(0, 255, 0), flags=0)
+        cv2.imwrite(get_output_fp('tree-feature-detection-kaze-blob.jpg'), img_kp)
 
-# ---
-# OpenCV (feature detection) (orb -- harris corner)
-# ---
+    fd_kaze_blob()
 
-def basic_edge_detection_orb_harris_corner():
-    fp1 = 'tree.jpg'
-    img1 = cv2.imread(fp1, 0)
-    # Initiate ORB detector
-    orb_params = dict(edgeThreshold=15, patchSize=31, nlevels=8, fastThreshold=20, scaleFactor=1.2,
-                      scoreType=cv2.ORB_HARRIS_SCORE, nfeatures=5000, firstLevel=0)
-    orb = cv2.ORB_create(**orb_params)
-    # compute the descriptors with ORB
-    kp1, des1 = orb.detectAndCompute(img1, None)
+    def fd_akaze_blob():
+        akaze = cv2.AKAZE_create()
+        key_points, descriptors = akaze.detectAndCompute(img, None)
+        img_kp = cv2.drawKeypoints(img, key_points, None, color=(0, 255, 0), flags=0)
+        cv2.imwrite(get_output_fp('tree-feature-detection-akaze-blob.jpg'), img_kp)
 
-    # draw only keypoints location,not size and orientation
-    img2 = cv2.drawKeypoints(img1, kp1, None, color=(0, 255, 0), flags=0)
-    plt.imshow(img2), plt.show()
+    fd_akaze_blob()
 
-# ---
-# OpenCV (feature detection) (kaze -- blob)
-# ---
-
-
-def basic_feature_detection_kaze_blob():
-    # load images
-    fp1 = 'tree.jpg'
-    img1 = cv2.imread(fp1, 0)
-    # initiate detector (kaze)
-    kaze = cv2.KAZE_create()
-    # get keypoints and descriptors
-    kp1, des1 = kaze.detectAndCompute(img1, None)
-
-    # print(des1[0], des1[round(len(des1)/2)],des1[-1])
-
-    # draw only keypoints location,not size and orientation
-    img2 = cv2.drawKeypoints(img1, kp1, None, color=(0, 255, 0), flags=0)
-    plt.imshow(img2), plt.show()
-
-# ---
-# OpenCV (feature detection) (akaze -- blob)
-# ---
+    print('...')
 
 
-def basic_feature_detection_akaze_blob():
-    # load images
-    fp1 = 'tree.jpg'
-    img1 = cv2.imread(fp1, 0)
-    # initiate detector (akaze)
-    akaze = cv2.AKAZE_create()
-    # get keypoints and descriptors
-    kp1, des1 = akaze.detectAndCompute(img1, None)
+def basic_feature_matching():
+    fp = get_input_fp('tree.jpg')
+    img = cv2.imread(fp, 0)
 
-    # draw only keypoints location,not size and orientation
-    img2 = cv2.drawKeypoints(img1, kp1, None, color=(0, 255, 0), flags=0)
-    plt.imshow(img2), plt.show()
+    fp_cropped = get_input_fp('tree2.jpg')
+    img_cropped = cv2.imread(fp_cropped, 0)
 
-# ---
-# OpenCV (feature matching) (orb/bf/match)
-# ---
-
-
-def basic_feature_matching_orb_bf_match():
-    # BRUTE FORCE (with ORB and match)
-    # load images
-    fp1 = '../path/to/pic/filename1.jpg'
-    fp2 = '../path/to/pic/filename2.jpg'
-    img1 = cv2.imread(fp1, 0)
-    img2 = cv2.imread(fp2, 0)
-    # initiate detector (orb)
-    orb_params = dict(edgeThreshold=15, patchSize=31, nlevels=8, fastThreshold=20, scaleFactor=1.2,
-                      scoreType=cv2.ORB_HARRIS_SCORE, nfeatures=5000, firstLevel=0)
-    orb = cv2.ORB_create(**orb_params)
-    # get keypoints and descriptors
-    kp1, des1 = orb.detectAndCompute(img1, None)
-    kp2, des2 = orb.detectAndCompute(img2, None)
-    # create BFMatcher object
-    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-    # match descriptors
-    matches = bf.match(des1, des2)
-    # sort by distance (low distance is better)
-    matches = sorted(matches, key=lambda x: x.distance)
-    # draw first 10 matches
-    img3 = cv2.drawMatches(img1, kp1, img2, kp2, matches[:10], outImg=None, flags=2)
-    # plot matched illustration
-    plt.imshow(img3), plt.show()
-
-
-# ---
-# OpenCV (feature matching) (sift & knn)
-# ---
-
-def basic_feature_matching_sift_and_knn():
-    # (SIFT HAS BEEN REMOVED FROM cv2)
-    # BRUTE FORCE (with SIFT and bf.knnMatch) (SIFT -- scale invariant feature transform)
-    # load images
-    fp1 = '../path/to/pic/filename1.jpg'
-    fp2 = '../path/to/pic/filename2.jpg'
-    img1 = cv2.imread(fp1, 0)
-    img2 = cv2.imread(fp2, 0)
-    # initiate detector (sift)
-    sift = cv2.xFeatures2d.SIFT_create()
-    kp1, des1 = sift.detectAndCompute(img1, None)
-    kp2, des2 = sift.detectAndCompute(img2, None)
-    # create BFMatcher object
-    bf = cv2.BFMatcher()
-    # find matches
-    matches = bf.knnMatch(des1, des2, k=2)  # knnMatch -- finds the k best matches for each descriptor
-    # lowe's ratio test to filter good matches
-    good = []
-    for m, n in matches:
-        if m.distance < (n.distance * .7):
-            good.append([m])
-    # draw matches
-    img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, good, flags=2)
-    plt.imshow(img3), plt.show()
-
-# ---
-# OpenCV (feature matching) (orb/bf/knn)
-# ---
-
-
-def basic_feature_matching_orb_bf_knn():
-    # BRUTE FORCE
-    # load images
-    fp1 = '../path/to/pic/filename1.jpg'
-    fp2 = '../path/to/pic/filename2.jpg'
-    img1 = cv2.imread(fp1, 0)
-    img2 = cv2.imread(fp2, 0)
-    # initiate detector (orb)
-    orb_params = dict(edgeThreshold=15, patchSize=31, nlevels=8, fastThreshold=20, scaleFactor=1.2,
-                      scoreType=cv2.ORB_HARRIS_SCORE, nfeatures=1000, firstLevel=0)
-    orb = cv2.ORB_create(**orb_params)
-    # get keypoints and descriptors
-    kp1, des1 = orb.detectAndCompute(img1, None)
-    kp2, des2 = orb.detectAndCompute(img2, None)
-    # create BFMatcher object
-    bf = cv2.BFMatcher()
-    # find matches
-    matches = bf.knnMatch(des1, des2, k=2)  # knnMatch -- finds the k best matches for each descriptor
-    # lowe's ratio test to filter good matches
-    good = []
-    for m, n in matches:
-        if m.distance < (n.distance * .55):
-            good.append([m])
-    # draw matches
-    img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, good, outImg=None, flags=2)
-    plt.imshow(img3), plt.show()
-
-
-# ---
-# OpenCV (feature matching) (orb/flann/knn)
-# ---
-
-def basic_feature_matching_orb_flann_knn():
-    # FLANN
-    # load images
-    fp1 = '../path/to/pic/filename1.jpg'
-    fp2 = '../path/to/pic/filename2.jpg'
-    img1 = cv2.imread(fp1, 0)
-    img2 = cv2.imread(fp2, 0)
-    # initiate detector (orb)
-    orb_params = dict(edgeThreshold=15, patchSize=31, nlevels=8, fastThreshold=20, scaleFactor=1.2,
-                      scoreType=cv2.ORB_HARRIS_SCORE, nfeatures=1000, firstLevel=0)
-    orb = cv2.ORB_create(**orb_params)
-    # get keypoints and descriptors
-    kp1, des1 = orb.detectAndCompute(img1, None)
-    kp2, des2 = orb.detectAndCompute(img2, None)
-    # params for FlannBasedMatcher
-    FLANN_INDEX_LSH = 6
-    index_params = dict(algorithm=FLANN_INDEX_LSH, table_number=6, key_size=12, multi_probe_level=1)
-    search_params = dict(checks=50)
-    # create flann object
-    flann = cv2.FlannBasedMatcher(index_params, search_params)
-    # find matches
-    matches = flann.knnMatch(des1, des2, k=2)
-    # lowe's ratio test to filter good matches
-    good = []
-    for m, n in matches:
-        if m.distance < (n.distance * .55):
-            good.append([m])
-    # draw matches
-    img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, good, outImg=None, flags=2)
-    plt.imshow(img3), plt.show()
-
-# ---
-# OpenCV (feature matching) (akaze/flann/knn)
-# ---
-
-
-def basic_feature_matching_akaze_flann_knn():
-    # FLANN
-    # load images
-    fp1 = 'tree.jpg'
-    fp2 = 'tree.png'
-    img1 = cv2.imread(fp1, 0)
-    img2 = cv2.imread(fp2, 0)
-    # initiate detector (akaze)
-    akaze = cv2.AKAZE_create()
-    # get keypoints and descriptors
-    kp1, des1 = akaze.detectAndCompute(img1, None)
-    kp2, des2 = akaze.detectAndCompute(img2, None)
-    # params for FlannBasedMatcher
-    FLANN_INDEX_LSH = 6
-    index_params = dict(algorithm=FLANN_INDEX_LSH, table_number=6, key_size=12, multi_probe_level=1)
-    search_params = dict(checks=50)
-    # create flann object
-    flann = cv2.FlannBasedMatcher(index_params, search_params)
-    # find matches
-    matches = flann.knnMatch(des1, des2, k=2)
-    # lowe's ratio test to filter good matches
-    good = []
-    for m_n in matches:
-        if len(m_n) != 2:
-            continue
-        (m, n) = m_n
-        if m.distance < (n.distance * .4):
-            good.append([m])
-    # draw matches
-    img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, good, outImg=None, flags=2)
-    plt.imshow(img3), plt.show()
-
-# ---
-# OpenCV (feature matching & homography) (akaze/flann/knn)
-# ---
-
-
-def basic_feature_matching_and_homography_akaze_flann_knn():
-    print('getting kp and des')
-
-    # FLANN
-    # load images
-    fp1 = '9a.jpg'
-    fp2 = '9b.jpg'
-    img1 = cv2.imread(fp1, 0)
-    img2 = cv2.imread(fp2, 0)
-    # initiate detector (akaze)
-    akaze = cv2.AKAZE_create()
-    # get keypoints and descriptors
-    kp1, des1 = akaze.detectAndCompute(img1, None)
-    kp2, des2 = akaze.detectAndCompute(img2, None)
-
-    print('getting matches')
-
-    # params for FlannBasedMatcher
-    FLANN_INDEX_LSH = 6
-    index_params = dict(algorithm=FLANN_INDEX_LSH, table_number=6, key_size=12, multi_probe_level=1)
-    search_params = dict(checks=50)
-    # create flann object
-    flann = cv2.FlannBasedMatcher(index_params, search_params)
-    # find matches
-    matches = flann.knnMatch(des1, des2, k=2)
-
-    print('filtering matches')
-
-    # lowe's ratio test to filter good matches
-    good = []
-    for m_n in matches:
-        if len(m_n) != 2:
-            continue
-        (m, n) = m_n
-        if m.distance < (n.distance * .4):
-            good.append(m)
-
-    print('beginning homography')
-
-    # homography
-    if len(good) > 4:
-        list_kp1 = []
-        list_kp2 = []
-        for match in good:
-            # Get the matching keypoints for each of the images
-            img1_idx = match.queryIdx
-            img2_idx = match.trainIdx
-            # Get points
-            point1 = kp1[img1_idx].pt
-            point2 = kp2[img2_idx].pt
-            # append point to list
-            list_kp1.append(point1)
-            list_kp2.append(point2)
-
-        H, mask = cv2.findHomography(
-            srcPoints=np.array(list_kp2),
-            dstPoints=np.array(list_kp1),
-            method=cv2.RANSAC,
-            ransacReprojThreshold=4
+    def fm_orb_brute_force():
+        orb_config = {
+            'edgeThreshold': 15,
+            'patchSize': 31,
+            'nlevels': 8,
+            'fastThreshold': 20,
+            'scaleFactor': 1.2,
+            'scoreType': cv2.ORB_HARRIS_SCORE,
+            'nfeatures': 5000,
+            'firstLevel': 0
+        }
+        orb = cv2.ORB_create(**orb_config)  # type: ignore
+        key_points, descriptors = orb.detectAndCompute(img, None)
+        key_points_cropped, descriptors_cropped = orb.detectAndCompute(img_cropped, None)
+        bf_matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+        matches = bf_matcher.match(descriptors, descriptors_cropped)
+        matches = sorted(matches, key=lambda x: x.distance)
+        # Draw first 10 matches
+        img_matches = cv2.drawMatches(
+            img,
+            key_points,
+            img_cropped,
+            key_points_cropped,
+            matches[:10],
+            outImg=None,  # type: ignore
+            flags=2
         )
+        cv2.imwrite(get_output_fp('tree-feature-matching-orb-brute-force.jpg'), img_matches)
 
-        h, w = img1.shape
-        img3 = cv2.warpPerspective(img2, H, (w, h))
+    fm_orb_brute_force()
 
-    # plot images
-    plt.subplot(2, 2, 1)
-    plt.imshow(img1, cmap='gray')
-    plt.title('raw1')
-    plt.subplot(2, 2, 2)
-    plt.imshow(img3, cmap='gray')
-    plt.title('warp2')
+    def fm_sift_and_knn():
+        # BRUTE FORCE (with SIFT and bf.knnMatch) (SIFT -- scale invariant feature transform)
+        sift = cv2.SIFT_create()  # cv2.xFeatures2d.SIFT_create()
+        key_points, descriptors = sift.detectAndCompute(img, None)
+        key_points_cropped, descriptors_cropped = sift.detectAndCompute(img_cropped, None)
+        bf = cv2.BFMatcher()
 
+        # knnMatch -- finds the k best matches for each descriptor
+        matches = bf.knnMatch(descriptors, descriptors_cropped, k=2)
+        good: List[List[cv2.DMatch]] = []
+        for m, n in matches:
+            if m.distance < (n.distance * .7):
+                good.append([m])
+        good = sorted(good, key=lambda x: x[0].distance)[:20]
 
-# ---
-# OpenCV (contour)
-# ---
+        img_matches = cv2.drawMatchesKnn(
+            img,
+            key_points,
+            img_cropped,
+            key_points_cropped,
+            good,
+            outImg=None,  # type: ignore
+            flags=2
+        )
+        cv2.imwrite(get_output_fp('tree-feature-matching-sift-and-knn.jpg'), img_matches)
+
+    fm_sift_and_knn()
+
+    def fm_orb_brute_force_knn():
+        orb_config = {
+            'edgeThreshold': 15,
+            'patchSize': 31,
+            'nlevels': 8,
+            'fastThreshold': 20,
+            'scaleFactor': 1.2,
+            'scoreType': cv2.ORB_HARRIS_SCORE,
+            'nfeatures': 5000,
+            'firstLevel': 0
+        }
+        orb = cv2.ORB_create(**orb_config)
+        key_points, descriptors = orb.detectAndCompute(img, None)
+        key_points_cropped, descriptors_cropped = orb.detectAndCompute(img_cropped, None)
+        bf = cv2.BFMatcher()
+        matches = bf.knnMatch(descriptors, descriptors_cropped, k=2)
+        good: List[List[cv2.DMatch]] = []
+        for m, n in matches:
+            if m.distance < (n.distance * .7):
+                good.append([m])
+        good = sorted(good, key=lambda x: x[0].distance)[:20]
+        img_matches = cv2.drawMatchesKnn(
+            img,
+            key_points,
+            img_cropped,
+            key_points_cropped,
+            good,
+            outImg=None,  # type: ignore
+            flags=2
+        )
+        cv2.imwrite(get_output_fp('tree-feature-matching-orb-brute-force-knn.jpg'), img_matches)
+
+    fm_orb_brute_force_knn()
+
+    def fm_orb_flann_knn():
+        orb_config = {
+            'edgeThreshold': 15,
+            'patchSize': 31,
+            'nlevels': 8,
+            'fastThreshold': 20,
+            'scaleFactor': 1.2,
+            'scoreType': cv2.ORB_HARRIS_SCORE,
+            'nfeatures': 1000,
+            'firstLevel': 0
+        }
+        orb = cv2.ORB_create(**orb_config)
+        key_points, descriptors = orb.detectAndCompute(img, None)
+        key_points_cropped, descriptors_cropped = orb.detectAndCompute(img_cropped, None)
+        FLANN_INDEX_LSH = 6
+        index_params: cv2.flann.IndexParams = {
+            'algorithm': FLANN_INDEX_LSH,
+            'table_number': 6,
+            'key_size': 12,
+            'multi_probe_level': 1
+        }
+        search_params: cv2.flann.SearchParams = {'checks': 50}
+        flann = cv2.FlannBasedMatcher(index_params, search_params)
+        matches = flann.knnMatch(descriptors, descriptors_cropped, k=2)
+        good: List[List[cv2.DMatch]] = []
+        for m, n in matches:
+            if m.distance < (n.distance * .7):
+                good.append([m])
+        good = sorted(good, key=lambda x: x[0].distance)[:20]
+        img_matches = cv2.drawMatchesKnn(
+            img,
+            key_points,
+            img_cropped,
+            key_points_cropped,
+            good,
+            outImg=None,  # type: ignore
+            flags=2
+        )
+        cv2.imwrite(get_output_fp('tree-feature-matching-orb-flann-knn.jpg'), img_matches)
+
+    fm_orb_flann_knn()
+
+    def fm_akaze_flann_knn():
+        akaze = cv2.AKAZE_create()
+        key_points, descriptors = akaze.detectAndCompute(img, None)
+        key_points_cropped, descriptors_cropped = akaze.detectAndCompute(img_cropped, None)
+        FLANN_INDEX_LSH = 6
+        index_params: cv2.flann.IndexParams = {
+            'algorithm': FLANN_INDEX_LSH,
+            'table_number': 6,
+            'key_size': 12,
+            'multi_probe_level': 1
+        }
+        search_params: cv2.flann.SearchParams = {'checks': 50}
+        flann = cv2.FlannBasedMatcher(index_params, search_params)
+        matches = flann.knnMatch(descriptors, descriptors_cropped, k=2)
+        good: List[List[cv2.DMatch]] = []
+        for m_n in matches:
+            if len(m_n) != 2:
+                continue
+            (m, n) = m_n
+            if m.distance < (n.distance * .4):
+                good.append([m])
+        good = sorted(good, key=lambda x: x[0].distance)[:20]
+        img_matches = cv2.drawMatchesKnn(
+            img,
+            key_points,
+            img_cropped,
+            key_points_cropped,
+            good,
+            outImg=None,  # type: ignore
+            flags=2
+        )
+        cv2.imwrite(get_output_fp('tree-feature-matching-akaze-flann-knn.jpg'), img_matches)
+
+    fm_akaze_flann_knn()
+
+    # TODO: fix homography example
+
+    def fm_akaze_flann_knn_homography():
+        img1 = cv2.imread(get_input_fp('1214a.jpg'), 0)
+        img2 = cv2.imread(get_input_fp('1214b.jpg'), 0)
+
+        akaze = cv2.AKAZE_create()
+        kp1, des1 = akaze.detectAndCompute(img1, None)
+        kp2, des2 = akaze.detectAndCompute(img2, None)
+        FLANN_INDEX_LSH = 6
+        index_params: cv2.flann.IndexParams = {
+            'algorithm': FLANN_INDEX_LSH,
+            'table_number': 6,
+            'key_size': 12,
+            'multi_probe_level': 1
+        }
+        search_params: cv2.flann.SearchParams = {'checks': 50}
+        flann = cv2.FlannBasedMatcher(index_params, search_params)
+        matches = flann.knnMatch(des1, des2, k=2)
+        good: List[List[cv2.DMatch]] = []
+        for m_n in matches:
+            if len(m_n) != 2:
+                continue
+            (m, n) = m_n
+            if m.distance < (n.distance * .4):
+                good.append([m])
+        if len(good) > 4:
+            list_kp1 = []
+            list_kp2 = []
+            for match in good:
+                img1_idx = match[0].queryIdx
+                img2_idx = match[0].trainIdx
+                point1 = kp1[img1_idx].pt
+                point2 = kp2[img2_idx].pt
+                list_kp1.append(point1)
+                list_kp2.append(point2)
+            H, mask = cv2.findHomography(
+                srcPoints=np.array(list_kp2),
+                dstPoints=np.array(list_kp1),
+                method=cv2.RANSAC,
+                ransacReprojThreshold=4
+            )
+
+            h, w = img.shape
+            img_matches = cv2.warpPerspective(img2, H, (w, h))
+            cv2.imwrite(get_output_fp('1214-feature-matching-akaze-flann-knn-homography.jpg'), img_matches)
+
+    fm_akaze_flann_knn_homography()
+
+    print('...')
+
 
 def basic_contour():
-
     # larger kernel size for blurring might help
 
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    # blur image
-    img2 = cv2.medianBlur(src=img1, ksize=5)
-    # grayscale
-    img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-    # binary threshold
-    ret, img2 = cv2.threshold(src=img2, thresh=160, maxval=255, type=cv2.THRESH_BINARY_INV)
-    # find contours
-    contours, hierarchy = cv2.findContours(image=img2.copy(), mode=cv2.RETR_CCOMP, method=cv2.CHAIN_APPROX_SIMPLE)
-    # show contours (before watershed)
-    for i, c in enumerate(contours):
-        if hierarchy[0][i][3] == -1:
-            # external contour
-            img2 = cv2.drawContours(image=img1, contours=contours, contourIdx=i, color=(100, 100, 255), thickness=10)
-    # plot image
-    plt.imshow(img2)
+    fp = get_input_fp('geometry.jpg')
+    img = cv2.imread(fp)
+    img = cv2.medianBlur(img, ksize=3)
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
+    # External contour
+    def external_contour():
+        ret, img_thresh = cv2.threshold(img_gray, thresh=160, maxval=255, type=cv2.THRESH_BINARY_INV)
+        contours, hierarchy = cv2.findContours(img_thresh.copy(), mode=cv2.RETR_CCOMP, method=cv2.CHAIN_APPROX_SIMPLE)
 
-# ---
-# OpenCV (contours -- watershed algorithm)
-# ---
+        img_contour = img.copy()
+        for i, c in enumerate(contours):
+            if hierarchy[0][i][3] == -1:
+                # Draw external contour
+                img_contour = cv2.drawContours(img, contours, i, (255, 100, 100), 10)
+        cv2.imwrite(get_output_fp('geometry-contour.jpg'), img_contour)
 
-def basic_contour_watershed_algorithm():
+    external_contour()
 
+    # Watershed algorithm
     # larger kernel size for blurring might help
     # otsu's method works well with watershed algorithm
     # distance transform:
     # binary image: background (0), foreground (1)
     # foreground value increases as it gets further away from background.
 
-    # first threshold produces img2, second threshold produces img3
+    def contour_watershed_algorithm():
+        ret, img_thresh = cv2.threshold(img_gray, thresh=160, maxval=255, type=cv2.THRESH_BINARY_INV)
+        kernel = np.ones((3, 3), np.uint8)
+        img_opening = cv2.morphologyEx(img_thresh, cv2.MORPH_OPEN, kernel, iterations=2)
+        img_distance = cv2.distanceTransform(img_opening, distanceType=cv2.DIST_L2, maskSize=5)
+        threshold = 0.7*img_distance.max()
+        ret, img_threshold = cv2.threshold(img_distance, thresh=threshold, maxval=255, type=cv2.THRESH_BINARY)
+        img_threshold: np.ndarray = np.uint8(img_threshold)  # type: ignore
+        img_diff = cv2.subtract(img_opening, img_threshold)
+        ret, img_connected = cv2.connectedComponents(img_threshold)
+        img_connected: np.ndarray = img_connected + 1
+        img_connected[img_diff == 255] = 0
+        img_connected = cv2.watershed(img, img_connected)
+        contours, hierarchy = cv2.findContours(img_opening.copy(), mode=cv2.RETR_CCOMP, method=cv2.CHAIN_APPROX_SIMPLE)
 
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1)
-    # blur image
-    img2 = cv2.medianBlur(src=img1, ksize=3)
-    # grayscale
-    img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-    # binary threshold
-    ret, img2 = cv2.threshold(src=img2, thresh=160, maxval=255, type=cv2.THRESH_OTSU)
-    # noise removal (optional) (morphological operator)
-    kernel = np.ones((3, 3), np.uint8)
-    img2 = cv2.morphologyEx(src=img2, op=cv2.MORPH_OPEN, kernel=kernel, iterations=2)
-    # distance transform
-    img3 = cv2.distanceTransform(src=img2, distanceType=cv2.DIST_L2, maskSize=5)
-    # threshold
-    threshold = 0.7*img3.max()
-    ret, img3 = cv2.threshold(src=img3, thresh=threshold, maxval=255, type=cv2.THRESH_BINARY)  # idk, cv2.THRESH_BINARY
-    # subtract img2, img3
-    img3 = np.uint8(img3)
-    unknown = cv2.subtract(img2, img3)
-    # get img4 (sure foreground, unknown area, background) (sure foreground will be the seeds for watershed)
-    ret, img4 = cv2.connectedComponents(img3)
-    img4 = img4 + 1
-    img4[unknown == 255] = 0
-    # watershed algorithm
-    img4 = cv2.watershed(img1, img4)
-    # find contours
-    contours, hierarchy = cv2.findContours(image=img2.copy(), mode=cv2.RETR_CCOMP, method=cv2.CHAIN_APPROX_SIMPLE)
+        img_contour = img.copy()
+        for i, c in enumerate(contours):
+            if hierarchy[0][i][3] == -1:
+                img_contour = cv2.drawContours(
+                    img_contour,
+                    contours=contours,
+                    contourIdx=i,
+                    color=(255, 100, 100),
+                    thickness=3
+                )
 
-    # show contours
-    for i, c in enumerate(contours):
-        if hierarchy[0][i][3] == -1:
-            # external contour
-            img5 = cv2.drawContours(image=img1, contours=contours, contourIdx=i, color=(100, 100, 255), thickness=3)
-            # plot image
-            plt.imshow(img5)
+        cv2.imwrite(get_output_fp('geometry-contour-watershed.jpg'), img_contour)
+
+    contour_watershed_algorithm()
+
+    print('...')
 
 
 # ---
-# OpenCV (watershed algorithm -- custom seeds)
+# Utils
 # ---
 
-# skipped this section
+
+def print_section_title(string: str) -> None:
+    print(f'\n{string.upper()}\n')
+
+
+def get_input_fp(filename: str) -> str:
+    return os.path.join(INPUT_DIR, filename)
+
+
+def get_output_fp(filename: str) -> str:
+    return os.path.join(OUTPUT_DIR, filename)
+
 
 # ---
-# OpenCV (face detection) (viola-jones algorithm with haar cascades)
+# Run
 # ---
 
-def basic_face_detection_viola_jones_with_hoar_cascades()
-    # main features -- edges, lines, four-rectangle
-        # edges = mean_light - mean_dark (the higher the value, the better the edge)
-            # calculating all possible edges is computationally expensive.
-            # viola-jones algorithm uses the 'integral' image (summed area table).
-            # create a rectangle between the top left corner and the current pixel.
-            # sum all values, that is the pixel value.
-            # the image then goes through a cascade of classifiers.
-            # if the image fails a classifier, we can stop attempting to detect a face.
 
-    # take an image of a front-facing person
-    # make grayscale
-    # search for eyes/cheek, then nose, then eyebrows, then lips
-    # see if image passes all classifiers
-
-    # load image
-    fp1 = '../path/to/pic/filename1.jpg'
-    img1 = cv2.imread(fp1, 0)
-    # import classifier
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-
-
-    def detect_face(img):
-        img1 = img.copy()
-        face_rectangles = face_cascade.detectMultiScale(img1)  # scaleFactor=1.2, minNeighbors=5
-        for (x, y, w, h) in face_rectangles:
-            cv2.rectangle(img=img1, pt1=(x, y), pt2=(x+w, y+h), color=(255, 255, 255), thickness=10)
-        return img1
-
-
-    img2 = detect_face(img1)
-    plt.imshow(img2, cmap='gray')
-
-# ---
-# OpenCV (object tracking) (video)
-# ---
-
-# optical flow -- the pattern of apparent motion of image objects between two consecutive frames (caused by camera/object movement)
-# skipped this section
-
-# ---
-# OpenCV (deep learning and computer vision)
-# ---
-
-# keras basics
-# MNIST data overview
-# convolutional neural network theory
-# keras CNN
+if __name__ == '__main__':
+    main()

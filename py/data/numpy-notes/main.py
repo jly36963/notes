@@ -3,6 +3,49 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+def basic_numpy_usage():
+    # CREATE ARRAYS
+    # array from list
+    list1 = [1, 2, 3]
+    arr1 = np.array(list1)
+    type(arr1)  # numpy.ndarray
+    # array from range
+    arr1 = np.arange(0, 10, 1)  # start, stop (cuts off before), step (optional)
+    # array of zeros (2d) (uses floats)
+    np.zeros(shape=(10, 5))  # 10 rows, 5 columns
+    # array of ones (2d) (uses floats)
+    np.ones(shape=(2, 4))  # 2 rows, 4 columns
+    # array of random integers (seed makes the random integers consistent)
+    np.random.seed(101)
+    arr1 = np.random.randint(0, 100, 10)  # 10 random integers between 0 and 100
+    # copy array
+    arr1 = np.arange(0, 10, 1)
+    arr2 = arr1.copy()
+
+    # NUMPY (STATS)
+    arr1.max()  # max value
+    arr1.argmax()  # return index of max
+    arr1.min()  # min value
+    arr1.argmin()  # return index of min
+    arr1.mean()  # mean
+
+    # NUMPY (SHAPING)
+    arr1 = np.arange(0, 100).reshape(10, 10)  # array of 0-100, reshaped to 10 rows/cols
+    arr1.shape  # dimensions of array (rows, columns)
+
+    # NUMPY INDEXING/SLICING
+    arr1 = np.arange(0, 100).reshape(10, 10)
+    arr1[2, 4]  # row index 2, col index 4 (nested array: which array, which element)
+    arr1[:, 5]  # col index 5 (all intersections between rows and col index 5)
+    arr1[3, :]  # row index 3 (all intersections between cols and row index 3)
+    arr1[2:4, 3:5]  # 2d array -- rows 2 & 3, cols 3 & 4
+
+    # NUMPY ASSIGNMENT (using indexing)
+    arr1[2, 4] = 0  # assign value to one element
+    arr1[:, 5] = 0  # assign value to a slice
+    arr1[:, :] = 123  # assign value to 2d slice
+
+
 def basic_array_creation():
     # list to array
     list1 = [1, 2, 3, 4, 5]

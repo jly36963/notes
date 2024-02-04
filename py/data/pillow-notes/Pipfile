@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 Pillow = "*"
+numpy = "*"
+matplotlib = "*"
 
 [dev-packages]
 pylint = "*"
