@@ -8,6 +8,7 @@ matplotlib = "*"
 numpy = "*"
 opencv-python = "*"
 opencv-contrib-python = "*"
+scipy = "*"
 
 [dev-packages]
 pylint = "*"

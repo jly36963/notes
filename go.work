@@ -1,4 +1,4 @@
-go 1.19
+go 1.21
 
 use (
 	./go/core/basics
@@ -18,10 +18,11 @@ use (
 	./go/db/redis-example
 	./go/db/squirrel-example
 	./go/testing/gomega-notes
-	./go/utility-pkgs/gift-notes
-	./go/utility-pkgs/govalidator-notes
-	./go/utility-pkgs/resty-notes
-	./go/utility-pkgs/sling-notes
+	./go/utils/carbon-notes
+	./go/utils/gift-notes
+	./go/utils/govalidator-notes
+	./go/utils/resty-notes
+	./go/utils/sling-notes
 	./go/web/atreugo
 	./go/web/fasthttp
 	./go/web/gin

@@ -3,7 +3,9 @@ from typing import List
 import numpy as np
 import cv2
 import cv2.flann
+from cv2.dnn_superres import DnnSuperResImpl
 import matplotlib.pyplot as plt
+from scipy import ndimage
 
 # OpenCV (Open Source Computer Vision) is written in C++ (has Python bindings)
 # Docs: https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html
@@ -38,8 +40,17 @@ def main():
     print_section_title('basic_resize')
     basic_resize()
 
+    print_section_title('basic_rotate')
+    basic_rotate()
+
     print_section_title('basic_flip')
     basic_flip()
+
+    print_section_title('basic_brighten')
+    basic_brighten()
+
+    print_section_title('basic_contrast')
+    basic_contrast()
 
     print_section_title('basic_thresholding')
     basic_thresholding()
@@ -74,6 +85,12 @@ def main():
     print_section_title('basic_contour')
     basic_contour()
 
+    print_section_title('basic_upscaling')
+    basic_upscaling()
+
+    print_section_title('basic_denoise')
+    basic_denoise()
+
 # ---
 # Examples
 # ---
@@ -83,7 +100,6 @@ def basic_import_export():
     fp = get_input_fp('polaris.jpg')
     img: np.ndarray = cv2.imread(fp)
     cv2.imwrite(get_output_fp('polaris.jpg'), img)
-    print('...')
 
 
 def basic_bands():
@@ -98,8 +114,6 @@ def basic_bands():
     img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HLS)
     cv2.imwrite(get_output_fp('polaris-bands-hsl.jpg'), img2)
 
-    print('...')
-
 
 def basic_reverse_bands():
     fp = get_input_fp('polaris.jpg')
@@ -107,14 +121,12 @@ def basic_reverse_bands():
     # Reverse the z axis (args -- image, axis))
     img = np.flip(img, 2)
     cv2.imwrite(get_output_fp('polaris-reverse-bands.jpg'), img)
-    print('...')
 
 
 def basic_grayscale():
     fp = get_input_fp('polaris.jpg')
     img: np.ndarray = cv2.imread(fp, cv2.IMREAD_GRAYSCALE)
     cv2.imwrite(get_output_fp('polaris-gray.jpg'), img)
-    print('...')
 
 
 def basic_resize():
@@ -129,7 +141,33 @@ def basic_resize():
     img2 = cv2.resize(img, (0, 0), img, x, y)  # source, zeros tuple, source, x, y
     cv2.imwrite(get_output_fp('polaris-resize-2.jpg'), img2)
 
-    print('...')
+
+def basic_rotate():
+    fp = get_input_fp('polaris.jpg')
+    img: np.ndarray = cv2.imread(fp)
+
+    # Rotate (simple)
+    img1 = cv2.rotate(img, cv2.ROTATE_180)
+    cv2.imwrite(get_output_fp('polaris-rotate.jpg'), img1)
+
+    # Pad and scale
+    # TODO: cv2.getRotationMatrix2D
+
+    # Pad and rotate 45 degrees
+    h, w, _ = img.shape
+    pad_x = h // 2
+    pad_y = w // 2
+    img2 = cv2.copyMakeBorder(
+        img,
+        top=pad_y,
+        bottom=pad_y,
+        left=pad_x,
+        right=pad_x,
+        borderType=cv2.BORDER_CONSTANT,
+        value=[0, 0, 0]
+    )
+    img2 = ndimage.rotate(img, 45)
+    cv2.imwrite(get_output_fp('polaris-rotate-2.jpg'), img2)
 
 
 def basic_flip():
@@ -138,7 +176,28 @@ def basic_flip():
     # flipCode: 0 -- flip rows (y), 1 -- flip columns (x), 2 flip bands (z)
     img = cv2.flip(img, 0)
     cv2.imwrite(get_output_fp('polaris-flip.jpg'), img)
-    print('...')
+
+
+def basic_brighten():
+    fp = get_input_fp('polaris.jpg')
+    img: np.ndarray = cv2.imread(fp)
+    img = cv2.convertScaleAbs(img, alpha=1.05, beta=10)
+    cv2.imwrite(get_output_fp('polaris-brighten.jpg'), img)
+
+
+def basic_contrast():
+    def adjust_contrast_brightness(
+        img: np.ndarray,
+        contrast=1.0,  # 0.0 to inf
+        brightness: int = 0,  # -255 to 255
+    ) -> np.ndarray:
+        brightness += int(round(255*(1-contrast)/2))
+        return cv2.addWeighted(img, contrast, img, 0, brightness)
+
+    fp = get_input_fp('polaris.jpg')
+    img: np.ndarray = cv2.imread(fp)
+    img = adjust_contrast_brightness(img, contrast=1.3, brightness=0)
+    cv2.imwrite(get_output_fp('polaris-contrast.jpg'), img)
 
 
 def basic_thresholding():
@@ -157,7 +216,6 @@ def basic_thresholding():
         C=2
     )
     cv2.imwrite(get_output_fp('orchid-threshold-adaptive.jpg'), img2)
-    print('...')
 
 
 def basic_gamma_correction():
@@ -169,7 +227,6 @@ def basic_gamma_correction():
     img = ((img / 255) ** gamma) * 255
     # img = np.power(img/255, gamma)  # type: ignore
     cv2.imwrite(get_output_fp('orchid-gamma.jpg'), img)
-    print('...')
 
 
 def basic_blurring():
@@ -206,8 +263,6 @@ def basic_blurring():
     img5 = cv2.bilateralFilter(src=img, d=9, sigmaColor=75, sigmaSpace=75)
     cv2.imwrite(get_output_fp('polaris-blur-bilateral.jpg'), img5)
 
-    print('...')
-
 
 def basic_morphological_operators():
     fp = get_input_fp('beach.jpg')
@@ -237,8 +292,6 @@ def basic_morphological_operators():
     morph_gradient_kernel = np.ones((5, 5), dtype=np.uint8)
     img5 = cv2.morphologyEx(img, op=cv2.MORPH_GRADIENT, kernel=morph_gradient_kernel, iterations=1)
     cv2.imwrite(get_output_fp('beach-morph-gradient.jpg'), img5)
-
-    print('...')
 
 
 def basic_gradients():
@@ -274,7 +327,6 @@ def basic_gradients():
     img3 = cv2.Laplacian(src=img, ddepth=cv2.CV_64F, ksize=5)
     cv2.imwrite(get_output_fp('polaris-gradients-laplacian.jpg'), img3)
 
-    print('...')
 
 # ---
 # OpenCV (histograms)
@@ -309,8 +361,6 @@ def basic_histograms():
     img_eq_color = cv2.cvtColor(img_hsv, cv2.COLOR_HSV2BGR)
     cv2.imwrite(get_output_fp('beach-histogram-equalization-color.jpg'), img_eq_color)
 
-    print('...')
-
 
 def basic_corner_detection():
     # edges -- sudden change in image brightness
@@ -338,8 +388,6 @@ def basic_corner_detection():
         cv2.circle(img_highlighted_st, (x, y), radius=10, color=(0, 255, 0), thickness=-1)
     cv2.imwrite(get_output_fp('tree-corners-shi-tomasi-highlighted.jpg'), img_highlighted_st)
 
-    print('...')
-
 
 def basic_canny_edge_detector():
     # intensity gradient < threshold1 -- not an edge
@@ -362,8 +410,6 @@ def basic_canny_edge_detector():
     # Canny edge detector (thresholds based on median)
     img_edges_manual = cv2.Canny(image=img_blurred, threshold1=thresh1, threshold2=thresh2)
     cv2.imwrite(get_output_fp('tree-canny-edge-detector-manual.jpg'), img_edges_manual)
-
-    print('...')
 
 
 def basic_feature_detection():
@@ -403,8 +449,6 @@ def basic_feature_detection():
         cv2.imwrite(get_output_fp('tree-feature-detection-akaze-blob.jpg'), img_kp)
 
     fd_akaze_blob()
-
-    print('...')
 
 
 def basic_feature_matching():
@@ -633,8 +677,6 @@ def basic_feature_matching():
 
     fm_akaze_flann_knn_homography()
 
-    print('...')
-
 
 def basic_contour():
     # larger kernel size for blurring might help
@@ -695,8 +737,36 @@ def basic_contour():
 
     contour_watershed_algorithm()
 
-    print('...')
 
+def basic_upscaling():
+    def get_sr() -> DnnSuperResImpl:
+        '''Get super resolution model (FSRCNN)'''
+        # https://learnopencv.com/super-resolution-in-opencv/
+        sr: DnnSuperResImpl = cv2.dnn_superres.DnnSuperResImpl_create()  # type: ignore
+        path = os.path.join('models', "FSRCNN_x2.pb")
+        sr.readModel(path)
+        sr.setModel("fsrcnn", 2)
+        return sr
+
+    sr = get_sr()
+    fp = get_input_fp('polaris.jpg')
+    img = cv2.imread(fp)
+    img = sr.upsample(img)
+    cv2.imwrite(get_output_fp('polaris-upscaled.jpg'), img)
+
+
+def basic_denoise():
+    fp = get_input_fp('polaris.jpg')
+    img = cv2.imread(fp)
+    img = cv2.fastNlMeansDenoisingColored(
+        img,
+        None,  # type: ignore
+        h=5,
+        hColor=5,
+        templateWindowSize=5,
+        searchWindowSize=5
+    )
+    cv2.imwrite(get_output_fp('polaris-denoised.jpg'), img)
 
 # ---
 # Utils
