@@ -1,0 +1,40 @@
+{
+  "name": "d3-notes",
+  "version": "1.0.0",
+  "description": "d3 notes",
+  "main": "index.js",
+  "license": "ISC",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node ./build/index.js",
+    "dev": "bun run index.ts",
+    "build": "rimraf build && tsc"
+  },
+  "dependencies": {
+    "d3": "^7.8.5",
+    "d3-hexbin": "^0.2.2",
+    "jsdom": "^24.0.0",
+    "lodash-es": "^4.17.21",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "@types/d3-hexbin": "^0.2.5",
+    "@types/jsdom": "^21.1.6",
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^20.11.16",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "gts": "^5.2.0",
+    "nodemon": "^3.0.3",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
