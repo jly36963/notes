@@ -1,6 +1,7 @@
 import {writeFileSync, readFileSync} from 'fs';
 import {mapValues} from 'lodash-es';
 import * as d3 from 'd3';
+import * as d3Collection from 'd3-collection';
 import d3Hexbin from 'd3-hexbin';
 import jsdom from 'jsdom';
 import path from 'path';
@@ -50,6 +51,18 @@ async function main() {
 
   printSectionTitle('Scatter plot');
   basicScatterPlot(dom);
+
+  printSectionTitle('Violin plot');
+  basicViolinPlot(dom);
+
+  printSectionTitle('Bar chart (stacked)');
+  basicBarChartStacked(dom);
+
+  printSectionTitle('Bar chart (stacked) (normalized)');
+  basicBarChartStackNorm(dom);
+
+  printSectionTitle('Area chart (stacked)');
+  basicAreaChartStacked(dom);
 }
 
 // ---
@@ -330,13 +343,16 @@ function basicBarChartVertical(dom: jsdom.JSDOM): void {
 }
 
 function basicAreaChart(dom: jsdom.JSDOM): void {
+  type CsvValue = {date: Date; value: number};
+
   // Data
   const data = d3.csvParse(
     readFileSync(getInputFilepath('aapl.csv'), {encoding: 'utf-8'}),
-    ({date, close}) => ({
-      date: new Date(date),
-      value: Number(close),
-    })
+    ({date, close}) =>
+      ({
+        date: new Date(date),
+        value: Number(close),
+      }) as CsvValue
   );
 
   // Dimensions
@@ -357,7 +373,7 @@ function basicAreaChart(dom: jsdom.JSDOM): void {
 
   const curve = d3.curveLinear;
   const area = d3
-    .area<{date: Date; value: number}>()
+    .area<CsvValue>()
     .curve(curve)
     .x(d => xScale(d.date))
     .y0(yScale(0))
@@ -1368,11 +1384,473 @@ function basicScatterPlot(dom: jsdom.JSDOM): void {
   svg.remove();
 }
 
-// TODO:
-// norm stack bar
-// stacked area chart
-// stacked bar chart
-// violin chart
+function basicViolinPlot(dom: jsdom.JSDOM): void {
+  type Species = 'setosa' | 'versicolor' | 'virginica';
+  type CsvValue = {
+    sepalLength: number;
+    sepalWidth: number;
+    petalLength: number;
+    petalWidth: number;
+    species: Species;
+  };
+
+  // Data
+  const data = d3.csvParse(
+    readFileSync(getInputFilepath('iris.csv'), {encoding: 'utf-8'}),
+    ({sepalLength, sepalWidth, petalLength, petalWidth, species}) =>
+      ({
+        sepalLength: Number(sepalLength),
+        sepalWidth: Number(sepalWidth),
+        petalLength: Number(petalLength),
+        petalWidth: Number(petalWidth),
+        species,
+      }) as CsvValue
+  );
+
+  // Dimensions
+  const margin = {top: 10, right: 30, bottom: 30, left: 40};
+  const width = 600 - margin.left - margin.right;
+  const height = 400 - margin.top - margin.bottom;
+
+  // Scale
+  const xScale = d3
+    .scaleBand()
+    .range([0, width])
+    .domain(['setosa', 'versicolor', 'virginica'])
+    .padding(0.05);
+  const yScale = d3
+    .scaleLinear()
+    .domain([3.5, 8]) // Note that here the Y scale is set manually
+    .range([height, 0]);
+
+  // Geometry
+  const histogram = d3
+    .bin()
+    .domain(yScale.domain() as [number, number])
+    .thresholds(yScale.ticks(20))
+    .value(d => d);
+
+  // TODO: replace "nest" usage
+  const sumstat = d3Collection
+    .nest<CsvValue, d3.Bin<number, number>[]>() // { key: string, values: object[] }[]
+    .key(d => d.species)
+    .rollup(d => {
+      const input = d.map(g => g.sepalLength);
+      const bins = histogram(input);
+      return bins;
+    })
+    .entries(data);
+
+  let maxNum = 0;
+  for (const i in sumstat) {
+    const allBins = sumstat[i].value!;
+    const lengths = allBins.map(a => {
+      return a.length;
+    });
+    const longest = d3.max(lengths) as any as number;
+    if (longest > maxNum) {
+      maxNum = longest;
+    }
+  }
+
+  const xNum = d3
+    .scaleLinear()
+    .range([0, xScale.bandwidth()])
+    .domain([-maxNum, maxNum]);
+
+  // D3 Container
+  const body = d3.select(dom.window.document.querySelector('body'));
+  const svg = body
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom);
+
+  svg
+    .append('g')
+    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+  svg.append('g').call(d3.axisLeft(yScale));
+
+  svg
+    .append('g')
+    .attr('transform', 'translate(0,' + height + ')')
+    .call(d3.axisBottom(xScale));
+
+  svg
+    .selectAll('myViolin')
+    .data(sumstat)
+    .enter()
+    .append('g')
+    .attr('transform', d => 'translate(' + xScale(d.key) + ' ,0)')
+    .append('path')
+    .datum(d => d.value!)
+    .style('stroke', 'none')
+    .style('fill', '#69b3a2')
+    .attr(
+      'd',
+      // @ts-expect-error (idk)
+      d3
+        .area()
+        .x0(d => xNum(-d.length))
+        .x1(d => xNum(d.length))
+        // @ts-expect-error (idk)
+        .y(d => yScale(d.x0))
+        .curve(d3.curveCatmullRom)
+    );
+
+  // Save output and clear body
+  writeFileSync(getOutputFilepath('violin-plot.html'), dom.serialize());
+  svg.remove();
+}
+
+function basicBarChartStacked(dom: jsdom.JSDOM): void {
+  type AgeGroups = {
+    [ageGroup: string]: number;
+  };
+
+  type CsvValue = {
+    name: string;
+  } & AgeGroups;
+  type CsvValueWithTotal = CsvValue & {total: number};
+
+  // Data
+  const data = d3
+    .csvParse(
+      readFileSync(getInputFilepath('population-by-age-and-state-full.csv'), {
+        encoding: 'utf-8',
+      }),
+      ({name, ...ageGroups}, i, columns) => {
+        const row = {
+          name,
+          ...mapValues(ageGroups, v => Number(v)),
+        } as CsvValueWithTotal;
+        row.total = d3.sum(columns, c => row[c]);
+        return row;
+      }
+    )
+    .sort((a, b) => b.total - a.total);
+
+  // Dimensions
+  const margin = {top: 10, right: 10, bottom: 20, left: 40};
+  const height = 500;
+  const width = 1.8 * height;
+
+  // Geometry
+  const formatValue = (x: number) =>
+    isNaN(x) ? 'N/A' : x.toLocaleString('en');
+  const series = d3
+    .stack<any, CsvValue, string>()
+    .keys(data.columns.slice(1) as string[])(data)
+    .map(d => {
+      d.forEach(p => {
+        // @ts-expect-error ("v" doesnt have "key")
+        p.key = d.key;
+      });
+      return d;
+    });
+
+  // color
+  const color = d3
+    .scaleOrdinal<string, string, string>()
+    .domain(series.map(d => d.key))
+    .range(d3.schemeSpectral[series.length])
+    .unknown('#ccc');
+
+  // Scale
+  const xScale = d3
+    .scaleBand()
+    .domain(data.map(d => d.name))
+    .range([margin.left, width - margin.right])
+    .padding(0.1);
+  const yScale = d3
+    .scaleLinear()
+    .domain([0, d3.max(series, d => d3.max(d, d => d[1]))!])
+    .rangeRound([height - margin.bottom, margin.top]);
+
+  // D3 container
+  const body = d3.select(dom.window.document.querySelector('body'));
+  const svg = body.append('svg').attr('viewBox', [0, 0, width, height]);
+
+  svg
+    .append('g')
+    .selectAll('g')
+    .data(series)
+    .join('g')
+    .attr('fill', d => color(d.key))
+    .selectAll('rect')
+    .data(d => d)
+    .join('rect')
+    .attr('x', (d, i) => xScale(d.data.name as any as string)!)
+    .attr('y', d => yScale(d[1]))
+    .attr('height', d => yScale(d[0]) - yScale(d[1]))
+    .attr('width', xScale.bandwidth())
+    .append('title')
+    // @ts-expect-error ("v" doesnt have "key")
+    .text(p => `${p.data.name} ${p.key} ${formatValue(p.data[p.key])}`);
+
+  svg.append('g').call(g =>
+    g
+      .attr('transform', `translate(0,${height - margin.bottom})`)
+      .call(d3.axisBottom(xScale).tickSizeOuter(0))
+      .call(g => g.selectAll('.domain').remove())
+  );
+
+  svg.append('g').call(g =>
+    g
+      .attr('transform', `translate(${margin.left},0)`)
+      .call(d3.axisLeft(yScale).ticks(null, 's'))
+      .call(g => g.selectAll('.domain').remove())
+  );
+
+  // Save output and clear body
+  writeFileSync(getOutputFilepath('bar-chart-stacked.html'), dom.serialize());
+  svg.remove();
+}
+
+function basicBarChartStackNorm(dom: jsdom.JSDOM): void {
+  type AgeGroups = {
+    [ageGroup: string]: number;
+  };
+
+  type CsvValue = {
+    name: string;
+  } & AgeGroups;
+  type CsvValueWithTotal = CsvValue & {total: number};
+
+  // Data
+  const data = d3
+    .csvParse(
+      readFileSync(getInputFilepath('population-by-age-and-state-full.csv'), {
+        encoding: 'utf-8',
+      }),
+      ({name, ...ageGroups}, i, columns) => {
+        const row = {
+          name,
+          ...mapValues(ageGroups, v => Number(v)),
+        } as CsvValueWithTotal;
+        row.total = d3.sum(columns, c => row[c]);
+        return row;
+      }
+    )
+    .sort((a, b) => b['<10'] / b.total - a['<10'] / a.total);
+
+  // Dimensions
+  const margin = {top: 30, right: 10, bottom: 0, left: 30};
+  const height = data.length * 25 + margin.top + margin.bottom;
+  const width = 0.8 * height;
+
+  // Geometry
+  const formatValue = (x: number) =>
+    isNaN(x) ? 'N/A' : x.toLocaleString('en');
+  const formatPercent = d3.format('.1%');
+  const series = d3
+    .stack<any, CsvValue, string>()
+    .keys(data.columns.slice(1) as string[])
+    .offset(d3.stackOffsetExpand)(data)
+    .map(d => {
+      d.forEach(p => {
+        // @ts-expect-error ("v" doesnt have "key")
+        p.key = d.key;
+      });
+      return d;
+    });
+  // color
+  const color = d3
+    .scaleOrdinal()
+    .domain(series.map(d => d.key))
+    .range(d3.schemeSpectral[series.length])
+    .unknown('#ccc');
+
+  // Scale
+  const xScale = d3.scaleLinear().range([margin.left, width - margin.right]);
+  const yScale = d3
+    .scaleBand()
+    .domain(data.map(d => d.name))
+    .range([margin.top, height - margin.bottom])
+    .padding(0.08);
+
+  // D3 Container
+  const body = d3.select(dom.window.document.querySelector('body'));
+  const svg = body
+    .append('svg')
+    .attr('viewBox', [0, 0, width, height])
+    .style('overflow', 'visible');
+
+  svg
+    .append('g')
+    .selectAll('g')
+    .data(series)
+    .enter()
+    .append('g')
+    // @ts-expect-error ("p" has no "key")
+    .attr('fill', p => color(p.key))
+    .selectAll('rect')
+    .data(d => d)
+    .join('rect')
+    .attr('x', d => xScale(d[0]))
+    .attr('y', d => yScale(d.data.name)!)
+    .attr('width', d => xScale(d[1]) - xScale(d[0]))
+    .attr('height', yScale.bandwidth())
+    .append('title')
+    .text(
+      p =>
+        // @ts-expect-error ("p" has no "key")
+        `${p.data.name} ${p.key} ${formatPercent(p[1] - p[0])} (${formatValue(p.data[p.key])})`
+    );
+
+  svg.append('g').call(g =>
+    g
+      .attr('transform', `translate(0,${margin.top})`)
+      .call(d3.axisTop(xScale).ticks(width / 100, '%'))
+      .call(g => g.selectAll('.domain').remove())
+  );
+
+  svg.append('g').call(g =>
+    g
+      .attr('transform', `translate(${margin.left},0)`)
+      .call(d3.axisLeft(yScale).tickSizeOuter(0))
+      .call(g => g.selectAll('.domain').remove())
+  );
+
+  // Save output and clear body
+  writeFileSync(
+    getOutputFilepath('bar-chart-stacked-normalized.html'),
+    dom.serialize()
+  );
+  svg.remove();
+}
+
+function basicAreaChartStacked(dom: jsdom.JSDOM) {
+  type IndustryGroups = {
+    [industryGroup: string]: number;
+  };
+
+  type CsvValue = {
+    date: Date;
+  } & IndustryGroups;
+  type CsvValueWithTotal = CsvValue & {total: number};
+
+  // Data
+  const data = d3
+    .csvParse(
+      readFileSync(getInputFilepath('unemployment-by-industry.csv'), {
+        encoding: 'utf-8',
+      }),
+      ({date, ...industryGroups}, i, columns) => {
+        const row = {
+          date: new Date(date),
+          ...mapValues(industryGroups, v => Number(v)),
+        } as CsvValueWithTotal;
+        row.total = d3.sum(columns, c => row[c]);
+        return row;
+      }
+    )
+    .sort((a, b) => b.total - a.total);
+
+  // Dimensions
+  const margin = {top: 20, right: 180, bottom: 30, left: 40};
+  const height = 500;
+  const width = 1.8 * height;
+
+  const numericColumns = data.columns.slice(1) as string[];
+
+  // Visual
+  const series = d3.stack().keys(numericColumns)(data);
+  const color = d3
+    .scaleOrdinal<string, string, never>()
+    .domain(numericColumns)
+    .range(d3.schemeCategory10);
+
+  // Scale
+  const xScale = d3
+    .scaleUtc()
+    .domain(d3.extent(data, d => d.date) as [Date, Date])
+    .range([margin.left, width - margin.right]);
+  const yScale = d3
+    .scaleLinear()
+    .domain([0, d3.max(series, d => d3.max(d, d => d[1]))!])
+    .nice()
+    .range([height - margin.bottom, margin.top]);
+
+  // Geometry
+  const area = d3
+    .area<[number, number] & {data: CsvValue}>() // TODO: fix type
+    .x(d => xScale(d.data.date))
+    .y0(d => yScale(d[0]))
+    .y1(d => yScale(d[1]));
+
+  // D3 Container
+  const body = d3.select(dom.window.document.querySelector('body'));
+  const svg = body.append('svg').attr('viewBox', [0, 0, width, height]);
+
+  svg
+    .append('g')
+    .selectAll('path')
+    .data(series)
+    .join('path')
+    .attr('fill', d => color(d.key))
+    // @ts-expect-error (idk)
+    .attr('d', area)
+    .append('title')
+    .text(d => d.key);
+
+  svg.append('g').call(g =>
+    g.attr('transform', `translate(0,${height - margin.bottom})`).call(
+      d3
+        .axisBottom(xScale)
+        .ticks(width / 80)
+        .tickSizeOuter(0)
+    )
+  );
+
+  svg.append('g').call(g =>
+    g
+      .attr('transform', `translate(${margin.left},0)`)
+      .call(d3.axisLeft(yScale))
+      .call(g => g.select('.domain').remove())
+      .call(g =>
+        g
+          .select('.tick:last-of-type text')
+          .clone()
+          .attr('x', 3)
+          .attr('text-anchor', 'start')
+          .attr('font-weight', 'bold')
+          .text('Unemployment')
+      )
+  );
+
+  // Legend
+  svg.append('g').call(svg => {
+    const g = svg
+      .attr(
+        'transform',
+        `translate(${width},${height / 2 - 10 * numericColumns.length})`
+      )
+      .attr('text-anchor', 'end')
+      .attr('font-family', 'sans-serif')
+      .attr('font-size', 10)
+      .selectAll('g')
+      .data(color.domain().slice().reverse())
+      .join('g')
+      .attr('transform', (d, i) => `translate(0,${i * 20})`);
+
+    g.append('rect')
+      .attr('x', -19)
+      .attr('width', 19)
+      .attr('height', 19)
+      .attr('fill', color);
+
+    g.append('text')
+      .attr('x', -24)
+      .attr('y', 9.5)
+      .attr('dy', '0.35em')
+      .text(d => d);
+  });
+
+  // Save output and clear body
+  writeFileSync(getOutputFilepath('area-chart-stacked.html'), dom.serialize());
+  svg.remove();
+}
 
 // ---
 // Run
