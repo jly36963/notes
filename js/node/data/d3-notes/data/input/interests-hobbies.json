@@ -1,0 +1,67 @@
+{
+  "name": "",
+  "children": [
+    {
+      "name": "language 🌎",
+      "children": [
+        {
+          "name": "Portuguese",
+          "size": 400
+        },
+        {
+          "name": "Spanish",
+          "size": 150
+        }
+      ]
+    },
+    {
+      "name": "music 🎵",
+      "children": [
+        {
+          "name": "guitar",
+          "children": [
+            {
+              "name": "acoustic",
+              "size": 100
+            },
+            {
+              "name": "electric",
+              "size": 50
+            }
+          ]
+        },
+        {
+          "name": "concerts",
+          "children": [
+            {"name": "acoustic", "size": 50},
+            {"name": "pop-punk", "size": 50},
+            {"name": "djent", "size": 50},
+            {"name": "electronic", "size": 50}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "sports ⚽",
+      "children": [
+        {
+          "name": "soccer",
+          "size": 200
+        },
+        {
+          "name": "hockey",
+          "size": 100
+        }
+      ]
+    },
+    {
+      "name": "Series 📺",
+      "children": [
+        {"name": "Naruto", "size": 200},
+        {"name": "Avatar", "size": 100},
+        {"name": "Silo", "size": 100},
+        {"name": "Spongebob", "size": 100}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "name": "",
+  "children": [
+    {
+      "name": "frontend",
+      "children": [
+        {"name": "react", "size": 100},
+        {"name": "solid", "size": 50},
+        {"name": "leptos", "size": 40},
+        {"name": "astro", "size": 30},
+        {"name": "vue", "size": 30},
+        {"name": "htmx", "size": 25}
+      ]
+    },
+    {
+      "name": "backend",
+      "children": [
+        {
+          "name": "node",
+          "children": [
+            {"name": "express", "size": 50},
+            {"name": "koa", "size": 50}
+          ]
+        },
+        {
+          "name": "python",
+          "children": [
+            {"name": "fastapi", "size": 40},
+            {"name": "sanic", "size": 25},
+            {"name": "quart", "size": 25}
+          ]
+        },
+        {
+          "name": "go",
+          "children": [
+            {"name": "chi", "size": 40},
+            {"name": "fiber", "size": 40},
+            {"name": "gin", "size": 25}
+          ]
+        },
+        {
+          "name": "rust",
+          "children": [
+            {"name": "axum", "size": 50},
+            {"name": "actix", "size": 50}
+          ]
+        },
+        {"name": "gleam", "children": [{"name": "wisp", "size": 50}]}
+      ]
+    },
+    {
+      "name": "database",
+      "children": [
+        {"name": "postgres", "size": 200},
+        {"name": "redis", "size": 50},
+        {"name": "mongo", "size": 40},
+        {"name": "elastic-search", "size": 30},
+        {"name": "cassandra", "size": 30}
+      ]
+    },
+    {
+      "name": "cli",
+      "children": [
+        {"name": "node (yargs)", "size": 50},
+        {"name": "python (typer)", "size": 30},
+        {"name": "go (cobra)", "size": 30},
+        {"name": "rust (clap)", "size": 30}
+      ]
+    },
+    {
+      "name": "data",
+      "children": [
+        {
+          "name": "pipelines",
+          "children": [
+            {"name": "polars", "size": 50},
+            {"name": "pandas", "size": 50},
+            {"name": "airflow", "size": 30},
+            {"name": "spark", "size": 20}
+          ]
+        },
+        {
+          "name": "visualization",
+          "children": [
+            {"name": "d3", "size": 20},
+            {"name": "matplotlib", "size": 20}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "OSS",
+      "children": [
+        {"name": "yargs", "size": 100},
+        {"name": "string-ts", "size": 80},
+        {"name": "ruff", "size": 20},
+        {"name": "biome", "size": 20},
+        {"name": "polars", "size": 20}
+      ]
+    }
+  ]
+}

@@ -6,6 +6,11 @@ import d3Hexbin from 'd3-hexbin';
 import jsdom from 'jsdom';
 import path from 'path';
 
+// NOTE:
+// To convert html svg to svg file
+// Add `xmlns="http://www.w3.org/2000/svg"` attribute to svg element
+// Cut and past svg element to file with `.svg` extension
+
 // ---
 // Main
 // ---
@@ -63,6 +68,12 @@ async function main() {
 
   printSectionTitle('Area chart (stacked)');
   basicAreaChartStacked(dom);
+
+  printSectionTitle('Sunburst');
+  basicSunburst(dom);
+
+  printSectionTitle('Sunburst (me)');
+  basicSunburstMe(dom);
 }
 
 // ---
@@ -1850,6 +1861,253 @@ function basicAreaChartStacked(dom: jsdom.JSDOM) {
   // Save output and clear body
   writeFileSync(getOutputFilepath('area-chart-stacked.html'), dom.serialize());
   svg.remove();
+}
+
+function basicSunburst(dom: jsdom.JSDOM): void {
+  // Types
+  type SunburstLeaf = {
+    name: string;
+    size: number;
+  };
+  type SunburstBranch = {
+    name: string;
+    children: (SunburstBranch | SunburstLeaf)[];
+  };
+
+  // Data
+  const data: SunburstBranch = JSON.parse(
+    readFileSync(getInputFilepath('flare.json'), {
+      encoding: 'utf-8',
+    })
+  );
+
+  // Dimensions
+  const width = 1152; // outer width, in pixels
+  const height = 1152; // outer height, in pixels
+  const margin = {top: 1, right: 1, bottom: 1, left: 1};
+
+  // Geometry
+  const padding = 1; // separation between arcs
+  const startAngle = 0; // the starting angle for the sunburst
+  const endAngle = 2 * Math.PI; // the ending angle for the sunburst
+  const radius =
+    Math.min(
+      width - margin.left - margin.right,
+      height - margin.top - margin.bottom
+    ) / 2; // outer radius
+  const colorScheme = d3.interpolateRainbow; // color scheme, if any
+  const fill = '#ccc'; // fill for arcs (if no color encoding)
+  const fillOpacity = 0.6; // fill opacity for arcs
+
+  // Helpers
+  const label = (d: SunburstLeaf) => d.name;
+  const value = (d: SunburstLeaf) => d.size;
+  // const id = Array.isArray(data) ? (d: {id: string}) => d.id : null;
+  const title = (n: d3.HierarchyNode<SunburstLeaf>) =>
+    `${n
+      .ancestors()
+      .reverse()
+      .map(d => d.data.name)
+      .join('.')}\n${n.value!.toLocaleString('en')}`;
+
+  // @ts-expect-error (Branch will have children, Leaf won't)
+  const root = d3.hierarchy<SunburstLeaf>(data, d => d.children);
+  root.sum(d => Math.max(0, value(d)));
+  root.sort((a, b) => d3.descending(a.value, b.value));
+  d3.partition<SunburstLeaf>().size([endAngle - startAngle, radius])(root);
+  const color = d3
+    .scaleSequential([0, root.children!.length], colorScheme)
+    .unknown(fill);
+  // @ts-expect-error (`d3.HierarchyNode<SunburstLeaf>` doesn't have `index`)
+  root.children!.forEach((child, i) => (child.index = i));
+  const arc = d3
+    .arc<SunburstBranch, any>()
+    .startAngle(d => d.x0 + startAngle)
+    .endAngle(d => d.x1 + startAngle)
+    .padAngle(d => Math.min((d.x1 - d.x0) / 2, (2 * padding) / radius))
+    .padRadius(radius / 2)
+    .innerRadius(d => d.y0)
+    .outerRadius(d => d.y1 - padding);
+
+  // D3 Container
+  const body = d3.select(dom.window.document.querySelector('body'));
+  const svg = body
+    .append('svg')
+    .attr('viewBox', [
+      margin.right - margin.left - width / 2,
+      margin.bottom - margin.top - height / 2,
+      width,
+      height,
+    ])
+    .attr('width', width)
+    .attr('height', height)
+    .attr('style', 'max-width: 100%; height: auto; height: intrinsic;')
+    .attr('font-family', 'sans-serif')
+    .attr('font-size', 10)
+    .attr('text-anchor', 'middle');
+
+  const cell = svg.selectAll('a').data(root.descendants()).join('a');
+
+  cell
+    .append('path')
+    // @ts-expect-error (idk)
+    .attr('d', arc)
+    // @ts-expect-error (`d3.HierarchyNode<SunburstLeaf>` doesn't have `index`)
+    .attr('fill', color ? d => color(d.ancestors().reverse()[1]?.index) : fill)
+    .attr('fill-opacity', fillOpacity);
+
+  cell
+    .filter((d: any) => ((d.y0 + d.y1) / 2) * (d.x1 - d.x0) > 10)
+    .append('text')
+    .attr('transform', (d: any) => {
+      if (!d.depth) return null;
+      const x = (((d.x0 + d.x1) / 2 + startAngle) * 180) / Math.PI;
+      const y = (d.y0 + d.y1) / 2;
+      return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
+    })
+    .attr('dy', '0.32em')
+    .text(d => label(d.data));
+
+  cell.append('title').text(title);
+
+  svg.node();
+
+  // Save output and clear body
+  writeFileSync(getOutputFilepath('sunburst.html'), dom.serialize());
+  svg.remove();
+}
+
+function basicSunburstMe(dom: jsdom.JSDOM): void {
+  // Types
+  type SunburstLeaf = {
+    name: string;
+    size: number;
+  };
+  type SunburstBranch = {
+    name: string;
+    children: (SunburstBranch | SunburstLeaf)[];
+  };
+
+  const configs = [
+    {
+      input: 'interests-software.json',
+      output: 'sunburst-interests-software.html',
+      colorScheme: d3.interpolateViridis,
+    },
+    {
+      input: 'interests-hobbies.json',
+      output: 'sunburst-interests-hobbies.html',
+      colorScheme: d3.interpolateRainbow,
+    },
+  ];
+
+  for (const {input, output, colorScheme} of configs) {
+    // Data
+    const data: SunburstBranch = JSON.parse(
+      readFileSync(getInputFilepath(input), {
+        encoding: 'utf-8',
+      })
+    );
+
+    // Dimensions
+    const width = 1000; // outer width, in pixels
+    const height = 1000; // outer height, in pixels
+    const margin = {top: 1, right: 1, bottom: 1, left: 1};
+    const fontSize = 12;
+
+    // Geometry
+    const padding = 1; // separation between arcs
+    const startAngle = 0; // the starting angle for the sunburst
+    const endAngle = 2 * Math.PI; // the ending angle for the sunburst
+    const radius =
+      Math.min(
+        width - margin.left - margin.right,
+        height - margin.top - margin.bottom
+      ) / 2;
+    const fill = 'rgba(0, 0, 0, 0)'; // fill for arcs (if no color encoding)
+    const fillOpacity = 0.9; // fill opacity for arcs
+
+    // Helpers
+    const label = (d: SunburstLeaf) => d.name;
+    const value = (d: SunburstLeaf) => d.size;
+    const title = (n: d3.HierarchyNode<SunburstLeaf>) =>
+      `${n
+        .ancestors()
+        .reverse()
+        .map(d => d.data.name)
+        .filter(n => n)
+        .join(' . ')}`;
+
+    // @ts-expect-error (Branch will have children, Leaf won't)
+    const root = d3.hierarchy<SunburstLeaf>(data, d => d.children);
+    root.sum(d => Math.max(0, value(d)));
+    root.sort((a, b) => d3.descending(a.value, b.value));
+    d3.partition<SunburstLeaf>().size([endAngle - startAngle, radius])(root);
+    const color = d3
+      .scaleSequential([0, root.children!.length], colorScheme)
+      .unknown(fill);
+    // @ts-expect-error (`d3.HierarchyNode<SunburstLeaf>` doesn't have `index`)
+    root.children!.forEach((child, i) => (child.index = i));
+    const arc = d3
+      .arc<SunburstBranch, any>()
+      .startAngle(d => d.x0 + startAngle)
+      .endAngle(d => d.x1 + startAngle)
+      .padAngle(d => Math.min((d.x1 - d.x0) / 2, (2 * padding) / radius))
+      .padRadius(radius / 2)
+      .innerRadius(d => d.y0)
+      .outerRadius(d => d.y1 - padding);
+
+    // D3 Container
+    const body = d3.select(dom.window.document.querySelector('body'));
+    const svg = body
+      .append('svg')
+      .attr('viewBox', [
+        margin.right - margin.left - width / 2,
+        margin.bottom - margin.top - height / 2,
+        width,
+        height,
+      ])
+      .attr('width', width)
+      .attr('height', height)
+      .attr('style', 'max-width: 100%; height: auto; height: intrinsic;')
+      .attr('font-family', 'sans-serif')
+      .attr('font-size', fontSize)
+      .attr('text-anchor', 'middle');
+
+    const cell = svg.selectAll('a').data(root.descendants()).join('a');
+
+    cell
+      .append('path')
+      // @ts-expect-error (idk)
+      .attr('d', arc)
+      .attr(
+        'fill',
+        // @ts-expect-error (`d3.HierarchyNode<SunburstLeaf>` doesn't have `index`)
+        color ? d => color(d.ancestors().reverse()[1]?.index) : fill
+      )
+      .attr('fill-opacity', fillOpacity);
+
+    cell
+      .filter((d: any) => ((d.y0 + d.y1) / 2) * (d.x1 - d.x0) > 10)
+      .append('text')
+      .attr('transform', (d: any) => {
+        if (!d.depth) return null;
+        const x = (((d.x0 + d.x1) / 2 + startAngle) * 180) / Math.PI;
+        const y = (d.y0 + d.y1) / 2;
+        return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
+      })
+      .attr('fill', 'white')
+      .attr('dy', '0.32em')
+      .text(d => label(d.data));
+
+    cell.append('title').text(title);
+
+    svg.node();
+
+    // Save output and clear body
+    writeFileSync(getOutputFilepath(output), dom.serialize());
+    svg.remove();
+  }
 }
 
 // ---
