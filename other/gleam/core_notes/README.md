@@ -22,4 +22,17 @@ gleam run
 
 ## Language
 
-...
+### Modules
+
+https://gleam.run/book/tour/modules.html
+
+### Packages (hex)
+
+- https://github.com/gleam-lang/awesome-gleam
+
+#### Docs
+
+- wisp
+  - https://hexdocs.pm/wisp/index.html
+- file
+  - https://hexdocs.pm/gleam_file/gleam/file/
