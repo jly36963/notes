@@ -2102,8 +2102,6 @@ function basicSunburstMe(dom: jsdom.JSDOM): void {
 
     cell.append('title').text(title);
 
-    svg.node();
-
     // Save output and clear body
     writeFileSync(getOutputFilepath(output), dom.serialize());
     svg.remove();
