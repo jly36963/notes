@@ -2,6 +2,7 @@
 
 ## Docs
 
+- [Guide](https://zig.guide/)
 - [Language Reference](https://ziglang.org/documentation/master/#Hello-World)
 - [Learn](https://ziglang.org/learn/)
 - [Std Library](https://ziglang.org/documentation/master/std/#A;std)
@@ -18,3 +19,9 @@
 
 - [Build](https://ziglang.org/documentation/master/#Build-Mode)
 - [Primitive Types](https://ziglang.org/documentation/master/#Primitive-Types)
+
+## Modules
+
+- `@import`
+- `table-helper`
+- zigmod
