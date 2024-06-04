@@ -1,0 +1,4 @@
+
+dev:
+	ghc ./src/main.hs -o ./target/main -odir ./target -hidir ./target
+	./target/main
