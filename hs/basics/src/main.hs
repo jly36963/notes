@@ -47,9 +47,7 @@ toLowerCase :: String -> String
 toLowerCase = map toUpper
 
 printSectionTitle :: String -> IO ()
-printSectionTitle str = do
-  let contents = toUpperCase ("\n" ++ str ++ "\n")
-  putStrLn contents
+printSectionTitle str = ("\n" ++ str ++ "\n") & toUpperCase & putStrLn
 
 clean :: String -> String
 clean str =
@@ -74,83 +72,123 @@ basicPrint = do
 basicOperators :: IO ()
 basicOperators = do
   let mathRes = 4 / 2 * 3 + 4 - 5
-  putStrLn $ "Math result: " ++ show mathRes
+  putStrLn ("Math result: " ++ show mathRes)
 
   let b1 = False
   let b2 = True
   let b3 = True
   let boolRes = b1 || (b2 && b3) `xor` not b2
-  putStrLn $ "Bool result: " ++ show boolRes
+  putStrLn ("Bool result: " ++ show boolRes)
 
 basicNumber :: IO ()
 basicNumber = do
   let absRes = abs (-5)
-  putStrLn $ "`abs (-5)`: " ++ show absRes
+  putStrLn ("`abs (-5)`: " ++ show absRes)
 
   let roundRes = round 2.75
-  putStrLn $ "`round 2.75`: " ++ show roundRes
+  putStrLn ("`round 2.75`: " ++ show roundRes)
   let ceilingRes = ceiling 2.75
-  putStrLn $ "`ceiling 2.75`: " ++ show ceilingRes
+  putStrLn ("`ceiling 2.75`: " ++ show ceilingRes)
   let floorRes = floor 2.75
-  putStrLn $ "`floor 2.75`: " ++ show floorRes
+  putStrLn ("`floor 2.75`: " ++ show floorRes)
 
   let sqrtRes = sqrt 5
-  putStrLn $ "`sqrt 5:`" ++ show sqrtRes
+  putStrLn ("`sqrt 5`: " ++ show sqrtRes)
 
   let fromIntegralRes = round2 (sqrt 5) 3
-  putStrLn $ "`round2 (sqrt 5) 3:`" ++ show fromIntegralRes
+  putStrLn ("`round2 (sqrt 5) 3: `" ++ show fromIntegralRes)
 
 basicString :: IO ()
 basicString = do
-  putStrLn "TODO"
+  let str = "The inner machinations of my mind are an enigma."
+  putStrLn ("length: " ++ (str & length & show))
+  -- TODO: head, tail, init, last
+  putStrLn ("take: " ++ (str & take 3 & show))
+  putStrLn ("reverse: " ++ (str & reverse & show))
+  putStrLn ("concat: " ++ (["Fi", "nl", "and!"] & concat & show))
+  putStrLn ("words: " ++ ("Where's the leak ma'am?" & words & show))
+  putStrLn ("unwords: " ++ (["W", "for", "Wumbo"] & unwords & show))
 
 basicList :: IO ()
 basicList = do
   -- Head/tail, init/last
   let l0 = ['a', 'b', 'c', 'd', 'e']
-  putStrLn $ "list of char: " ++ show l0
-  putStrLn $ "head: " ++ show (head l0)
-  putStrLn $ "tail: " ++ show (tail l0)
-  putStrLn $ "init: " ++ show (init l0)
-  putStrLn $ "last: " ++ show (last l0)
+  putStrLn ("list of char: " ++ show l0)
+  putStrLn ("head: " ++ (l0 & head & show))
+  putStrLn ("tail: " ++ (l0 & tail & show))
+  putStrLn ("init: " ++ (l0 & init & show))
+  putStrLn ("last: " ++ (l0 & last & show))
 
   -- List comprehension
   let l1 = [n ^ 2 | n <- [1 .. 5], even n]
-  putStrLn $ "list comprehension: " ++ show l1
+  putStrLn ("list comprehension: " ++ show l1)
 
   -- Map
   let l2 = map toUpper ['a' .. 'e']
-  putStrLn $ "list of char (map): " ++ show l2
+  putStrLn ("list of char (map): " ++ show l2)
   let l3 = map (\x -> 2 * x + 1) [1, 2, 3, 4, 5]
-  putStrLn $ "List of number (map): " ++ show l3
+  putStrLn ("List of number (map): " ++ show l3)
 
   -- Filter
   -- let l4 = filter (>3) [1, 2, 3, 4, 5]
   -- let l4 = filter even [1, 2, 3, 4, 5]
   let l4 = filter (\x -> x ^ 2 > 10) [1, 2, 3, 4, 5]
-  putStrLn $ "List of number (filter): " ++ show l4
+  putStrLn ("List of number (filter): " ++ show l4)
 
   -- Fold
   -- let l5 = foldl (*) 1 [1 .. 5]
   -- let l5 = product [1 .. 5]
   let l5 = foldl (\a c -> a + c * c) 0 [1 .. 5]
-  putStrLn $ "List of number (fold): " ++ show l5
+  putStrLn ("List of number (fold): " ++ show l5)
 
 basicIf :: IO ()
 basicIf = do
-  putStrLn "TODO"
+  let n = 7
+  let parity = if even n then "even" else "odd"
+  putStrLn (show n ++ " is " ++ parity)
+
+colorToFruit :: String -> String
+colorToFruit color = case color of
+  "red" -> "Strawberry"
+  "yellow" -> "Banana"
+  "blue" -> "Blueberry"
+  "green" -> "Pear"
+  "purple" -> "Plum"
+  "orange" -> "Orange"
+  _ -> "-"
 
 basicCase :: IO ()
 basicCase = do
-  putStrLn "TODO"
+  let color = "green"
+  let fruit = colorToFruit color
+  putStrLn ("Fruit is: " ++ fruit)
+
+numberType :: Int -> String
+numberType n
+  | n < 0 = "negative"
+  | n == 0 = "zero"
+  | otherwise = "positive"
 
 basicGuards :: IO ()
 basicGuards = do
-  putStrLn "TODO"
+  let n = 7
+  let res = numberType n
+  putStrLn (show n ++ " is " ++ res)
+
+--
+data Option val = None | Some val
+
+mapOption :: (val -> val) -> Option val -> Option val
+mapOption fn (Some val) = val & fn & Some
+mapOption fn None = None
 
 basicDataTypes :: IO ()
 basicDataTypes = do
-  putStrLn "TODO"
+  let opt = Some 7
+  let mappedOpt = mapOption (\x -> x * 2 + 1) opt
+  case mappedOpt of
+    Some val -> putStrLn ("The mapped option is " ++ show val)
+    None -> putStrLn "The mapped option is None"
 
 basicPatternMatching :: IO ()
 basicPatternMatching = do
