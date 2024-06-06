@@ -17,6 +17,8 @@ main = do
   basicNumber
   printSectionTitle "Basic String"
   basicString
+  printSectionTitle "Basic Functions"
+  basicFunctions
   printSectionTitle "Basic List"
   basicList
   printSectionTitle "Basic If"
@@ -27,8 +29,6 @@ main = do
   basicGuards
   printSectionTitle "Basic Data Types"
   basicDataTypes
-  printSectionTitle "Basic Functions"
-  basicFunctions
   printSectionTitle "Basic Pattern Matching"
   basicPatternMatching
   printSectionTitle "Basic Type Classes"
@@ -58,8 +58,8 @@ clean str =
     & T.toLower
     & T.unpack
 
-round2 :: Float -> Int -> Float
-round2 f n = fromIntegral (round (f * 10 ^ n)) / (10.0 ^^ n)
+roundTo :: Int -> Float -> Float
+roundTo n f = fromIntegral (round (f * 10 ^ n)) / (10.0 ^^ n)
 
 -- ---
 -- Examples
@@ -95,8 +95,8 @@ basicNumber = do
   let sqrtRes = sqrt 5
   putStrLn ("`sqrt 5`: " ++ show sqrtRes)
 
-  let fromIntegralRes = round2 (sqrt 5) 3
-  putStrLn ("`round2 (sqrt 5) 3: `" ++ show fromIntegralRes)
+  let fromIntegralRes = roundTo 3 (sqrt 5)
+  putStrLn ("`roundTo 3 (sqrt 5): `" ++ show fromIntegralRes)
 
 basicString :: IO ()
 basicString = do
@@ -108,6 +108,24 @@ basicString = do
   putStrLn ("concat: " ++ (["Fi", "nl", "and!"] & concat & show))
   putStrLn ("words: " ++ ("Where's the leak ma'am?" & words & show))
   putStrLn ("unwords: " ++ (["W", "for", "Wumbo"] & unwords & show))
+
+basicFunctions :: IO ()
+basicFunctions = do
+  -- Partial application
+  let round2 = roundTo 2
+  let roundRes = round2 3.14159
+  putStrLn ("pi rounded to 2 decimals is " ++ show roundRes)
+
+  -- Composition
+  let f1 = (1 +) . (2 *)
+  let f1Res = f1 2
+  putStrLn ("f1: " ++ show f1Res)
+  let f2 n = n & (* 2) & (+ 1)
+  let f2Res = f2 2
+  putStrLn ("f2: " ++ show f2Res)
+  let f3 n = (+ 1) $ (* 2) n
+  let f3Res = f3 2
+  putStrLn ("f3: " ++ show f3Res)
 
 basicList :: IO ()
 basicList = do
@@ -175,7 +193,6 @@ basicGuards = do
   let res = numberType n
   putStrLn (show n ++ " is " ++ res)
 
---
 data Option val = None | Some val
 
 mapOption :: (val -> val) -> Option val -> Option val
@@ -192,10 +209,6 @@ basicDataTypes = do
 
 basicPatternMatching :: IO ()
 basicPatternMatching = do
-  putStrLn "TODO"
-
-basicFunctions :: IO ()
-basicFunctions = do
   putStrLn "TODO"
 
 basicTypeClasses :: IO ()
