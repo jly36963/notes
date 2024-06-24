@@ -1,0 +1,10 @@
+# dev:
+#     elixir main.exs
+
+install:
+    mix deps.get
+build:
+    mix compile
+dev:
+    mix run main.exs
+
