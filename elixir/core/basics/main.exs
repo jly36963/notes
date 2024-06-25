@@ -1,6 +1,3 @@
-require Date
-require Duration
-require Float
 require Integer
 
 defmodule Basics do
@@ -71,6 +68,12 @@ defmodule Basics do
   # Utils
   # ---
 
+  @spec is_string(any()) :: bool()
+  def is_string(v) do
+    is_binary(v) and String.valid?(v)
+  end
+
+  @spec is_mapset(any()) :: bool()
   def is_mapset(v) do
     case v do
       %MapSet{} -> true
@@ -117,11 +120,6 @@ defmodule Basics do
   # ---
   # Examples
   # ---
-
-  @spec is_string(any()) :: bool()
-  def is_string(v) do
-    is_binary(v) and String.valid?(v)
-  end
 
   def basic_bool() do
     date1 = Date.utc_today()
