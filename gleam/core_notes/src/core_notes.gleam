@@ -38,26 +38,33 @@ pub fn main() {
 
   print_section_title("basic lists")
   basic_lists()
-  // print_section_title("basic tuples")
-  // basic_tuples()
 
-  // print_section_title("basic dicts")
-  // basic_dicts()
+  print_section_title("basic tuples")
+  basic_tuples()
 
-  // print_section_title("basic generics")
-  // basic_generics()
+  print_section_title("basic dicts")
+  basic_dicts()
 
-  // print_section_title("basic custom types")
-  // basic_custom_types()
+  print_section_title("basic records")
+  basic_records()
 
-  // print_section_title("basic enums")
-  // basic_enums()
+  print_section_title("basic use")
+  basic_use()
 
-  // print_section_title("basic use")
-  // basic_use()
+  print_section_title("basic spawn")
+  basic_spawn()
 
-  // print_section_title("basic spawn")
-  // basic_spawn()
+  print_section_title("basic path")
+  basic_path()
+
+  print_section_title("basic fs")
+  basic_fs()
+
+  print_section_title("basic system")
+  basic_system()
+
+  print_section_title("basic process")
+  basic_process()
 }
 
 // ---
@@ -79,6 +86,28 @@ fn basic_variables() -> Nil {
 }
 
 fn basic_bool() -> Nil {
+  let t = True
+  let f = False
+
+  // TODO: bool.guard + use
+  // TODO: bool.lazy_guard + use
+
+  let results = [
+    "t: " <> t |> string.inspect,
+    "f: " <> f |> string.inspect,
+    "bool.and(t, t): " <> bool.and(t, t) |> string.inspect,
+    "bool.compare(t, t): " <> bool.compare(t, t) |> string.inspect,
+    "bool.exclusive_nor(t, t): " <> bool.exclusive_nor(t, t) |> string.inspect,
+    "bool.exclusive_or(t, f): " <> bool.exclusive_or(t, f) |> string.inspect,
+    "bool.nand(t, f): " <> bool.nand(t, f) |> string.inspect,
+    "bool.negate(t): " <> bool.negate(t) |> string.inspect,
+    "bool.nor(f, f): " <> bool.nor(f, f) |> string.inspect,
+    "bool.or(f, t): " <> bool.or(f, t) |> string.inspect,
+    "bool.to_int(t): " <> bool.to_int(t) |> string.inspect,
+  ]
+
+  list.each(results, io.println)
+
   // == !=
   // > >= < <=
   // && ||
@@ -92,70 +121,65 @@ fn basic_bool() -> Nil {
 // fn stringify() -> String {}
 
 fn basic_floats() -> Nil {
-  let float1 = 3.14
-  let float2 = float.negate(float1)
+  let f1 = 3.14
+  let f2 = float.negate(f1)
 
   let results = [
-    "float1: " <> float1 |> string.inspect,
-    "float2: " <> float2 |> string.inspect,
-    "float.add(float1, 1.0): " <> float.add(float1, 1.0) |> string.inspect,
-    "float.compare(float1, 1.0): "
-      <> float.compare(float1, 1.0) |> string.inspect,
-    "float.absolute_value(float2): "
-      <> float.absolute_value(float2) |> string.inspect,
-    "float.ceiling(float1): " <> float.ceiling(float1) |> string.inspect,
-    "float.clamp(float1, 3.0, 4.0): "
-      <> float.clamp(float1, 3.0, 4.0) |> string.inspect,
-    "float.divide(float1, 2.0): " <> float.divide(float1, 2.0) |> string.inspect,
-    "float.floor(float1): " <> float.floor(float1) |> string.inspect,
-    "float.max(float1, 4.0): " <> float.max(float1, 4.0) |> string.inspect,
-    "float.min(float1, 2.0): " <> float.min(float1, 2.0) |> string.inspect,
-    "float.multiply(float1, 2.0): "
-      <> float.multiply(float1, 2.0) |> string.inspect,
-    "float.negate(float1): " <> float.negate(float1) |> string.inspect,
+    "f1: " <> f1 |> string.inspect,
+    "f2: " <> f2 |> string.inspect,
+    "float.add(f1, 1.0): " <> float.add(f1, 1.0) |> string.inspect,
+    "float.compare(f1, 1.0): " <> float.compare(f1, 1.0) |> string.inspect,
+    "float.absolute_value(f2): " <> float.absolute_value(f2) |> string.inspect,
+    "float.ceiling(f1): " <> float.ceiling(f1) |> string.inspect,
+    "float.clamp(f1, 3.0, 4.0): " <> float.clamp(f1, 3.0, 4.0) |> string.inspect,
+    "float.divide(f1, 2.0): " <> float.divide(f1, 2.0) |> string.inspect,
+    "float.floor(f1): " <> float.floor(f1) |> string.inspect,
+    "float.max(f1, 4.0): " <> float.max(f1, 4.0) |> string.inspect,
+    "float.min(f1, 2.0): " <> float.min(f1, 2.0) |> string.inspect,
+    "float.multiply(f1, 2.0): " <> float.multiply(f1, 2.0) |> string.inspect,
+    "float.negate(f1): " <> float.negate(f1) |> string.inspect,
     "float.parse(\"3.14\"): " <> float.parse("3.14") |> string.inspect,
-    "float.power(float1, 2.0) : " <> float.power(float1, 2.0) |> string.inspect,
+    "float.power(f1, 2.0) : " <> float.power(f1, 2.0) |> string.inspect,
     "float.product([1.0, 2.0, 3.0]): "
       <> float.product([1.0, 2.0, 3.0]) |> string.inspect,
-    "float.round(float1): " <> float.round(float1) |> string.inspect,
-    "float.square_root(float1): " <> float.square_root(float1) |> string.inspect,
-    "float.subtract(float1, 1.0): "
-      <> float.subtract(float1, 1.0) |> string.inspect,
+    "float.round(f1): " <> float.round(f1) |> string.inspect,
+    "float.square_root(f1): " <> float.square_root(f1) |> string.inspect,
+    "float.subtract(f1, 1.0): " <> float.subtract(f1, 1.0) |> string.inspect,
     "float.sum([1.0, 2.0, 3.0]): "
       <> float.sum([1.0, 2.0, 3.0]) |> string.inspect,
     "float.random(): " <> float.random() |> string.inspect,
-    "float.round(float1): " <> float.round(float1) |> string.inspect,
-    "float.truncate(float1): " <> float.truncate(float1) |> string.inspect,
+    "float.round(f1): " <> float.round(f1) |> string.inspect,
+    "float.truncate(f1): " <> float.truncate(f1) |> string.inspect,
   ]
 
   list.each(results, io.println)
 }
 
 fn basic_ints() -> Nil {
-  let int1 = 2
-  let int2 = 7
+  let i1 = 2
+  let i2 = 7
 
   let results = [
-    "int1: " <> int1 |> string.inspect,
-    "int2: " <> int2 |> string.inspect,
-    "int.add(int1, 1): " <> int.add(int1, 1) |> string.inspect,
-    "int.compare(int1, 1): " <> int.compare(int1, 1) |> string.inspect,
-    "int.absolute_value(int2): " <> int.absolute_value(int2) |> string.inspect,
-    "int.clamp(int1, 3, 4): " <> int.clamp(int1, 3, 4) |> string.inspect,
-    "int.divide(int1, 2): " <> int.divide(int1, 2) |> string.inspect,
-    "int.is_even(int1): " <> int.is_even(int1) |> string.inspect,
-    "int.is_odd(int1): " <> int.is_odd(int1) |> string.inspect,
-    "int.divide(int1, 2): " <> int.divide(int1, 2) |> string.inspect,
-    "int.max(int1, 4): " <> int.max(int1, 4) |> string.inspect,
-    "int.min(int1, 2): " <> int.min(int1, 2) |> string.inspect,
-    "int.modulo(int1, 2): " <> int.modulo(int1, 2) |> string.inspect,
-    "int.multiply(int1, 2): " <> int.multiply(int1, 2) |> string.inspect,
-    "int.negate(int1): " <> int.negate(int1) |> string.inspect,
+    "i1: " <> i1 |> string.inspect,
+    "i2: " <> i2 |> string.inspect,
+    "int.add(i1, 1): " <> int.add(i1, 1) |> string.inspect,
+    "int.compare(i1, 1): " <> int.compare(i1, 1) |> string.inspect,
+    "int.absolute_value(i2): " <> int.absolute_value(i2) |> string.inspect,
+    "int.clamp(i1, 3, 4): " <> int.clamp(i1, 3, 4) |> string.inspect,
+    "int.divide(i1, 2): " <> int.divide(i1, 2) |> string.inspect,
+    "int.is_even(i1): " <> int.is_even(i1) |> string.inspect,
+    "int.is_odd(i1): " <> int.is_odd(i1) |> string.inspect,
+    "int.divide(i1, 2): " <> int.divide(i1, 2) |> string.inspect,
+    "int.max(i1, 4): " <> int.max(i1, 4) |> string.inspect,
+    "int.min(i1, 2): " <> int.min(i1, 2) |> string.inspect,
+    "int.modulo(i1, 2): " <> int.modulo(i1, 2) |> string.inspect,
+    "int.multiply(i1, 2): " <> int.multiply(i1, 2) |> string.inspect,
+    "int.negate(i1): " <> int.negate(i1) |> string.inspect,
     "int.parse(\"3.14\"): " <> int.parse("3.14") |> string.inspect,
-    "int.power(int1, 2.0) : " <> int.power(int1, 2.0) |> string.inspect,
+    "int.power(i1, 2.0) : " <> int.power(i1, 2.0) |> string.inspect,
     "int.product([1, 2, 3]): " <> int.product([1, 2, 3]) |> string.inspect,
-    "int.square_root(int1): " <> int.square_root(int1) |> string.inspect,
-    "int.subtract(int1, 1): " <> int.subtract(int1, 1) |> string.inspect,
+    "int.square_root(i1): " <> int.square_root(i1) |> string.inspect,
+    "int.subtract(i1, 1): " <> int.subtract(i1, 1) |> string.inspect,
     "int.sum([1, 2, 3]): " <> int.sum([1, 2, 3]) |> string.inspect,
   ]
 
@@ -249,94 +273,91 @@ fn basic_cases() -> Nil {
 }
 
 fn basic_results() -> Nil {
-  let result1 = Ok("Yup")
-  let result2 = Error("Nope")
+  let r1 = Ok("Yup")
+  let r2 = Error("Nope")
 
   // Pattern matching with case
   io.println("Pattern matching a result:")
-  case result1 {
+  case r1 {
     Ok(v) -> io.println("Success: message: " <> v)
     Error(e) -> io.println("Error message:" <> e)
   }
 
   let results = [
-    "result1: " <> result1 |> string.inspect,
-    "result2: " <> result2 |> string.inspect,
+    "r1: " <> r1 |> string.inspect,
+    "r2: " <> r2 |> string.inspect,
     "result.all([Ok(\"Yes\"), Ok(\"Sim\")]): "
       <> result.all([Ok("Yes"), Ok("Sim")]) |> string.inspect,
-    "result.flatten(Ok(Ok(result1))): "
+    "result.flatten(Ok(Ok(r1))): "
       <> result.flatten(Ok(Ok("Yes"))) |> string.inspect,
-    "result.is_error(result2): " <> result.is_error(result2) |> string.inspect,
-    "result.is_ok(Ok(result1)): " <> result.is_ok(Ok(result1)) |> string.inspect,
-    "result.lazy_or(result2, fn () { Ok(\"yup!!\") }): "
-      <> result.lazy_or(result2, fn() { Ok("yup!!") }) |> string.inspect,
-    "result.lazy_unwrap(result2, fn () { \"yup!!\" }): "
-      <> result.lazy_unwrap(result2, fn() { "yup!!" }),
-    "result.map(result1, string.uppercase): "
-      <> result.map(result1, string.uppercase) |> string.inspect,
-    "result.map_error(result2, string.uppercase): "
-      <> result.map_error(result2, string.uppercase) |> string.inspect,
-    "result.or(result2, result1): "
-      <> result.or(result2, result1) |> string.inspect,
-    "result.replace(result1, \"Yes\"): "
-      <> result.replace(result1, "Yes") |> string.inspect,
-    "result.replace_error(result2, \"No\"): "
-      <> result.replace_error(result2, "No") |> string.inspect,
-    "result.try(result1, fn(v) { Ok(string.uppercase(v)) }): "
-      <> result.try(result1, fn(v) { Ok(string.uppercase(v)) })
+    "result.is_error(r2): " <> result.is_error(r2) |> string.inspect,
+    "result.is_ok(Ok(r1)): " <> result.is_ok(Ok(r1)) |> string.inspect,
+    "result.lazy_or(r2, fn () { Ok(\"yup!!\") }): "
+      <> result.lazy_or(r2, fn() { Ok("yup!!") }) |> string.inspect,
+    "result.lazy_unwrap(r2, fn () { \"yup!!\" }): "
+      <> result.lazy_unwrap(r2, fn() { "yup!!" }),
+    "result.map(r1, string.uppercase): "
+      <> result.map(r1, string.uppercase) |> string.inspect,
+    "result.map_error(r2, string.uppercase): "
+      <> result.map_error(r2, string.uppercase) |> string.inspect,
+    "result.or(r2, r1): " <> result.or(r2, r1) |> string.inspect,
+    "result.replace(r1, \"Yes\"): "
+      <> result.replace(r1, "Yes") |> string.inspect,
+    "result.replace_error(r2, \"No\"): "
+      <> result.replace_error(r2, "No") |> string.inspect,
+    "result.try(r1, fn(v) { Ok(string.uppercase(v)) }): "
+      <> result.try(r1, fn(v) { Ok(string.uppercase(v)) })
     |> string.inspect,
-    "result.try_recover(result2, fn(e) { Error(string.uppercase(e)) }): "
-      <> result.try_recover(result2, fn(e) { Error(string.uppercase(e)) })
+    "result.try_recover(r2, fn(e) { Error(string.uppercase(e)) }): "
+      <> result.try_recover(r2, fn(e) { Error(string.uppercase(e)) })
     |> string.inspect,
-    "result.unwrap(result2, \"Yes\"): "
-      <> result.unwrap(result2, "Yes") |> string.inspect,
+    "result.unwrap(r2, \"Yes\"): " <> result.unwrap(r2, "Yes") |> string.inspect,
   ]
 
   list.each(results, io.println)
 }
 
 fn basic_options() -> Nil {
-  let option1: Option(String) = Some("Yup")
-  let option2: Option(String) = option.None
+  let o1: Option(String) = Some("Yup")
+  let o2: Option(String) = option.None
 
   // Pattern matching with case
   io.println("Pattern matching an option:")
-  case option1 {
+  case o1 {
     Some(v) -> io.println("Message provided: " <> v)
     None -> "No message provided" |> io.println
   }
 
   let results = [
-    "option1: " <> option1 |> string.inspect,
-    "option2: " <> option2 |> string.inspect,
-    "option.all([Some(\"Yes\"), Some(\"Sim\")]): "
-      <> option.all([Some("Yes"), Some("Sim")]) |> string.inspect,
-    "option.flatten(Some(Some(option1))): "
-      <> option.flatten(Some(Some("Yes"))) |> string.inspect,
-    "option.is_none(option2): " <> option.is_none(option2) |> string.inspect,
-    "option.is_some(Some(option1)): "
-      <> option.is_some(Some(option1)) |> string.inspect,
-    "option.lazy_or(option2, fn () { Some(\"yup!!\") }): "
-      <> option.lazy_or(option2, fn() { Some("yup!!") }) |> string.inspect,
-    "option.lazy_unwrap(option2, fn () { \"yup!!\" }): "
-      <> option.lazy_unwrap(option2, fn() { "yup!!" }),
-    "option.map(option1, string.uppercase): "
-      <> option.map(option1, string.uppercase) |> string.inspect,
-    "option.or(option2, option1): "
-      <> option.or(option2, option1) |> string.inspect,
-    "option.then(option1, fn(v) { Some(string.uppercase(v)) }): "
-      <> option.then(option1, fn(v) { Some(string.uppercase(v)) })
+    "o1: " <> o1 |> string.inspect,
+    "o2: " <> o2 |> string.inspect,
+    "option.all([o1, o1]): " <> option.all([o1, o1]) |> string.inspect,
+    "option.flatten(Some(o1)): " <> option.flatten(Some(o1)) |> string.inspect,
+    "option.from_result(Ok(\"Yes\")): "
+      <> option.from_result(Ok("Yes")) |> string.inspect,
+    "option.is_none(o2): " <> option.is_none(o2) |> string.inspect,
+    "option.is_some(o1): " <> option.is_some(o1) |> string.inspect,
+    "option.lazy_or(o2, fn () { Some(\"yup!!\") }): "
+      <> option.lazy_or(o2, fn() { Some("yup!!") }) |> string.inspect,
+    "option.lazy_unwrap(o2, fn () { \"yup!!\" }): "
+      <> option.lazy_unwrap(o2, fn() { "yup!!" }),
+    "option.map(o1, string.uppercase): "
+      <> option.map(o1, string.uppercase) |> string.inspect,
+    "option.or(o2, o1): " <> option.or(o2, o1) |> string.inspect,
+    "option.then(o1, fn(v) { Some(string.uppercase(v)) }): "
+      <> option.then(o1, fn(v) { Some(string.uppercase(v)) })
     |> string.inspect,
-    "option.unwrap(option2, \"Yes\"): "
-      <> option.unwrap(option2, "Yes") |> string.inspect,
+    "option.unwrap(o2, \"Yes\"): " <> option.unwrap(o2, "Yes") |> string.inspect,
+    "option.values([o1, o2, o1]): "
+      <> option.values([o1, o2, o1]) |> string.inspect,
   ]
 
   list.each(results, io.println)
 }
 
 fn basic_lists() -> Nil {
-  let list0 = [2, 3, 4]
-  let list1 = list.append([1, ..list0], [5])
+  let l0 = [2, 3, 4]
+  let l1 = list.append([1, ..l0], [5])
 
   let keep_even_and_double = fn(n: Int) -> Result(Int, Nil) {
     case int.is_even(n) {
@@ -346,67 +367,65 @@ fn basic_lists() -> Nil {
   }
 
   let results = [
-    "list1: " <> list1 |> string.inspect,
-    "list.map(list1, fn(n) { n * 2 }): "
-      <> list.map(list1, fn(n) { n * 2 }) |> string.inspect,
-    "list.all(list1, fn(n) { n > 0 }): "
-      <> list.all(list1, fn(n) { n > 0 }) |> string.inspect,
-    "list.any(list1, int.is_even): "
-      <> list.any(list1, int.is_even) |> string.inspect,
-    "list.append(list1, [6]): " <> list.append(list1, [6]) |> string.inspect,
-    "list.at(list1, 2): " <> list.at(list1, 2) |> string.inspect,
+    "l1: " <> l1 |> string.inspect,
+    "list.map(l1, fn(n) { n * 2 }): "
+      <> list.map(l1, fn(n) { n * 2 }) |> string.inspect,
+    "list.all(l1, fn(n) { n > 0 }): "
+      <> list.all(l1, fn(n) { n > 0 }) |> string.inspect,
+    "list.any(l1, int.is_even): " <> list.any(l1, int.is_even) |> string.inspect,
+    "list.append(l1, [6]): " <> list.append(l1, [6]) |> string.inspect,
+    "list.at(l1, 2): " <> list.at(l1, 2) |> string.inspect,
     "list.combination_pairs([1,2,3]): "
       <> list.combination_pairs([1, 2, 3]) |> string.inspect,
     "list.combinations([1,2,3,4], 3): "
       <> list.combinations([1, 2, 3, 4], 3) |> string.inspect,
-    "list.concat([list1, [6]]): " <> list.concat([list1, [6]]) |> string.inspect,
-    "list.contains(list1, 2): " <> list.contains(list1, 2) |> string.inspect,
+    "list.concat([l1, [6]]): " <> list.concat([l1, [6]]) |> string.inspect,
+    "list.contains(l1, 2): " <> list.contains(l1, 2) |> string.inspect,
     "list.each([], fn (v) { v |> string.inspect |> io.println }): "
       <> list.each([], fn(v) { v |> string.inspect |> io.println })
     |> string.inspect,
-    "list.filter(list1, int.is_even): "
-      <> list.filter(list1, int.is_even) |> string.inspect,
-    "list.find(list1, fn(n) { n > 3 }): "
-      <> list.find(list1, fn(n) { n > 3 }) |> string.inspect,
-    "list.filter_map(list1, keep_even_and_double): "
-      <> list.filter_map(list1, keep_even_and_double) |> string.inspect,
-    "list.first(list1): " <> list.first(list1) |> string.inspect,
-    "list.flat_map(list1, fn(n) { [n - 1, n + 1] }): "
-      <> list.flat_map(list1, fn(n) { [n - 1, n + 1] }) |> string.inspect,
+    "list.filter(l1, int.is_even): "
+      <> list.filter(l1, int.is_even) |> string.inspect,
+    "list.find(l1, fn(n) { n > 3 }): "
+      <> list.find(l1, fn(n) { n > 3 }) |> string.inspect,
+    "list.filter_map(l1, keep_even_and_double): "
+      <> list.filter_map(l1, keep_even_and_double) |> string.inspect,
+    "list.first(l1): " <> list.first(l1) |> string.inspect,
+    "list.flat_map(l1, fn(n) { [n - 1, n + 1] }): "
+      <> list.flat_map(l1, fn(n) { [n - 1, n + 1] }) |> string.inspect,
     "list.flatten([[1, 2], [3, 4]]): "
       <> list.flatten([[1, 2], [3, 4]]) |> string.inspect,
-    "list.fold(list1, 1, fn(acc, curr) { acc * curr }): "
-      <> list.fold(list1, 1, fn(acc, curr) { acc * curr }) |> string.inspect,
+    "list.fold(l1, 1, fn(acc, curr) { acc * curr }): "
+      <> list.fold(l1, 1, fn(acc, curr) { acc * curr }) |> string.inspect,
     // list.group
-    "list.is_empty(list1): " <> list.is_empty(list1) |> string.inspect,
-    "list.last(list1): " <> list.last(list1) |> string.inspect,
-    "list.length(list1): " <> list.length(list1) |> string.inspect,
-    "list.map(list1, fn(n) { n * 2 }): "
-      <> list.map(list1, fn(n) { n * 2 }) |> string.inspect,
-    "list.partition(list1, int.is_even): "
-      <> list.partition(list1, int.is_even) |> string.inspect,
+    "list.is_empty(l1): " <> list.is_empty(l1) |> string.inspect,
+    "list.last(l1): " <> list.last(l1) |> string.inspect,
+    "list.length(l1): " <> list.length(l1) |> string.inspect,
+    "list.map(l1, fn(n) { n * 2 }): "
+      <> list.map(l1, fn(n) { n * 2 }) |> string.inspect,
+    "list.partition(l1, int.is_even): "
+      <> list.partition(l1, int.is_even) |> string.inspect,
     "list.permutations([1, 2, 3]): "
       <> list.permutations([1, 2, 3]) |> string.inspect,
-    "list.prepend(list1, 0): " <> list.prepend(list1, 0) |> string.inspect,
+    "list.prepend(l1, 0): " <> list.prepend(l1, 0) |> string.inspect,
     "list.range(0, 5): " <> list.range(0, 5) |> string.inspect,
-    "list.reduce(list1, fn(acc, curr) { acc * curr }): "
-      <> list.reduce(list1, fn(acc, curr) { acc * curr }) |> string.inspect,
+    "list.reduce(l1, fn(acc, curr) { acc * curr }): "
+      <> list.reduce(l1, fn(acc, curr) { acc * curr }) |> string.inspect,
     "list.repeat(0, 5): " <> list.repeat(0, 5) |> string.inspect,
-    "list.rest(list1): " <> list.rest(list1) |> string.inspect,
-    "list.reverse(list1): " <> list.reverse(list1) |> string.inspect,
-    "list.shuffle(list1): " <> list.shuffle(list1) |> string.inspect,
-    "list.sized_chunk(list1, 2): "
-      <> list.sized_chunk(list1, 2) |> string.inspect,
-    "list.sort(list1, int.compare): "
-      <> list.sort(list1, int.compare) |> string.inspect,
-    "list.take(list1, 3): " <> list.take(list1, 3) |> string.inspect,
+    "list.rest(l1): " <> list.rest(l1) |> string.inspect,
+    "list.reverse(l1): " <> list.reverse(l1) |> string.inspect,
+    "list.shuffle(l1): " <> list.shuffle(l1) |> string.inspect,
+    "list.sized_chunk(l1, 2): " <> list.sized_chunk(l1, 2) |> string.inspect,
+    "list.sort(l1, int.compare): "
+      <> list.sort(l1, int.compare) |> string.inspect,
+    "list.take(l1, 3): " <> list.take(l1, 3) |> string.inspect,
     "list.transpose([[1, 2], [3, 4], [5, 6]]): "
       <> list.transpose([[1, 2], [3, 4], [5, 6]]) |> string.inspect,
-    "list.try_map(list1, fn(n) { Ok(n * 2) }): "
-      <> list.try_map(list1, fn(n) { Ok(n * 2) }) |> string.inspect,
-    "list.unique(list1): " <> list.unique(list1) |> string.inspect,
+    "list.try_map(l1, fn(n) { Ok(n * 2) }): "
+      <> list.try_map(l1, fn(n) { Ok(n * 2) }) |> string.inspect,
+    "list.unique(l1): " <> list.unique(l1) |> string.inspect,
     // list.window
-    "list.zip(list1, list1): " <> list.zip(list1, list1) |> string.inspect,
+    "list.zip(l1, l1): " <> list.zip(l1, l1) |> string.inspect,
     // "list.wrap(1): " <> list.wrap(1) |> string.inspect,
   ]
 
@@ -414,102 +433,72 @@ fn basic_lists() -> Nil {
 }
 
 fn basic_tuples() -> Nil {
-  // https://gleam.run/book/tour/tuples.html
-  io.println("...")
+  let t1 = #(1, 2, 3)
+  let #(a, b, c) = t1
+
+  let results = [
+    "t1: " <> t1 |> string.inspect,
+    "t1.0: " <> t1.0 |> string.inspect,
+    "Destructuring like `let #(a, b, c) = t1`",
+    "a: " <> a |> string.inspect,
+    "b: " <> b |> string.inspect,
+    "c: " <> c |> string.inspect,
+  ]
+
+  list.each(results, io.println)
 }
 
 fn basic_dicts() -> Nil {
-  let dict1 = dict.from_list([#("a", 1), #("b", 2), #("c", 3)])
-  dict.insert(dict1, "d", 4)
-  dict.delete(dict1, "d")
+  let d1 = dict.from_list([#("a", 1), #("b", 2), #("c", 3)])
+  let d2 = dict.from_list([#("d", 4), #("e", 5)])
 
-  // delete
-  // ...
+  let results = [
+    "d1: " <> d1 |> string.inspect,
+    "dict.delete(d1, \"c\"): " <> dict.delete(d1, "c") |> string.inspect,
+    "dict.drop(d1, [\"c\", \"d\"]): "
+      <> dict.drop(d1, ["c", "d"]) |> string.inspect,
+    // dict.each
+    "dict.filter(d1, fn(_k, v) { v > 2 }): "
+      <> dict.filter(d1, fn(_k, v) { v > 2 }) |> string.inspect,
+    "dict.get(d1, \"a\"): " <> dict.get(d1, "a") |> string.inspect,
+    "dict.has_key(d1, \"a\"): " <> dict.has_key(d1, "a") |> string.inspect,
+    "dict.insert(d1, \"d\", 4): " <> dict.insert(d1, "d", 4) |> string.inspect,
+    "dict.keys(d1): " <> dict.keys(d1) |> string.inspect,
+    "dict.map_values(d1, fn(_k, v) { v * 2 }): "
+      <> dict.map_values(d1, fn(_k, v) { v * 2 }) |> string.inspect,
+    "dict.merge(d1, d2): " <> dict.merge(d1, d2) |> string.inspect,
+    "dict.size(d1): " <> dict.size(d1) |> string.inspect,
+    "dict.take(d1, [\"a\", \"b\"]): "
+      <> dict.take(d1, ["a", "b"]) |> string.inspect,
+    "dict.to_list(d1): " <> dict.to_list(d1) |> string.inspect,
+    // dict.update
+    "dict.values(d1): " <> dict.values(d1) |> string.inspect,
+  ]
 
-  // drop
-  // ...
-
-  io.println("filter")
-  dict1
-  |> dict.filter(fn(_k, v) { v > 2 })
-  |> string.inspect
-  |> io.println
-
-  // fold
-  // ...
-
-  // from_list
-  // ...
-
-  io.println("get")
-  dict1
-  |> dict.get("a")
-  |> result.unwrap(0)
-  |> int.to_string
-  |> io.println
-
-  io.println("has_key")
-  dict1
-  |> dict.has_key("a")
-  |> bool.to_string
-  |> io.println
-
-  // insert
-  // ...
-
-  io.println("keys")
-  dict1
-  |> dict.keys
-  |> string.inspect
-  |> io.println
-
-  io.println("map_values")
-  dict1
-  |> dict.map_values(fn(_k, v) { v * 2 })
-  |> string.inspect
-  |> io.println
-
-  io.println("merge")
-  dict1
-  |> dict.merge(dict.from_list([#("d", 4), #("e", 5)]))
-  |> string.inspect
-  |> io.println
-
-  // new
-  // ...
-
-  io.println("size")
-  dict1
-  |> dict.size
-  |> int.to_string
-  |> io.println
-
-  // take
-  // ...
-
-  // to_list
-  // ...
-
-  // update
-  // ...
-
-  io.println("values")
-  dict1
-  |> dict.values
-  |> string.inspect
-  |> io.println
+  list.each(results, io.println)
 }
 
-fn basic_generics() -> Nil {
-  io.println("...")
+pub type SchoolPerson {
+  Teacher(name: String, subject: String)
+  Student(name: String)
 }
 
-fn basic_custom_types() -> Nil {
-  io.println("...")
+pub fn greet(sp: SchoolPerson) -> Nil {
+  // Without pattern matching, only common fields can be accessed
+  let greeting = "Hello! My name is " <> sp.name <> "."
+
+  let continuation = case sp {
+    Teacher(subject: s, name: _) -> " I teach " <> s <> "."
+    Student(name: _) -> ""
+  }
+  io.println(greeting <> continuation)
 }
 
-fn basic_enums() -> Nil {
-  io.println("...")
+fn basic_records() -> Nil {
+  let student = Student(name: "Kakashi")
+  greet(student)
+  let student = Teacher(name: "Kaka Sensei", subject: "genin operations")
+  greet(student)
 }
 
 fn basic_use() -> Nil {
@@ -517,5 +506,21 @@ fn basic_use() -> Nil {
 }
 
 fn basic_spawn() -> Nil {
+  io.println("...")
+}
+
+fn basic_path() -> Nil {
+  io.println("...")
+}
+
+fn basic_fs() -> Nil {
+  io.println("...")
+}
+
+fn basic_system() -> Nil {
+  io.println("...")
+}
+
+fn basic_process() -> Nil {
   io.println("...")
 }
