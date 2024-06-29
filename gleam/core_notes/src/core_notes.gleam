@@ -35,9 +35,9 @@ pub fn main() {
 
   print_section_title("basic options")
   basic_options()
-  // print_section_title("basic lists")
-  // basic_lists()
 
+  print_section_title("basic lists")
+  basic_lists()
   // print_section_title("basic tuples")
   // basic_tuples()
 
@@ -336,250 +336,81 @@ fn basic_options() -> Nil {
 
 fn basic_lists() -> Nil {
   let list0 = [2, 3, 4]
-  let list1 = list.append([1, ..list0], [5, 6])
+  let list1 = list.append([1, ..list0], [5])
 
-  io.println("list1")
-  // Could just use string.inspect
-  list1
-  |> list.map(fn(n) { int.to_string(n) })
-  |> string.join(", ")
-  |> io.println()
-
-  io.println("all")
-  list1
-  |> list.all(fn(n) { n > 0 })
-  |> bool.to_string
-  |> io.println
-
-  io.println("any")
-  list1
-  |> list.any(fn(n) { n > 3 })
-  |> bool.to_string
-  |> io.println
-
-  // append
-  // ...
-
-  io.println("at")
-  list1
-  |> list.at(2)
-  |> result.unwrap(0)
-  |> int.to_string
-  |> io.println
-
-  // chunk
-  // ...
-
-  io.println("combinations")
-  list1
-  |> list.combinations(2)
-  |> string.inspect()
-  |> io.println()
-
-  io.println("concat")
-  list1
-  |> fn(l) { list.concat([l, [7, 8]]) }
-  |> string.inspect()
-  |> io.println()
-
-  io.println("contains")
-  list1
-  |> list.contains(3)
-  |> bool.to_string
-  |> io.println
-
-  // drop_while
-  // ...
-
-  io.println("each")
-  // Also "try_each"
-  list.each(list1, fn(n) {
-    n
-    |> int.to_string()
-    |> io.println()
-  })
-
-  io.println("filter")
-  // Also "filter_map"
-  list1
-  |> list.filter(fn(n) { n > 3 })
-  |> string.inspect()
-  |> io.println()
-
-  io.println("find")
-  list1
-  |> list.find(fn(n) { n > 3 })
-  |> fn(l) {
-    case l {
-      Ok(n) ->
-        n
-        |> int.to_string
-      Error(Nil) -> "None"
-    }
-    |> io.println
-  }
-
-  io.println("find_map")
-  [[], [1, 2, 3], [4]]
-  |> list.find_map(list.last)
-  |> result.map(int.to_string)
-  |> result.unwrap("None")
-  |> io.println
-
-  io.println("first")
-  list1
-  |> list.first
-  |> fn(r) {
-    case r {
-      Ok(n) -> io.println(int.to_string(n))
-      Error(Nil) -> Nil
+  let keep_even_and_double = fn(n: Int) -> Result(Int, Nil) {
+    case int.is_even(n) {
+      True -> Ok(n * 2)
+      False -> Error(Nil)
     }
   }
 
-  io.println("flat_map")
-  list1
-  |> list.flat_map(fn(n) { [n - 1, n, n + 1] })
-  |> string.inspect()
-  |> io.println()
+  let results = [
+    "list1: " <> list1 |> string.inspect,
+    "list.map(list1, fn(n) { n * 2 }): "
+      <> list.map(list1, fn(n) { n * 2 }) |> string.inspect,
+    "list.all(list1, fn(n) { n > 0 }): "
+      <> list.all(list1, fn(n) { n > 0 }) |> string.inspect,
+    "list.any(list1, int.is_even): "
+      <> list.any(list1, int.is_even) |> string.inspect,
+    "list.append(list1, [6]): " <> list.append(list1, [6]) |> string.inspect,
+    "list.at(list1, 2): " <> list.at(list1, 2) |> string.inspect,
+    "list.combination_pairs([1,2,3]): "
+      <> list.combination_pairs([1, 2, 3]) |> string.inspect,
+    "list.combinations([1,2,3,4], 3): "
+      <> list.combinations([1, 2, 3, 4], 3) |> string.inspect,
+    "list.concat([list1, [6]]): " <> list.concat([list1, [6]]) |> string.inspect,
+    "list.contains(list1, 2): " <> list.contains(list1, 2) |> string.inspect,
+    "list.each([], fn (v) { v |> string.inspect |> io.println }): "
+      <> list.each([], fn(v) { v |> string.inspect |> io.println })
+    |> string.inspect,
+    "list.filter(list1, int.is_even): "
+      <> list.filter(list1, int.is_even) |> string.inspect,
+    "list.find(list1, fn(n) { n > 3 }): "
+      <> list.find(list1, fn(n) { n > 3 }) |> string.inspect,
+    "list.filter_map(list1, keep_even_and_double): "
+      <> list.filter_map(list1, keep_even_and_double) |> string.inspect,
+    "list.first(list1): " <> list.first(list1) |> string.inspect,
+    "list.flat_map(list1, fn(n) { [n - 1, n + 1] }): "
+      <> list.flat_map(list1, fn(n) { [n - 1, n + 1] }) |> string.inspect,
+    "list.flatten([[1, 2], [3, 4]]): "
+      <> list.flatten([[1, 2], [3, 4]]) |> string.inspect,
+    "list.fold(list1, 1, fn(acc, curr) { acc * curr }): "
+      <> list.fold(list1, 1, fn(acc, curr) { acc * curr }) |> string.inspect,
+    // list.group
+    "list.is_empty(list1): " <> list.is_empty(list1) |> string.inspect,
+    "list.last(list1): " <> list.last(list1) |> string.inspect,
+    "list.length(list1): " <> list.length(list1) |> string.inspect,
+    "list.map(list1, fn(n) { n * 2 }): "
+      <> list.map(list1, fn(n) { n * 2 }) |> string.inspect,
+    "list.partition(list1, int.is_even): "
+      <> list.partition(list1, int.is_even) |> string.inspect,
+    "list.permutations([1, 2, 3]): "
+      <> list.permutations([1, 2, 3]) |> string.inspect,
+    "list.prepend(list1, 0): " <> list.prepend(list1, 0) |> string.inspect,
+    "list.range(0, 5): " <> list.range(0, 5) |> string.inspect,
+    "list.reduce(list1, fn(acc, curr) { acc * curr }): "
+      <> list.reduce(list1, fn(acc, curr) { acc * curr }) |> string.inspect,
+    "list.repeat(0, 5): " <> list.repeat(0, 5) |> string.inspect,
+    "list.rest(list1): " <> list.rest(list1) |> string.inspect,
+    "list.reverse(list1): " <> list.reverse(list1) |> string.inspect,
+    "list.shuffle(list1): " <> list.shuffle(list1) |> string.inspect,
+    "list.sized_chunk(list1, 2): "
+      <> list.sized_chunk(list1, 2) |> string.inspect,
+    "list.sort(list1, int.compare): "
+      <> list.sort(list1, int.compare) |> string.inspect,
+    "list.take(list1, 3): " <> list.take(list1, 3) |> string.inspect,
+    "list.transpose([[1, 2], [3, 4], [5, 6]]): "
+      <> list.transpose([[1, 2], [3, 4], [5, 6]]) |> string.inspect,
+    "list.try_map(list1, fn(n) { Ok(n * 2) }): "
+      <> list.try_map(list1, fn(n) { Ok(n * 2) }) |> string.inspect,
+    "list.unique(list1): " <> list.unique(list1) |> string.inspect,
+    // list.window
+    "list.zip(list1, list1): " <> list.zip(list1, list1) |> string.inspect,
+    // "list.wrap(1): " <> list.wrap(1) |> string.inspect,
+  ]
 
-  // fold, try_fold, fold_right, fold_until
-  // ...
-
-  // group
-  // ...
-
-  // index_fold, index_map,
-  // ...
-
-  // interleave, intersperse
-  // ...
-
-  io.println("is_empty")
-  list1
-  |> list.is_empty
-  |> bool.to_string
-  |> io.println
-
-  // key_filter, key_find, key_pop, key_set
-  // ...
-
-  io.println("last")
-  list1
-  |> list.last
-  |> fn(r) {
-    case r {
-      Ok(n) -> io.println(int.to_string(n))
-      Error(Nil) -> Nil
-    }
-  }
-
-  io.println("length")
-  list1
-  |> list.length
-  |> int.to_string
-  |> io.println
-
-  io.println("map")
-  // Also "try_map"
-  list1
-  |> list.map(fn(n) { n * 2 })
-  |> string.inspect()
-  |> io.println()
-
-  io.println("partition")
-  list1
-  |> list.partition(fn(n) { n > 3 })
-  |> string.inspect()
-  |> io.println()
-
-  // permutations
-  // ...
-
-  // pop
-  // ...
-
-  // prepend
-  // ...
-
-  io.println("range")
-  list.range(1, 5)
-  |> string.inspect()
-  |> io.println()
-
-  list1
-  |> list.reduce(fn(acc, n) { acc + n })
-  |> result.unwrap(0)
-  |> int.to_string
-  |> io.println
-
-  io.println("repeat")
-  [1, 2, 3]
-  |> list.repeat(2)
-  |> string.inspect()
-  |> io.println()
-
-  // rest
-  // ...
-
-  io.println("reverse")
-  list1
-  |> list.reverse()
-  |> string.inspect()
-  |> io.println()
-
-  // scan
-  // ...
-
-  // shuffle
-  io.println("shuffle")
-  list1
-  |> list.shuffle()
-  |> string.inspect()
-  |> io.println()
-
-  io.println("sized_chunk")
-  list1
-  |> list.sized_chunk(2)
-  |> string.inspect()
-  |> io.println()
-
-  [1, 3, 2, 4, 5]
-  |> list.sort(int.compare)
-  |> string.inspect()
-  |> io.println()
-
-  // split
-  // ...
-
-  io.println("take")
-  // Also "take_while"
-  list1
-  |> list.take(3)
-  |> string.inspect
-  |> io.println()
-
-  io.println("transpose")
-  [[1, 2], [3, 4], [5, 6]]
-  |> list.transpose
-  |> string.inspect
-  |> io.println
-
-  io.println("unique")
-  [1, 1, 1, 2, 2, 3]
-  |> list.unique
-  |> string.inspect
-  |> io.println
-
-  io.println("window")
-  list1
-  |> list.window(3)
-  |> string.inspect
-  |> io.println
-
-  // zip, strict_zip, unzip
-  // ...
-
-  Nil
+  list.each(results, io.println)
 }
 
 fn basic_tuples() -> Nil {
