@@ -17,6 +17,9 @@ defmodule Stdlib do
 
     print_section_title("system")
     basic_system()
+
+    print_section_title("process")
+    basic_process()
   end
 
   # ---
@@ -150,7 +153,30 @@ defmodule Stdlib do
   end
 
   def basic_system do
+    dir1 = "."
+    filename1 = "./main.exs"
+
+    results = [
+      "dir1: #{dir1}",
+      "System.argv(): #{System.argv() |> stringify}",
+      ~s|System.cmd("pwd", []): #{System.cmd("pwd", []) |> elem(0) |> String.trim() |> stringify}|,
+      ~s|System.fetch_env!("USER"): #{System.fetch_env!("USER")}|,
+      ~s|System.get_env()["HOME"]: #{System.get_env()["HOME"] |> stringify}|,
+      "System.os_time(): #{System.os_time() |> stringify}",
+      "System.pid(): #{System.pid() |> stringify}",
+      ~s|System.shell("pwd"): #{System.shell("pwd") |> elem(0) |> String.trim() |> stringify}|,
+      "System.system_time(): #{System.system_time() |> stringify}",
+      "System.user_home!(): #{System.user_home!() |> stringify}",
+      "System.version(): #{System.version() |> stringify}"
+    ]
+
+    Enum.each(results, fn r -> IO.puts(r) end)
+  end
+
+  def basic_process do
     IO.puts("...")
+    # https://hexdocs.pm/elixir/processes.html
+    # https://hexdocs.pm/elixir/Task.html
   end
 
   # TODO: agent, process, task

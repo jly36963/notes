@@ -51,14 +51,14 @@ defmodule Basics do
     print_section_title("list")
     basic_list()
 
-    print_section_title("map")
-    basic_map()
-
     print_section_title("range")
     basic_range()
 
     print_section_title("stream")
     basic_stream()
+
+    print_section_title("map")
+    basic_map()
 
     print_section_title("struct")
     basic_struct()
@@ -258,7 +258,25 @@ defmodule Basics do
   end
 
   def basic_atom() do
-    IO.puts("...")
+    result1 = {:ok, "Success"}
+    result2 = {:error, "Failure"}
+    result_list = [result1, result2]
+
+    result_fn = fn r ->
+      case r do
+        {:ok, m} -> "Message: #{m}"
+        {:error, e} -> "Error: #{e}"
+      end
+    end
+
+    mapped_result_list = Enum.map(result_list, result_fn)
+
+    results = [
+      "result_list: #{result_list |> stringify}",
+      "mapped_result_list: #{mapped_result_list |> stringify}"
+    ]
+
+    Enum.each(results, fn r -> IO.puts(r) end)
   end
 
   def basic_date() do
@@ -301,11 +319,39 @@ defmodule Basics do
   end
 
   def basic_date_time() do
-    IO.puts("...")
+    now = DateTime.utc_now()
+    tomorrow = DateTime.add(now, 1, :day)
+
+    results = [
+      "now: #{now}",
+      "tomorrow: #{tomorrow}",
+      "DateTime.compare(tomorrow, today): #{DateTime.compare(tomorrow, now)}",
+      "DateTime.diff(tomorrow, now): #{DateTime.diff(tomorrow, now)}",
+      "DateTime.to_date(now): #{DateTime.to_date(now)}",
+      "DateTime.to_time(now): #{DateTime.to_time(now)}",
+      "DateTime.to_iso8601(now): #{DateTime.to_iso8601(now)}",
+      "DateTime.to_string(now): #{DateTime.to_string(now)}",
+      "DateTime.to_unix(now): #{DateTime.to_unix(now)}"
+    ]
+
+    Enum.each(results, fn r -> IO.puts(r) end)
   end
 
   def basic_time() do
-    IO.puts("...")
+    now = Time.utc_now()
+    soon = Time.add(now, 1, :hour)
+
+    results = [
+      "now: #{now}",
+      "soon: #{soon}",
+      "Time.compare(soon, today): #{Time.compare(soon, now)}",
+      "Time.diff(soon, now): #{Time.diff(soon, now)}",
+      "Time.to_seconds_after_midnight(now): #{Time.to_seconds_after_midnight(now) |> elem(0)}",
+      "Time.to_iso8601(now): #{Time.to_iso8601(now)}",
+      "Time.to_string(now): #{Time.to_string(now)}"
+    ]
+
+    Enum.each(results, fn r -> IO.puts(r) end)
   end
 
   def basic_tuple() do
@@ -432,6 +478,7 @@ defmodule Basics do
 
     results = [
       "list1: #{list1 |> stringify}",
+      "list1 ++ [6, 7]: #{(list1 ++ [6, 7]) |> stringify}",
       "hd(list1): #{hd(list1)}",
       "tl(list1): #{tl(list1)}",
       # Functions
@@ -447,8 +494,45 @@ defmodule Basics do
     ]
 
     Enum.each(results, fn r -> IO.puts(r) end)
+  end
 
-    # [1, 2, 3] |> Enum.map(fn n -> Integer.to_string(n) end) |> IO.puts() # 123
+  def basic_comprehension() do
+    list1 = [1, 2, 3, 4, 5]
+
+    results = [
+      "list1: #{list1 |> stringify}",
+      "for n <- list1, do: (n ** 2): #{for(n <- list1, do: n ** 2) |> stringify}"
+    ]
+
+    Enum.each(results, fn r -> IO.puts(r) end)
+    # https://www.mitchellhanberg.com/the-comprehensive-guide-to-elixirs-for-comprehension/
+  end
+
+  def basic_range() do
+    range1 = 1..5
+
+    results = [
+      "range1: #{range1 |> stringify}",
+      "2 in range1: #{2 in range1}",
+      "Enum.to_list(range1): #{Enum.to_list(range1) |> stringify}",
+      "Enum.count(range1): #{Enum.count(range1) |> stringify}",
+      "Enum.reduce(range1, 0, &Kernel.+/2): #{Enum.reduce(range1, 0, &Kernel.+/2) |> stringify}"
+    ]
+
+    Enum.each(results, fn r -> IO.puts(r) end)
+  end
+
+  def basic_stream() do
+    IO.puts("...")
+    range1 = 1..5
+    mul_2 = fn n -> n * 2 end
+
+    results = [
+      "range1: #{range1 |> stringify}",
+      "Stream.map(range1, mul_2): #{Stream.map(range1, mul_2) |> Enum.to_list() |> stringify}"
+    ]
+
+    Enum.each(results, fn r -> IO.puts(r) end)
   end
 
   def basic_map() do
@@ -481,25 +565,6 @@ defmodule Basics do
     ]
 
     Enum.each(results, fn r -> IO.puts(r) end)
-  end
-
-  def basic_range() do
-    range1 = 1..5
-
-    results = [
-      "range1: #{range1 |> stringify}",
-      "2 in range1: #{2 in range1}",
-      "Enum.to_list(range1): #{Enum.to_list(range1) |> stringify}",
-      "Enum.count(range1): #{Enum.count(range1) |> stringify}",
-      "Enum.reduce(range1, 0, &Kernel.+/2): #{Enum.reduce(range1, 0, &Kernel.+/2) |> stringify}"
-    ]
-
-    Enum.each(results, fn r -> IO.puts(r) end)
-  end
-
-  def basic_stream() do
-    IO.puts("...")
-    # https://hexdocs.pm/elixir/1.17.1/Stream.html
   end
 
   def basic_struct() do

@@ -4,6 +4,7 @@ import gleam/float
 import gleam/int
 import gleam/io
 import gleam/list
+import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/string
 
@@ -11,20 +12,17 @@ pub fn main() {
   print_section_title("Basic variables")
   basic_variables()
 
-  print_section_title("Basic types")
-  basic_types()
-
-  print_section_title("Basic operators")
-  basic_operators()
-
-  print_section_title("basic strings")
-  basic_strings()
+  print_section_title("Basic bool")
+  basic_bool()
 
   print_section_title("basic floats")
   basic_floats()
 
   print_section_title("basic ints")
   basic_ints()
+
+  print_section_title("basic strings")
+  basic_strings()
 
   print_section_title("basic expression blocks")
   basic_expression_blocks()
@@ -37,30 +35,29 @@ pub fn main() {
 
   print_section_title("basic options")
   basic_options()
+  // print_section_title("basic lists")
+  // basic_lists()
 
-  print_section_title("basic lists")
-  basic_lists()
+  // print_section_title("basic tuples")
+  // basic_tuples()
 
-  print_section_title("basic tuples")
-  basic_tuples()
+  // print_section_title("basic dicts")
+  // basic_dicts()
 
-  print_section_title("basic dicts")
-  basic_dicts()
+  // print_section_title("basic generics")
+  // basic_generics()
 
-  print_section_title("basic generics")
-  basic_generics()
+  // print_section_title("basic custom types")
+  // basic_custom_types()
 
-  print_section_title("basic custom types")
-  basic_custom_types()
+  // print_section_title("basic enums")
+  // basic_enums()
 
-  print_section_title("basic enums")
-  basic_enums()
+  // print_section_title("basic use")
+  // basic_use()
 
-  print_section_title("basic use")
-  basic_use()
-
-  print_section_title("basic spawn")
-  basic_spawn()
+  // print_section_title("basic spawn")
+  // basic_spawn()
 }
 
 // ---
@@ -81,12 +78,7 @@ fn basic_variables() -> Nil {
   io.println(str1)
 }
 
-fn basic_types() -> Nil {
-  // bool, float, function, int, list, dict, set, result, string
-  io.println("...")
-}
-
-fn basic_operators() -> Nil {
+fn basic_bool() -> Nil {
   // == !=
   // > >= < <=
   // && ||
@@ -97,243 +89,139 @@ fn basic_operators() -> Nil {
   io.println("...")
 }
 
-fn basic_strings() -> Nil {
-  io.println("append")
-  io.println(string.append("Bar", "nacles"))
-
-  io.println("byte_size")
-  "Where's the leak, ma'am?"
-  |> string.byte_size
-  |> int.to_string
-  |> io.println
-
-  io.println("capitalize")
-  "the inner machinations of my mind are an enigma"
-  |> string.capitalise
-  |> io.println
-
-  io.println("concat")
-  ["Who", " ", "are", " ", "you", " ", "people?"]
-  |> string.concat
-  |> io.println
-
-  io.println("contains")
-  string.contains(does: "Not even Squidward's house", contain: "id")
-  |> bool.to_string
-  |> io.println
-
-  io.println("ends_with")
-  "Help me boy or you're fired"
-  |> string.ends_with("fired")
-  |> bool.to_string
-  |> io.println
-
-  io.println("first")
-  "Yeah! E mionr! All right! Yeah!"
-  |> string.first
-  |> result.unwrap("")
-  |> io.println
-
-  io.println("inspect")
-  "Mr. Krabs, I have an idea!"
-  |> string.inspect
-  |> io.println
-
-  io.println("is_empty")
-  "I'm ready!"
-  |> string.is_empty
-  |> bool.to_string
-
-  io.println("join")
-  ["I", "wumbo", "you", "wumbo"]
-  |> string.join(" ")
-  |> io.println
-
-  io.println("last")
-  "We're doomed"
-  |> string.last
-  |> result.unwrap("")
-  |> io.println
-
-  io.println("length")
-  "Living in the sunlight, loving in the moonlight, having a wonderful time!"
-  |> string.length
-  |> int.to_string
-  |> io.println
-
-  io.println("lowercase")
-  "I CAN'T SEE MY FOREHEAD"
-  |> string.lowercase
-  |> io.println
-
-  io.println("pad_left")
-  io.println(string.pad_left("25", 8, "."))
-
-  io.println("pad_right")
-  io.println(string.pad_right("Meet my darling daughter, Pearl", 40, "<3"))
-
-  // pop_grapheme
-  // ...
-
-  io.println("repeat")
-  io.println(string.repeat("I'm ready!  ", 3))
-
-  io.println("replace")
-  io.println(string.replace("I'm ready!  ", "ready", "not ready"))
-
-  io.println("reverse")
-  "People order our patties"
-  |> string.reverse()
-  |> io.println()
-
-  io.println("slice")
-  "Magic Conch, could Squidward have some of this yummy, delicious, super-terrific sandwich?"
-  |> string.slice(at_index: 7, length: 2)
-  |> string.reverse()
-  |> io.println
-
-  io.println("split")
-  "Ho! Ho! Ho! Stop it Patrick, you're scaring him!"
-  |> string.split("!")
-  |> list.filter(fn(s) { string.length(s) < 5 })
-  |> list.map(fn(s) { string.trim(s) })
-  |> string.join("! ")
-  |> io.println
-
-  io.println("starts_with")
-  "It's okay, take your time"
-  |> string.starts_with("I")
-  |> bool.to_string()
-  |> io.println()
-
-  // to_graphemes
-  // ...
-
-  // to_option
-  // ...
-
-  // to_utf_codepoints
-  // ...
-
-  io.println("trim")
-  "   The owner of the white sedan you left your lights on   "
-  |> string.trim
-  |> io.println
-
-  io.println("uppercase")
-  "This is a load of barnacles"
-  |> string.uppercase
-  |> io.println
-}
+// fn stringify() -> String {}
 
 fn basic_floats() -> Nil {
   let float1 = 3.14
+  let float2 = float.negate(float1)
 
-  io.println("absolute_value")
-  float.absolute_value(float.negate(float1))
-  |> float.to_string
-  |> io.println
+  let results = [
+    "float1: " <> float1 |> string.inspect,
+    "float2: " <> float2 |> string.inspect,
+    "float.add(float1, 1.0): " <> float.add(float1, 1.0) |> string.inspect,
+    "float.compare(float1, 1.0): "
+      <> float.compare(float1, 1.0) |> string.inspect,
+    "float.absolute_value(float2): "
+      <> float.absolute_value(float2) |> string.inspect,
+    "float.ceiling(float1): " <> float.ceiling(float1) |> string.inspect,
+    "float.clamp(float1, 3.0, 4.0): "
+      <> float.clamp(float1, 3.0, 4.0) |> string.inspect,
+    "float.divide(float1, 2.0): " <> float.divide(float1, 2.0) |> string.inspect,
+    "float.floor(float1): " <> float.floor(float1) |> string.inspect,
+    "float.max(float1, 4.0): " <> float.max(float1, 4.0) |> string.inspect,
+    "float.min(float1, 2.0): " <> float.min(float1, 2.0) |> string.inspect,
+    "float.multiply(float1, 2.0): "
+      <> float.multiply(float1, 2.0) |> string.inspect,
+    "float.negate(float1): " <> float.negate(float1) |> string.inspect,
+    "float.parse(\"3.14\"): " <> float.parse("3.14") |> string.inspect,
+    "float.power(float1, 2.0) : " <> float.power(float1, 2.0) |> string.inspect,
+    "float.product([1.0, 2.0, 3.0]): "
+      <> float.product([1.0, 2.0, 3.0]) |> string.inspect,
+    "float.round(float1): " <> float.round(float1) |> string.inspect,
+    "float.square_root(float1): " <> float.square_root(float1) |> string.inspect,
+    "float.subtract(float1, 1.0): "
+      <> float.subtract(float1, 1.0) |> string.inspect,
+    "float.sum([1.0, 2.0, 3.0]): "
+      <> float.sum([1.0, 2.0, 3.0]) |> string.inspect,
+    "float.random(): " <> float.random() |> string.inspect,
+    "float.round(float1): " <> float.round(float1) |> string.inspect,
+    "float.truncate(float1): " <> float.truncate(float1) |> string.inspect,
+  ]
 
-  // add
-  // ...
-
-  io.println("ceiling")
-  float1
-  |> float.ceiling()
-  |> float.to_string
-  |> io.println
-
-  io.println("clamp")
-  float1
-  |> float.clamp(3.0, 4.0)
-  |> float.to_string
-  |> io.println
-
-  // compare
-  // ...
-
-  // divide
-  // ...
-
-  float1
-  |> float.floor()
-  |> float.to_string
-  |> io.println
-
-  // loosely_compare, loosely_equals,
-  // ...
-
-  io.println("max")
-  float.max(float1, 5.0)
-  |> float.to_string
-  |> io.println
-
-  io.println("min")
-  float.min(float1, 5.0)
-  |> float.to_string
-  |> io.println
-
-  // multiply
-  // ...
-
-  io.println("negate")
-  float1
-  |> float.negate
-  |> float.to_string
-  |> io.println
-
-  // parse
-  // ...
-
-  io.println("power")
-  float1
-  *. {
-    float.power(2.0, 2.0)
-    |> result.unwrap(0.0)
-  }
-  |> float.to_string
-  |> io.println
-
-  // product
-  // ...
-
-  // random
-  // ...
-
-  // round
-  // ...
-
-  // square_root
-  // ...
-
-  // subtract
-  // ...
-
-  // sum
-  // ...
-
-  // to_string
-  // ...
-
-  // truncate
-  // ...
-
-  Nil
+  list.each(results, io.println)
 }
 
 fn basic_ints() -> Nil {
-  io.println("...")
-  // ... Most float methods
-  // base_parse
-  // bitwise ...
-  // digits, undigits
-  // is_even
-  // is_odd
-  // modulo
-  // negate
-  // sum
-  // to_base ...
-  // to_string
+  let int1 = 2
+  let int2 = 7
+
+  let results = [
+    "int1: " <> int1 |> string.inspect,
+    "int2: " <> int2 |> string.inspect,
+    "int.add(int1, 1): " <> int.add(int1, 1) |> string.inspect,
+    "int.compare(int1, 1): " <> int.compare(int1, 1) |> string.inspect,
+    "int.absolute_value(int2): " <> int.absolute_value(int2) |> string.inspect,
+    "int.clamp(int1, 3, 4): " <> int.clamp(int1, 3, 4) |> string.inspect,
+    "int.divide(int1, 2): " <> int.divide(int1, 2) |> string.inspect,
+    "int.is_even(int1): " <> int.is_even(int1) |> string.inspect,
+    "int.is_odd(int1): " <> int.is_odd(int1) |> string.inspect,
+    "int.divide(int1, 2): " <> int.divide(int1, 2) |> string.inspect,
+    "int.max(int1, 4): " <> int.max(int1, 4) |> string.inspect,
+    "int.min(int1, 2): " <> int.min(int1, 2) |> string.inspect,
+    "int.modulo(int1, 2): " <> int.modulo(int1, 2) |> string.inspect,
+    "int.multiply(int1, 2): " <> int.multiply(int1, 2) |> string.inspect,
+    "int.negate(int1): " <> int.negate(int1) |> string.inspect,
+    "int.parse(\"3.14\"): " <> int.parse("3.14") |> string.inspect,
+    "int.power(int1, 2.0) : " <> int.power(int1, 2.0) |> string.inspect,
+    "int.product([1, 2, 3]): " <> int.product([1, 2, 3]) |> string.inspect,
+    "int.square_root(int1): " <> int.square_root(int1) |> string.inspect,
+    "int.subtract(int1, 1): " <> int.subtract(int1, 1) |> string.inspect,
+    "int.sum([1, 2, 3]): " <> int.sum([1, 2, 3]) |> string.inspect,
+  ]
+
+  list.each(results, io.println)
+}
+
+fn basic_strings() -> Nil {
+  let results = [
+    "string.append(\"Bar\", \"nacles\"): " <> string.append("Bar", "nacles"),
+    "string.byte_size(\"Where's the leak, ma'am?\"): "
+      <> string.byte_size("Where's the leak, ma'am?") |> string.inspect,
+    "string.capitalise(\"the owner of the white sedan, you left your lights on\"): "
+      <> string.capitalise(
+      "the owner of the white sedan, you left your lights on",
+    ),
+    "string.concat([\"Who\", \" \", \"are\", \" \", \"you\", \" \", \"people?\"]): "
+      <> string.concat(["Who", " ", "are", " ", "you", " ", "people?"]),
+    "string.contains(does: \"Not even Squidward's house\", contain: \"id\"): "
+      <> string.contains(does: "Not even Squidward's house", contain: "id")
+    |> string.inspect,
+    "string.ends_with(\"Help me boy or you're fired\", \"fired\"): "
+      <> string.ends_with("Help me boy or you're fired", "fired")
+    |> string.inspect,
+    "string.first(\"Yeah! E minor! All right! Yeah!\"): "
+      <> string.first("Yeah! E minor! All right! Yeah!") |> string.inspect,
+    "string.inspect([1, 2, 3]): " <> string.inspect([1, 2, 3]),
+    "string.is_empty(\"Mr. Krabs, I have an idea!\"): "
+      <> string.is_empty("Mr. Krabs, I have an idea!") |> string.inspect,
+    "string.join([\"I\", \"wumbo\", \"you\", \"wumbo\"], \" \"): "
+      <> string.join(["I", "wumbo", "you", "wumbo"], " "),
+    "string.last(\"We're doomed\"): "
+      <> string.last("We're doomed") |> string.inspect,
+    "string.length(\"Meet my darling daughter, Pearl!\"): "
+      <> string.length("Meet my darling daughter, Pearl!") |> string.inspect,
+    "string.lowercase(\"I CAN'T SEE MY FOREHEAD\"): "
+      <> string.lowercase("I CAN'T SEE MY FOREHEAD"),
+    "string.pad_left(\"25\", 4, \"0\"): " <> string.pad_left("25", 4, "0"),
+    "string.repeat(\"I'm ready!  \", 3): " <> string.repeat("I'm ready!  ", 3),
+    "string.pad_right(\"25\", 4, \".\"): " <> string.pad_right("25", 4, "."),
+    "string.pop_grapheme(\"This is a load of barnacles!\"): "
+      <> string.pop_grapheme("This is a load of barnacles!") |> string.inspect,
+    "string.replace(\"I'm ready!  \", \"ready\", \"not ready\"): "
+      <> string.replace("I'm ready!  ", "ready", "not ready"),
+    "string.reverse(\"People order our patties\"): "
+      <> string.reverse("People order our patties"),
+    "string.slice(\"Kicking? I want to do some kicking!\", at_index: 11, length: 4): "
+      <> string.slice(
+      "Kicking? I want to do some kicking!",
+      at_index: 11,
+      length: 4,
+    ),
+    "string.split(\"Your ceiling is talking to me!\", \" \"): "
+      <> string.split("Your ceiling is talking to me!", " ")
+    |> string.inspect,
+    "string.starts_with(\"It's okay, take your time\", \"I\"): "
+      <> string.starts_with("It's okay, take your time", "I") |> string.inspect,
+    "string.to_graphemes(\"Me hoy minoy ✏️\") :"
+      <> string.to_graphemes("Me hoy minoy ✏️") |> string.inspect,
+    "string.trim(\"   Too bad that didn't kill me   \"): "
+      <> string.trim("   Too bad that didn't kill me   "),
+    "string.uppercase(\"moar!\"): " <> string.uppercase("moar!"),
+    "string.to_utf_codepoints(\"Você tá bem?\"): "
+      <> string.to_utf_codepoints("Você tá bem?") |> string.inspect,
+  ]
+
+  list.each(results, io.println)
 }
 
 fn basic_expression_blocks() -> Nil {
@@ -361,29 +249,89 @@ fn basic_cases() -> Nil {
 }
 
 fn basic_results() -> Nil {
-  let list1 = [1, 2, 3, 4, 5]
+  let result1 = Ok("Yup")
+  let result2 = Error("Nope")
 
-  // With case
-  list1
-  |> list.find(fn(n) { n > 3 })
-  |> fn(l) {
-    case l {
-      Ok(n) -> int.to_string(n)
-      Error(Nil) -> "None"
-    }
+  // Pattern matching with case
+  io.println("Pattern matching a result:")
+  case result1 {
+    Ok(v) -> io.println("Success: message: " <> v)
+    Error(e) -> io.println("Error message:" <> e)
   }
-  |> io.println
 
-  // With map/unwrap
-  list1
-  |> list.find(fn(n) { n > 3 })
-  |> result.map(fn(n) { int.to_string(n) })
-  |> result.unwrap("None")
-  |> io.println
+  let results = [
+    "result1: " <> result1 |> string.inspect,
+    "result2: " <> result2 |> string.inspect,
+    "result.all([Ok(\"Yes\"), Ok(\"Sim\")]): "
+      <> result.all([Ok("Yes"), Ok("Sim")]) |> string.inspect,
+    "result.flatten(Ok(Ok(result1))): "
+      <> result.flatten(Ok(Ok("Yes"))) |> string.inspect,
+    "result.is_error(result2): " <> result.is_error(result2) |> string.inspect,
+    "result.is_ok(Ok(result1)): " <> result.is_ok(Ok(result1)) |> string.inspect,
+    "result.lazy_or(result2, fn () { Ok(\"yup!!\") }): "
+      <> result.lazy_or(result2, fn() { Ok("yup!!") }) |> string.inspect,
+    "result.lazy_unwrap(result2, fn () { \"yup!!\" }): "
+      <> result.lazy_unwrap(result2, fn() { "yup!!" }),
+    "result.map(result1, string.uppercase): "
+      <> result.map(result1, string.uppercase) |> string.inspect,
+    "result.map_error(result2, string.uppercase): "
+      <> result.map_error(result2, string.uppercase) |> string.inspect,
+    "result.or(result2, result1): "
+      <> result.or(result2, result1) |> string.inspect,
+    "result.replace(result1, \"Yes\"): "
+      <> result.replace(result1, "Yes") |> string.inspect,
+    "result.replace_error(result2, \"No\"): "
+      <> result.replace_error(result2, "No") |> string.inspect,
+    "result.try(result1, fn(v) { Ok(string.uppercase(v)) }): "
+      <> result.try(result1, fn(v) { Ok(string.uppercase(v)) })
+    |> string.inspect,
+    "result.try_recover(result2, fn(e) { Error(string.uppercase(e)) }): "
+      <> result.try_recover(result2, fn(e) { Error(string.uppercase(e)) })
+    |> string.inspect,
+    "result.unwrap(result2, \"Yes\"): "
+      <> result.unwrap(result2, "Yes") |> string.inspect,
+  ]
+
+  list.each(results, io.println)
 }
 
 fn basic_options() -> Nil {
-  io.println("...")
+  let option1: Option(String) = Some("Yup")
+  let option2: Option(String) = option.None
+
+  // Pattern matching with case
+  io.println("Pattern matching an option:")
+  case option1 {
+    Some(v) -> io.println("Message provided: " <> v)
+    None -> "No message provided" |> io.println
+  }
+
+  let results = [
+    "option1: " <> option1 |> string.inspect,
+    "option2: " <> option2 |> string.inspect,
+    "option.all([Some(\"Yes\"), Some(\"Sim\")]): "
+      <> option.all([Some("Yes"), Some("Sim")]) |> string.inspect,
+    "option.flatten(Some(Some(option1))): "
+      <> option.flatten(Some(Some("Yes"))) |> string.inspect,
+    "option.is_none(option2): " <> option.is_none(option2) |> string.inspect,
+    "option.is_some(Some(option1)): "
+      <> option.is_some(Some(option1)) |> string.inspect,
+    "option.lazy_or(option2, fn () { Some(\"yup!!\") }): "
+      <> option.lazy_or(option2, fn() { Some("yup!!") }) |> string.inspect,
+    "option.lazy_unwrap(option2, fn () { \"yup!!\" }): "
+      <> option.lazy_unwrap(option2, fn() { "yup!!" }),
+    "option.map(option1, string.uppercase): "
+      <> option.map(option1, string.uppercase) |> string.inspect,
+    "option.or(option2, option1): "
+      <> option.or(option2, option1) |> string.inspect,
+    "option.then(option1, fn(v) { Some(string.uppercase(v)) }): "
+      <> option.then(option1, fn(v) { Some(string.uppercase(v)) })
+    |> string.inspect,
+    "option.unwrap(option2, \"Yes\"): "
+      <> option.unwrap(option2, "Yes") |> string.inspect,
+  ]
+
+  list.each(results, io.println)
 }
 
 fn basic_lists() -> Nil {
