@@ -1,5 +1,8 @@
+import filepath
 import gleam/bool
 import gleam/dict
+import gleam/erlang
+import gleam/erlang/os
 import gleam/float
 import gleam/int
 import gleam/io
@@ -7,6 +10,12 @@ import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/string
+import simplifile as file
+
+// import gleam/regex
+// import gleam/json
+// import prng/random
+// import gleam/erlang/process
 
 pub fn main() {
   print_section_title("Basic variables")
@@ -48,23 +57,50 @@ pub fn main() {
   print_section_title("basic records")
   basic_records()
 
+  print_section_title("basic functions")
+  basic_functions()
+
   print_section_title("basic use")
   basic_use()
 
-  print_section_title("basic spawn")
-  basic_spawn()
+  print_section_title("basic let assert")
+  basic_let_assert()
 
-  print_section_title("basic path")
-  basic_path()
+  print_section_title("basic dynamic")
+  basic_dynamic()
 
-  print_section_title("basic fs")
-  basic_fs()
+  print_section_title("basic erlang")
+  basic_erlang()
 
-  print_section_title("basic system")
-  basic_system()
+  print_section_title("basic regex")
+  basic_regex()
+
+  print_section_title("basic filepath")
+  basic_filepath()
+
+  print_section_title("basic file")
+  basic_file()
+
+  print_section_title("basic file io")
+  basic_file_io()
+
+  print_section_title("basic os")
+  basic_os()
 
   print_section_title("basic process")
   basic_process()
+
+  print_section_title("basic http")
+  basic_http()
+
+  print_section_title("basic json")
+  basic_json()
+
+  print_section_title("basic prng")
+  basic_prng()
+
+  print_section_title("basic spawn")
+  basic_spawn()
 }
 
 // ---
@@ -107,15 +143,6 @@ fn basic_bool() -> Nil {
   ]
 
   list.each(results, io.println)
-
-  // == !=
-  // > >= < <=
-  // && ||
-  // + - * / %
-  // +. -. *. /.
-  // <>
-  // |>
-  io.println("...")
 }
 
 // fn stringify() -> String {}
@@ -500,6 +527,11 @@ fn basic_records() -> Nil {
   greet(student)
 }
 
+fn basic_functions() -> Nil {
+  // https://hexdocs.pm/gleam_stdlib/gleam/function.html
+  io.println("...")
+}
+
 type Person =
   #(Int, String, String)
 
@@ -551,8 +583,7 @@ fn results_with_use() {
   use people <- result.try(fetch_people())
   use person <- result.try(find_person(people, 1))
   use initials <- result.try(get_initials(person))
-  let res = "Initials: " <> initials
-  Ok(res)
+  Ok("Initials: " <> initials)
 }
 
 fn basic_use() -> Nil {
@@ -571,22 +602,119 @@ fn basic_use() -> Nil {
   })
 }
 
-fn basic_spawn() -> Nil {
+fn basic_dynamic() -> Nil {
   io.println("...")
 }
 
-fn basic_path() -> Nil {
+fn basic_let_assert() -> Nil {
+  // Panic if error (like Rust's Result unwrap)
+  let l1 = [1, 2, 3]
+  let assert Ok(num1) = list.first(l1)
+
+  let results = [
+    "l1: " <> l1 |> string.inspect,
+    "num1: " <> num1 |> string.inspect,
+  ]
+
+  list.each(results, io.println)
+}
+
+fn basic_regex() -> Nil {
   io.println("...")
 }
 
-fn basic_fs() -> Nil {
+fn basic_erlang() -> Nil {
+  // erlang.sleep(1)
+
+  let results = [
+    "erlang.erlang_timestamp(): " <> erlang.erlang_timestamp() |> string.inspect,
+  ]
+
+  list.each(results, io.println)
+}
+
+fn basic_filepath() -> Nil {
+  let dir1 = "."
+  let dir2 = "./a/b/c/d.txt"
+  let dir3 = "~"
+
+  let join_paths = fn(paths: List(String)) { list.reduce(paths, filepath.join) }
+
+  let results = [
+    "dir1: " <> dir1,
+    "dir2: " <> dir2,
+    "dir3: " <> dir3,
+    "filepath.base_name(dir2): " <> filepath.base_name(dir2),
+    "filepath.directory_name(dir2): " <> filepath.directory_name(dir2),
+    "filepath.expand(dir3): " <> filepath.expand(dir3) |> string.inspect,
+    "filepath.extension(dir2): " <> filepath.extension(dir2) |> string.inspect,
+    "join_paths([\".\", \"data\", \"input\"]): "
+      <> join_paths([".", "data", "input"]) |> string.inspect,
+    "filepath.split(dir2): " <> filepath.split(dir2) |> string.inspect,
+  ]
+
+  list.each(results, io.println)
+}
+
+fn basic_file() -> Nil {
+  let dir1 = "./src"
+  let filename1 = "./README.md"
+
+  let results = [
+    "dir1: " <> dir1,
+    "filename1: " <> filename1,
+    "file.current_directory(): " <> file.current_directory() |> string.inspect,
+    "file.is_directory(dir1): " <> file.is_directory(dir1) |> string.inspect,
+    "file.is_file(filename1): " <> file.is_file(filename1) |> string.inspect,
+    "file.is_symlink(filename1): "
+      <> file.is_symlink(filename1) |> string.inspect,
+    "file.get_files(dir1): " <> file.get_files(dir1) |> string.inspect,
+    "file.file_info(filename1) |> result.map(fn(info) { info.size }): "
+      <> file.file_info(filename1)
+    |> result.map(fn(info) { info.size })
+    |> string.inspect,
+  ]
+
+  list.each(results, io.println)
+}
+
+fn basic_file_io() -> Nil {
   io.println("...")
 }
 
-fn basic_system() -> Nil {
-  io.println("...")
+fn basic_os() -> Nil {
+  let dir1 = "."
+
+  let results = [
+    "dir1: " <> dir1,
+    "os.family(): " <> os.family() |> string.inspect,
+    "os.get_all_env()[\"HOME\"]: "
+      <> os.get_all_env() |> dict.get("HOME") |> string.inspect,
+    "os.get_env(\"USER\"): " <> os.get_env("USER") |> string.inspect,
+  ]
+
+  list.each(results, io.println)
 }
 
 fn basic_process() -> Nil {
+  // https://hexdocs.pm/gleam_erlang/0.25.0/gleam/erlang/process.html#call
+  io.println("...")
+}
+
+fn basic_http() -> Nil {
+  io.println("...")
+}
+
+fn basic_json() -> Nil {
+  // https://github.com/gleam-lang/json
+  io.println("...")
+}
+
+fn basic_prng() -> Nil {
+  // https://hexdocs.pm/prng/
+  io.println("...")
+}
+
+fn basic_spawn() -> Nil {
   io.println("...")
 }
