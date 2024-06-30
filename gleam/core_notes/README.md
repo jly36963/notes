@@ -18,6 +18,10 @@ brew install erlang
 gleam new <project-name>
 # Run project
 gleam run
+# Dependencies
+gleam deps download
+gleam deps list
+gleam deps update
 ```
 
 ## Language

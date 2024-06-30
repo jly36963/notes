@@ -374,7 +374,6 @@ fn basic_lists() -> Nil {
       <> list.all(l1, fn(n) { n > 0 }) |> string.inspect,
     "list.any(l1, int.is_even): " <> list.any(l1, int.is_even) |> string.inspect,
     "list.append(l1, [6]): " <> list.append(l1, [6]) |> string.inspect,
-    "list.at(l1, 2): " <> list.at(l1, 2) |> string.inspect,
     "list.combination_pairs([1,2,3]): "
       <> list.combination_pairs([1, 2, 3]) |> string.inspect,
     "list.combinations([1,2,3,4], 3): "
@@ -497,12 +496,79 @@ pub fn greet(sp: SchoolPerson) -> Nil {
 fn basic_records() -> Nil {
   let student = Student(name: "Kakashi")
   greet(student)
-  let student = Teacher(name: "Kaka Sensei", subject: "genin operations")
+  let student = Teacher(name: "Kaka Sensei", subject: "chunin exam preparation")
   greet(student)
 }
 
+type Person =
+  #(Int, String, String)
+
+const people: List(Person) = [
+  #(1, "Kakashi", "Hatake"), #(2, "Iruka", "Umino"), #(3, "Tenzo", "Yamato"),
+  #(4, "Hiruzen", "Sarutobi"),
+]
+
+fn fetch_people() -> Result(List(Person), String) {
+  Ok(people)
+}
+
+fn find_person(people: List(Person), id: Int) -> Result(Person, String) {
+  people
+  |> list.find(fn(person) {
+    let current_id = person.0
+    id == current_id
+  })
+  |> result.replace_error("No person found: " <> int.to_string(id))
+}
+
+fn get_initials(person: Person) -> Result(String, String) {
+  let #(_, first_name, last_name) = person
+  [first_name, last_name]
+  |> list.map(string.first)
+  |> result.all()
+  |> result.map(fn(names) { string.join(names, "") })
+  |> result.replace_error("Couldn't get initials")
+}
+
+fn results_with_try_and_callbacks() {
+  result.try(fetch_people(), fn(people) {
+    result.try(find_person(people, 1), fn(person) {
+      result.try(get_initials(person), fn(initials) {
+        Ok("Initials: " <> initials)
+      })
+    })
+  })
+}
+
+fn results_with_then() {
+  fetch_people()
+  |> result.then(fn(people) { find_person(people, 1) })
+  |> result.then(fn(person) { get_initials(person) })
+  |> result.then(fn(initials) { Ok("Initials: " <> initials) })
+}
+
+fn results_with_use() {
+  use people <- result.try(fetch_people())
+  use person <- result.try(find_person(people, 1))
+  use initials <- result.try(get_initials(person))
+  let res = "Initials: " <> initials
+  Ok(res)
+}
+
 fn basic_use() -> Nil {
-  io.println("...")
+  let results =
+    dict.from_list([
+      #("Results with callback: ", results_with_try_and_callbacks()),
+      #("Results with pipe: ", results_with_then()),
+      #("Results with use: ", results_with_use()),
+    ])
+  dict.each(results, fn(label, res) {
+    io.println(label)
+    case res {
+      Ok(v) -> io.println(v)
+      Error(e) -> io.println(e)
+    }
+  })
 }
 
 fn basic_spawn() -> Nil {
