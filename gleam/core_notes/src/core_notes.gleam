@@ -1,21 +1,31 @@
-import filepath
+import envoy
+import filepath as path
 import gleam/bool
 import gleam/dict
+import gleam/dynamic
 import gleam/erlang
 import gleam/erlang/os
 import gleam/float
+import gleam/function
 import gleam/int
 import gleam/io
+import gleam/json
 import gleam/list
 import gleam/option.{type Option, None, Some}
+import gleam/regex
 import gleam/result
-import gleam/string
+import gleam/string.{inspect}
+import prng/random
 import simplifile as file
+import snag
+import youid/uuid
 
-// import gleam/regex
-// import gleam/json
-// import prng/random
+// import decode
 // import gleam/erlang/process
+// import gleam/otp/actor
+// import gleam/otp/process
+// import gleam/otp/supervisor
+// import gleam/otp/task
 
 pub fn main() {
   print_section_title("Basic variables")
@@ -57,8 +67,14 @@ pub fn main() {
   print_section_title("basic records")
   basic_records()
 
-  print_section_title("basic functions")
-  basic_functions()
+  print_section_title("basic function curry")
+  basic_function_curry()
+
+  print_section_title("basic function recursion")
+  basic_function_recursion()
+
+  print_section_title("basic function captures")
+  basic_function_captures()
 
   print_section_title("basic use")
   basic_use()
@@ -75,8 +91,8 @@ pub fn main() {
   print_section_title("basic regex")
   basic_regex()
 
-  print_section_title("basic filepath")
-  basic_filepath()
+  print_section_title("basic path")
+  basic_path()
 
   print_section_title("basic file")
   basic_file()
@@ -90,14 +106,23 @@ pub fn main() {
   print_section_title("basic process")
   basic_process()
 
-  print_section_title("basic http")
-  basic_http()
+  print_section_title("basic env")
+  basic_env()
+
+  print_section_title("basic uuid")
+  basic_uuid()
 
   print_section_title("basic json")
   basic_json()
 
+  print_section_title("basic decode")
+  basic_decode()
+
   print_section_title("basic prng")
   basic_prng()
+
+  print_section_title("basic http")
+  basic_http()
 
   print_section_title("basic spawn")
   basic_spawn()
@@ -129,17 +154,17 @@ fn basic_bool() -> Nil {
   // TODO: bool.lazy_guard + use
 
   let results = [
-    "t: " <> t |> string.inspect,
-    "f: " <> f |> string.inspect,
-    "bool.and(t, t): " <> bool.and(t, t) |> string.inspect,
-    "bool.compare(t, t): " <> bool.compare(t, t) |> string.inspect,
-    "bool.exclusive_nor(t, t): " <> bool.exclusive_nor(t, t) |> string.inspect,
-    "bool.exclusive_or(t, f): " <> bool.exclusive_or(t, f) |> string.inspect,
-    "bool.nand(t, f): " <> bool.nand(t, f) |> string.inspect,
-    "bool.negate(t): " <> bool.negate(t) |> string.inspect,
-    "bool.nor(f, f): " <> bool.nor(f, f) |> string.inspect,
-    "bool.or(f, t): " <> bool.or(f, t) |> string.inspect,
-    "bool.to_int(t): " <> bool.to_int(t) |> string.inspect,
+    "t: " <> t |> inspect,
+    "f: " <> f |> inspect,
+    "bool.and(t, t): " <> bool.and(t, t) |> inspect,
+    "bool.compare(t, t): " <> bool.compare(t, t) |> inspect,
+    "bool.exclusive_nor(t, t): " <> bool.exclusive_nor(t, t) |> inspect,
+    "bool.exclusive_or(t, f): " <> bool.exclusive_or(t, f) |> inspect,
+    "bool.nand(t, f): " <> bool.nand(t, f) |> inspect,
+    "bool.negate(t): " <> bool.negate(t) |> inspect,
+    "bool.nor(f, f): " <> bool.nor(f, f) |> inspect,
+    "bool.or(f, t): " <> bool.or(f, t) |> inspect,
+    "bool.to_int(t): " <> bool.to_int(t) |> inspect,
   ]
 
   list.each(results, io.println)
@@ -152,31 +177,30 @@ fn basic_floats() -> Nil {
   let f2 = float.negate(f1)
 
   let results = [
-    "f1: " <> f1 |> string.inspect,
-    "f2: " <> f2 |> string.inspect,
-    "float.add(f1, 1.0): " <> float.add(f1, 1.0) |> string.inspect,
-    "float.compare(f1, 1.0): " <> float.compare(f1, 1.0) |> string.inspect,
-    "float.absolute_value(f2): " <> float.absolute_value(f2) |> string.inspect,
-    "float.ceiling(f1): " <> float.ceiling(f1) |> string.inspect,
-    "float.clamp(f1, 3.0, 4.0): " <> float.clamp(f1, 3.0, 4.0) |> string.inspect,
-    "float.divide(f1, 2.0): " <> float.divide(f1, 2.0) |> string.inspect,
-    "float.floor(f1): " <> float.floor(f1) |> string.inspect,
-    "float.max(f1, 4.0): " <> float.max(f1, 4.0) |> string.inspect,
-    "float.min(f1, 2.0): " <> float.min(f1, 2.0) |> string.inspect,
-    "float.multiply(f1, 2.0): " <> float.multiply(f1, 2.0) |> string.inspect,
-    "float.negate(f1): " <> float.negate(f1) |> string.inspect,
-    "float.parse(\"3.14\"): " <> float.parse("3.14") |> string.inspect,
-    "float.power(f1, 2.0) : " <> float.power(f1, 2.0) |> string.inspect,
+    "f1: " <> f1 |> inspect,
+    "f2: " <> f2 |> inspect,
+    "float.add(f1, 1.0): " <> float.add(f1, 1.0) |> inspect,
+    "float.compare(f1, 1.0): " <> float.compare(f1, 1.0) |> inspect,
+    "float.absolute_value(f2): " <> float.absolute_value(f2) |> inspect,
+    "float.ceiling(f1): " <> float.ceiling(f1) |> inspect,
+    "float.clamp(f1, 3.0, 4.0): " <> float.clamp(f1, 3.0, 4.0) |> inspect,
+    "float.divide(f1, 2.0): " <> float.divide(f1, 2.0) |> inspect,
+    "float.floor(f1): " <> float.floor(f1) |> inspect,
+    "float.max(f1, 4.0): " <> float.max(f1, 4.0) |> inspect,
+    "float.min(f1, 2.0): " <> float.min(f1, 2.0) |> inspect,
+    "float.multiply(f1, 2.0): " <> float.multiply(f1, 2.0) |> inspect,
+    "float.negate(f1): " <> float.negate(f1) |> inspect,
+    "float.parse(\"3.14\"): " <> float.parse("3.14") |> inspect,
+    "float.power(f1, 2.0) : " <> float.power(f1, 2.0) |> inspect,
     "float.product([1.0, 2.0, 3.0]): "
-      <> float.product([1.0, 2.0, 3.0]) |> string.inspect,
-    "float.round(f1): " <> float.round(f1) |> string.inspect,
-    "float.square_root(f1): " <> float.square_root(f1) |> string.inspect,
-    "float.subtract(f1, 1.0): " <> float.subtract(f1, 1.0) |> string.inspect,
-    "float.sum([1.0, 2.0, 3.0]): "
-      <> float.sum([1.0, 2.0, 3.0]) |> string.inspect,
-    "float.random(): " <> float.random() |> string.inspect,
-    "float.round(f1): " <> float.round(f1) |> string.inspect,
-    "float.truncate(f1): " <> float.truncate(f1) |> string.inspect,
+      <> float.product([1.0, 2.0, 3.0]) |> inspect,
+    "float.round(f1): " <> float.round(f1) |> inspect,
+    "float.square_root(f1): " <> float.square_root(f1) |> inspect,
+    "float.subtract(f1, 1.0): " <> float.subtract(f1, 1.0) |> inspect,
+    "float.sum([1.0, 2.0, 3.0]): " <> float.sum([1.0, 2.0, 3.0]) |> inspect,
+    "float.random(): " <> float.random() |> inspect,
+    "float.round(f1): " <> float.round(f1) |> inspect,
+    "float.truncate(f1): " <> float.truncate(f1) |> inspect,
   ]
 
   list.each(results, io.println)
@@ -187,27 +211,27 @@ fn basic_ints() -> Nil {
   let i2 = 7
 
   let results = [
-    "i1: " <> i1 |> string.inspect,
-    "i2: " <> i2 |> string.inspect,
-    "int.add(i1, 1): " <> int.add(i1, 1) |> string.inspect,
-    "int.compare(i1, 1): " <> int.compare(i1, 1) |> string.inspect,
-    "int.absolute_value(i2): " <> int.absolute_value(i2) |> string.inspect,
-    "int.clamp(i1, 3, 4): " <> int.clamp(i1, 3, 4) |> string.inspect,
-    "int.divide(i1, 2): " <> int.divide(i1, 2) |> string.inspect,
-    "int.is_even(i1): " <> int.is_even(i1) |> string.inspect,
-    "int.is_odd(i1): " <> int.is_odd(i1) |> string.inspect,
-    "int.divide(i1, 2): " <> int.divide(i1, 2) |> string.inspect,
-    "int.max(i1, 4): " <> int.max(i1, 4) |> string.inspect,
-    "int.min(i1, 2): " <> int.min(i1, 2) |> string.inspect,
-    "int.modulo(i1, 2): " <> int.modulo(i1, 2) |> string.inspect,
-    "int.multiply(i1, 2): " <> int.multiply(i1, 2) |> string.inspect,
-    "int.negate(i1): " <> int.negate(i1) |> string.inspect,
-    "int.parse(\"3.14\"): " <> int.parse("3.14") |> string.inspect,
-    "int.power(i1, 2.0) : " <> int.power(i1, 2.0) |> string.inspect,
-    "int.product([1, 2, 3]): " <> int.product([1, 2, 3]) |> string.inspect,
-    "int.square_root(i1): " <> int.square_root(i1) |> string.inspect,
-    "int.subtract(i1, 1): " <> int.subtract(i1, 1) |> string.inspect,
-    "int.sum([1, 2, 3]): " <> int.sum([1, 2, 3]) |> string.inspect,
+    "i1: " <> i1 |> inspect,
+    "i2: " <> i2 |> inspect,
+    "int.add(i1, 1): " <> int.add(i1, 1) |> inspect,
+    "int.compare(i1, 1): " <> int.compare(i1, 1) |> inspect,
+    "int.absolute_value(i2): " <> int.absolute_value(i2) |> inspect,
+    "int.clamp(i1, 3, 4): " <> int.clamp(i1, 3, 4) |> inspect,
+    "int.divide(i1, 2): " <> int.divide(i1, 2) |> inspect,
+    "int.is_even(i1): " <> int.is_even(i1) |> inspect,
+    "int.is_odd(i1): " <> int.is_odd(i1) |> inspect,
+    "int.divide(i1, 2): " <> int.divide(i1, 2) |> inspect,
+    "int.max(i1, 4): " <> int.max(i1, 4) |> inspect,
+    "int.min(i1, 2): " <> int.min(i1, 2) |> inspect,
+    "int.modulo(i1, 2): " <> int.modulo(i1, 2) |> inspect,
+    "int.multiply(i1, 2): " <> int.multiply(i1, 2) |> inspect,
+    "int.negate(i1): " <> int.negate(i1) |> inspect,
+    "int.parse(\"3.14\"): " <> int.parse("3.14") |> inspect,
+    "int.power(i1, 2.0) : " <> int.power(i1, 2.0) |> inspect,
+    "int.product([1, 2, 3]): " <> int.product([1, 2, 3]) |> inspect,
+    "int.square_root(i1): " <> int.square_root(i1) |> inspect,
+    "int.subtract(i1, 1): " <> int.subtract(i1, 1) |> inspect,
+    "int.sum([1, 2, 3]): " <> int.sum([1, 2, 3]) |> inspect,
   ]
 
   list.each(results, io.println)
@@ -217,7 +241,7 @@ fn basic_strings() -> Nil {
   let results = [
     "string.append(\"Bar\", \"nacles\"): " <> string.append("Bar", "nacles"),
     "string.byte_size(\"Where's the leak, ma'am?\"): "
-      <> string.byte_size("Where's the leak, ma'am?") |> string.inspect,
+      <> string.byte_size("Where's the leak, ma'am?") |> inspect,
     "string.capitalise(\"the owner of the white sedan, you left your lights on\"): "
       <> string.capitalise(
       "the owner of the white sedan, you left your lights on",
@@ -226,28 +250,27 @@ fn basic_strings() -> Nil {
       <> string.concat(["Who", " ", "are", " ", "you", " ", "people?"]),
     "string.contains(does: \"Not even Squidward's house\", contain: \"id\"): "
       <> string.contains(does: "Not even Squidward's house", contain: "id")
-    |> string.inspect,
+    |> inspect,
     "string.ends_with(\"Help me boy or you're fired\", \"fired\"): "
       <> string.ends_with("Help me boy or you're fired", "fired")
-    |> string.inspect,
+    |> inspect,
     "string.first(\"Yeah! E minor! All right! Yeah!\"): "
-      <> string.first("Yeah! E minor! All right! Yeah!") |> string.inspect,
-    "string.inspect([1, 2, 3]): " <> string.inspect([1, 2, 3]),
+      <> string.first("Yeah! E minor! All right! Yeah!") |> inspect,
+    "inspect([1, 2, 3]): " <> inspect([1, 2, 3]),
     "string.is_empty(\"Mr. Krabs, I have an idea!\"): "
-      <> string.is_empty("Mr. Krabs, I have an idea!") |> string.inspect,
+      <> string.is_empty("Mr. Krabs, I have an idea!") |> inspect,
     "string.join([\"I\", \"wumbo\", \"you\", \"wumbo\"], \" \"): "
       <> string.join(["I", "wumbo", "you", "wumbo"], " "),
-    "string.last(\"We're doomed\"): "
-      <> string.last("We're doomed") |> string.inspect,
+    "string.last(\"We're doomed\"): " <> string.last("We're doomed") |> inspect,
     "string.length(\"Meet my darling daughter, Pearl!\"): "
-      <> string.length("Meet my darling daughter, Pearl!") |> string.inspect,
+      <> string.length("Meet my darling daughter, Pearl!") |> inspect,
     "string.lowercase(\"I CAN'T SEE MY FOREHEAD\"): "
       <> string.lowercase("I CAN'T SEE MY FOREHEAD"),
     "string.pad_left(\"25\", 4, \"0\"): " <> string.pad_left("25", 4, "0"),
     "string.repeat(\"I'm ready!  \", 3): " <> string.repeat("I'm ready!  ", 3),
     "string.pad_right(\"25\", 4, \".\"): " <> string.pad_right("25", 4, "."),
     "string.pop_grapheme(\"This is a load of barnacles!\"): "
-      <> string.pop_grapheme("This is a load of barnacles!") |> string.inspect,
+      <> string.pop_grapheme("This is a load of barnacles!") |> inspect,
     "string.replace(\"I'm ready!  \", \"ready\", \"not ready\"): "
       <> string.replace("I'm ready!  ", "ready", "not ready"),
     "string.reverse(\"People order our patties\"): "
@@ -260,16 +283,16 @@ fn basic_strings() -> Nil {
     ),
     "string.split(\"Your ceiling is talking to me!\", \" \"): "
       <> string.split("Your ceiling is talking to me!", " ")
-    |> string.inspect,
+    |> inspect,
     "string.starts_with(\"It's okay, take your time\", \"I\"): "
-      <> string.starts_with("It's okay, take your time", "I") |> string.inspect,
+      <> string.starts_with("It's okay, take your time", "I") |> inspect,
     "string.to_graphemes(\"Me hoy minoy ✏️\") :"
-      <> string.to_graphemes("Me hoy minoy ✏️") |> string.inspect,
+      <> string.to_graphemes("Me hoy minoy ✏️") |> inspect,
     "string.trim(\"   Too bad that didn't kill me   \"): "
       <> string.trim("   Too bad that didn't kill me   "),
     "string.uppercase(\"moar!\"): " <> string.uppercase("moar!"),
     "string.to_utf_codepoints(\"Você tá bem?\"): "
-      <> string.to_utf_codepoints("Você tá bem?") |> string.inspect,
+      <> string.to_utf_codepoints("Você tá bem?") |> inspect,
   ]
 
   list.each(results, io.println)
@@ -311,34 +334,32 @@ fn basic_results() -> Nil {
   }
 
   let results = [
-    "r1: " <> r1 |> string.inspect,
-    "r2: " <> r2 |> string.inspect,
+    "r1: " <> r1 |> inspect,
+    "r2: " <> r2 |> inspect,
     "result.all([Ok(\"Yes\"), Ok(\"Sim\")]): "
-      <> result.all([Ok("Yes"), Ok("Sim")]) |> string.inspect,
-    "result.flatten(Ok(Ok(r1))): "
-      <> result.flatten(Ok(Ok("Yes"))) |> string.inspect,
-    "result.is_error(r2): " <> result.is_error(r2) |> string.inspect,
-    "result.is_ok(Ok(r1)): " <> result.is_ok(Ok(r1)) |> string.inspect,
+      <> result.all([Ok("Yes"), Ok("Sim")]) |> inspect,
+    "result.flatten(Ok(Ok(r1))): " <> result.flatten(Ok(Ok("Yes"))) |> inspect,
+    "result.is_error(r2): " <> result.is_error(r2) |> inspect,
+    "result.is_ok(Ok(r1)): " <> result.is_ok(Ok(r1)) |> inspect,
     "result.lazy_or(r2, fn () { Ok(\"yup!!\") }): "
-      <> result.lazy_or(r2, fn() { Ok("yup!!") }) |> string.inspect,
+      <> result.lazy_or(r2, fn() { Ok("yup!!") }) |> inspect,
     "result.lazy_unwrap(r2, fn () { \"yup!!\" }): "
       <> result.lazy_unwrap(r2, fn() { "yup!!" }),
     "result.map(r1, string.uppercase): "
-      <> result.map(r1, string.uppercase) |> string.inspect,
+      <> result.map(r1, string.uppercase) |> inspect,
     "result.map_error(r2, string.uppercase): "
-      <> result.map_error(r2, string.uppercase) |> string.inspect,
-    "result.or(r2, r1): " <> result.or(r2, r1) |> string.inspect,
-    "result.replace(r1, \"Yes\"): "
-      <> result.replace(r1, "Yes") |> string.inspect,
+      <> result.map_error(r2, string.uppercase) |> inspect,
+    "result.or(r2, r1): " <> result.or(r2, r1) |> inspect,
+    "result.replace(r1, \"Yes\"): " <> result.replace(r1, "Yes") |> inspect,
     "result.replace_error(r2, \"No\"): "
-      <> result.replace_error(r2, "No") |> string.inspect,
+      <> result.replace_error(r2, "No") |> inspect,
     "result.try(r1, fn(v) { Ok(string.uppercase(v)) }): "
       <> result.try(r1, fn(v) { Ok(string.uppercase(v)) })
-    |> string.inspect,
+    |> inspect,
     "result.try_recover(r2, fn(e) { Error(string.uppercase(e)) }): "
       <> result.try_recover(r2, fn(e) { Error(string.uppercase(e)) })
-    |> string.inspect,
-    "result.unwrap(r2, \"Yes\"): " <> result.unwrap(r2, "Yes") |> string.inspect,
+    |> inspect,
+    "result.unwrap(r2, \"Yes\"): " <> result.unwrap(r2, "Yes") |> inspect,
   ]
 
   list.each(results, io.println)
@@ -356,27 +377,26 @@ fn basic_options() -> Nil {
   }
 
   let results = [
-    "o1: " <> o1 |> string.inspect,
-    "o2: " <> o2 |> string.inspect,
-    "option.all([o1, o1]): " <> option.all([o1, o1]) |> string.inspect,
-    "option.flatten(Some(o1)): " <> option.flatten(Some(o1)) |> string.inspect,
+    "o1: " <> o1 |> inspect,
+    "o2: " <> o2 |> inspect,
+    "option.all([o1, o1]): " <> option.all([o1, o1]) |> inspect,
+    "option.flatten(Some(o1)): " <> option.flatten(Some(o1)) |> inspect,
     "option.from_result(Ok(\"Yes\")): "
-      <> option.from_result(Ok("Yes")) |> string.inspect,
-    "option.is_none(o2): " <> option.is_none(o2) |> string.inspect,
-    "option.is_some(o1): " <> option.is_some(o1) |> string.inspect,
+      <> option.from_result(Ok("Yes")) |> inspect,
+    "option.is_none(o2): " <> option.is_none(o2) |> inspect,
+    "option.is_some(o1): " <> option.is_some(o1) |> inspect,
     "option.lazy_or(o2, fn () { Some(\"yup!!\") }): "
-      <> option.lazy_or(o2, fn() { Some("yup!!") }) |> string.inspect,
+      <> option.lazy_or(o2, fn() { Some("yup!!") }) |> inspect,
     "option.lazy_unwrap(o2, fn () { \"yup!!\" }): "
       <> option.lazy_unwrap(o2, fn() { "yup!!" }),
     "option.map(o1, string.uppercase): "
-      <> option.map(o1, string.uppercase) |> string.inspect,
-    "option.or(o2, o1): " <> option.or(o2, o1) |> string.inspect,
+      <> option.map(o1, string.uppercase) |> inspect,
+    "option.or(o2, o1): " <> option.or(o2, o1) |> inspect,
     "option.then(o1, fn(v) { Some(string.uppercase(v)) }): "
       <> option.then(o1, fn(v) { Some(string.uppercase(v)) })
-    |> string.inspect,
-    "option.unwrap(o2, \"Yes\"): " <> option.unwrap(o2, "Yes") |> string.inspect,
-    "option.values([o1, o2, o1]): "
-      <> option.values([o1, o2, o1]) |> string.inspect,
+    |> inspect,
+    "option.unwrap(o2, \"Yes\"): " <> option.unwrap(o2, "Yes") |> inspect,
+    "option.values([o1, o2, o1]): " <> option.values([o1, o2, o1]) |> inspect,
   ]
 
   list.each(results, io.println)
@@ -394,65 +414,62 @@ fn basic_lists() -> Nil {
   }
 
   let results = [
-    "l1: " <> l1 |> string.inspect,
+    "l1: " <> l1 |> inspect,
     "list.map(l1, fn(n) { n * 2 }): "
-      <> list.map(l1, fn(n) { n * 2 }) |> string.inspect,
+      <> list.map(l1, fn(n) { n * 2 }) |> inspect,
     "list.all(l1, fn(n) { n > 0 }): "
-      <> list.all(l1, fn(n) { n > 0 }) |> string.inspect,
-    "list.any(l1, int.is_even): " <> list.any(l1, int.is_even) |> string.inspect,
-    "list.append(l1, [6]): " <> list.append(l1, [6]) |> string.inspect,
+      <> list.all(l1, fn(n) { n > 0 }) |> inspect,
+    "list.any(l1, int.is_even): " <> list.any(l1, int.is_even) |> inspect,
+    "list.append(l1, [6]): " <> list.append(l1, [6]) |> inspect,
     "list.combination_pairs([1,2,3]): "
-      <> list.combination_pairs([1, 2, 3]) |> string.inspect,
+      <> list.combination_pairs([1, 2, 3]) |> inspect,
     "list.combinations([1,2,3,4], 3): "
-      <> list.combinations([1, 2, 3, 4], 3) |> string.inspect,
-    "list.concat([l1, [6]]): " <> list.concat([l1, [6]]) |> string.inspect,
-    "list.contains(l1, 2): " <> list.contains(l1, 2) |> string.inspect,
-    "list.each([], fn (v) { v |> string.inspect |> io.println }): "
-      <> list.each([], fn(v) { v |> string.inspect |> io.println })
-    |> string.inspect,
-    "list.filter(l1, int.is_even): "
-      <> list.filter(l1, int.is_even) |> string.inspect,
+      <> list.combinations([1, 2, 3, 4], 3) |> inspect,
+    "list.concat([l1, [6]]): " <> list.concat([l1, [6]]) |> inspect,
+    "list.contains(l1, 2): " <> list.contains(l1, 2) |> inspect,
+    "list.each([], fn (v) { v |> inspect |> io.println }): "
+      <> list.each([], fn(v) { v |> inspect |> io.println })
+    |> inspect,
+    "list.filter(l1, int.is_even): " <> list.filter(l1, int.is_even) |> inspect,
     "list.find(l1, fn(n) { n > 3 }): "
-      <> list.find(l1, fn(n) { n > 3 }) |> string.inspect,
+      <> list.find(l1, fn(n) { n > 3 }) |> inspect,
     "list.filter_map(l1, keep_even_and_double): "
-      <> list.filter_map(l1, keep_even_and_double) |> string.inspect,
-    "list.first(l1): " <> list.first(l1) |> string.inspect,
+      <> list.filter_map(l1, keep_even_and_double) |> inspect,
+    "list.first(l1): " <> list.first(l1) |> inspect,
     "list.flat_map(l1, fn(n) { [n - 1, n + 1] }): "
-      <> list.flat_map(l1, fn(n) { [n - 1, n + 1] }) |> string.inspect,
+      <> list.flat_map(l1, fn(n) { [n - 1, n + 1] }) |> inspect,
     "list.flatten([[1, 2], [3, 4]]): "
-      <> list.flatten([[1, 2], [3, 4]]) |> string.inspect,
+      <> list.flatten([[1, 2], [3, 4]]) |> inspect,
     "list.fold(l1, 1, fn(acc, curr) { acc * curr }): "
-      <> list.fold(l1, 1, fn(acc, curr) { acc * curr }) |> string.inspect,
+      <> list.fold(l1, 1, fn(acc, curr) { acc * curr }) |> inspect,
     // list.group
-    "list.is_empty(l1): " <> list.is_empty(l1) |> string.inspect,
-    "list.last(l1): " <> list.last(l1) |> string.inspect,
-    "list.length(l1): " <> list.length(l1) |> string.inspect,
+    "list.is_empty(l1): " <> list.is_empty(l1) |> inspect,
+    "list.last(l1): " <> list.last(l1) |> inspect,
+    "list.length(l1): " <> list.length(l1) |> inspect,
     "list.map(l1, fn(n) { n * 2 }): "
-      <> list.map(l1, fn(n) { n * 2 }) |> string.inspect,
+      <> list.map(l1, fn(n) { n * 2 }) |> inspect,
     "list.partition(l1, int.is_even): "
-      <> list.partition(l1, int.is_even) |> string.inspect,
-    "list.permutations([1, 2, 3]): "
-      <> list.permutations([1, 2, 3]) |> string.inspect,
-    "list.prepend(l1, 0): " <> list.prepend(l1, 0) |> string.inspect,
-    "list.range(0, 5): " <> list.range(0, 5) |> string.inspect,
+      <> list.partition(l1, int.is_even) |> inspect,
+    "list.permutations([1, 2, 3]): " <> list.permutations([1, 2, 3]) |> inspect,
+    "list.prepend(l1, 0): " <> list.prepend(l1, 0) |> inspect,
+    "list.range(0, 5): " <> list.range(0, 5) |> inspect,
     "list.reduce(l1, fn(acc, curr) { acc * curr }): "
-      <> list.reduce(l1, fn(acc, curr) { acc * curr }) |> string.inspect,
-    "list.repeat(0, 5): " <> list.repeat(0, 5) |> string.inspect,
-    "list.rest(l1): " <> list.rest(l1) |> string.inspect,
-    "list.reverse(l1): " <> list.reverse(l1) |> string.inspect,
-    "list.shuffle(l1): " <> list.shuffle(l1) |> string.inspect,
-    "list.sized_chunk(l1, 2): " <> list.sized_chunk(l1, 2) |> string.inspect,
-    "list.sort(l1, int.compare): "
-      <> list.sort(l1, int.compare) |> string.inspect,
-    "list.take(l1, 3): " <> list.take(l1, 3) |> string.inspect,
+      <> list.reduce(l1, fn(acc, curr) { acc * curr }) |> inspect,
+    "list.repeat(0, 5): " <> list.repeat(0, 5) |> inspect,
+    "list.rest(l1): " <> list.rest(l1) |> inspect,
+    "list.reverse(l1): " <> list.reverse(l1) |> inspect,
+    "list.shuffle(l1): " <> list.shuffle(l1) |> inspect,
+    "list.sized_chunk(l1, 2): " <> list.sized_chunk(l1, 2) |> inspect,
+    "list.sort(l1, int.compare): " <> list.sort(l1, int.compare) |> inspect,
+    "list.take(l1, 3): " <> list.take(l1, 3) |> inspect,
     "list.transpose([[1, 2], [3, 4], [5, 6]]): "
-      <> list.transpose([[1, 2], [3, 4], [5, 6]]) |> string.inspect,
+      <> list.transpose([[1, 2], [3, 4], [5, 6]]) |> inspect,
     "list.try_map(l1, fn(n) { Ok(n * 2) }): "
-      <> list.try_map(l1, fn(n) { Ok(n * 2) }) |> string.inspect,
-    "list.unique(l1): " <> list.unique(l1) |> string.inspect,
+      <> list.try_map(l1, fn(n) { Ok(n * 2) }) |> inspect,
+    "list.unique(l1): " <> list.unique(l1) |> inspect,
     // list.window
-    "list.zip(l1, l1): " <> list.zip(l1, l1) |> string.inspect,
-    // "list.wrap(1): " <> list.wrap(1) |> string.inspect,
+    "list.zip(l1, l1): " <> list.zip(l1, l1) |> inspect,
+    // "list.wrap(1): " <> list.wrap(1) |> inspect,
   ]
 
   list.each(results, io.println)
@@ -463,12 +480,12 @@ fn basic_tuples() -> Nil {
   let #(a, b, c) = t1
 
   let results = [
-    "t1: " <> t1 |> string.inspect,
-    "t1.0: " <> t1.0 |> string.inspect,
+    "t1: " <> t1 |> inspect,
+    "t1.0: " <> t1.0 |> inspect,
     "Destructuring like `let #(a, b, c) = t1`",
-    "a: " <> a |> string.inspect,
-    "b: " <> b |> string.inspect,
-    "c: " <> c |> string.inspect,
+    "a: " <> a |> inspect,
+    "b: " <> b |> inspect,
+    "c: " <> c |> inspect,
   ]
 
   list.each(results, io.println)
@@ -479,26 +496,24 @@ fn basic_dicts() -> Nil {
   let d2 = dict.from_list([#("d", 4), #("e", 5)])
 
   let results = [
-    "d1: " <> d1 |> string.inspect,
-    "dict.delete(d1, \"c\"): " <> dict.delete(d1, "c") |> string.inspect,
-    "dict.drop(d1, [\"c\", \"d\"]): "
-      <> dict.drop(d1, ["c", "d"]) |> string.inspect,
+    "d1: " <> d1 |> inspect,
+    "dict.delete(d1, \"c\"): " <> dict.delete(d1, "c") |> inspect,
+    "dict.drop(d1, [\"c\", \"d\"]): " <> dict.drop(d1, ["c", "d"]) |> inspect,
     // dict.each
     "dict.filter(d1, fn(_k, v) { v > 2 }): "
-      <> dict.filter(d1, fn(_k, v) { v > 2 }) |> string.inspect,
-    "dict.get(d1, \"a\"): " <> dict.get(d1, "a") |> string.inspect,
-    "dict.has_key(d1, \"a\"): " <> dict.has_key(d1, "a") |> string.inspect,
-    "dict.insert(d1, \"d\", 4): " <> dict.insert(d1, "d", 4) |> string.inspect,
-    "dict.keys(d1): " <> dict.keys(d1) |> string.inspect,
+      <> dict.filter(d1, fn(_k, v) { v > 2 }) |> inspect,
+    "dict.get(d1, \"a\"): " <> dict.get(d1, "a") |> inspect,
+    "dict.has_key(d1, \"a\"): " <> dict.has_key(d1, "a") |> inspect,
+    "dict.insert(d1, \"d\", 4): " <> dict.insert(d1, "d", 4) |> inspect,
+    "dict.keys(d1): " <> dict.keys(d1) |> inspect,
     "dict.map_values(d1, fn(_k, v) { v * 2 }): "
-      <> dict.map_values(d1, fn(_k, v) { v * 2 }) |> string.inspect,
-    "dict.merge(d1, d2): " <> dict.merge(d1, d2) |> string.inspect,
-    "dict.size(d1): " <> dict.size(d1) |> string.inspect,
-    "dict.take(d1, [\"a\", \"b\"]): "
-      <> dict.take(d1, ["a", "b"]) |> string.inspect,
-    "dict.to_list(d1): " <> dict.to_list(d1) |> string.inspect,
+      <> dict.map_values(d1, fn(_k, v) { v * 2 }) |> inspect,
+    "dict.merge(d1, d2): " <> dict.merge(d1, d2) |> inspect,
+    "dict.size(d1): " <> dict.size(d1) |> inspect,
+    "dict.take(d1, [\"a\", \"b\"]): " <> dict.take(d1, ["a", "b"]) |> inspect,
+    "dict.to_list(d1): " <> dict.to_list(d1) |> inspect,
     // dict.update
-    "dict.values(d1): " <> dict.values(d1) |> string.inspect,
+    "dict.values(d1): " <> dict.values(d1) |> inspect,
   ]
 
   list.each(results, io.println)
@@ -527,9 +542,27 @@ fn basic_records() -> Nil {
   greet(student)
 }
 
-fn basic_functions() -> Nil {
-  // https://hexdocs.pm/gleam_stdlib/gleam/function.html
-  io.println("...")
+fn basic_function_curry() -> Nil {
+  let add_one = function.curry2(int.add)(1)
+  io.println("add_one(2): " <> add_one(2) |> inspect)
+}
+
+fn recursive_sum(ints: List(Int), total: Int) -> Int {
+  case ints {
+    [first, ..rest] -> recursive_sum(rest, total + first)
+    [] -> total
+  }
+}
+
+fn basic_function_recursion() -> Nil {
+  io.println(
+    "recursive_sum([1, 2, 3], 0): " <> recursive_sum([1, 2, 3], 0) |> inspect,
+  )
+}
+
+fn basic_function_captures() -> Nil {
+  let add_one = int.add(1, _)
+  io.println("add_one(2): " <> add_one(2) |> inspect)
 }
 
 type Person =
@@ -562,7 +595,7 @@ fn get_initials(person: Person) -> Result(String, String) {
   |> result.replace_error("Couldn't get initials")
 }
 
-fn results_with_try_and_callbacks() {
+fn results_with_callback() {
   result.try(fetch_people(), fn(people) {
     result.try(find_person(people, 1), fn(person) {
       result.try(get_initials(person), fn(initials) {
@@ -572,7 +605,7 @@ fn results_with_try_and_callbacks() {
   })
 }
 
-fn results_with_then() {
+fn results_with_pipe() {
   fetch_people()
   |> result.then(fn(people) { find_person(people, 1) })
   |> result.then(fn(person) { get_initials(person) })
@@ -586,24 +619,40 @@ fn results_with_use() {
   Ok("Initials: " <> initials)
 }
 
-fn basic_use() -> Nil {
-  let results =
-    dict.from_list([
-      #("Results with callback: ", results_with_try_and_callbacks()),
-      #("Results with pipe: ", results_with_then()),
-      #("Results with use: ", results_with_use()),
-    ])
-  dict.each(results, fn(label, res) {
-    io.println(label)
-    case res {
-      Ok(v) -> io.println(v)
-      Error(e) -> io.println(e)
+fn as_snag(res, message) {
+  let issue = case res {
+    Ok(_) -> None
+    Error(e) -> Some(inspect(e))
+  }
+  let s = {
+    let s = snag.new(message)
+    case issue {
+      Some(i) -> snag.layer(s, i)
+      None -> s
     }
-  })
+  }
+  result.replace_error(res, s)
 }
 
-fn basic_dynamic() -> Nil {
-  io.println("...")
+fn snag_try(res, message, func) {
+  result.try(as_snag(res, message), func)
+}
+
+fn results_with_snag() {
+  use people <- snag_try(fetch_people(), "Oops, couldn't fetch")
+  use person <- snag_try(find_person(people, 1), "Oops, couldn't find person")
+  use initials <- snag_try(get_initials(person), "Oops, couldn't get initials")
+  Ok("Initials: " <> initials)
+}
+
+fn basic_use() -> Nil {
+  let outputs = [
+    "Results with callback: " <> results_with_callback() |> inspect,
+    "Results with pipe: " <> results_with_pipe() |> inspect,
+    "Results with use: " <> results_with_use() |> inspect,
+    "Results with snag: " <> results_with_snag() |> inspect,
+  ]
+  list.each(outputs, io.println)
 }
 
 fn basic_let_assert() -> Nil {
@@ -611,46 +660,76 @@ fn basic_let_assert() -> Nil {
   let l1 = [1, 2, 3]
   let assert Ok(num1) = list.first(l1)
 
-  let results = [
-    "l1: " <> l1 |> string.inspect,
-    "num1: " <> num1 |> string.inspect,
-  ]
+  let results = ["l1: " <> l1 |> inspect, "num1: " <> num1 |> inspect]
 
   list.each(results, io.println)
 }
 
 fn basic_regex() -> Nil {
-  io.println("...")
+  // String to test against
+  let s1 =
+    "In order to survive, we cling to all we know and understand. "
+    <> "And label it reality. "
+    <> "But knowledge and understanding are ambiguous. "
+    <> "That reality could be an illusion. "
+    <> "All humans live with the wrong assumptions."
+
+  let check = fn(pattern: String, str: String) -> Bool {
+    let assert Ok(re) = regex.from_string(pattern)
+    regex.check(re, str)
+  }
+
+  io.println(s1)
+  let results = [
+    "contains 'ambiguous': " <> check("ambiguous", s1) |> inspect,
+    "begins_with 'In': " <> check("^In", s1) |> inspect,
+    "ends_with 'assumptions.': " <> check("assumptions.$", s1) |> inspect,
+    "one_or_more 'Al+.': " <> check("Al+", s1) |> inspect,
+    "zero_or_one 'labels?': " <> check("labels?", s1) |> inspect,
+    "zero_or_more 'il*usion': " <> check("il*usion", s1) |> inspect,
+    "one_of 'B[aeiou]t': " <> check("B[aeiou]t", s1) |> inspect,
+    "match_or 'equivocal|ambiguous': "
+      <> check("equivocal|ambiguous", s1) |> inspect,
+    "not '[^sharingan]': " <> check("[^sharingan]", s1) |> inspect,
+    "any_char 'under.tanding': " <> check("under.tanding", s1) |> inspect,
+    "zero_to_three 'Al{0,3}': " <> check("Al{0,3}", s1) |> inspect,
+    "insensitive '(?i)REALITY': " <> check("(?i)REALITY", s1) |> inspect,
+    "seven_lower '[a-z]{7}': " <> check("[a-z]{7}", s1) |> inspect,
+    "four_alnum '[[:alnum:]]{4} reality': "
+      <> check("[[:alnum:]]{4} reality", s1) |> inspect,
+  ]
+
+  list.each(results, io.println)
 }
 
 fn basic_erlang() -> Nil {
   // erlang.sleep(1)
 
   let results = [
-    "erlang.erlang_timestamp(): " <> erlang.erlang_timestamp() |> string.inspect,
+    "erlang.erlang_timestamp(): " <> erlang.erlang_timestamp() |> inspect,
   ]
 
   list.each(results, io.println)
 }
 
-fn basic_filepath() -> Nil {
+fn basic_path() -> Nil {
   let dir1 = "."
   let dir2 = "./a/b/c/d.txt"
   let dir3 = "~"
 
-  let join_paths = fn(paths: List(String)) { list.reduce(paths, filepath.join) }
+  let join_paths = fn(paths: List(String)) { list.reduce(paths, path.join) }
 
   let results = [
     "dir1: " <> dir1,
     "dir2: " <> dir2,
     "dir3: " <> dir3,
-    "filepath.base_name(dir2): " <> filepath.base_name(dir2),
-    "filepath.directory_name(dir2): " <> filepath.directory_name(dir2),
-    "filepath.expand(dir3): " <> filepath.expand(dir3) |> string.inspect,
-    "filepath.extension(dir2): " <> filepath.extension(dir2) |> string.inspect,
+    "path.base_name(dir2): " <> path.base_name(dir2),
+    "path.directory_name(dir2): " <> path.directory_name(dir2),
+    "path.expand(dir3): " <> path.expand(dir3) |> inspect,
+    "path.extension(dir2): " <> path.extension(dir2) |> inspect,
     "join_paths([\".\", \"data\", \"input\"]): "
-      <> join_paths([".", "data", "input"]) |> string.inspect,
-    "filepath.split(dir2): " <> filepath.split(dir2) |> string.inspect,
+      <> join_paths([".", "data", "input"]) |> inspect,
+    "path.split(dir2): " <> path.split(dir2) |> inspect,
   ]
 
   list.each(results, io.println)
@@ -663,23 +742,56 @@ fn basic_file() -> Nil {
   let results = [
     "dir1: " <> dir1,
     "filename1: " <> filename1,
-    "file.current_directory(): " <> file.current_directory() |> string.inspect,
-    "file.is_directory(dir1): " <> file.is_directory(dir1) |> string.inspect,
-    "file.is_file(filename1): " <> file.is_file(filename1) |> string.inspect,
-    "file.is_symlink(filename1): "
-      <> file.is_symlink(filename1) |> string.inspect,
-    "file.get_files(dir1): " <> file.get_files(dir1) |> string.inspect,
+    "file.current_directory(): " <> file.current_directory() |> inspect,
+    "file.is_directory(dir1): " <> file.is_directory(dir1) |> inspect,
+    "file.is_file(filename1): " <> file.is_file(filename1) |> inspect,
+    "file.is_symlink(filename1): " <> file.is_symlink(filename1) |> inspect,
+    "file.get_files(dir1): " <> file.get_files(dir1) |> inspect,
     "file.file_info(filename1) |> result.map(fn(info) { info.size }): "
       <> file.file_info(filename1)
     |> result.map(fn(info) { info.size })
-    |> string.inspect,
+    |> inspect,
   ]
 
   list.each(results, io.println)
 }
 
+fn file_io_example() {
+  let data_dir = path.join(".", "data")
+  let input_dir = path.join(data_dir, "input")
+  let output_dir = path.join(data_dir, "output")
+  let file1_name = "report.txt"
+  let file1_path = path.join(input_dir, file1_name)
+  let file1_copy_path = path.join(output_dir, file1_name)
+
+  use _ <- result.try(file.create_directory_all(input_dir))
+  use _ <- result.try(file.create_directory(output_dir))
+  use _ <- result.try(file.create_file(file1_path))
+  use _ <- result.try(file.write(file1_path, "Who you calling pinhead?"))
+  use contents1 <- result.try(file.read(file1_path))
+  io.println("file: " <> file1_path)
+  io.println("contents: " <> contents1)
+
+  use _ <- result.try(file.copy_file(file1_path, file1_copy_path))
+  use _ <- result.try(file.append(file1_copy_path, " I can't see my forehead."))
+  use contents2 <- result.try(file.read(file1_copy_path))
+  io.println("file: " <> file1_copy_path)
+  io.println("contents: " <> contents2)
+
+  use _ <- result.try(file.delete(file1_copy_path))
+  use _ <- result.try(file.delete(file1_path))
+  use _ <- result.try(file.delete(output_dir))
+  use _ <- result.try(file.delete(input_dir))
+  use _ <- result.try(file.delete(data_dir))
+  Ok(Nil)
+}
+
 fn basic_file_io() -> Nil {
-  io.println("...")
+  let res = file_io_example()
+  case res {
+    Ok(_) -> io.println("Success")
+    Error(e) -> e |> inspect |> io.println()
+  }
 }
 
 fn basic_os() -> Nil {
@@ -687,10 +799,10 @@ fn basic_os() -> Nil {
 
   let results = [
     "dir1: " <> dir1,
-    "os.family(): " <> os.family() |> string.inspect,
-    "os.get_all_env()[\"HOME\"]: "
-      <> os.get_all_env() |> dict.get("HOME") |> string.inspect,
-    "os.get_env(\"USER\"): " <> os.get_env("USER") |> string.inspect,
+    "os.family(): " <> os.family() |> inspect,
+    "os.get_all_env() |> dict.get(\"HOME\"): "
+      <> os.get_all_env() |> dict.get("HOME") |> inspect,
+    "os.get_env(\"USER\"): " <> os.get_env("USER") |> inspect,
   ]
 
   list.each(results, io.println)
@@ -701,17 +813,131 @@ fn basic_process() -> Nil {
   io.println("...")
 }
 
-fn basic_http() -> Nil {
-  io.println("...")
+fn basic_env() -> Nil {
+  let results = [
+    "envoy.all() |> dict.get(\"HOME\"): "
+      <> envoy.all() |> dict.get("HOME") |> inspect,
+    "envoy.get(\"USER\"): " <> envoy.get("USER") |> inspect,
+  ]
+  // envoy.set
+  // envoy.unset
+
+  list.each(results, io.println)
+}
+
+fn basic_uuid() -> Nil {
+  let results = [
+    "uuid.v4_string(): " <> uuid.v4_string(),
+    "uuid.v4(): " <> uuid.v4() |> inspect,
+    "uuid.v4_string() |> uuid.from_string: "
+      <> uuid.v4_string() |> uuid.from_string |> inspect,
+    "uuid.v4() |> uuid.to_string: " <> uuid.v4() |> uuid.to_string,
+    "uuid.v4() |> uuid.variant: " <> uuid.v4() |> uuid.variant |> inspect,
+    "uuid.v4() |> uuid.version: " <> uuid.v4() |> uuid.version |> inspect,
+  ]
+
+  list.each(results, io.println)
+}
+
+fn basic_dynamic() -> Nil {
+  let results = [
+    // any
+    "dynamic.bool(dynamic.from(True)): "
+      <> dynamic.bool(dynamic.from(True)) |> inspect,
+    "dynamic.classify(dynamic.from(True)): "
+      <> dynamic.classify(dynamic.from(True)) |> inspect,
+    // decode1, ..., decode9
+    // dict
+    "dynamic.dynamic(dynamic.from(True)): "
+      <> dynamic.dynamic(dynamic.from(True)) |> inspect,
+    // element
+    // field
+    "dynamic.float(dynamic.from(1.0)): "
+      <> dynamic.float(dynamic.from(1.0)) |> inspect,
+    // from
+    "dynamic.int(dynamic.from(1)): " <> dynamic.int(dynamic.from(1)) |> inspect,
+    "dynamic.list(dynamic.int)(dynamic.from([1, 2, 3])): "
+      <> dynamic.list(dynamic.int)(dynamic.from([1, 2, 3])) |> inspect,
+    // optional
+    // result
+    "dynamic.string(dynamic.from(\"Finland!\")): "
+      <> dynamic.string(dynamic.from("Finland!")) |> inspect,
+    // tuple2, ... tuple6
+  ]
+
+  list.each(results, io.println)
+}
+
+pub type Ninja {
+  Ninja(first_name: String, last_name: String, age: Int)
 }
 
 fn basic_json() -> Nil {
-  // https://github.com/gleam-lang/json
+  // Create ninja record
+  Ninja(first_name: "Kakashi", last_name: "Hatake", age: 27)
+  |> function.tap(io.debug)
+  // Convert to json string
+  |> fn(n: Ninja) {
+    json.object([
+      #("firstName", json.string(n.first_name)),
+      #("lastName", json.string(n.last_name)),
+      #("age", json.int(n.age)),
+    ])
+    |> json.to_string()
+  }
+  |> function.tap(io.debug)
+  // Convert back to record
+  |> fn(data) {
+    json.decode(
+      data,
+      dynamic.decode3(
+        Ninja,
+        dynamic.field("firstName", dynamic.string),
+        dynamic.field("lastName", dynamic.string),
+        dynamic.field("age", dynamic.int),
+      ),
+    )
+  }
+  |> inspect
+  |> io.println
+}
+
+fn basic_decode() -> Nil {
+  // https://github.com/lpil/decode
+  // https://hexdocs.pm/decode/decode.html
+  // https://github.com/lpil/decode/blob/main/test/decode_test.gleam#L23
   io.println("...")
 }
 
 fn basic_prng() -> Nil {
-  // https://hexdocs.pm/prng/
+  let coin_toss = random.choose(True, False)
+
+  // Get random sample and convert to string
+  let s = fn(g: random.Generator(a)) { random.random_sample(g) |> inspect }
+
+  let results = [
+    // Single value
+    "random.choose(True, False): " <> random.choose(True, False) |> s,
+    "random.constant(True): " <> random.constant(True) |> s,
+    "random.float(0.0, 1.0): " <> random.float(0.0, 1.0) |> s,
+    "random.int(1, 10): " <> random.int(1, 10) |> s,
+    "random.uniform(1, [2, 3, 5, 6]): " <> random.uniform(1, [2, 3, 5, 6]) |> s,
+    // List of values
+    " random.fixed_size_list(coin_toss, 3): "
+      <> random.fixed_size_list(coin_toss, 3) |> s,
+    "random.fixed_size_string(3): " <> random.fixed_size_string(3) |> s,
+    "random.list(coin_toss): " <> random.list(coin_toss) |> s,
+    "random.pair(coin_toss, coin_toss) : "
+      <> random.pair(coin_toss, coin_toss) |> s,
+    "random.map(random.int(1, 5), fn(n) { int.power(n, 2.0) }): "
+      <> random.map(random.int(1, 5), fn(n) { int.power(n, 2.0) }) |> s,
+    "random.string(): " <> random.string() |> s,
+  ]
+
+  list.each(results, io.println)
+}
+
+fn basic_http() -> Nil {
   io.println("...")
 }
 

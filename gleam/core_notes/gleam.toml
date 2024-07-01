@@ -16,9 +16,14 @@ version = "1.0.0"
 gleam_stdlib = "~> 0.38 or ~> 1.0"
 gleam_erlang = ">= 0.25.0 and < 1.0.0"
 filepath = ">= 1.0.0 and < 2.0.0"
-gleam_json = ">= 2.0.0 and < 3.0.0"
+gleam_json = "== 1.0.1"                # Must be <2 until OTP 27 is available
 prng = ">= 3.0.3 and < 4.0.0"
 simplifile = ">= 2.0.1 and < 3.0.0"
+youid = ">= 1.2.0 and < 2.0.0"
+envoy = ">= 1.0.1 and < 2.0.0"
+snag = ">= 0.3.0 and < 1.0.0"
+decode = ">= 0.1.0 and < 1.0.0"
+gleam_otp = ">= 0.10.0 and < 1.0.0"
 
 [dev-dependencies]
 gleeunit = "~> 1.0"
