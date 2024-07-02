@@ -868,36 +868,94 @@ fn basic_dynamic() -> Nil {
   list.each(results, io.println)
 }
 
+pub type Jutsu {
+  Jutsu(name: String, chakra_nature: String, description: String)
+}
+
+fn jutsu_json_encode(jutsu: Jutsu) -> json.Json {
+  json.object([
+    #("name", json.string(jutsu.name)),
+    #("chakraNature", json.string(jutsu.chakra_nature)),
+    #("description", json.string(jutsu.description)),
+  ])
+}
+
+type Decoder(a) =
+  fn(dynamic.Dynamic) -> Result(a, List(dynamic.DecodeError))
+
+fn get_jutsu_json_decoder() -> Decoder(Jutsu) {
+  dynamic.decode3(
+    Jutsu,
+    dynamic.field("name", dynamic.string),
+    dynamic.field("chakraNature", dynamic.string),
+    dynamic.field("description", dynamic.string),
+  )
+}
+
 pub type Ninja {
-  Ninja(first_name: String, last_name: String, age: Int)
+  Ninja(
+    first_name: String,
+    last_name: String,
+    age: Int,
+    jutsus: Option(List(Jutsu)),
+  )
+}
+
+fn ninja_json_encode(ninja: Ninja) -> json.Json {
+  json.object([
+    #("firstName", json.string(ninja.first_name)),
+    #("lastName", json.string(ninja.last_name)),
+    #("age", json.int(ninja.age)),
+    #(
+      "jutsus",
+      json.nullable(ninja.jutsus, fn(jutsus) {
+        json.array(jutsus, jutsu_json_encode)
+      }),
+    ),
+  ])
+}
+
+fn get_ninja_json_decoder() -> Decoder(Ninja) {
+  dynamic.decode4(
+    Ninja,
+    dynamic.field("firstName", dynamic.string),
+    dynamic.field("lastName", dynamic.string),
+    dynamic.field("age", dynamic.int),
+    dynamic.field(
+      "jutsus",
+      dynamic.optional(dynamic.list(get_jutsu_json_decoder())),
+    ),
+  )
+}
+
+fn decode_ninja(data: String) -> Result(Ninja, json.DecodeError) {
+  json.decode(data, get_ninja_json_decoder())
 }
 
 fn basic_json() -> Nil {
   // Create ninja record
-  Ninja(first_name: "Kakashi", last_name: "Hatake", age: 27)
+  Ninja(
+    first_name: "Kakashi",
+    last_name: "Hatake",
+    age: 27,
+    jutsus: Some([
+      Jutsu(
+        name: "Chidori",
+        chakra_nature: "Lightning",
+        description: "Lightning blade",
+      ),
+    ]),
+  )
+  // Log
   |> function.tap(io.debug)
   // Convert to json string
-  |> fn(n: Ninja) {
-    json.object([
-      #("firstName", json.string(n.first_name)),
-      #("lastName", json.string(n.last_name)),
-      #("age", json.int(n.age)),
-    ])
-    |> json.to_string()
-  }
+  |> ninja_json_encode
+  |> json.to_string
+  // Log
   |> function.tap(io.debug)
   // Convert back to record
-  |> fn(data) {
-    json.decode(
-      data,
-      dynamic.decode3(
-        Ninja,
-        dynamic.field("firstName", dynamic.string),
-        dynamic.field("lastName", dynamic.string),
-        dynamic.field("age", dynamic.int),
-      ),
-    )
-  }
+  |> decode_ninja
+  // Log
   |> inspect
   |> io.println
 }
