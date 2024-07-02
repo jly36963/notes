@@ -27,6 +27,10 @@ import youid/uuid
 // import gleam/otp/supervisor
 // import gleam/otp/task
 
+// ---
+// Main
+// ---
+
 pub fn main() {
   print_section_title("Basic variables")
   basic_variables()
