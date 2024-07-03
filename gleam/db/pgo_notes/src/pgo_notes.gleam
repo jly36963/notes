@@ -50,8 +50,12 @@ fn basic_json() {
         name: "Chidori",
         chakra_nature: "Lightning",
         description: "Lightning blade",
+        created_at: None,
+        updated_at: None,
       ),
     ]),
+    created_at: None,
+    updated_at: None,
   )
   // Log
   |> function.tap(io.debug)
@@ -69,7 +73,13 @@ fn basic_json() {
 
 fn basic_pgo() {
   let db =
-    pg_utils.get_client(host: "localhost", port: 5432, database: "practice")
+    pg_utils.get_client(
+      host: "localhost",
+      port: 5432,
+      database: "practice",
+      user: "postgres",
+      password: "postgres",
+    )
 
   // Create ninja
   use ninja_new <- snag_try(
@@ -81,6 +91,8 @@ fn basic_pgo() {
         last_name: "Hatake",
         age: 27,
         jutsus: None,
+        created_at: None,
+        updated_at: None,
       ),
     ),
     "Failed to insert ninja",
@@ -118,6 +130,8 @@ fn basic_pgo() {
         name: "Chidori",
         chakra_nature: "Lightning",
         description: "Plover / One thousand birds",
+        created_at: None,
+        updated_at: None,
       ),
     ),
     "Failed to insert jutsu",

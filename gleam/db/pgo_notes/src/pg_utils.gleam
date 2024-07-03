@@ -5,20 +5,24 @@ import gleam/pgo
 import gleam/result
 import gleam/string
 import snag
-import snag_utils.{as_snag_result, snag_try}
+import snag_utils.{snag_try}
 import types.{
   type Jutsu, type JutsuUpdates, type Ninja, type NinjaUpdates, Jutsu, Ninja,
-  NinjaUpdates, get_jutsu_decoder, get_ninja_decoder,
+  NinjaUpdates, get_jutsu_json_decoder, get_ninja_json_decoder,
 }
 
 // ---
 // Pgo
 // ---
 
+// TODO: replace placeholders
+
 /// Create pgo client
 pub fn get_client(
   host host: String,
   port port: Int,
+  user user: String,
+  password password: String,
   database database: String,
 ) -> pgo.Connection {
   pgo.connect(
@@ -27,6 +31,8 @@ pub fn get_client(
       host: host,
       port: port,
       database: database,
+      user: user,
+      password: Some(password),
       pool_size: 10,
     ),
   )
@@ -58,13 +64,14 @@ pub fn maybe_append_param(
 pub fn ninja_get(db: pgo.Connection, id: String) -> snag.Result(Ninja) {
   let sql = "SELECT * FROM ninjas WHERE id = ?;"
   let params = [pgo.text(id)]
-  let decoder = get_ninja_decoder()
+  let decoder = get_ninja_json_decoder()
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
     "Failed to query db for ninja",
   )
-  as_snag_result(list.first(res.rows), "No ninja found")
+  use ninja <- snag_try(list.first(res.rows), "No ninja found")
+  Ok(ninja)
 }
 
 pub fn ninja_insert(db: pgo.Connection, ninja: Ninja) -> snag.Result(Ninja) {
@@ -76,13 +83,14 @@ pub fn ninja_insert(db: pgo.Connection, ninja: Ninja) -> snag.Result(Ninja) {
     pgo.text(ninja.first_name),
     pgo.int(ninja.age),
   ]
-  let decoder = get_ninja_decoder()
+  let decoder = get_ninja_json_decoder()
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
     "Failed to query db for ninja",
   )
-  as_snag_result(list.first(res.rows), "No ninja found")
+  use ninja <- snag_try(list.first(res.rows), "No ninja found")
+  Ok(ninja)
 }
 
 pub fn ninja_update(
@@ -107,25 +115,27 @@ pub fn ninja_update(
   let sql =
     "UPDATE ninjas SET " <> set_placeholders <> " WHERE id = ? RETURNING *;"
   let params = list.concat([set_params, [pgo.text(id)]])
-  let decoder = get_ninja_decoder()
+  let decoder = get_ninja_json_decoder()
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
     "Failed to query db for ninja",
   )
-  as_snag_result(list.first(res.rows), "No ninja found")
+  use ninja <- snag_try(list.first(res.rows), "No ninja found")
+  Ok(ninja)
 }
 
 pub fn ninja_delete(db: pgo.Connection, id: String) -> snag.Result(Ninja) {
   let sql = "DELETE FROM ninjas WHERE id = ? RETURNING *;"
   let params = [pgo.text(id)]
-  let decoder = get_ninja_decoder()
+  let decoder = get_ninja_json_decoder()
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
     "Failed to query db for ninja",
   )
-  as_snag_result(list.first(res.rows), "No ninja found")
+  use ninja <- snag_try(list.first(res.rows), "No ninja found")
+  Ok(ninja)
 }
 
 // ---
@@ -135,13 +145,14 @@ pub fn ninja_delete(db: pgo.Connection, id: String) -> snag.Result(Ninja) {
 pub fn jutsu_get(db: pgo.Connection, id: String) -> snag.Result(Jutsu) {
   let sql = "SELECT * FROM jutsus WHERE id = ?;"
   let params = [pgo.text(id)]
-  let decoder = get_jutsu_decoder()
+  let decoder = get_jutsu_json_decoder()
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
     "Failed to query db for jutsu",
   )
-  as_snag_result(list.first(res.rows), "No jutsu found")
+  use jutsu <- snag_try(list.first(res.rows), "No jutsu found")
+  Ok(jutsu)
 }
 
 pub fn jutsu_insert(db: pgo.Connection, jutsu: Jutsu) -> snag.Result(Jutsu) {
@@ -153,13 +164,14 @@ pub fn jutsu_insert(db: pgo.Connection, jutsu: Jutsu) -> snag.Result(Jutsu) {
     pgo.text(jutsu.chakra_nature),
     pgo.text(jutsu.description),
   ]
-  let decoder = get_jutsu_decoder()
+  let decoder = get_jutsu_json_decoder()
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
     "Failed to query db for jutsu",
   )
-  as_snag_result(list.first(res.rows), "No jutsu found")
+  use jutsu <- snag_try(list.first(res.rows), "No jutsu found")
+  Ok(jutsu)
 }
 
 pub fn jutsu_update(
@@ -184,25 +196,27 @@ pub fn jutsu_update(
   let sql =
     "UPDATE jutsus SET " <> set_placeholders <> " WHERE id = ? RETURNING *;"
   let params = list.concat([set_params, [pgo.text(id)]])
-  let decoder = get_jutsu_decoder()
+  let decoder = get_jutsu_json_decoder()
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
     "Failed to query db for jutsu",
   )
-  as_snag_result(list.first(res.rows), "No jutsu found")
+  use jutsu_updated <- snag_try(list.first(res.rows), "No jutsu found")
+  Ok(jutsu_updated)
 }
 
 pub fn jutsu_delete(db: pgo.Connection, id: String) -> snag.Result(Jutsu) {
   let sql = "DELETE FROM jutsus WHERE id = ? RETURNING *;"
   let params = [pgo.text(id)]
-  let decoder = get_jutsu_decoder()
+  let decoder = get_jutsu_json_decoder()
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
     "Failed to query db for jutsu",
   )
-  as_snag_result(list.first(res.rows), "No jutsu found")
+  use jutsu_deleted <- snag_try(list.first(res.rows), "No jutsu found")
+  Ok(jutsu_deleted)
 }
 
 // ---
@@ -218,10 +232,11 @@ pub fn ninja_add_jutsu(
     "INSERT INTO ninjas_jutsus (ninja_id, jutsu_id) VALUES ( ?, ? ) RETURNING *;"
   let params = [pgo.text(ninja_id), pgo.text(jutsu_id)]
 
-  as_snag_result(
-    pgo.execute(sql, db, params, dynamic.dynamic) |> result.replace(Nil),
+  use _ <- snag_try(
+    pgo.execute(sql, db, params, dynamic.dynamic),
     "Failed to associate ninja/jutsu",
   )
+  Ok(Nil)
 }
 
 pub fn ninja_remove_jutsu(
@@ -233,19 +248,34 @@ pub fn ninja_remove_jutsu(
     "DELETE FROM ninjas_jutsus WHERE (ninja_id = ? AND jutsu_id = ?) RETURNING *;"
   let params = [pgo.text(ninja_id), pgo.text(jutsu_id)]
 
-  as_snag_result(
-    pgo.execute(sql, db, params, dynamic.dynamic) |> result.replace(Nil),
+  use _ <- snag_try(
+    pgo.execute(sql, db, params, dynamic.dynamic),
     "Failed to associate ninja/jutsu",
   )
+  Ok(Nil)
 }
 
-pub fn get_ninja_jutsus() {
-  todo
+pub fn get_ninja_jutsus(
+  db: pgo.Connection,
+  id: String,
+) -> snag.Result(List(Jutsu)) {
+  let sql =
+    "SELECT * FROM jutsus WHERE jutsus.id IN (SELECT jutsu_id FROM ninjas_jutsus WHERE ninjas_jutsus.ninja_id = ?);"
+  let params = [pgo.text(id)]
+  let decoder = get_jutsu_json_decoder()
+
+  use res <- snag_try(
+    pgo.execute(sql, db, params, decoder),
+    "Failed to query db for jutsus",
+  )
+  Ok(res.rows)
 }
 
 pub fn ninja_get_with_jutsus(
   db: pgo.Connection,
   id: String,
 ) -> snag.Result(Ninja) {
-  todo
+  use ninja <- result.try(ninja_get(db, id))
+  use jutsus <- result.try(get_ninja_jutsus(db, id))
+  Ok(Ninja(..ninja, jutsus: Some(jutsus)))
 }
