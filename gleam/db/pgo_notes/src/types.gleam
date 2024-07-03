@@ -1,6 +1,7 @@
 import gleam/dynamic
 import gleam/json
-import gleam/option
+import gleam/option.{None}
+import gleam/result
 import snag
 import snag_utils.{as_snag_result}
 
@@ -21,9 +22,9 @@ pub type Ninja {
     first_name: String,
     last_name: String,
     age: Int,
-    jutsus: option.Option(List(Jutsu)),
     created_at: option.Option(String),
     updated_at: option.Option(String),
+    jutsus: option.Option(List(Jutsu)),
   )
 }
 
@@ -52,20 +53,29 @@ pub fn ninja_json_encode(ninja: Ninja) -> json.Json {
   ])
 }
 
-pub fn get_ninja_sql_decoder() -> Decoder(Ninja) {
-  dynamic.decode7(
-    Ninja,
-    dynamic.field("id", dynamic.string),
-    dynamic.field("first_name", dynamic.string),
-    dynamic.field("last_name", dynamic.string),
-    dynamic.field("age", dynamic.int),
-    dynamic.field(
-      "jutsus",
-      dynamic.optional(dynamic.list(get_jutsu_sql_decoder())),
-    ),
-    dynamic.field("created_at", dynamic.optional(dynamic.string)),
-    dynamic.field("updated_at", dynamic.optional(dynamic.string)),
-  )
+pub fn ninja_sql_decoder(
+  dyn: dynamic.Dynamic,
+) -> Result(Ninja, List(dynamic.DecodeError)) {
+  use data <- result.try(dynamic.tuple6(
+    dynamic.string,
+    dynamic.string,
+    dynamic.string,
+    dynamic.int,
+    // dynamic.optional(dynamic.list(get_jutsu_sql_decoder())),
+    dynamic.optional(dynamic.string),
+    dynamic.optional(dynamic.string),
+  )(dyn))
+
+  let #(id, first_name, last_name, age, created_at, updated_at) = data
+  Ok(Ninja(
+    id: id,
+    first_name: first_name,
+    last_name: last_name,
+    age: age,
+    created_at: created_at,
+    updated_at: updated_at,
+    jutsus: None,
+  ))
 }
 
 pub fn get_ninja_json_decoder() -> Decoder(Ninja) {
@@ -75,12 +85,12 @@ pub fn get_ninja_json_decoder() -> Decoder(Ninja) {
     dynamic.field("firstName", dynamic.string),
     dynamic.field("lastName", dynamic.string),
     dynamic.field("age", dynamic.int),
+    dynamic.field("createdAt", dynamic.optional(dynamic.string)),
+    dynamic.field("updatedAt", dynamic.optional(dynamic.string)),
     dynamic.field(
       "jutsus",
       dynamic.optional(dynamic.list(get_jutsu_json_decoder())),
     ),
-    dynamic.field("createdAt", dynamic.optional(dynamic.string)),
-    dynamic.field("updatedAt", dynamic.optional(dynamic.string)),
   )
 }
 
@@ -135,16 +145,27 @@ pub fn get_jutsu_json_decoder() -> Decoder(Jutsu) {
   )
 }
 
-pub fn get_jutsu_sql_decoder() -> Decoder(Jutsu) {
-  dynamic.decode6(
-    Jutsu,
-    dynamic.field("id", dynamic.string),
-    dynamic.field("name", dynamic.string),
-    dynamic.field("chakra_nature", dynamic.string),
-    dynamic.field("description", dynamic.string),
-    dynamic.field("created_at", dynamic.optional(dynamic.string)),
-    dynamic.field("updated_at", dynamic.optional(dynamic.string)),
-  )
+pub fn jutsu_sql_decoder(
+  dyn: dynamic.Dynamic,
+) -> Result(Jutsu, List(dynamic.DecodeError)) {
+  use data <- result.try(dynamic.tuple6(
+    dynamic.string,
+    dynamic.string,
+    dynamic.string,
+    dynamic.string,
+    dynamic.optional(dynamic.string),
+    dynamic.optional(dynamic.string),
+  )(dyn))
+
+  let #(id, name, chakra_nature, description, created_at, updated_at) = data
+  Ok(Jutsu(
+    id: id,
+    name: name,
+    chakra_nature: chakra_nature,
+    description: description,
+    created_at: created_at,
+    updated_at: updated_at,
+  ))
 }
 
 pub fn jutsu_json_decode(data: String) -> snag.Result(Jutsu) {

@@ -1,4 +1,5 @@
 import gleam/dynamic
+import gleam/int
 import gleam/list
 import gleam/option.{None, Some}
 import gleam/pgo
@@ -8,14 +9,60 @@ import snag
 import snag_utils.{snag_try}
 import types.{
   type Jutsu, type JutsuUpdates, type Ninja, type NinjaUpdates, Jutsu, Ninja,
-  NinjaUpdates, get_jutsu_json_decoder, get_ninja_json_decoder,
+  NinjaUpdates, jutsu_sql_decoder, ninja_sql_decoder,
 }
 
 // ---
 // Pgo
 // ---
 
-// TODO: replace placeholders
+/// Recursively replace "?" placeholders
+fn rp_inner(
+  sql_iter: List(String),
+  current_placeholder: Int,
+  result: String,
+) -> String {
+  case sql_iter {
+    [current, next, ..rest] -> {
+      case current, next {
+        // Escape "??" to "?"
+        "?", "?" -> rp_inner(rest, current_placeholder, result <> "?")
+        // Convert "?" to dollar placeholder (eg: "$1")
+        "?", v1 ->
+          rp_inner(
+            rest,
+            current_placeholder + 1,
+            result <> "$" <> int.to_string(current_placeholder) <> v1,
+          )
+        v1, "?" ->
+          rp_inner(
+            rest,
+            current_placeholder + 1,
+            result <> v1 <> "$" <> int.to_string(current_placeholder),
+          )
+        v1, v2 -> rp_inner(rest, current_placeholder, result <> v1 <> v2)
+      }
+    }
+    [current, ..rest] -> {
+      case current {
+        "?" ->
+          rp_inner(
+            rest,
+            current_placeholder + 1,
+            result <> "$" <> int.to_string(current_placeholder),
+          )
+        v -> rp_inner(rest, current_placeholder, result <> v)
+      }
+    }
+    [] -> result
+  }
+}
+
+/// Replace "?" placeholder with dollar placeholder (eg: "$1")
+pub fn replace_placeholders(sql: String) -> String {
+  let sql_iter = string.to_graphemes(sql)
+  rp_inner(sql_iter, 1, "")
+}
 
 /// Create pgo client
 pub fn get_client(
@@ -62,9 +109,9 @@ pub fn maybe_append_param(
 // ---
 
 pub fn ninja_get(db: pgo.Connection, id: String) -> snag.Result(Ninja) {
-  let sql = "SELECT * FROM ninjas WHERE id = ?;"
+  let sql = replace_placeholders("SELECT * FROM ninjas WHERE id = ?;")
   let params = [pgo.text(id)]
-  let decoder = get_ninja_json_decoder()
+  let decoder = ninja_sql_decoder
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
@@ -76,14 +123,16 @@ pub fn ninja_get(db: pgo.Connection, id: String) -> snag.Result(Ninja) {
 
 pub fn ninja_insert(db: pgo.Connection, ninja: Ninja) -> snag.Result(Ninja) {
   let sql =
-    "INSERT INTO ninjas (id, first_name, last_name, age) VALUES (?, ?, ?, ?) RETURNING *;"
+    replace_placeholders(
+      "INSERT INTO ninjas (id, first_name, last_name, age) VALUES (?, ?, ?, ?) RETURNING *;",
+    )
   let params = [
     pgo.text(ninja.id),
     pgo.text(ninja.first_name),
-    pgo.text(ninja.first_name),
+    pgo.text(ninja.last_name),
     pgo.int(ninja.age),
   ]
-  let decoder = get_ninja_json_decoder()
+  let decoder = ninja_sql_decoder
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
@@ -113,9 +162,11 @@ pub fn ninja_update(
   let set_placeholders = set_params |> list.length() |> get_placeholders
 
   let sql =
-    "UPDATE ninjas SET " <> set_placeholders <> " WHERE id = ? RETURNING *;"
+    replace_placeholders(
+      "UPDATE ninjas SET " <> set_placeholders <> " WHERE id = ? RETURNING *;",
+    )
   let params = list.concat([set_params, [pgo.text(id)]])
-  let decoder = get_ninja_json_decoder()
+  let decoder = ninja_sql_decoder
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
@@ -126,9 +177,9 @@ pub fn ninja_update(
 }
 
 pub fn ninja_delete(db: pgo.Connection, id: String) -> snag.Result(Ninja) {
-  let sql = "DELETE FROM ninjas WHERE id = ? RETURNING *;"
+  let sql = replace_placeholders("DELETE FROM ninjas WHERE id = ? RETURNING *;")
   let params = [pgo.text(id)]
-  let decoder = get_ninja_json_decoder()
+  let decoder = ninja_sql_decoder
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
@@ -143,9 +194,9 @@ pub fn ninja_delete(db: pgo.Connection, id: String) -> snag.Result(Ninja) {
 // ---
 
 pub fn jutsu_get(db: pgo.Connection, id: String) -> snag.Result(Jutsu) {
-  let sql = "SELECT * FROM jutsus WHERE id = ?;"
+  let sql = replace_placeholders("SELECT * FROM jutsus WHERE id = ?;")
   let params = [pgo.text(id)]
-  let decoder = get_jutsu_json_decoder()
+  let decoder = jutsu_sql_decoder
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
@@ -157,14 +208,16 @@ pub fn jutsu_get(db: pgo.Connection, id: String) -> snag.Result(Jutsu) {
 
 pub fn jutsu_insert(db: pgo.Connection, jutsu: Jutsu) -> snag.Result(Jutsu) {
   let sql =
-    "INSERT INTO jutsus (id, first_name, last_name, age) VALUES (?, ?, ?, ?) RETURNING *;"
+    replace_placeholders(
+      "INSERT INTO jutsus (id, first_name, last_name, age) VALUES (?, ?, ?, ?) RETURNING *;",
+    )
   let params = [
     pgo.text(jutsu.id),
     pgo.text(jutsu.name),
     pgo.text(jutsu.chakra_nature),
     pgo.text(jutsu.description),
   ]
-  let decoder = get_jutsu_json_decoder()
+  let decoder = jutsu_sql_decoder
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
@@ -194,9 +247,11 @@ pub fn jutsu_update(
   let set_placeholders = set_params |> list.length() |> get_placeholders
 
   let sql =
-    "UPDATE jutsus SET " <> set_placeholders <> " WHERE id = ? RETURNING *;"
+    replace_placeholders(
+      "UPDATE jutsus SET " <> set_placeholders <> " WHERE id = ? RETURNING *;",
+    )
   let params = list.concat([set_params, [pgo.text(id)]])
-  let decoder = get_jutsu_json_decoder()
+  let decoder = jutsu_sql_decoder
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
@@ -207,9 +262,9 @@ pub fn jutsu_update(
 }
 
 pub fn jutsu_delete(db: pgo.Connection, id: String) -> snag.Result(Jutsu) {
-  let sql = "DELETE FROM jutsus WHERE id = ? RETURNING *;"
+  let sql = replace_placeholders("DELETE FROM jutsus WHERE id = ? RETURNING *;")
   let params = [pgo.text(id)]
-  let decoder = get_jutsu_json_decoder()
+  let decoder = jutsu_sql_decoder
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
@@ -229,7 +284,9 @@ pub fn ninja_add_jutsu(
   jutsu_id: String,
 ) -> snag.Result(Nil) {
   let sql =
-    "INSERT INTO ninjas_jutsus (ninja_id, jutsu_id) VALUES ( ?, ? ) RETURNING *;"
+    replace_placeholders(
+      "INSERT INTO ninjas_jutsus (ninja_id, jutsu_id) VALUES ( ?, ? ) RETURNING *;",
+    )
   let params = [pgo.text(ninja_id), pgo.text(jutsu_id)]
 
   use _ <- snag_try(
@@ -245,7 +302,9 @@ pub fn ninja_remove_jutsu(
   jutsu_id: String,
 ) -> snag.Result(Nil) {
   let sql =
-    "DELETE FROM ninjas_jutsus WHERE (ninja_id = ? AND jutsu_id = ?) RETURNING *;"
+    replace_placeholders(
+      "DELETE FROM ninjas_jutsus WHERE (ninja_id = ? AND jutsu_id = ?) RETURNING *;",
+    )
   let params = [pgo.text(ninja_id), pgo.text(jutsu_id)]
 
   use _ <- snag_try(
@@ -260,9 +319,11 @@ pub fn get_ninja_jutsus(
   id: String,
 ) -> snag.Result(List(Jutsu)) {
   let sql =
-    "SELECT * FROM jutsus WHERE jutsus.id IN (SELECT jutsu_id FROM ninjas_jutsus WHERE ninjas_jutsus.ninja_id = ?);"
+    replace_placeholders(
+      "SELECT * FROM jutsus WHERE jutsus.id IN (SELECT jutsu_id FROM ninjas_jutsus WHERE ninjas_jutsus.ninja_id = ?);",
+    )
   let params = [pgo.text(id)]
-  let decoder = get_jutsu_json_decoder()
+  let decoder = jutsu_sql_decoder
 
   use res <- snag_try(
     pgo.execute(sql, db, params, decoder),
