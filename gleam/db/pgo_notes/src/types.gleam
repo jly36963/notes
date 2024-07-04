@@ -1,9 +1,42 @@
+import birl
 import gleam/dynamic
+import gleam/float
 import gleam/json
 import gleam/option.{None}
 import gleam/result
 import snag
-import snag_utils.{as_snag_result}
+import snag_utils.{as_snag_result, snag_try}
+import youid/uuid
+
+// ---
+// Date
+// ---
+
+pub fn dynamic_float_to_int(df) {
+  use f <- result.try(dynamic.float(df))
+  Ok(float.round(f))
+}
+
+/// Convert dynamic pg date to erlang date format
+pub fn dynamic_erlang_date(dyn) {
+  dynamic.tuple2(
+    dynamic.tuple3(dynamic.int, dynamic.int, dynamic.int),
+    dynamic.tuple3(dynamic.int, dynamic.int, dynamic_float_to_int),
+  )(dyn)
+}
+
+// pub fn dynamic_date(dyn) {
+//   dynamic.tuple2(
+//     dynamic.tuple3(dynamic.int, dynamic.int, dynamic.int),
+//     dynamic.tuple3(dynamic.int, dynamic.int, dynamic.int),
+//   )(dyn)
+// }
+
+pub fn erlang_datetime_to_string(dt) {
+  let time = birl.from_erlang_universal_datetime(dt)
+  let date_string = birl.to_iso8601(time)
+  date_string
+}
 
 // ---
 // Json
@@ -53,20 +86,29 @@ pub fn ninja_json_encode(ninja: Ninja) -> json.Json {
   ])
 }
 
-pub fn ninja_sql_decoder(
-  dyn: dynamic.Dynamic,
-) -> Result(Ninja, List(dynamic.DecodeError)) {
-  use data <- result.try(dynamic.tuple6(
-    dynamic.string,
+pub fn get_ninja_sql_decoder() {
+  dynamic.tuple6(
+    dynamic.bit_array,
     dynamic.string,
     dynamic.string,
     dynamic.int,
-    // dynamic.optional(dynamic.list(get_jutsu_sql_decoder())),
-    dynamic.optional(dynamic.string),
-    dynamic.optional(dynamic.string),
-  )(dyn))
+    dynamic.optional(dynamic_erlang_date),
+    dynamic.optional(dynamic_erlang_date),
+  )
+}
 
-  let #(id, first_name, last_name, age, created_at, updated_at) = data
+pub fn ninja_from_sql_tuple(data) {
+  let #(raw_id, first_name, last_name, age, raw_created_at, raw_updated_at) =
+    data
+  use uuid <- snag_try(
+    uuid.from_bit_array(raw_id),
+    "Failed to convert bit array to uuid",
+  )
+  let id = uuid.to_string(uuid)
+
+  let created_at = option.map(raw_created_at, erlang_datetime_to_string)
+  let updated_at = option.map(raw_updated_at, erlang_datetime_to_string)
+
   Ok(Ninja(
     id: id,
     first_name: first_name,
@@ -145,19 +187,35 @@ pub fn get_jutsu_json_decoder() -> Decoder(Jutsu) {
   )
 }
 
-pub fn jutsu_sql_decoder(
-  dyn: dynamic.Dynamic,
-) -> Result(Jutsu, List(dynamic.DecodeError)) {
-  use data <- result.try(dynamic.tuple6(
+pub fn get_jutsu_sql_decoder() {
+  dynamic.tuple6(
+    dynamic.bit_array,
     dynamic.string,
     dynamic.string,
     dynamic.string,
-    dynamic.string,
-    dynamic.optional(dynamic.string),
-    dynamic.optional(dynamic.string),
-  )(dyn))
+    dynamic.optional(dynamic_erlang_date),
+    dynamic.optional(dynamic_erlang_date),
+  )
+}
 
-  let #(id, name, chakra_nature, description, created_at, updated_at) = data
+pub fn jutsu_from_sql_tuple(data) {
+  let #(
+    raw_id,
+    name,
+    chakra_nature,
+    description,
+    raw_created_at,
+    raw_updated_at,
+  ) = data
+  use uuid <- snag_try(
+    uuid.from_bit_array(raw_id),
+    "Failed to convert bit array to uuid",
+  )
+  let id = uuid.to_string(uuid)
+
+  let created_at = option.map(raw_created_at, erlang_datetime_to_string)
+  let updated_at = option.map(raw_updated_at, erlang_datetime_to_string)
+
   Ok(Jutsu(
     id: id,
     name: name,

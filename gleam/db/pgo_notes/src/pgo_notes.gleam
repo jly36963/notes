@@ -6,7 +6,8 @@ import gleam/string.{inspect}
 import pg_utils
 import snag_utils.{snag_try}
 import types.{
-  Jutsu, JutsuUpdates, Ninja, NinjaUpdates, ninja_json_decode, ninja_json_encode,
+  Jutsu, JutsuUpdates, Ninja, NinjaUpdates, jutsu_json_encode, ninja_json_decode,
+  ninja_json_encode,
 }
 import youid/uuid
 
@@ -97,14 +98,14 @@ fn basic_pgo() {
     ),
     "Failed to insert ninja",
   )
-  { "ninja_new: " <> inspect(ninja_new) } |> io.println
+  io.println("ninja_new: " <> ninja_new |> ninja_json_encode |> json.to_string)
 
   // Get ninja
   use ninja <- snag_try(
     pg_utils.ninja_get(db, ninja_new.id),
     "Failed to get ninja",
   )
-  { "ninja: " <> inspect(ninja) } |> io.println
+  io.println("ninja: " <> ninja |> ninja_json_encode |> json.to_string)
 
   // Update ninja
   use ninja_updated <- snag_try(
@@ -119,7 +120,9 @@ fn basic_pgo() {
     ),
     "Failed to update ninja",
   )
-  { "ninja_updated: " <> inspect(ninja_updated) } |> io.println
+  io.println(
+    "ninja_updated: " <> ninja_updated |> ninja_json_encode |> json.to_string,
+  )
 
   // Create jutsu
   use jutsu_new <- snag_try(
@@ -136,14 +139,14 @@ fn basic_pgo() {
     ),
     "Failed to insert jutsu",
   )
-  { "jutsu_new: " <> inspect(jutsu_new) } |> io.println
+  io.println("jutsu_new: " <> jutsu_new |> jutsu_json_encode |> json.to_string)
 
   // Get jutsu
   use jutsu <- snag_try(
     pg_utils.jutsu_get(db, jutsu_new.id),
     "Failed to get jutsu",
   )
-  { "jutsu: " <> inspect(ninja) } |> io.println
+  io.println("jutsu: " <> jutsu |> jutsu_json_encode |> json.to_string)
 
   // Update jutsu
   use jutsu_updated <- snag_try(
@@ -158,7 +161,9 @@ fn basic_pgo() {
     ),
     "Failed to update jutsu",
   )
-  { "jutsu_updated: " <> inspect(jutsu_updated) } |> io.println
+  io.println(
+    "jutsu_updated: " <> jutsu_updated |> jutsu_json_encode |> json.to_string,
+  )
 
   // Associate ninja/jutsu
   use _ <- snag_try(
@@ -172,8 +177,11 @@ fn basic_pgo() {
     pg_utils.ninja_get_with_jutsus(db, ninja.id),
     "Failed to get ninja with jutsus",
   )
-  { "ninja_with_jutsus (after association): " <> inspect(ninja_with_jutsus) }
-  |> io.println
+
+  io.println(
+    "ninja_with_jutsus (after association): "
+    <> ninja_with_jutsus |> ninja_json_encode |> json.to_string,
+  )
 
   // Dissociate ninja/jutsu
   use _ <- snag_try(
@@ -187,22 +195,28 @@ fn basic_pgo() {
     pg_utils.ninja_get_with_jutsus(db, ninja.id),
     "Failed to get ninja with jutsus",
   )
-  { "ninja_with_jutsus (after dissociation): " <> inspect(ninja_with_jutsus) }
-  |> io.println
+  io.println(
+    "ninja_with_jutsus (after dissociation): "
+    <> ninja_with_jutsus |> ninja_json_encode |> json.to_string,
+  )
 
   // Get jutsu
   use jutsu_deleted <- snag_try(
     pg_utils.jutsu_delete(db, jutsu_new.id),
     "Failed to get jutsu",
   )
-  { "jutsu_deleted: " <> inspect(jutsu_deleted) } |> io.println
+  io.println(
+    "jutsu_deleted: " <> jutsu_deleted |> jutsu_json_encode |> json.to_string,
+  )
 
   // Get ninja
   use ninja_deleted <- snag_try(
     pg_utils.ninja_delete(db, ninja_new.id),
     "Failed to get ninja",
   )
-  { "ninja_deleted: " <> inspect(ninja_deleted) } |> io.println
+  io.println(
+    "ninja_deleted: " <> ninja_deleted |> ninja_json_encode |> json.to_string,
+  )
 
   Ok(Nil)
 }
