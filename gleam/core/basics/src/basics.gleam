@@ -937,7 +937,6 @@ fn decode_ninja(data: String) -> Result(Ninja, json.DecodeError) {
 }
 
 fn basic_json() -> Nil {
-  // Create ninja record
   Ninja(
     first_name: "Kakashi",
     last_name: "Hatake",
@@ -950,16 +949,11 @@ fn basic_json() -> Nil {
       ),
     ]),
   )
-  // Log
   |> function.tap(io.debug)
-  // Convert to json string
   |> ninja_json_encode
   |> json.to_string
-  // Log
   |> function.tap(io.debug)
-  // Convert back to record
   |> decode_ninja
-  // Log
   |> inspect
   |> io.println
 }

@@ -25,13 +25,6 @@ pub fn dynamic_erlang_date(dyn) {
   )(dyn)
 }
 
-// pub fn dynamic_date(dyn) {
-//   dynamic.tuple2(
-//     dynamic.tuple3(dynamic.int, dynamic.int, dynamic.int),
-//     dynamic.tuple3(dynamic.int, dynamic.int, dynamic.int),
-//   )(dyn)
-// }
-
 pub fn erlang_datetime_to_string(dt) {
   let time = birl.from_erlang_universal_datetime(dt)
   let date_string = birl.to_iso8601(time)
