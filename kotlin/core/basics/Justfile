@@ -1,0 +1,14 @@
+lint:
+  ktlint
+
+format:
+  ktlint --format
+
+build:
+  ./gradlew build
+
+run:
+  ./gradlew run
+
+dev:
+  ./gradlew run

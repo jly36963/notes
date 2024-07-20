@@ -1,0 +1,15 @@
+ENTRY := "Main.kt"
+OUTPUT := "main.jar"
+
+format:
+  ktlint --format
+
+build:
+  kotlinc {{ENTRY}} -include-runtime -d {{OUTPUT}}
+
+run:
+  java -jar {{OUTPUT}}
+
+dev:
+  just --justfile {{justfile()}} build
+  just --justfile {{justfile()}} run
