@@ -1,0 +1,32 @@
+name = "cake_notes"
+version = "1.0.0"
+
+# Fill out these fields if you intend to generate HTML documentation or publish
+# your project to the Hex package manager.
+#
+# description = ""
+# licences = ["Apache-2.0"]
+# repository = { type = "github", user = "username", repo = "project" }
+# links = [{ title = "Website", href = "https://gleam.run" }]
+#
+# For a full reference of all the available options, you can have a look at
+# https://gleam.run/writing-gleam/gleam-toml/.
+
+[dependencies]
+gleam_stdlib = "~> 0.39 or ~> 1.0"
+gleam_erlang = ">= 0.25.0 and < 1.0.0"
+filepath = ">= 1.0.0 and < 2.0.0"
+gleam_json = "== 1.0.1"                # Must be <2 until OTP 27 is available
+prng = ">= 3.0.3 and < 4.0.0"
+simplifile = ">= 2.0.1 and < 3.0.0"
+youid = ">= 1.2.0 and < 2.0.0"
+envoy = ">= 1.0.1 and < 2.0.0"
+snag = ">= 0.3.0 and < 1.0.0"
+decode = ">= 0.1.0 and < 1.0.0"
+gleam_otp = ">= 0.10.0 and < 1.0.0"
+gleam_pgo = ">= 0.11.0 and < 1.0.0"
+birl = ">= 1.7.1 and < 2.0.0"
+cake = ">= 1.0.1 and < 2.0.0"
+
+[dev-dependencies]
+gleeunit = ">= 1.0.0 and < 2.0.0"

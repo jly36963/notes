@@ -1,9 +1,3 @@
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::Read;
-use std::io::Write;
-use std::path::Path;
-
 // ---
 // Main
 // ---
@@ -84,9 +78,6 @@ fn main() {
     print_section_header(String::from("basic vectors"));
     basic_vectors();
 
-    print_section_header(String::from("basic hashmaps"));
-    basic_hashmaps();
-
     print_section_header(String::from("basic assert"));
     basic_assert();
 
@@ -98,9 +89,6 @@ fn main() {
 
     print_section_header(String::from("basic lifetimes"));
     basic_lifetimes();
-
-    print_section_header(String::from("basic io"));
-    basic_io();
 
     print_section_header(String::from("basic macros"));
     basic_macros();
@@ -722,42 +710,6 @@ pub fn basic_vectors() -> () {
     }
 }
 
-pub fn basic_hashmaps() -> () {
-    let hm0: HashMap<String, i32> = HashMap::new();
-    let mut hm1: HashMap<String, i32> = HashMap::from([
-        (String::from("a"), 1),
-        (String::from("b"), 2),
-        (String::from("c"), 3),
-    ]);
-    hm1.insert(String::from("d"), 4);
-
-    let results = vec![
-        format!("hm0: {:?}", hm0),
-        format!("hm1: {:?}", hm1),
-        format!("hm1.capacity(): {:?}", hm1.capacity()),
-        format!("hm1.contains_key(\"a\"): {:?}", hm1.contains_key("a")),
-        format!("hm1.get(\"a\".into()): {:?}", hm1.get("a".into())),
-        format!(
-            "hm1.get(\"e\".into()).unwrap_or(&5): {:?}",
-            hm1.get("e".into()).unwrap_or(&5)
-        ),
-        format!("hm1.keys(): {:?}", hm1.keys()),
-        format!("hm1.is_empty(): {:?}", hm1.is_empty()),
-        format!(
-            "hm1.iter().map(...): {:?}",
-            hm1.iter().map(|(k, v)| format!("k: {}, v: {}", k, v))
-        ),
-        format!("hm1.len(): {:?}", hm1.len()),
-        format!("hm1.values(): {:?}", hm1.values()),
-    ];
-    results.iter().for_each(|s| println!("{}", s));
-
-    println!("For loop through hm1");
-    for (k, v) in &hm1 {
-        println!("k: {}, v: {}", k, v);
-    }
-}
-
 /// Iterator: implements the "Iterator" trait
 /// Has a "next" method, which returns Option<Self::Item>
 pub fn basic_iterators() -> () {
@@ -830,24 +782,6 @@ pub fn basic_traits() -> () {
 
 pub fn basic_lifetimes() -> () {
     println!("TODO");
-}
-
-/// io examples using File and Path types
-pub fn basic_io() -> () {
-    // get path
-    let path = Path::new("hello.txt");
-    // create (if ok, returns write-only file descriptor)
-    let mut fd = File::create(&path).unwrap();
-    // write (requires `use std::io::Write;`)
-    fd.write_all(b"Hello, world!").unwrap();
-    // open (if ok, returns read-only file descriptor)
-    let mut fd = File::open(&path).unwrap();
-    // read
-    let mut contents = String::new();
-    fd.read_to_string(&mut contents).unwrap();
-    println!("contents: {}", contents);
-    // delete
-    std::fs::remove_file(&path).unwrap();
 }
 
 /// Basic assert usage
