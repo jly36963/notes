@@ -4,7 +4,6 @@ members = [
     "rs/core/basics",
     "rs/core/stdlib",
     "rs/data/polars-notes",
-    "rs/db/mongo-notes",
     "rs/db/postgres-notes",
     "rs/db/redis-notes",
     "rs/db/sqlx-notes",
@@ -20,7 +19,4 @@ members = [
     "rs/web/axum-example",
     "rs/web/gotham-example",
     "rs/web/warp-example",
-    # "rs/web/old/iron-example",
-    # "rs/web/old/nickel-example",
-    # "rs/web/old/rocket-example",
 ]
