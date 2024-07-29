@@ -7,6 +7,7 @@ members = [
     "rs/db/postgres-notes",
     "rs/db/redis-notes",
     "rs/db/sqlx-notes",
+    "rs/db/diesel-notes",
     "rs/testing/unit-testing-notes",
     "rs/utils/chrono-notes",
     "rs/utils/clap-notes",
