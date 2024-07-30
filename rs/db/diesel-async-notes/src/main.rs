@@ -6,10 +6,11 @@ use types::jutsu::{JutsuNew, JutsuUpdates};
 use types::ninja::{NinjaNew, NinjaUpdates};
 use uuid::Uuid;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     // Connection
     let pg_conn_str = "postgresql://postgres:postgres@localhost:5432/practice";
-    let pool = get_pg_pool(pg_conn_str);
+    let pool = get_pg_pool(pg_conn_str).await;
 
     // Set up providers
     let providers = providers::Providers {
@@ -23,7 +24,12 @@ fn main() {
         last_name: "Hatake".to_string(),
         age: 27,
     };
-    let ninja = providers.pgdal.create_ninja(ninja_new).unwrap().unwrap();
+    let ninja = providers
+        .pgdal
+        .create_ninja(ninja_new)
+        .await
+        .unwrap()
+        .unwrap();
     println!("Create ninja result: {:#?}", ninja);
     let ninja_id = ninja.id;
 
@@ -31,6 +37,7 @@ fn main() {
     let ninja = providers
         .pgdal
         .get_ninja(ninja_id.clone())
+        .await
         .unwrap()
         .unwrap();
     println!("Select ninja result: {:#?}", ninja);
@@ -44,6 +51,7 @@ fn main() {
     let ninja = providers
         .pgdal
         .update_ninja(ninja_id.clone(), ninja_updates)
+        .await
         .unwrap()
         .unwrap();
     println!("Update ninja result: {:#?}", ninja);
@@ -55,7 +63,12 @@ fn main() {
         description: "Plover / a thousand birds".to_string(),
         chakra_nature: "Lightning".to_string(),
     };
-    let jutsu = providers.pgdal.create_jutsu(jutsu_new).unwrap().unwrap();
+    let jutsu = providers
+        .pgdal
+        .create_jutsu(jutsu_new)
+        .await
+        .unwrap()
+        .unwrap();
     println!("Create jutsu result: {:#?}", jutsu);
     let jutsu_id = jutsu.id;
 
@@ -63,6 +76,7 @@ fn main() {
     let jutsu = providers
         .pgdal
         .get_jutsu(jutsu_id.clone())
+        .await
         .unwrap()
         .unwrap();
     println!("Select jutsu result: {:#?}", jutsu);
@@ -76,6 +90,7 @@ fn main() {
     let jutsu = providers
         .pgdal
         .update_jutsu(jutsu_id.clone(), jutsu_updates)
+        .await
         .unwrap()
         .unwrap();
     println!("Update jutsu result: {:#?}", jutsu);
@@ -84,6 +99,7 @@ fn main() {
     providers
         .pgdal
         .associate_ninja_and_jutsu(ninja_id.clone(), jutsu_id.clone())
+        .await
         .unwrap();
     println!("Associate ninja and jutsu result: ok");
 
@@ -91,6 +107,7 @@ fn main() {
     let ninja_and_jutsus = providers
         .pgdal
         .get_ninja_and_jutsus(ninja_id.clone())
+        .await
         .unwrap()
         .unwrap();
     println!("Select ninja and jutsus result: {:#?}", ninja_and_jutsus);
@@ -99,6 +116,7 @@ fn main() {
     providers
         .pgdal
         .dissociate_ninja_and_jutsu(ninja_id.clone(), jutsu_id.clone())
+        .await
         .unwrap();
     println!("Dissociate ninja and jutsu result: ok");
 
@@ -106,6 +124,7 @@ fn main() {
     let ninja_and_jutsus = providers
         .pgdal
         .get_ninja_and_jutsus(ninja_id.clone())
+        .await
         .unwrap()
         .unwrap();
     println!(
@@ -117,11 +136,17 @@ fn main() {
     let ninja = providers
         .pgdal
         .delete_ninja(ninja_id.clone())
+        .await
         .unwrap()
         .unwrap();
     println!("Delete ninja result: {:#?}", ninja);
 
     // Delete jutsu
-    let jutsu = providers.pgdal.delete_jutsu(jutsu.id).unwrap().unwrap();
+    let jutsu = providers
+        .pgdal
+        .delete_jutsu(jutsu.id)
+        .await
+        .unwrap()
+        .unwrap();
     println!("Delete jutsu result: {:#?}", jutsu);
 }

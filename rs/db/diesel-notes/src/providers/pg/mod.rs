@@ -204,18 +204,3 @@ impl TPostgresDAL for PostgresDAL {
         }
     }
 }
-
-// use async_trait::async_trait;
-// use diesel_async::pooled_connection::bb8::Pool;
-// use diesel_async::pooled_connection::AsyncDieselConnectionManager;
-// use diesel_async::{AsyncConnection, AsyncPgConnection, RunQueryDsl};
-
-// pub fn get_async_conn(url: &str) -> AsyncPgConnection {
-//     AsyncPgConnection::establish(url)
-//         .await
-//         .expect("could not connect to pg")
-// }
-
-// pub struct PostgresDAL {
-//     pub conn: AsyncPgConnection,
-// }

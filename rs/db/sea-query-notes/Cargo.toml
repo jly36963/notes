@@ -1,0 +1,35 @@
+[package]
+name = "sea-query-notes"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sqlx = { version = "0.7.4", features = [
+    "postgres",
+    "runtime-async-std-native-tls",
+    "migrate",
+    "uuid",
+    "chrono",
+] }
+sea-query = { version = "0.30", features = [
+    "derive",
+    "attr",
+    "thread-safe",
+    "backend-postgres",
+    "with-chrono",
+    "with-uuid",
+] }
+sea-query-binder = { version = "0.5", features = [
+    "sqlx-postgres",
+    "with-chrono",
+    "with-json",
+    "with-uuid",
+    "runtime-async-std-native-tls",
+] }
+chrono = { version = "0.4.38", features = ["serde"] }
+tokio = { version = "1.39.2", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+uuid = { version = "1.10.0", features = ["serde", "v4"] }
+dotenvy = "0.15"
+async-trait = "0.1.81"
+anyhow = "1.0.86"
