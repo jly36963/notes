@@ -378,8 +378,8 @@ def basic_discrete_binomial_distribution():
     print(
         f"binom mean: {np.round(arr.mean(), 3)}",
         f"binom std: {np.round(arr.std(), 3)}",
-        f"binom cdf (value={k_cdf}) : {np.round(cdf, 3)}",
-        f"binom pmf (value={k_pmf}) : {np.round(pmf, 3)}",
+        f"binom cdf (value={k_cdf}): {np.round(cdf, 3)}",
+        f"binom pmf (value={k_pmf}): {np.round(pmf, 3)}",
         f"binom ppf (percentile={q}): {np.round(ppf, 3)}",
         sep="\n",
     )

@@ -15,7 +15,6 @@ scikit-learn = "*" # sklearn
 [dev-packages]
 pylint = "*"
 ruff = "*"
-# scipy_stubs = "*"
 
 [requires]
 python_version = "3.12"

@@ -1,444 +1,358 @@
+"""Numpy notes."""
 
-import matplotlib.pyplot as plt
+import json
+from typing import Dict, Any
 import numpy as np
+import scipy.stats as st
+
+# ---
+# Main
+# ---
 
 
-def basic_numpy_usage():
-    # CREATE ARRAYS
-    # array from list
-    list1 = [1, 2, 3]
-    arr1 = np.array(list1)
-    type(arr1)  # numpy.ndarray
-    # array from range
-    arr1 = np.arange(0, 10, 1)  # start, stop (cuts off before), step (optional)
-    # array of zeros (2d) (uses floats)
-    np.zeros(shape=(10, 5))  # 10 rows, 5 columns
-    # array of ones (2d) (uses floats)
-    np.ones(shape=(2, 4))  # 2 rows, 4 columns
-    # array of random integers (seed makes the random integers consistent)
-    np.random.seed(101)
-    arr1 = np.random.randint(0, 100, 10)  # 10 random integers between 0 and 100
-    # copy array
-    arr1 = np.arange(0, 10, 1)
-    arr2 = arr1.copy()
+def main():
+    """Run a bunch of example code snippets."""
+    print_section_title("basic array creation")
+    basic_array_creation()
 
-    # NUMPY (STATS)
-    arr1.max()  # max value
-    arr1.argmax()  # return index of max
-    arr1.min()  # min value
-    arr1.argmin()  # return index of min
-    arr1.mean()  # mean
+    print_section_title("basic multidimensional array")
+    basic_multidimensional_array()
 
-    # NUMPY (SHAPING)
-    arr1 = np.arange(0, 100).reshape(10, 10)  # array of 0-100, reshaped to 10 rows/cols
-    arr1.shape  # dimensions of array (rows, columns)
+    print_section_title("basic array stats")
+    basic_array_stats()
 
-    # NUMPY INDEXING/SLICING
-    arr1 = np.arange(0, 100).reshape(10, 10)
-    arr1[2, 4]  # row index 2, col index 4 (nested array: which array, which element)
-    arr1[:, 5]  # col index 5 (all intersections between rows and col index 5)
-    arr1[3, :]  # row index 3 (all intersections between cols and row index 3)
-    arr1[2:4, 3:5]  # 2d array -- rows 2 & 3, cols 3 & 4
+    print_section_title("basic array shaping")
+    basic_array_shaping()
 
-    # NUMPY ASSIGNMENT (using indexing)
-    arr1[2, 4] = 0  # assign value to one element
-    arr1[:, 5] = 0  # assign value to a slice
-    arr1[:, :] = 123  # assign value to 2d slice
+    print_section_title("basic array arithmetic")
+    basic_array_arithmetic()
+
+    print_section_title("basic array agg")
+    basic_array_agg()
+
+    print_section_title("basic array methods")
+    basic_array_methods()
+
+    print_section_title("basic array round")
+    basic_array_round()
+
+    print_section_title("basic vectorization")
+    basic_vectorization()
+
+    print_section_title("basic ufunc unary")
+    basic_ufunc_unary()
+
+    print_section_title("basic ufunc binary")
+    basic_ufunc_binary()
+
+    print_section_title("basic ufunc comparison")
+    basic_ufunc_comparison()
+
+    print_section_title("basic array bool")
+    basic_array_bool()
+
+
+# ---
+# Utils
+# ---
+
+
+def print_section_title(string: str) -> None:
+    """Uppercase and newline wrap a string, then print it."""
+    print(f"\n{string.upper()}\n")
+
+
+def pretty_print(value: Any) -> None:
+    """Pretty print any value in json format."""
+    print(json.dumps(value, indent=2, default=str))
+
+
+def pretty_print_results(results: Dict[str, Any]) -> None:
+    """Pretty print each key/value."""
+    for k, v in results.items():
+        print(k)
+        print(v)
+
+
+# ---
+# Examples
+# ---
 
 
 def basic_array_creation():
-    # list to array
-    list1 = [1, 2, 3, 4, 5]
-    arr1 = np.array(list1)
-
-    # array to list
-    list1 = arr1.tolist()
-
-    # multi-dimensional array
-    list1 = [1, 2, 3, 4, 5]
-    list2 = ['a', 'b', 'c', 'd', 'e']
-    both_lists = [list1, list2]
-    arr1 = np.array(both_lists)
-    print(f'shape: {arr1.shape}')
-
-    # array from range
-    arr1 = np.arange(10)  # length
-    arr1 = np.arange(0, 10)  # start, stop
-    arr1 = np.arange(0, 10, 1)  # start, stop, step
-
-    # copying arrays
-    # if a slice of array is assigned to a variable,
-    # the variable references a portion of the original array
-    # if the new array is changed, so is the original array (same space in memory)
-
-    # arr2 = arr1[:]  # don't do this
-    _ = arr1.copy()  # do this
-
-
-# ---
-# quick array creation
-# ---
-
-def basic_array_generating():
-    # 2d zeros array
-    np.zeros((10, 10))  # 10x10 array of zeros
-
-    # 2d ones array
-    np.ones(5)  # array of ones (5 elements)
-    np.ones((6, 8))  # array of ones (6 rows, 8 cols)
-
-    # np.random.randn
-    # 'standard normal' (gaussian) distribution, mean 0, variance 1 (values mostly around 0)
-    np.random.randn()  # returns single float
-    np.random.randn(10)  # array of 10 random numbers
-    np.random.randn(2, 4)  # 2 rows, 4 cols
-    3 * np.random.randn(2, 4) + 3  # each_element * 3 + 3
-
-    # np.random.seed (same random values)
-    np.random.seed(0)  # random values will be predictale
-    np.random.randn(5)  # same values every time
-
-    # np.random.rand
-    # uniform distribution over [0,1)
-    np.random.rand()  # single float
-    np.random.rand(5)  # array of 5 values
-    np.random.rand(2, 4)  # 2 rows, 4 cols
-
-    # np.random.normal (like 'np.random.randn', but control over mu/sigma (mean/standdev))
-    # draw random samples from a normal (Gaussian) distribution
-    np.random.normal(loc=0.0, scale=1.0, size=(3, 3))
-
-    # np.randint
-    np.random.randint(low=0, high=1000, size=10)  # array of 10 random integers (0-999)
-    np.random.randint(low=0, high=1000, size=(3, 3))  # 3x3 of random integers (0-999)
-
-    # np.random.random
-    np.random.random(size=(2, 4))  # rows:2, cols:4, values:random floats (0 <= n < 1)
-
-    # np.random.uniform
-    np.random.uniform(low=0, high=100, size=(5, 5))  # array, 5 rows, 5 cols, 0-99
-
-    # np.linspace
-    np.linspace(0, 11, 6)  # array of (6) evenly spaced values between 0 and 10
-
-    # np.nan
-    arr1 = np.ones(10)
-    arr1[5] = np.nan  # change value to NaN
-
-    # np.eye (identity matrix)
-    np.eye(4)  # 4x4 array, mostly zeros, diagonal line of ones [[1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]]
+    """Basic np.ndarray creation."""
+    pretty_print_results(
+        {
+            "np.array([1, 2, 3])": np.array([1, 2, 3]),  # np.ndarray
+            "np.arange(5)": np.arange(1, 6),  # range
+            "np.arange(1, 6)": np.arange(1, 6),  # range with start/stop
+            "np.arange(2, 11, 2)": np.arange(2, 12, 2),  # range with start/stop/step
+            "np.zeros(shape=(2,3))": np.zeros(shape=(2, 3)),  # ndarray of zeros
+            "np.ones(shape=(3,2))": np.ones(shape=(3, 2)),  # ndarray of zeros
+            "np.random.randn()": np.random.randn(),  # normal distribution
+            "np.random.randn(5)": np.random.randn(5),
+            "np.random.randn(2, 3)": np.random.randn(2, 3),
+            "np.random.normal(loc=0.0, scale=1.0, size=(3, 3))": np.random.normal(
+                loc=0.0, scale=1.0, size=(3, 3)
+            ),  # normal distribution (with more options)
+            "np.random.uniform(low=0, high=5, size=(3,3))": np.random.uniform(
+                low=0, high=5, size=(3, 3)
+            ),
+            "np.random.randint(low=0, high=10, size=5)": np.random.randint(
+                low=0, high=10, size=5
+            ),
+            "np.linspace(0, 10, 6)": np.linspace(0, 10, 6),
+            "np.eye(3)": np.eye(3),
+            "np.array([1, 2, 3]).copy()": np.array([1, 2, 3]).copy(),
+            "np.arange(1, 10, 1).reshape(3, 3)": np.arange(1, 10, 1).reshape(3, 3),
+            "np.concatenate([np.arange(3), np.arange(3)], axis=0)": np.concatenate(
+                [np.arange(3), np.arange(3)], axis=0
+            ),
+            "np.stack([np.arange(3), np.arange(3)])": np.stack(
+                [np.arange(3), np.arange(3)]
+            ),
+        }
+    )
 
 
-def basic_array_indexing():
-    """
-    Indexing, slicing, filtering (boolean indexing)
-    """
-    # indexing arrays
-    arr1 = np.arange(0, 10)  # array([0,1,2,3,4,5,6,7,8,9])
-    arr1[5]  # 5
-    arr1[1:5]  # array([1,2,3,4])
-    arr1[1:7:2]  # array([1,3,5])
-    arr1[8:]  # array([8,9])
-    arr1[:3]  # array([0,1,2,3])
-    arr1[:] = 0  # array([0,0,0,0,0,0,0,0,0,0])
+def basic_multidimensional_array():
+    """TODO."""
+    arr = np.arange(1, 13).reshape(3, 4)
 
-    # indexing 2d arrays
-    arr_2d = np.array(([2, 4, 6], [8, 10, 12], [14, 16, 18]))
-    arr_2d[1]  # array([8,10,12])
-    arr_2d[1][0]  # 8
+    pretty_print_results(
+        {
+            "arr": arr,
+            "arr.shape": arr.shape,
+            "arr.ndim": arr.ndim,
+            "arr.size": arr.size,
+            "arr.itemsize": arr.itemsize,
+            "arr[0, 2]": arr[0, 2],  # row 1, col 3
+            "arr[:, 0]": arr[:, 0],  # all rows, col 1
+            "arr[2, :]": arr[2, :],  # row 3, all cols
+            "arr[0:2, 1:3]": arr[0:2, 1:3],  # rows 1 and2, cols 2 and 3
+            "arr[arr > 5]": arr[arr > 5],  # filter with mask
+            "arr[[0,2]]": arr[[0, 2]],  # select specific
+        }
+    )
 
-    # slice 2d arrays
-    arr_2d = np.array(([2, 4, 6], [8, 10, 12], [14, 16, 18]))
-    arr_2d[0:2, 1:3]  # array([[4,6],[10,12]]) (rows -- 0 & 1, columns 1 & 2)
-    arr_2d[:2, 1:]  # array([[4,6],[10,12]])
-
-    # filter array
-    arr1 = np.arange(0, 100, 1).reshape(10, 10)
-    arr1[arr1 > 50]  # return subset where condition is true
-
-    # fancy indexing
-    arr_2d = np.zeros((10, 10))
-    arr_2d[[2, 4, 6, 8]]  # rows 2, 4, 6, 8 (excludes 0,1,3,5,7,9)
-    arr_2d[[0, 1, 2, 9]]  # rows 0, 1, 2, 9
-    arr_2d[[4, 3, 2, 1]]  # rows 4, 3, 2, 1
-
-
-def basic_array_shaping():
-    # array transposition
-    arr = np.arange(50).reshape(10, 5)  # 0-49 (10 rows, 5 columns)
-    arr1 = np.arange(100).reshape(10, 10)  # 0-99 (10r, 10c)
-    arr1.T  # transpose rows/columns
-
-    # swap axes
-    arr = np.array([[1, 2, 3]])  # array([1,2,3])
-    arr.swapaxes(0, 1)  # array([ [1],[2],[3] ])
-
-    # 3d array (z,y,x)
-    arr_3d = np.arange(60).reshape(5, 4, 3)  # 5 layers, 4 rows, 3 columns
-    arr_3d.transpose((1, 0, 2))  # 4 layers, 5 rows, 3 columns
-
-    # flatten
-    arr_3d = np.arange(60).reshape(5, 4, 3)  # 5 layers, 4 rows, 3 columns
-    arr1 = arr_3d.flatten()  # ndarray method (only works on ndarray)
-    arr1 = arr_3d.ravel()  # library method (works on ndarrays and more (ie: list of ndarrays.))
-
-
-def basic_array_methods():
-    arr1 = np.arange(25).reshape(5, 5)  # 0-24 (5 rows, 5 columns)
-
-    # math
-    arr1.prod()  # prod
-    arr1.prod(axis=0)  # prod along axis
-    arr1.sum()  # sum
-    arr1.sum(axis=0)  # sum along axis
-    arr1.cumprod()  # list of cumulative products
-    arr1.cumsum()  # list of cumulative sums
-
-    # stats
-    arr1.max()  # maximum
-    arr1.max(axis=0)  # maximum along axis (2d array returns list)
-    arr1.min()  # minimum
-    arr1.min(axis=0)  # minimum along axis
-    arr1.mean()  # mean
-    arr1.mean(axis=0)  # mean along axis
-    arr1.argmax()  # returns index of maximum value
-    arr1.argmax(axis=0)  # returns index of maximum value along axis
-    arr1.argmin()  # returns index of minimum value
-    arr1.argmin(axis=0)  # returns index of minimum value along axis
-    arr1.ptp()  # range (peak to peak) (min to max)
-    arr1.ptp(axis=0)  # range along axis
-    arr1.std()  # std: sqrt(mean(abs(arr1[i] - arr1.mean())**2)) / len(arr1)
-    arr1.std(ddof=1)  # std: sqrt(mean(abs(arr1[i] - arr1.mean())**2)) / (len(arr1) - 1)
-    arr1.std(axis=0)  # standard deviation (along axis)
-    arr1.var()  # variance
-    arr1.var(ddof=1)  # variance (n-1)
-    arr1.var(axis=0)  # variance (along axis)
-    np.median(arr1)  # median
-    np.median(arr1, axis=0)  # median along axis
-
-    # misc
-    arr1.clip(min=5, max=20)  # values are clipped to interval edges (5,5,5,5,5,6,7,8, ...)
-    arr1.sort()  # sort in-place
-
-    # arrays with math operators
-    arr1 = np.array([[1, 2, 3, 4], [5, 6, 7, 8]])
-    arr1 + arr1  # array([2,4,6,8],[10,12,14,16])
-    1 / arr1  # array([ 1, .5, .333, .25 ],[ .2, .166, .143, .125 ])
-    arr1 ** 3  # array([1,8,27,64],[125,216,343,512])
-
-    # 2d array (for loops)
-    arr_2d = np.zeros((10, 10))
-    arr_length = arr_2d.shape[1]  # 10L
-    for i in range(arr_length):
-        arr_2d[i] = 1  # change all values to 1
-    for i in range(arr_length):
-        arr_2d[i] = i  # change each row to [i,i,i,i,i,i,i,i,i,i]
-
-    # dot product (2d -- matrix multiplication)
-    arr = np.arange(25).reshape(5, 5)  # 0-24 (5 rows, 5 columns)
-    np.dot(arr.T, arr)
-
-
-def add_one(n):
-    n = n + 1
-    return n
-
-
-def basic_vectorization():
-    # array
-    arr1 = np.arange(11)
-
-    # vectorized function
-    v_add_one = np.vectorize(add_one)
-    # apply vectorized function to each element in array
-    v_add_one(arr1)
-
-
-def basic_ufunc():
-    # unversal array (math ufunc)
-    arr1 = np.arange(11)
-    np.sqrt(arr1)  # square root (each element)
-    np.square(arr1)  # square (each element)
-    np.exp(arr1)  # e^element (each element)
-    np.exp2(arr1)  # 2^element (each element)
-    np.log(arr1)  # ln(element) (each element)
-    np.log2(arr1)  # log base 2 (each element)
-    np.log10(arr1)  # log base 10 (each element)
-    np.positive(arr1)  # postive (each element)
-    np.absolute(arr1)  # absolute value (each element)
-
-    # trig ufunc
-    np.deg2rad(arr1)  # degrees to radians (each element)
-    np.rad2deg(arr1)  # radians to degrees (each element)
-    np.sin(arr1)  # sin(element) (each element)
-    np.cos(arr1)  # cos(element) (each element)
-    np.tan(arr1)  # tan(element) (each element)
-    np.arcsin(arr1)  # arcsin(element) (each element)
-    np.arccos(arr1)  # arccos(element) (each element)
-    np.arctan(arr1)  # arctan(element) (each element)
-
-    # binary functions
-    arr1 = np.arange(11)
-    arr2 = np.arange(11)
-    np.add(arr1, arr2)  # array([0,2,4,6,8,10,12,14,16,18])
-    np.subtract(arr1, arr2)  # subtract arguments (element-wise)
-    np.multiply(arr1, arr2)  # multiply arguments (element-wise)
-    np.divide(arr1, arr2)  # divide arguments (element-wise)
-    np.power(arr1, arr2)  # arr1^arr2 (element-wise)
-    np.maximum(arr1, arr2)  # find maximum (element-wise)
-    np.minimum(arr1, arr2)  # find minimum (element-wise)
-
-    # comparison functions
-    arr1 = np.arange(11)
-    arr2 = np.arange(11)
-    np.greater(arr1, arr2)  # elem1 > elem2 (element wise)
-    np.greater_equal(arr1, arr2)  # elem1 >= elem2 (element wise)
-    np.less(arr1, arr2)  # elem1 < elem2 (element wise)
-    np.less_equal(arr1, arr2)  # elem1 <= elem2 (element wise)
-    np.equal(arr1, arr2)  # elem1 == elem2 (element-wise)
-    # logical functions
-    np.logical_and()
-    np.logical_or()
-    np.logical_not()
-
-
-# ---
-# matplotlib example (meshgrid & pyplot(plt))
-# ---
-
-'''
-# make matplotlib work in jupyter
-%matplotlib inline
-'''
-
-
-def basic_array_matplotlib():
-    # basics
-    x = np.arange(0, 10)
-    y = x**2
-    plt.plot(x, y, '*')  # x axis, y axis, marker
-
-    # manually control plot
-    x = np.arange(0, 10)
-    y = x**2
-    plt.plot(x, y, '*')  # x axis, y axis, marker
-    plt.xlim(0, 5)  # control axis bounds
-    plt.ylim(0, 5)  # control axis bounds
-    plt.title("my_title")
-    plt.xlabel('x_label')
-    plt.ylabel('y_label')
-
-    # imshow example
-    arr1 = np.arange(0, 100).reshape(10, 10)
-    plt.imshow(arr1, cmap='BrBG')  # 'brown, blue, green' color ramp
-
-    # imshow example 2
-    arr1 = np.random.randint(0, 255).reshape(10, 10)
-    plt.imshow(arr1, cmap='BrBG')
-    plt.colorbar()  # show color bar (basically a legend)
-
-    # more complicated example
-    points = np.arange(-5, 5, 0.01)
-    dx, dy = np.meshgrid(points, points)
-    z = (np.sin(dx) + np.sin(dy))
-
-    plt.imshow(z)
-    plt.colorbar()
-    plt.title('plot for sin(x) + sin(y)')
-
-
-def basic_np_where():
-    # list comprehension (without np.where)
-    a = np.array([1, 2, 3, 4])
-    b = np.array([100, 200, 300, 400])
-    condition = np.array([True, True, False, False])
-    answer = [(A_val if cond else B_val) for A_val, B_val, cond in zip(a, b, condition)]
-
-    # list comprehension (with np.where)
-    answer2 = np.where(condition, a, b)  # condition ? a : b (like js ternary operator)
-
-    # np.where (example)
-    arr1 = np.random.randn(5, 5)  # 5x5 matrix of random numbers
-    arr2 = np.random.randn(5, 5)
-
-    np.where(arr1 > 0, arr1, 0)  # if -- elem > 0 return elem, else -- return 0.
-    np.where(arr1 > arr2, arr1, arr2)  # if elem1 > elem2, return elem1, else return elem2
+    # Iterate over ndarray element-wise
+    print("arr.flat loop")
+    for n in arr.flat:
+        print(n)
 
 
 def basic_array_stats():
-    arr1 = np.arange(1, 10, 1).reshape(3, 3)  # 3x3 grid, 1-9
-    arr1.sum()  # 45
-    arr1.sum(0)  # array([12,15,18]) (sum columns)
-    arr1.sum(1)  # array([6,15,24]) (sum rows)
-    arr1.mean()  # 5.0
-    arr1.mean(0)  # array([4,5,6]) (mean columns)
-    arr1.mean(1)  # array([2,5,8]) (mean rows)
-    np.median(arr1)  # 5
-    np.median(arr1, 0)  # array([4,5,6])
-    np.median(arr1, 1)  # array([2,5,8])
+    """Get stats about the array"""
+    arr: np.ndarray = st.binom.rvs(n=6, size=10, p=0.5)  # type: ignore
 
-    # standard deviation
-    # find mean
-    # (each_elem - mean)^2
-    # divide by n (number of inputs)
-    # sqrt(new_mean)
-    arr1.std()  # 2.582
+    pretty_print_results(
+        {
+            "arr": arr,
+            # Methods
+            "arr.argmax()": arr.argmax(),
+            "arr.argmin()": arr.argmin(),
+            "arr.max()": arr.max(),
+            "arr.min()": arr.min(),
+            "arr.mean()": arr.mean(),
+            "arr.std()": arr.std(),
+            "arr.var()": arr.var(),
+            # Functions
+            "np.median(arr)": np.median(arr),
+            "st.mode(arr)": tuple(st.mode(arr)),
+        }
+    )
 
-    # variance
-    # find mean
-    # (each_elem - mean)^2
-    # divide by n (number of inputs)
-    arr1.var()  # 6.666667
 
-    # any, all
-    arr1 = np.arange(1, 10, 1).reshape(3, 3)
-    mean = arr1.mean()
-    arr1 = np.greater_equal(arr1, mean)  # elem >= 5 ? True : False
-    arr1.any()  # true (are any values True)
-    arr1.all()  # false (are all values True)
+def basic_array_shaping():
+    """Reshaping arrays."""
+    arr = np.arange(1, 7)
 
-    # sort
-    arr1 = np.random.rand(5)  # 5 random numbers
-    arr1.sort()  # sort random numbers
-    arr2 = np.random.randn(5, 5)  # 5x5 matrix of random numbers
-    arr2.sort()  # sort random numbers (local to each row)
-    arr3 = np.array(['f', 'g', 'a', 'b', 'c', 'd', 'e', 'a'])
-    arr3.sort()  # alphabetical
-    arr3 = np.unique(arr3)  # remove duplicates
+    pretty_print_results(
+        {
+            "arr": arr,
+            "arr.reshape(2, 3)": arr.reshape(2, 3),
+            "arr.T": arr.T,
+            "arr.reshape(2, 3).swapaxes(0, 1)": arr.reshape(2, 3).swapaxes(0, 1),
+            "arr.reshape(2,3).flatten()": arr.reshape(2, 3).flatten(),
+        }
+    )
 
-    # membership testing
-    arr1 = np.array(['f', 'g', 'a', 'b', 'c', 'd', 'e', 'a'])
-    arr2 = np.array(['a', 'b', 'c', 'z'])
-    np.in1d(arr2, arr1)  # array([ True, True, True, False ])
+
+def basic_array_arithmetic():
+    """Aggregation functions."""
+    arr = np.arange(1, 6)
+
+    pretty_print_results(
+        {
+            "arr": arr,
+            "arr + 5": arr + 5,
+            "arr * 2": arr * 2,
+            "arr**2": arr**2,
+            "arr / 2": arr / 2,
+            "arr + arr": arr + arr,
+            "arr * arr": arr * arr,
+            "1 / arr": 1 / arr,
+        }
+    )
+
+
+def basic_array_agg():
+    """Aggregation functions."""
+    arr = np.arange(9).reshape(3, 3)
+    pretty_print_results(
+        {
+            "arr": arr,
+            "arr.max()": arr.max(),
+            "arr.min()": arr.min(),
+            "arr.prod()": arr.prod(),
+            "arr.prod(axis=0)": arr.prod(axis=0),
+            "arr.sum()": arr.sum(),
+            "arr.sum(axis=0)": arr.sum(axis=0),
+        }
+    )
+
+    # Also cumprod, cumsum
+
+
+def basic_array_methods():
+    """TODO."""
+    # TODO
+    # tolist, view, fill, reshape/resize, transpose, ravel, squeeze
+    # take, sort, nonzero
+    arr = np.random.randint(low=-10, high=10, size=5)
+    pretty_print_results(
+        {
+            "arr": arr,
+            "arr.clip(min=-5, max=5)": arr.clip(min=-5, max=5),
+        }
+    )
+
+
+def basic_array_round():
+    """TODO."""
+    arr: np.ndarray = st.norm.rvs(size=10, loc=0, scale=10)  # type: ignore
+
+    pretty_print_results(
+        {
+            "arr": arr,
+            "np.round(arr, 3)": np.round(arr, 3),
+            "np.ceil(arr)": np.ceil(arr),
+            "np.floor(arr)": np.floor(arr),
+            "np.trunc(arr)": np.trunc(arr),
+        }
+    )
+
+
+def basic_vectorization():
+    """Use vectorization to apply a func element-wise."""
+    arr = np.arange(11)
+
+    def add_one(n):
+        return n + 1
+
+    add_one_vectorized = np.vectorize(add_one)
+
+    pretty_print_results(
+        {
+            "arr": arr,
+            "add_one_vectorized(arr)": add_one_vectorized(arr),
+        }
+    )
+
+
+def basic_ufunc_unary():
+    """Element-wise operations over a single array."""
+    arr = np.arange(1, 6)
+
+    pretty_print_results(
+        {
+            "arr": arr,
+            "np.sqrt(arr)": np.sqrt(arr),
+            "np.square(arr)": np.square(arr),
+            "np.exp(arr)": np.exp(arr),
+            "np.exp2(arr)": np.exp2(arr),
+            "np.log(arr)": np.log(arr),
+            "np.log2(arr)": np.log2(arr),
+            "np.log10(arr)": np.log10(arr),
+            "np.negative(arr)": np.negative(arr),
+            "np.positive(arr)": np.positive(arr),
+            "np.absolute(arr)": np.absolute(arr),
+            "np.isfinite(arr)": np.isfinite(arr),
+        }
+    )
+
+
+def basic_ufunc_binary():
+    """Element-wise operations over two arrays."""
+    arr1 = np.arange(1, 6)
+    arr2 = np.ones(5) + np.round(np.random.normal(size=5), 2)
+    pretty_print_results(
+        {
+            "arr1": arr1,
+            "arr2": arr2,
+            "np.add(arr1, arr2)": np.add(arr1, arr2),
+            "np.subtract(arr1, arr2)": np.subtract(arr1, arr2),
+            "np.multiply(arr1, arr2)": np.multiply(arr1, arr2),
+            "np.divide(arr1, arr2)": np.divide(arr1, arr2),
+            "np.power(arr1, arr2)": np.power(arr1, arr2),
+            "np.maximum(arr1, arr2)": np.maximum(arr1, arr2),
+            "np.minimum(arr1, arr2)": np.minimum(arr1, arr2),
+        }
+    )
+
+
+def basic_ufunc_comparison():
+    """Element-wise comparisons."""
+    arr1 = np.arange(1, 6)
+    arr2 = arr1.copy() + np.round(np.random.normal(size=5), 2)
+
+    pretty_print_results(
+        {
+            "np.greater(arr1, arr2)": np.greater(arr1, arr2),
+            "np.greater_equal(arr1, arr2)": np.greater_equal(arr1, arr2),
+            "np.less(arr1, arr2)": np.less(arr1, arr2),
+            "np.less_equal(arr1, arr2)": np.less_equal(arr1, arr2),
+            "np.equal(arr1, arr2)": np.equal(arr1, arr2),
+            "np.isin([1, 2, 3], [1, 3, 5])": np.isin(
+                [1, 2, 3],
+                [1, 3, 5],
+            ),
+        }
+    )
+
+
+def basic_array_bool():
+    """Boolean operations with arrays."""
+    arr = np.arange(1, 6)
+
+    arr1 = np.array([True, True, False])
+    arr2 = np.array([True, False, False])
+
+    # Typically prefer `&` / `|` over `and` / `or`
+
+    pretty_print_results(
+        {
+            "arr": arr,
+            "arr >= 3": arr >= 3,
+            "arr[arr % 2 == 0]": arr[arr % 2 == 0],
+            "(arr >= 2) & (arr <= 4)": (arr >= 2) | (arr <= 4),
+            "arr1": arr1,
+            "arr2": arr2,
+            "np.logical_and(arr1, arr2)": np.logical_and(arr1, arr2),
+            "np.logical_or(arr1, arr2)": np.logical_or(arr1, arr2),
+            "np.logical_xor(arr1, arr2)": np.logical_xor(arr1, arr2),
+            "arr1.all()": arr1.all(),
+            "arr1.any()": arr1.any(),
+        }
+    )
+
+    # TODO
+    # np.logical_not, np.where
+
 
 # ---
-# Array I/O (READ/WRITE)
+# Run
 # ---
 
-
-def basic_array_io():
-    # save/load array
-    arr = np.arange(1, 26, 1).reshape(5, 5)  # create
-    np.save('my_array', arr)  # save
-    arr = "I've been changed"
-    arr = np.load('my_array.npy')  # load
-
-    # zip multiple arrays
-    arr1 = np.arange(1, 10, 1).reshape(3, 3)
-    arr2 = np.arange(1, 17, 1).reshape(4, 4)
-    np.savez('zip_array.npz', arr1=arr1, arr2=arr2)
-    zip_arrays = np.load('zip_array.npz')
-    zip_arrays['arr1']
-    zip_arrays['arr2']
-
-    # save/load text files
-    arr = np.array([1, 2, 3], [4, 5, 6])
-    np.savetxt('text_array.txt', arr, delimiter=',')
-    text_arr = np.loadtxt('text_array.txt', delimiter=',')
-
-    # array concatenation
-    arr1 = np.arange(1, 26, 1).reshape(5, 5)
-    arr2 = np.arange(26, 51, 1).reshape(5, 5)
-
-    arr = np.concatenate([arr1, arr2], axis=0)  # 5 cols, 10 rows (more rows)
-    arr = np.concatenate([arr1, arr2], axis=1)  # 10 cols, 5 rows (more columns)
+if __name__ == "__main__":
+    main()
