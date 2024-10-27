@@ -1,3 +1,5 @@
+"""Seaborn notes."""
+
 import json
 import os
 from sklearn.datasets import load_iris
@@ -23,6 +25,7 @@ OUTPUT_DIR = os.path.join(DATA_DIR, 'output')
 # ---
 
 def main():
+    """Run a bunch of example code snippets."""
     print_section_title('setup')
     setup()
 
@@ -503,6 +506,7 @@ def basic_pairplot():
 # ---
 
 def print_section_title(string: str) -> None:
+    """Convert a string to upppercase, wrap in new lines, then print."""
     print(f'\n{string.upper()}\n')
 
 

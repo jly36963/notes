@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy = "*"
+pandas = "*"
+matplotlib = "*"
+seaborn = "*"
+scipy = "*"
+statsmodels = "*"
+scikit-learn = "*" # sklearn
+
+[dev-packages]
+pylint = "*"
+ruff = "*"
+# scipy_stubs = "*"
+
+[requires]
+python_version = "3.12"

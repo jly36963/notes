@@ -1,7 +1,4 @@
-# ---
-# Matplotlib
-# ---
-
+"""Matplotlib notes."""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,6 +15,7 @@ import seaborn as sns
 
 
 def main():
+    """Run a bunch of matplotlib code snippets."""
     print_section_title('setup')
     setup()
 
@@ -60,6 +58,7 @@ def main():
 
 
 def print_section_title(string: str) -> None:
+    """Convert a string to uppercase, wrap in new lines, then print."""
     print(f'\n{string.upper()}\n')
 
 

@@ -7,9 +7,7 @@
         {"name": "react", "size": 100},
         {"name": "solid", "size": 50},
         {"name": "leptos", "size": 40},
-        {"name": "astro", "size": 30},
-        {"name": "vue", "size": 30},
-        {"name": "htmx", "size": 25}
+        {"name": "astro", "size": 30}
       ]
     },
     {
@@ -53,18 +51,16 @@
       "children": [
         {"name": "postgres", "size": 200},
         {"name": "redis", "size": 50},
-        {"name": "mongo", "size": 40},
-        {"name": "elastic-search", "size": 30},
-        {"name": "cassandra", "size": 30}
+        {"name": "mongo", "size": 40}
       ]
     },
     {
       "name": "cli",
       "children": [
-        {"name": "node (yargs)", "size": 50},
-        {"name": "python (typer)", "size": 30},
-        {"name": "go (cobra)", "size": 30},
-        {"name": "rust (clap)", "size": 30}
+        {"name": "yargs (node)", "size": 50},
+        {"name": "typer (python)", "size": 30},
+        {"name": "cobra (go)", "size": 30},
+        {"name": "clap (rust)", "size": 30}
       ]
     },
     {
@@ -93,9 +89,7 @@
       "children": [
         {"name": "yargs", "size": 100},
         {"name": "string-ts", "size": 80},
-        {"name": "ruff", "size": 20},
-        {"name": "biome", "size": 20},
-        {"name": "polars", "size": 20}
+        {"name": "ruff", "size": 20}
       ]
     }
   ]

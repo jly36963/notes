@@ -1,13 +1,9 @@
-# sqlx
-
-- https://github.com/launchbadge/sqlx
-- https://docs.rs/sqlx/0.5.7/sqlx/
+# Sea Query
 
 ## Startup
 
 ```bash
-# start dev server
-make dev
+just dev
 ```
 
 ## migrations
@@ -29,8 +25,3 @@ sqlx migrate run
 # revert migration
 sqlx migrate revert
 ```
-
-### additional migration docs/issues
-
-- https://github.com/launchbadge/sqlx/issues/356
-- https://github.com/launchbadge/sqlx/issues/1306
