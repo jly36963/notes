@@ -48,6 +48,9 @@ def main():
     print_section_title("basic ufunc comparison")
     basic_ufunc_comparison()
 
+    print_section_title("basic array sets")
+    basic_array_sets()
+
     print_section_title("basic array bool")
     basic_array_bool()
 
@@ -317,6 +320,25 @@ def basic_ufunc_comparison():
                 [1, 2, 3],
                 [1, 3, 5],
             ),
+        }
+    )
+
+
+def basic_array_sets():
+    """TODO."""
+    pretty_print_results(
+        {
+            "np.isin([1, 2, 3], [1, 3, 5])": np.isin(
+                [1, 2, 3],
+                [1, 3, 5],
+            ),
+            "np.intersect1d([1, 2, 3], [1, 3, 5])": np.intersect1d(
+                [1, 2, 3], [1, 3, 5]
+            ),
+            "np.setdiff1d([1, 2, 3], [1, 3, 5])": np.setdiff1d([1, 2, 3], [1, 3, 5]),
+            "np.setxor1d([1, 2, 3], [1, 3, 5])": np.setxor1d([1, 2, 3], [1, 3, 5]),
+            "np.union1d([1, 2, 3], [1, 3, 5])": np.union1d([1, 2, 3], [1, 3, 5]),
+            "np.unique([1, 1, 1, 2, 2, 3])": np.unique([1, 1, 1, 2, 2, 3]),
         }
     )
 
