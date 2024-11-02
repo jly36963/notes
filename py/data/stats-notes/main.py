@@ -1,31 +1,31 @@
 """Scipy notes."""
 
-import os
 import json
+import os
 from typing import Any, Dict, Optional, cast
-from sklearn.utils import resample
-from sklearn.neighbors import LocalOutlierFactor
-from statsmodels.stats.weightstats import ztest
-import scipy.stats as st
-from scipy.stats._stats_py import (
-    ModeResult,
-    PearsonRResult,
-    TtestResult,
-    NormaltestResult,
-    SkewtestResult,
-    KurtosistestResult,
-)
-from scipy.stats._fit import GoodnessOfFitResult
-from scipy.stats._binomtest import BinomTestResult
-from scipy.stats._morestats import AndersonResult
-import seaborn as sns
-from seaborn._core.typing import DataSource
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+import scipy.stats as st
+import seaborn as sns
 from matplotlib.axes import Axes
 from numpy.typing import ArrayLike
-# import statsmodels.formula.api as smf
+from scipy.stats._binomtest import BinomTestResult
+from scipy.stats._fit import GoodnessOfFitResult
+from scipy.stats._morestats import AndersonResult
+from scipy.stats._stats_py import (
+    KurtosistestResult,
+    ModeResult,
+    NormaltestResult,
+    PearsonRResult,
+    SkewtestResult,
+    TtestResult,
+)
+from seaborn._core.typing import DataSource
+from sklearn.neighbors import LocalOutlierFactor
+from sklearn.utils import resample
+from statsmodels.stats.weightstats import ztest
 
 # ---
 # Constants
@@ -615,10 +615,10 @@ def basic_anderson_darling_test() -> None:
         f"samples.mean(): {np.round(samples.mean(), 3)}",
         f"samples.std(): {np.round(samples.std(), 3)}",
         'st.anderson(samples, dist="norm")',
-        f"statistic: {res.statistic}",
-        f"critical_values: {res.critical_values}",
-        f"significance_level: {res.significance_level}",
-        f"fit_result: {res.fit_result}",
+        f"statistic: {res.statistic}",  # type: ignore
+        f"critical_values: {res.critical_values}",  # type: ignore
+        f"significance_level: {res.significance_level}",  # type: ignore
+        f"fit_result: {res.fit_result}",  # type: ignore
         sep="\n",
     )
 

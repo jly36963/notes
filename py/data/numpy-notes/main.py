@@ -1,7 +1,8 @@
 """Numpy notes."""
 
 import json
-from typing import Dict, Any
+from typing import Any, Dict
+
 import numpy as np
 import scipy.stats as st
 

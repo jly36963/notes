@@ -15,12 +15,10 @@
 **/.pytest_cache/
 **/.coverage
 **/airflow
+**/.ruff_cache/
 
 # Rust
 **/target/
-
-# vscode
-**/.vscode/
 
 # Mac
 **/.DS_Store
