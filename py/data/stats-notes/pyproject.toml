@@ -12,7 +12,8 @@ dependencies = [
     "statsmodels>=0.14.4",
 ]
 
-tool.uv.dev-dependencies = ["ruff", "pylint"]
+[tool.uv]
+dev-dependencies = ["ruff", "pylint"]
 
 [tool.ruff.lint]
 extend-select = ["I"]
