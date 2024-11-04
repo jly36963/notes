@@ -1,11 +1,16 @@
 from io import StringIO
 from typing import List, TypedDict
 from uuid import UUID
+
 import numpy as np
 import pandas as pd
 
+
+def main():
+    pass
+
 # ---
-# series
+# Series
 # ---
 
 

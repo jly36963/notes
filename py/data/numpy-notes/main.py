@@ -220,7 +220,6 @@ def basic_array_agg():
 
 def basic_array_methods():
     """TODO."""
-    # TODO
     # tolist, view, fill, reshape/resize, transpose, ravel, squeeze
     # take, sort, nonzero
     arr = np.random.randint(low=-10, high=10, size=5)

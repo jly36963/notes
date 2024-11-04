@@ -1,8 +1,10 @@
-import os
-from PIL import Image, ImageFilter
-import numpy as np
-import matplotlib.pyplot as plt
+"""Pillow notes."""
 
+import os
+
+import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image, ImageFilter
 
 DATA_DIR = os.path.join('.', 'data')
 INPUT_DIR = os.path.join(DATA_DIR, 'input')

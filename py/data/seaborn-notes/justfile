@@ -1,0 +1,26 @@
+install:
+	uv venv .venv
+	uv sync
+
+format:
+	uv tool run ruff format .
+
+lint:
+	uv tool run ruff check
+
+dev:
+	uv run python3 main.py
+
+run:
+	PYTHON_ENV=production uv run python3 main.py
+
+
+# install:
+# 	mkdir -p .venv
+# 	pipenv install --dev
+
+# dev:
+# 	pipenv run python3 main.py
+
+# run:
+# 	PYTHON_ENV=production pipenv run python3 main.py

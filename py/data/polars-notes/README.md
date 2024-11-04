@@ -1,7 +1,5 @@
 # Polars
 
-A simple fastapi app with examples of basic usage.
-
 ## Setup
 
 - `pipenv install polars`
