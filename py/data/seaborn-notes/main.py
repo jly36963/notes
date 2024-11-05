@@ -72,12 +72,51 @@ def main():
 
 
 # ---
+# Utils
+# ---
+
+
+def get_fair_df() -> pd.DataFrame:
+    return cast(pd.DataFrame, sm.datasets.fair.load_pandas().data)  # type: ignore
+
+
+def print_section_title(string: str) -> None:
+    """Convert a string to upppercase, wrap in new lines, then print."""
+    print(f"\n{string.upper()}\n")
+
+
+def map_res(val):
+    """Map type to more print-friendly type"""
+    if isinstance(val, pd.DataFrame):
+        return val.to_dict(orient="records")
+    return val
+
+
+def pretty_print_result_map(results: dict) -> None:
+    """Convert values to more print-friendly types, then print"""
+    mapped = {k: map_res(v) for k, v in results.items()}
+    print(json.dumps(mapped, indent=2, ensure_ascii=False))
+
+
+def get_output_path(filename: str) -> str:
+    """Get path to input file"""
+    return os.path.join(OUTPUT_DIR, filename)
+
+
+def save_output_image(filename: str) -> None:
+    """Save current plot to file"""
+    print(f"Saving image: {filename}")
+    plt.savefig(get_output_path(filename))
+    plt.clf()
+
+
+# ---
 # Examples
 # ---
 
 
 def setup():
-    """Set defaults for seaborn"""
+    """Set defaults for seaborn."""
     sns.set_style(style="white")
 
     for d in [DATA_DIR, INPUT_DIR, OUTPUT_DIR]:
@@ -87,19 +126,17 @@ def setup():
 
 
 def basic_matplotlib_histogram():
-    """Histogram examples (matplotlib)"""
+    """Histogram examples (matplotlib)."""
 
     # Histograms 1 and 2
     bins = [-4, -3, -2, -1, 0, 1, 2, 3, 4]
     arr1 = np.random.randn(100)
     plt.hist(arr1, density=True, color="red", alpha=0.5, bins=bins)
     save_output_image("basic-matplotlib-histogram-1.png")
-    plt.clf()
 
     arr2 = np.random.randn(80)
     plt.hist(arr2, density=True, color="blue", alpha=0.5, bins=bins)
     save_output_image("basic-matplotlib-histogram-2.png")
-    plt.clf()
 
     # Histogram 3
     arr3 = np.random.randn(100)
@@ -115,11 +152,10 @@ def basic_matplotlib_histogram():
         density=True,  # idk lol
     )
     save_output_image("basic-matplotlib-histogram-3.png")
-    plt.clf()
 
 
 def basic_displot():
-    """Displot examples"""
+    """Displot examples."""
     # NOTE: distplot is now DEPRECATED, use displot instead
     # sns.distplot(x=arr1, bins=25) # DEPRECATED (distplot -> displot)
 
@@ -134,24 +170,21 @@ def basic_displot():
         kde_kws={"cut": 3},
     )
     save_output_image("basic-displot-1.png")
-    plt.clf()
 
     # distplot (with series)
     srs1 = pd.Series(np.random.randn(100), name="ds1")
     sns.displot(x=srs1, bins=25, kde=True)
     save_output_image("basic-displot-2.png")
-    plt.clf()
 
 
 def basic_jointplot():
-    """Jointplot examples"""
+    """Jointplot examples."""
     # Kinds: scatter, reg, resid, kde (density), hex
 
     # Scatter (default)
     df = pd.DataFrame({"x": np.random.randn(250), "y": np.random.randn(250)})
     sns.jointplot(df, x="x", y="y")
     save_output_image("basic-jointplot-scatter.png")
-    plt.clf()
 
     # Hex
     sns.jointplot(
@@ -161,7 +194,6 @@ def basic_jointplot():
         y=df["y"],
     )
     save_output_image("basic-jointplot-hex.png")
-    plt.clf()
 
     # KDE (kernel density estimation)
     sns.jointplot(
@@ -171,16 +203,14 @@ def basic_jointplot():
         y=df["y"],
     )
     save_output_image("basic-jointplot-kde.png")
-    plt.clf()
 
 
 def basic_rugplot():
-    """Rugplot examples"""
+    """Rugplot examples."""
     # rugplot (plot an array of datapoints as sticks on an axis)
     arr1 = np.random.randn(100)
     sns.rugplot(x=arr1, height=1, color="fuchsia")
     save_output_image("basic-rugplot-1.png")
-    plt.clf()
 
     # rugplot with histogram
     arr2 = np.random.randn(100)
@@ -189,11 +219,10 @@ def basic_rugplot():
     )
     sns.rugplot(x=arr2, height=0.05, color="black")
     save_output_image("basic-rugplot-2.png")
-    plt.clf()
 
 
 def basic_kde():
-    """KDE examples"""
+    """KDE examples."""
 
     # kde (kernal density estimation plot) (probability density function)
     # gaussian distribution plots on every data point -- sum of gaussian curves.
@@ -204,13 +233,11 @@ def basic_kde():
     for bwm in np.arange(0.5, 2, 0.25):
         sns.kdeplot(x=arr1, bw_method=bwm, lw=1.8, label=bwm)
     save_output_image("basic-kde-1.png")
-    plt.clf()
 
     # cdf (cumulative distribution function)
     arr3 = np.random.randn(100)
     sns.kdeplot(arr3, cumulative=True)
     save_output_image("basic-kde-2.png")
-    plt.clf()
 
     # kde (multivariate) (DEPRECATED)
     mean = [0, 0]  # mean
@@ -221,7 +248,6 @@ def basic_kde():
     df1 = pd.DataFrame(ds2, columns=["X", "Y"])  # dataset as dataframe
     sns.kdeplot(x=df1["X"], y=df1["Y"])  # kdeplot of dataframe
     save_output_image("basic-kde-3.png")
-    plt.clf()
 
     # kde (multivariate) (multiple vectors)
     mean = [0, 0]  # mean
@@ -232,7 +258,6 @@ def basic_kde():
     df1 = pd.DataFrame(ds2, columns=["X", "Y"])  # dataset as dataframe
     sns.kdeplot(x=df1["X"], y=df1["Y"], fill=True)
     save_output_image("basic-kde-4.png")
-    plt.clf()
 
     # kde (jointplot)
     mean = [0, 0]  # mean
@@ -243,7 +268,6 @@ def basic_kde():
     df1 = pd.DataFrame(ds2, columns=["X", "Y"])  # dataset as dataframe
     sns.jointplot(x=df1["X"], y=df1["Y"], kind="kde")
     save_output_image("basic-kde-5.png")
-    plt.clf()
 
     # # NOTE: Using alternate kernels is now DEPRECATED
     # # Manual kde (create kernels)
@@ -282,7 +306,7 @@ def basic_kde():
 
 
 def basic_box_plot():
-    """Boxplot examples"""
+    """Boxplot examples."""
     # box plot
     # 5 key components
     # first quartile, median, third quartile
@@ -295,19 +319,16 @@ def basic_box_plot():
     arr2 = np.random.randn(100)
     sns.boxplot(data=[arr1, arr2])
     save_output_image("basic-seaborn-box-plot-1.png")
-    plt.clf()
     sns.boxplot(data=[arr1, arr2], whis=np.inf)  # use outliers instead of min/max
     save_output_image("basic-seaborn-box-plot-2.png")
-    plt.clf()
 
 
 def basic_violin_plot():
-    """Violin plot examples"""
+    """Violin plot examples."""
     tips = sns.load_dataset("tips")  # example dataset (df)
     tips["tip_pct"] = 100 * (tips["tip"] / tips["total_bill"])
     sns.violinplot(x=tips["size"], y=tips["tip_pct"], inner="quartile")
     save_output_image("basic-seaborn-violin-plot-1.png")
-    plt.clf()
 
 
 def basic_box_and_violin_comparison():
@@ -320,21 +341,18 @@ def basic_box_and_violin_comparison():
     # Comparing boxplot and violinplot`
     sns.boxplot(data=[ds1, ds2])  # boxplot (why we may need violin plot)
     save_output_image("basic-violin-vs-box-plot-1.png")
-    plt.clf()
     sns.violinplot(data=[ds1, ds2], inner="quartile")  # inner -- quartile, point, stick
     save_output_image("basic-violin-vs-box-plot-2.png")
-    plt.clf()
 
 
 def basic_regression_plots():
-    """Regression plot examples"""
+    """Regression plot examples."""
 
     # linear regression
     tips = sns.load_dataset("tips")  # example dataset (df)
     tips.head()  # first 5 rows
     sns.lmplot(x="total_bill", y="tip", data=tips)  # col1, col2, df
     save_output_image("basic-regression-linear.png")
-    plt.clf()
 
     # linear regression (custom)
     tips = sns.load_dataset("tips")  # example dataset (df)
@@ -346,69 +364,59 @@ def basic_regression_plots():
         line_kws={"linewidth": 1, "color": "blue"},
     )
     save_output_image("basic-regression-linear-2.png")
-    plt.clf()
 
     # polynomial regression (higher order polynomials)
     tips = sns.load_dataset("tips")  # example dataset (df)
     sns.lmplot(x="total_bill", y="tip", data=tips, order=3)  # third order polynomial
     save_output_image("basic-regression-polynomial.png")
-    plt.clf()
 
     # linear regression (no fit)
     tips = sns.load_dataset("tips")  # example dataset (df)
     tips["tip_pct"] = 100 * (tips["tip"] / tips["total_bill"])
     sns.lmplot(x="total_bill", y="tip_pct", data=tips, fit_reg=False)
     save_output_image("basic-regression-linear-nofit.png")
-    plt.clf()
 
     # linear regression (discrete)
     tips = sns.load_dataset("tips")  # example dataset (df)
     tips["tip_pct"] = 100 * (tips["tip"] / tips["total_bill"])
     sns.lmplot(x="size", y="tip_pct", data=tips)  # size of party, tip percent
     save_output_image("basic-regression-linear-discrete.png")
-    plt.clf()
 
     # linear regression (jitter) (spreads discrete values)
     tips = sns.load_dataset("tips")  # example dataset (df)
     tips["tip_pct"] = 100 * (tips["tip"] / tips["total_bill"])
     sns.lmplot(x="size", y="tip_pct", data=tips, x_jitter=0.1)
     save_output_image("basic-regression-linear-jitter.png")
-    plt.clf()
 
     # linear regression (estimator)
     tips = sns.load_dataset("tips")  # example dataset (df)
     tips["tip_pct"] = 100 * (tips["tip"] / tips["total_bill"])
     sns.lmplot(x="size", y="tip_pct", data=tips, x_estimator=np.mean)
     save_output_image("basic-regression-linear-estimator.png")
-    plt.clf()
 
     # linear regression (estimator) (order)
     tips = sns.load_dataset("tips")  # example dataset (df)
     tips["tip_pct"] = 100 * (tips["tip"] / tips["total_bill"])
     sns.lmplot(x="size", y="tip_pct", data=tips, x_estimator=np.mean, order=2)
     save_output_image("basic-regression-linear-estimator-order.png")
-    plt.clf()
 
     # linear regression (hue) (categorize)
     tips = sns.load_dataset("tips")  # example dataset (df)
     tips["tip_pct"] = 100 * (tips["tip"] / tips["total_bill"])
     sns.lmplot(x="total_bill", y="tip_pct", data=tips, hue="day")  # categorize by day
     save_output_image("basic-regression-linear-hue-categorize.png")
-    plt.clf()
 
     # local regression (LOESS)
     tips = sns.load_dataset("tips")  # example dataset (df)
     tips["tip_pct"] = 100 * (tips["tip"] / tips["total_bill"])
     sns.lmplot(x="total_bill", y="tip_pct", data=tips, lowess=True)
     save_output_image("basic-regression-local-loess.png")
-    plt.clf()
 
     # regplot
     tips = sns.load_dataset("tips")  # example dataset (df)
     tips["tip_pct"] = 100 * (tips["tip"] / tips["total_bill"])
     sns.regplot(x="total_bill", y="tip_pct", data=tips)
     save_output_image("basic-regplot.png")
-    plt.clf()
 
     # regplot + violinplot (subplots)
     tips = sns.load_dataset("tips")  # example dataset (df)
@@ -417,7 +425,6 @@ def basic_regression_plots():
     sns.regplot(x="total_bill", y="tip_pct", data=tips, ax=axis1)
     sns.violinplot(x="size", y="tip_pct", data=tips, ax=axis2, inner="quartile")
     save_output_image("basic-reg-and-violin-plot.png")
-    plt.clf()
 
 
 def basic_heatmap():
@@ -429,7 +436,6 @@ def basic_heatmap():
     )  # pivot table
     sns.heatmap(df_flight)
     save_output_image("basic-heatmap.png")
-    plt.clf()
 
     # heatmap (center) (value at center is neutral, values diverge from there)
     df_flight = sns.load_dataset("flights")  # sample dataset (df)
@@ -438,7 +444,6 @@ def basic_heatmap():
     )  # pivot table
     sns.heatmap(df_flight, center=cast(float, df_flight.loc["Jan", 1955]))
     save_output_image("basic-heatmap-centered.png")
-    plt.clf()
 
     # heatmap + barplot (subplots)
     df_flight = sns.load_dataset("flights")  # sample dataset (df)
@@ -462,7 +467,6 @@ def basic_heatmap():
         cbar_kws={"orientation": "horizontal"},
     )
     save_output_image("basic-heatmap-and-barplot.png")
-    plt.clf()
 
 
 def basic_cluster_map():
@@ -475,32 +479,32 @@ def basic_cluster_map():
 
     sns.clustermap(df_flight)  # args: col_cluster, row_cluster, standard_scale, z_score
     save_output_image("basic-cluster-map.png")
-    plt.clf()
 
     sns.clustermap(df_flight, col_cluster=False)  # only cluster rows
     save_output_image("basic-cluster-map-only-rows.png")
-    plt.clf()
 
     sns.clustermap(df_flight, row_cluster=False)  # only cluster cols
     save_output_image("basic-cluster-map-only-cols.png")
-    plt.clf()
 
 
 def basic_categorical_plot():
     """TODO."""
-    # Dataset as df
-    df1: pd.DataFrame = cast(pd.DataFrame, sm.datasets.fair.load_pandas().data)  # type: ignore
-    print(df1.columns)
-    # Create 'Had_Affair' col
-    df1["Had_Affair"] = df1["affairs"].apply(lambda x: 0 if x == 0 else 1)
-    # Compare
-    df2 = df1.groupby("Had_Affair").mean().applymap(lambda x: round(x, 1))
+
+    def zero_or_one(x):
+        return 0 if x == 0 else 1
+
+    def r1(x):
+        return round(x, 1)
+
+    df = get_fair_df()
+    df["Had_Affair"] = df["affairs"].apply(zero_or_one)  # type: ignore # pylint: disable=E1136,E1137
+    df_grouped = df.groupby("Had_Affair").mean().applymap(r1)  # type: ignore
 
     # Plot (categorical plot)
-    sns.catplot(x="age", data=df1, kind="count", palette="coolwarm")
+    sns.catplot(x="age", data=df, kind="count", palette="coolwarm")
     save_output_image("basic-cat-plot-1.png")
     plt.clf()
-    sns.catplot(x="age", data=df2, kind="count", palette="coolwarm")
+    sns.catplot(x="age", data=df_grouped, kind="count", palette="coolwarm")
     save_output_image("basic-cat-plot-2.png")
     plt.clf()
 
@@ -521,40 +525,6 @@ def basic_pairplot():
     sns.pairplot(df1, hue="Species")
     save_output_image("basic-pair-plot.png")
     plt.clf()
-
-
-# ---
-# Utils
-# ---
-
-
-def print_section_title(string: str) -> None:
-    """Convert a string to upppercase, wrap in new lines, then print."""
-    print(f"\n{string.upper()}\n")
-
-
-def map_res(val):
-    """Map type to more print-friendly type"""
-    if isinstance(val, pd.DataFrame):
-        return val.to_dict(orient="records")
-    return val
-
-
-def pretty_print_result_map(results: dict) -> None:
-    """Convert values to more print-friendly types, then print"""
-    mapped = {k: map_res(v) for k, v in results.items()}
-    print(json.dumps(mapped, indent=2, ensure_ascii=False))
-
-
-def get_output_path(filename: str) -> str:
-    """Get path to input file"""
-    return os.path.join(OUTPUT_DIR, filename)
-
-
-def save_output_image(filename: str) -> None:
-    """Save current plot to file"""
-    print(f"Saving image: {filename}")
-    plt.savefig(get_output_path(filename))
 
 
 # ---

@@ -49,7 +49,7 @@ def main():
 
 
 # ---
-# Examples
+# Utils
 # ---
 
 
@@ -61,6 +61,11 @@ def print_section_title(string: str) -> None:
 def setup():
     """Set seaborn defaults"""
     sns.set_theme(style="white", color_codes=True)
+
+
+# ---
+# Examples
+# ---
 
 
 def basic_histogram():
