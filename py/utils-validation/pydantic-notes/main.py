@@ -36,12 +36,6 @@ class ChakraNature(Enum):
     LIGHTNING = "Lightning"
 
 
-def to_camel(string: str) -> str:
-    """Convert snake to camel."""
-    string_split = string.split("_")
-    return string_split[0] + "".join(word.capitalize() for word in string_split[1:])
-
-
 T = TypeVar("T")
 
 
