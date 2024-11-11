@@ -2,10 +2,10 @@
 
 import json
 import math
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional, TypeVar, cast
 
 import numpy as np
-from numpy.linalg import matrix_rank, norm, svd
+from numpy.linalg import inv, matrix_rank, norm, svd
 from sympy import Matrix, symbols
 
 # ---
@@ -90,6 +90,15 @@ def main():
     print_section_title("matrix rank")
     _matrix_rank()
 
+    print_section_title("systems of equations and rref")
+    _systems_of_equations_and_rref()
+
+    print_section_title("matrix inverse")
+    _matrix_inverse()
+
+    print_section_title("matrix inverse (row reduction)")
+    _matrix_inverse_row_reduction()
+
 
 # ---
 # Utils
@@ -115,6 +124,30 @@ def pretty_print_results(results: Dict[str, Any]) -> None:
         print(type(v))
         print(v)
         print()
+
+
+T = TypeVar("T")
+
+
+def first(input_list: List[T]) -> Optional[T]:
+    """Return the first item in a list, returns None if empty."""
+    if len(input_list) == 0:
+        return None
+    return input_list[0]
+
+
+def last(input_list: List[T]) -> Optional[T]:
+    """Return the last item in a list, returns None if empty."""
+    if len(input_list) == 0:
+        return None
+    return input_list[-1]
+
+
+def pipe(value, *funcs):
+    """Unary piping."""
+    for func in funcs:
+        value = func(value)
+    return value
 
 
 # ---
@@ -662,6 +695,71 @@ def _matrix_rank():
             "a_at": a_at,
             "matrix_rank(at_a)": matrix_rank(at_a),
             "matrix_rank(a_at)": matrix_rank(a_at),
+        }
+    )
+
+
+def _systems_of_equations_and_rref():
+    """Reduced row echelon form."""
+    mat1 = np.random.randn(4, 4)
+    mat2 = np.random.randn(4, 3)
+
+    def rref(matrix: np.ndarray) -> np.ndarray:
+        result = pipe(matrix, Matrix, lambda m: m.rref(), first, np.array)
+        return cast(np.ndarray, result)
+
+    pretty_print_results(
+        {
+            "mat1": mat1,
+            "mat2": mat2,
+            "rref(mat1)": rref(mat1),
+            "rref(mat2)": rref(mat2),
+        }
+    )
+
+
+def _matrix_inverse():
+    mat1 = np.random.randn(3, 3)  # Square matrix
+
+    pretty_print_results(
+        {
+            "mat1": mat1,
+            "inv(mat1)": inv(mat1),
+            "mat1 @ inv(mat1)": np.round(mat1 @ inv(mat1), 2),
+        }
+    )
+
+
+def _matrix_inverse_row_reduction():
+    size = 4
+    mat1 = pipe(
+        np.random.randn(size, size),
+        lambda a: a * 10,
+        np.round,
+    )
+
+    def inv_rr(matrix: np.ndarray) -> np.ndarray:
+        """Get the inverse using row reduction."""
+        rows, cols = matrix.shape
+        if rows != cols:
+            raise RuntimeError(f"Not a square matrix ({rows}, {cols})")
+        size = rows
+
+        return pipe(
+            mat1,
+            lambda a: Matrix(a, dtype="float64"),
+            lambda m: Matrix(np.concatenate((m, np.eye(size, size)), axis=1)),
+            lambda m: m.rref(),
+            first,
+            lambda res: res[:, size : size * 2],
+            lambda m: np.array(m, dtype=np.float64),
+        )
+
+    pretty_print_results(
+        {
+            "mat1": mat1,
+            "inv(mat1)": np.round(inv(mat1), 2),
+            "inv_rr(mat1)": np.round(inv_rr(mat1), 2),
         }
     )
 

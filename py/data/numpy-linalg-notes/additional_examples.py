@@ -13,172 +13,6 @@ from mpl_toolkits.mplot3d import Axes3D, art3d
 from sympy import Matrix, matrix2numpy
 
 
-def _vector_in_span():
-    # test if a vector is in the span of a set
-
-    # vector to be tested
-    v = np.array([1, 2, 3, 4])
-
-    # sets
-    S1 = np.array([[4, 3, 6, 2], [0, 4, 0, 1]]).transpose()
-    S2 = np.array([[1, 2, 2, 2], [0, 0, 1, 2]]).transpose()
-
-    # concatenate (np.c_) (column stack)
-    S1_aug = np.c_[S1, v]
-    S2_aug = np.c_[S2, v]
-
-    # print rank (should be 3, because v is not in span)
-    print(f"rank S1: {np.linalg.matrix_rank(S1_aug)}")
-    # print rank (should be 2, because v is in span.)
-    # v can be expressed as a linear combination of the vectors in set S2
-    print(f"rank S2: {np.linalg.matrix_rank(S2_aug)}")
-
-
-def _basic_matrix_systems_of_linear_equations():
-    # systems of linear equations
-
-    # these are the coefficients of the equation:
-    # az = bx + cy + d
-    eq1o = [1, 2, 3, -1]  # [a b c d]
-    eq2o = [2, 1, 3, 3]
-
-    # set up for 3D plot
-    fig = plt.figure()
-    ax = cast(Axes3D, fig.add_subplot(projection="3d"))
-
-    # 10 plots
-    for i in range(0, 10):
-        # randomly update equations
-        eq1 = np.add(eq2o, np.random.randn(1) * eq1o)
-        eq2 = np.add(eq1o, np.random.randn(1) * eq2o)
-
-        # plot new lines (solutions)
-        y = ([eq1[1] * -3, eq1[1] * 3] + eq1[3]) / eq1[0]
-        z = ([eq1[2] * -3, eq1[2] * 3] + eq1[3]) / eq1[0]
-        ax.plot([-3, 3], y, z)
-
-        # plot new lines (solutions)
-        y = ([eq2[1] * -3, eq2[1] * 3] + eq2[3]) / eq2[0]
-        z = ([eq2[2] * -3, eq2[2] * 3] + eq2[3]) / eq2[0]
-        ax.plot([-3, 3], y, z)
-
-        # axis limits
-        ax.set_xlim3d(-3, 6)
-        ax.set_ylim3d(-3, 6)
-        ax.set_zlim3d(-1, 10)
-
-
-def basic_matrix_reduced_row_echelon_form():
-    """reduced row echelon form"""
-
-    # make some random matrices (using sympy package)
-    A = Matrix(np.random.randn(4, 4))
-    B = Matrix(np.random.randn(4, 3))
-
-    # compute RREF
-    rrefA = A.rref()
-    rrefB = B.rref()
-
-    # print out the matrix and its rref
-    print(np.array(rrefA[0]))
-    print(np.array(rrefB[0]))
-
-
-def basic_matrix_inverse():
-    # matrix inverse (MCA)
-
-    """
-    # get matrix minor
-    def getMatrixMinor(m,i,j):
-        return [row[:j] + row[j+1:] for row in (m[:i]+m[i+1:])]
-
-    # get cofactors for invertible matrix
-    def matrix_cofactor(matrix):
-        return np.linalg.inv(matrix).T * np.linalg.det(matrix)
-    """
-
-    # size of square matrix
-    m = 3
-
-    # generate random matrix
-    A = np.random.randn(m, m)
-
-    # compute its inverse
-    Ainv = np.linalg.inv(A)
-
-    # and check the multiplication
-    check = A @ Ainv
-
-    # print the matrix. Note the computer rounding errors on the off-diagonals
-    print(check)
-
-    # show in an image
-    plt.subplot(131)
-    plt.imshow(A)
-    plt.title("Matrix A")
-
-    plt.subplot(132)
-    plt.imshow(Ainv)
-    plt.title("Matrix $A^{-1}$")
-
-    plt.subplot(133)
-    plt.imshow(check)
-    plt.title("AA$^{-1}$")
-
-    plt.show()
-
-
-def _basic_matrix_inverse_row_reduction():
-    # inverse (row reduction)
-
-    # matrix size
-    m = 4
-
-    # random integers matrix
-    A = Matrix(np.round(10 * np.random.randn(m, m)), dtype="float")
-
-    # augment A and identity
-    Aaug = Matrix(np.concatenate((A, np.eye(m, m)), axis=1))
-    print("Size of Aaug:", Aaug.shape)
-
-    # rref
-    Asol = Aaug.rref()
-    Asol = Asol[0]
-    Ainvrref = Asol[:, m : m * 2]
-    Ainv = A.inv()
-
-    # show the augemented matrices
-    plt.subplot(211)
-    plt.imshow(matrix2numpy(Aaug, dtype="float"))
-    plt.title("A|I")
-    plt.axis("off")
-
-    plt.subplot(212)
-    plt.imshow(matrix2numpy(Asol, dtype="float"))
-    plt.title("I|A$^{-1}$")
-    plt.axis("off")
-
-    plt.show()
-
-    # show the square matrices
-    plt.subplot(131)
-    plt.imshow(matrix2numpy(A, dtype="float"))
-    plt.title("Matrix A")
-    plt.axis("off")
-
-    plt.subplot(132)
-    plt.imshow(matrix2numpy(Ainvrref, dtype="float"))
-    plt.title("A$^{-1}$ from rref")
-    plt.axis("off")
-
-    plt.subplot(133)
-    plt.imshow(matrix2numpy(Ainv, dtype="float"))
-    plt.title("A$^{-1}$ from inv()")
-    plt.axis("off")
-
-    plt.show()
-
-
 def _basic_matrix_one_sided_inverse():
     """One-sided, left or right inverse."""
     # m>n for left inverse,
@@ -1893,6 +1727,40 @@ def basic_metric_definiteness():
 # ---
 # Figures
 # ---
+
+
+def _basic_matrix_systems_of_linear_equations():
+    # systems of linear equations
+
+    # these are the coefficients of the equation:
+    # az = bx + cy + d
+    eq1o = [1, 2, 3, -1]  # [a b c d]
+    eq2o = [2, 1, 3, 3]
+
+    # set up for 3D plot
+    fig = plt.figure()
+    ax = cast(Axes3D, fig.add_subplot(projection="3d"))
+
+    # 10 plots
+    for i in range(0, 10):
+        # randomly update equations
+        eq1 = np.add(eq2o, np.random.randn(1) * eq1o)
+        eq2 = np.add(eq1o, np.random.randn(1) * eq2o)
+
+        # plot new lines (solutions)
+        y = ([eq1[1] * -3, eq1[1] * 3] + eq1[3]) / eq1[0]
+        z = ([eq1[2] * -3, eq1[2] * 3] + eq1[3]) / eq1[0]
+        ax.plot([-3, 3], y, z)
+
+        # plot new lines (solutions)
+        y = ([eq2[1] * -3, eq2[1] * 3] + eq2[3]) / eq2[0]
+        z = ([eq2[2] * -3, eq2[2] * 3] + eq2[3]) / eq2[0]
+        ax.plot([-3, 3], y, z)
+
+        # axis limits
+        ax.set_xlim3d(-3, 6)
+        ax.set_ylim3d(-3, 6)
+        ax.set_zlim3d(-1, 10)
 
 
 def _column_space_example():

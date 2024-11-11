@@ -1,6 +1,7 @@
 import datetime
 import json
-from typing import TypedDict, List, NotRequired
+from typing import List, NotRequired, TypedDict
+
 from marshmallow import Schema, fields
 
 # ---
@@ -40,6 +41,7 @@ class NinjaWithJutsus(Ninja):
 class JutsuWithNinjas(Jutsu):
     ninjas: List[Ninja]
 
+
 # ---
 # Schemas
 # ---
@@ -49,22 +51,23 @@ class JutsuSchema(Schema):
     id = fields.UUID(required=True)
     name = fields.Str(required=True)
     description = fields.Str(required=True)
-    chakra_nature = fields.Str(data_key='chakraNature', required=True)
-    created_at = fields.DateTime(data_key='createdAt', required=True)
-    updated_at = fields.DateTime(data_key='updatedAt')
+    chakra_nature = fields.Str(data_key="chakraNature", required=True)
+    created_at = fields.DateTime(data_key="createdAt", required=True)
+    updated_at = fields.DateTime(data_key="updatedAt")
 
 
 class NinjaSchema(Schema):
     id = fields.UUID(required=True)
-    first_name = fields.Str(data_key='firstName', required=True)
-    last_name = fields.Str(data_key='lastName', required=True)
+    first_name = fields.Str(data_key="firstName", required=True)
+    last_name = fields.Str(data_key="lastName", required=True)
     age = fields.Int(required=True)
-    created_at = fields.DateTime(data_key='createdAt', required=True)
-    updated_at = fields.DateTime(data_key='updatedAt')
+    created_at = fields.DateTime(data_key="createdAt", required=True)
+    updated_at = fields.DateTime(data_key="updatedAt")
 
 
 class NinjaWithJutsusSchema(NinjaSchema):
     jutsus = fields.Nested(JutsuSchema(many=True))
+
 
 # ---
 # Notes
@@ -92,40 +95,56 @@ class NinjaWithJutsusSchema(NinjaSchema):
 
 def main():
     """Examples of marshmallow usage"""
-    ninja: NinjaWithJutsus = {
-        'id': '09b89141-009a-447c-95eb-3d1b3d29c105',
-        'firstName': 'Kakashi',
-        'lastName': 'Hatake',
-        'age': 27,
-        'createdAt': str(datetime.datetime.now()),
-        'jutsus': [{
-            'id': 'af71a1be-4e21-44d0-a327-6d3ac1acbced',
-            'name': 'Chidori',
-            'description': 'Lightning blade',
-            'chakraNature': 'Lightning',
-            'createdAt': str(datetime.datetime.now()),
-        }]
-    }
+    ninja = NinjaWithJutsus(
+        id="09b89141-009a-447c-95eb-3d1b3d29c105",
+        firstName="Kakashi",
+        lastName="Hatake",
+        age=27,
+        createdAt=str(datetime.datetime.now()),
+        jutsus=[
+            Jutsu(
+                id="af71a1be-4e21-44d0-a327-6d3ac1acbced",
+                name="Chidori",
+                description="Lightning blade",
+                chakraNature="Lightning",
+                createdAt=str(datetime.datetime.now()),
+            )
+        ],
+    )
+    # ninja: NinjaWithJutsus = {
+    #     'id': '09b89141-009a-447c-95eb-3d1b3d29c105',
+    #     'firstName': 'Kakashi',
+    #     'lastName': 'Hatake',
+    #     'age': 27,
+    #     'createdAt': str(datetime.datetime.now()),
+    #     'jutsus': [{
+    #         'id': 'af71a1be-4e21-44d0-a327-6d3ac1acbced',
+    #         'name': 'Chidori',
+    #         'description': 'Lightning blade',
+    #         'chakraNature': 'Lightning',
+    #         'createdAt': str(datetime.datetime.now()),
+    #     }]
+    # }
 
     # dump (Eg: dict -> dict) (no validation during serialization)
     dump_res: dict = NinjaWithJutsusSchema().dump(ninja)
-    print('dump:', dump_res)
+    print("dump:", dump_res)
 
     # dumps (Eg: dict -> json string) (no validation during serialization)
     dumps_res: str = NinjaWithJutsusSchema().dumps(ninja)
-    print('dumps:', dumps_res)
+    print("dumps:", dumps_res)
 
     # load (eg: dict -> dict) (validates and deserializes)
     load_res: dict = NinjaWithJutsusSchema().load(ninja)
-    print('load:', load_res)
+    print("load:", load_res)
 
     # loads (eg: json string -> dict) (validates and deserializes)
     loads_res: dict = NinjaWithJutsusSchema().loads(json.dumps(ninja))
-    print('loads:', loads_res)
+    print("loads:", loads_res)
 
     # Validate (validate without deserialization)
     NinjaWithJutsusSchema().validate(ninja)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
