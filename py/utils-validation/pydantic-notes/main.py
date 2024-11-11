@@ -1,21 +1,14 @@
 """Pydantic examples"""
 
+# pylint: disable=C0115,E0213,E0611
+
 import json
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Type, TypeVar
 
 import humps
-from pydantic import (  # type: ignore # pylint: disable=E0611 # ruff: noqa
-    BaseModel,
-    StrictInt,
-    StrictStr,
-    validator,
-)
-from schema import And, Schema
-
-# pylint: disable=C0115,E0213
-
+from pydantic import BaseModel, StrictInt, StrictStr, constr
 
 # ---
 # Types
@@ -64,62 +57,23 @@ def model_from_json(model: Type[T], json_string: str) -> T:
     return model_from_dict(model, value)
 
 
-# # Not in v1.10
-# from typing import Annotated
-# from pydantic import StringConstraints
-# StandardString = Annotated[
-#     str,
-#     StringConstraints(strict=True, min_length=2, max_length=50),
-# ]
-
-
-# # ConstrainedStr doesn't work with mypy/pylance
-# class StandardString(ConstrainedStr):
-#     """Ninja first and last name type."""
-
-#     strict = True
-#     min_length = 2
-#     max_length = 50
-
-
-def validate_standard_string(string: str) -> None:
-    """Validate a string."""
-    Schema(And(str, lambda s: 2 <= len(s) <= 50)).validate(string)
-
-
 class Ninja(BaseModel):
     id: StrictStr
-    first_name: StrictStr
-    last_name: StrictStr
+    first_name: constr(strict=True, min_length=2, max_length=50)  # type: ignore [reportInvalidTypeForm]
+    last_name: constr(strict=True, min_length=2, max_length=50)  # type: ignore [reportInvalidTypeForm]
     age: StrictInt
     village: Village
     created_at: StrictStr
     updated_at: Optional[StrictStr] = None
 
-    @validator("first_name")
-    def _first_name_validator(cls, v):
-        validate_standard_string(v)
-
-    @validator("last_name")
-    def _last_name_validator(cls, v):
-        validate_standard_string(v)
-
 
 class Jutsu(BaseModel):
     id: StrictStr
-    name: StrictStr
-    description: StrictStr
+    name: constr(strict=True, min_length=2, max_length=50)  # type: ignore [reportInvalidTypeForm]
+    description: constr(strict=True, min_length=2, max_length=50)  # type: ignore [reportInvalidTypeForm]
     chakra_nature: ChakraNature
     created_at: StrictStr
     updated_at: Optional[StrictStr] = None
-
-    @validator("name")
-    def _name_validator(cls, v):
-        validate_standard_string(v)
-
-    @validator("description")
-    def _description(cls, v):
-        validate_standard_string(v)
 
 
 class NinjaWithJutsus(Ninja):
@@ -276,7 +230,7 @@ def _model_validations():
         id="09b89141-009a-447c-95eb-3d1b3d29c105",
         first_name="Kakashi",  # Succeeds
         # first_name=25, # Fails strict type
-        # first_name="Kakashi" * 25, # Fails validation
+        # first_name="Kakashi" * 25,  # Fails validation
         last_name="Hatake",
         age=27,
         village=Village.LEAF,
@@ -293,7 +247,7 @@ def _model_validations():
 main()
 
 # ---
-# Notes
+# Notes (TypeAdaptor)
 # ---
 
 # from pydantic import TypeAdaptor # v2 feature
@@ -323,3 +277,73 @@ main()
 
 # class JutsuWithNinjas(Jutsu):
 #     ninjas: List[Ninja]
+
+
+# ---
+# Notes (constring alternatives)
+# ---
+
+# # Not in v1.10
+# from typing import Annotated
+# from pydantic import StringConstraints
+# StandardString = Annotated[
+#     str,
+#     StringConstraints(strict=True, min_length=2, max_length=50),
+# ]
+
+
+# # ConstrainedStr doesn't work with mypy/pylance
+# # Alternative to constr
+# class StandardString(ConstrainedStr):
+#     """Ninja first and last name type."""
+
+#     strict = True
+#     min_length = 2
+#     max_length = 50
+
+# ---
+# Notes (@validator)
+# ---
+
+# from pydantic import BaseModel, StrictInt, StrictStr, constr, validator
+# from schema import And, Schema
+
+
+# def validate_standard_string(string: str) -> None:
+#     """Validate a string."""
+#     Schema(And(str, lambda s: 2 <= len(s) <= 50)).validate(string)
+
+
+# class Ninja(BaseModel):
+#     id: StrictStr
+#     first_name: StrictStr
+#     last_name: StrictStr
+#     age: StrictInt
+#     village: Village
+#     created_at: StrictStr
+#     updated_at: Optional[StrictStr] = None
+
+#     @validator("first_name")
+#     def _first_name_validator(cls, v):
+#         validate_standard_string(v)
+
+#     @validator("last_name")
+#     def _last_name_validator(cls, v):
+#         validate_standard_string(v)
+
+
+# class Jutsu(BaseModel):
+#     id: StrictStr
+#     name: StrictStr
+#     description: StrictStr
+#     chakra_nature: ChakraNature
+#     created_at: StrictStr
+#     updated_at: Optional[StrictStr] = None
+
+#     @validator("name")
+#     def _name_validator(cls, v):
+#         validate_standard_string(v)
+
+#     @validator("description")
+#     def _description(cls, v):
+#         validate_standard_string(v)
