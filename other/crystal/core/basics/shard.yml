@@ -1,8 +1,6 @@
 name: crystal-basics
 version: 0.1.0
 
-authors:
-  - Landon Yarrington <jly.dev.36963@gmail.com>
 
 targets:
   crystal-basics:
