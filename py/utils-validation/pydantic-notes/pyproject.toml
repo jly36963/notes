@@ -6,6 +6,7 @@ dependencies = [
     "pandas>=2.2.3",
     "pydantic==1.10.6",
     "pyhumps>=3.8.0",
+    "schema>=0.7.7",
     "typing_extensions==4.4.0",
 ]
 
