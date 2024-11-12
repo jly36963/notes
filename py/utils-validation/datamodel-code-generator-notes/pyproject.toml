@@ -1,0 +1,24 @@
+[project]
+name = 'datamodel-code-generator-pydantic-gql-notes'
+version = "0.1.0"
+# datamodel-code-generator / typing_extensions and TypeVar  issue with >=3.12
+requires-python = ">=3.13"
+dependencies = [
+    "datamodel-code-generator>=0.26.3",
+    "graphql-core>=3.2.5",
+    "pandas>=2.2.3",
+    "pydantic==1.10.6",
+    "pyhumps>=3.8.0",
+    "typing-extensions>=4.12.2",
+    # Python 3.12 and typing_extensions 4.4.0 have issues
+    # "typing_extensions==4.4.0",
+]
+
+[tool.uv]
+dev-dependencies = ["ruff", "pylint"]
+
+[tool.ruff.lint]
+extend-select = ["I", "W"]
+
+[tool.pyright]
+typeCheckingMode = "basic"
