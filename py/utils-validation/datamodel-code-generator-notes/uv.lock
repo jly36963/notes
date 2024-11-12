@@ -85,6 +85,41 @@ wheels = [
 ]
 
 [[package]]
+name = "datamodel-code-generator-pydantic-gql-notes"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "datamodel-code-generator" },
+    { name = "graphql-core" },
+    { name = "pandas" },
+    { name = "pydantic" },
+    { name = "pyhumps" },
+    { name = "typing-extensions" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pylint" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "datamodel-code-generator", specifier = ">=0.26.3" },
+    { name = "graphql-core", specifier = ">=3.2.5" },
+    { name = "pandas", specifier = ">=2.2.3" },
+    { name = "pydantic", specifier = "==1.10.6" },
+    { name = "pyhumps", specifier = ">=3.8.0" },
+    { name = "typing-extensions", specifier = ">=4.12.2" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pylint" },
+    { name = "ruff" },
+]
+
+[[package]]
 name = "dill"
 version = "0.3.9"
 source = { registry = "https://pypi.org/simple" }
@@ -315,41 +350,6 @@ wheels = [
 [package.optional-dependencies]
 email = [
     { name = "email-validator", marker = "python_full_version < '4.0'" },
-]
-
-[[package]]
-name = "pydantic-gql"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "datamodel-code-generator" },
-    { name = "graphql-core" },
-    { name = "pandas" },
-    { name = "pydantic" },
-    { name = "pyhumps" },
-    { name = "typing-extensions" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pylint" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "datamodel-code-generator", specifier = ">=0.26.3" },
-    { name = "graphql-core", specifier = ">=3.2.5" },
-    { name = "pandas", specifier = ">=2.2.3" },
-    { name = "pydantic", specifier = "==1.10.6" },
-    { name = "pyhumps", specifier = ">=3.8.0" },
-    { name = "typing-extensions", specifier = ">=4.12.2" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pylint" },
-    { name = "ruff" },
 ]
 
 [[package]]

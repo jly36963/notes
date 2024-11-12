@@ -39,6 +39,7 @@ MODELS_FP = os.path.join(OUTPUT_DIR, "models.py")
 
 def main():
     """Get graphql files, read/parse/merge, create gql schema, generate models"""
+    setup()
     graphql_filepaths = get_gql_files(GRAPHQL_DIR)
     schema = merge_gql_files(graphql_filepaths)
     if schema is None:
@@ -89,6 +90,12 @@ def pipe(value, *funcs):
 # ---
 # Steps
 # ---
+
+
+def setup():
+    """Make sure directories exist."""
+    for d in [DATA_DIR, INPUT_DIR, OUTPUT_DIR, GRAPHQL_DIR]:
+        os.makedirs(d, exist_ok=True)
 
 
 def get_gql_files(root_dir: str) -> List[str]:
