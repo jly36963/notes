@@ -761,7 +761,7 @@ Inverse for tall or wide matrices
 - concept
   - projecting point b onto line a
   - projecting coordinate/vector b onto a subspace defined by vector a
-  - projection of b onto a is a scaled veresion of a
+  - projection of b onto a is a scaled version of a
     - `proj_a_b = beta*a`
 - find a value for beta where:
   - the distance between beta\*a and b is minimal

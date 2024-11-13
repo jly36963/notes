@@ -5,7 +5,8 @@ import math
 from typing import Any, Dict, List, Optional, TypeVar, cast
 
 import numpy as np
-from numpy.linalg import inv, matrix_rank, norm, svd
+from numpy.linalg import inv, matrix_rank, norm, solve, svd
+from numpy.random import randn
 from sympy import Matrix, symbols
 
 # ---
@@ -98,6 +99,15 @@ def main():
 
     print_section_title("matrix inverse (row reduction)")
     _matrix_inverse_row_reduction()
+
+    print_section_title("matrix inverse one-sided (left and right)")
+    _basic_matrix_one_sided_inverse()
+
+    print_section_title("Projections in R2")
+    _r2_projections()
+
+    print_section_title("Projections in RN")
+    _rn_projections()
 
 
 # ---
@@ -372,8 +382,8 @@ def _basic_vector_span():
 
 
 def _basic_matrix_creation():
-    sq_mat = np.round(np.random.randn(5, 5), 2)
-    rect_mat = np.round(np.random.randn(3, 4), 2)
+    sq_mat = np.round(randn(5, 5), 2)
+    rect_mat = np.round(randn(3, 4), 2)
 
     pretty_print_results(
         {
@@ -650,7 +660,7 @@ def _matrix_rank():
     # 4 rows, 3 cols
     # Max rank of 3 (min dimension)
     m, n = 4, 3
-    mat1 = np.round(np.random.randn(m, n), 2)
+    mat1 = np.round(randn(m, n), 2)
 
     # Make a row dependent (rank unaffected)
     mat2 = mat1.copy()
@@ -662,7 +672,7 @@ def _matrix_rank():
 
     # Noise to fix rank-deficiency (rank restored)
     mat4 = mat3.copy()
-    mat4 = mat4 + 0.001 * np.random.randn(m, n)
+    mat4 = mat4 + 0.001 * randn(m, n)
 
     # Shift to fix rank-deficiency (rank restored)
     mat5 = mat3.copy()
@@ -701,8 +711,8 @@ def _matrix_rank():
 
 def _systems_of_equations_and_rref():
     """Reduced row echelon form."""
-    mat1 = np.random.randn(4, 4)
-    mat2 = np.random.randn(4, 3)
+    mat1 = randn(4, 4)
+    mat2 = randn(4, 3)
 
     def rref(matrix: np.ndarray) -> np.ndarray:
         result = pipe(matrix, Matrix, lambda m: m.rref(), first, np.array)
@@ -719,7 +729,7 @@ def _systems_of_equations_and_rref():
 
 
 def _matrix_inverse():
-    mat1 = np.random.randn(3, 3)  # Square matrix
+    mat1 = randn(3, 3)  # Square matrix
 
     pretty_print_results(
         {
@@ -733,7 +743,7 @@ def _matrix_inverse():
 def _matrix_inverse_row_reduction():
     size = 4
     mat1 = pipe(
-        np.random.randn(size, size),
+        randn(size, size),
         lambda a: a * 10,
         np.round,
     )
@@ -760,6 +770,92 @@ def _matrix_inverse_row_reduction():
             "mat1": mat1,
             "inv(mat1)": np.round(inv(mat1), 2),
             "inv_rr(mat1)": np.round(inv_rr(mat1), 2),
+        }
+    )
+
+
+def _basic_matrix_one_sided_inverse():
+    """One-sided, left or right inverse."""
+    mat1 = randn(6, 3)  # Tall, use left inverse
+    at_a = mat1.T @ mat1
+    a_at = mat1 @ mat1.T
+
+    a_inv_left = inv(at_a) @ mat1.T
+    a_inv_right = mat1.T @ inv(a_at)
+
+    left_check = a_inv_left @ mat1
+    right_check = mat1 @ a_inv_right
+
+    pretty_print_results(
+        {
+            "mat1": mat1,
+            # Full rank (3 out of 3), left inverse will work
+            "at_a": np.round(at_a, 3),
+            "at_a.shape": at_a.shape,
+            "matrix_rank(at_a)": matrix_rank(at_a),
+            "a_inv_left": np.round(a_inv_left, 3),  # Left inverse
+            "a_inv_left @ mat1": np.round(left_check, 3),  # Left inverse check
+            # Rank deficient (3 out of 6), right inverse will not work
+            "a_at": np.round(a_at, 3),
+            "a_at.shape": a_at.shape,
+            "matrix_rank(a_at)": matrix_rank(a_at),
+            "a_inv_right": np.round(a_inv_right, 3),  # Right inverse
+            "mat1 @ a_inv_right": np.round(right_check, 3),  # Right inverse check
+        }
+    )
+
+
+def _r2_projections():
+    # Line `a`, point `b`, scalar `beta`
+    a = np.array([2, 5])
+    b = np.array([4, 1])
+    beta = (a.T @ b) / (a.T @ a)
+
+    # check
+    # `at @ (b - a * beta) = 0`
+
+    pretty_print_results(
+        {
+            "a": a,
+            "b": b,
+            "beta": np.round(beta, 2),
+            # Should equal 0
+            "a.T @ (b - a * beta)": np.round(a.T @ (b - a * beta), 2),
+        }
+    )
+
+
+def _rn_projections():
+    m = 3  # Rows
+    n = 5  # Cols
+
+    # Matrix A, vector b, vector x
+    A = randn(m, n)
+    b = randn(m, 1)
+
+    rank_a = matrix_rank(A.T @ A)  # Must be full rank
+    if rank_a != m:
+        # AtA must be full rank
+        raise RuntimeError(f"Matrix is not full rank ({rank_a} / {n})")
+
+    # Explicit inverse solution
+    # Can cause computer rounding errors
+    x = inv(A.T @ A) @ (A.T @ b)
+    # Preferred solution
+    x = solve(A.T @ A, A.T @ b)
+
+    pretty_print_results(
+        {
+            "m": m,
+            "n": n,
+            "A": A,
+            "b": b,
+            "rank_a": rank_a,
+            # Two ways to solve for `x`
+            "inv(A.T @ A) @ (A.T @ b)": inv(A.T @ A) @ (A.T @ b),
+            "a.T @ (b - a * beta)": solve(A.T @ A, A.T @ b),
+            # Should be zeros vector
+            "A.T @ (b - A @ x)": np.round(A.T @ (b - A @ x), 2),
         }
     )
 
