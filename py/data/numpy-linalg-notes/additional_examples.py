@@ -13,20 +13,6 @@ from mpl_toolkits.mplot3d import Axes3D, art3d
 from sympy import Matrix
 
 
-def _basic_qr_decomposition():
-    # example from the slides
-
-    A = [[1, 0], [1, 0], [0, 1]]
-
-    # "full" QR decomposition
-    Q, R = np.linalg.qr(A, "complete")
-    print(Q, "\n" * 2, R, "\n" * 2)
-
-    # "economy" QR decompmosition
-    Q, R = np.linalg.qr(A)  # is the default option in Python
-    print(Q, "\n" * 2, R, "\n" * 2)
-
-
 def _basic_qr_decomposition_2():
     # QR decomposition (example 2)
 

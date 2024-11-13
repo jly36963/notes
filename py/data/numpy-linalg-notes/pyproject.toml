@@ -8,6 +8,7 @@ dependencies = [
     "pandas>=2.2.3",
     "scipy>=1.14.1",
     "sympy>=1.13.3",
+    "tenacity>=9.0.0",
 ]
 
 [tool.uv]

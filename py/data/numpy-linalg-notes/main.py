@@ -1,13 +1,16 @@
 """Numpy linalg notes."""
 
+# pylint: disable=C0103
+
 import json
-import math
+from math import cos, sin
 from typing import Any, Dict, List, Optional, TypeVar, cast
 
 import numpy as np
 from numpy.linalg import inv, matrix_rank, norm, solve, svd
 from numpy.random import randn
 from sympy import Matrix, symbols
+from tenacity import retry
 
 # ---
 # Main
@@ -109,6 +112,9 @@ def main():
     print_section_title("Projections in RN")
     _rn_projections()
 
+    print_section_title("QR decomposition")
+    _qr_decomposition()
+
 
 # ---
 # Utils
@@ -118,7 +124,7 @@ def main():
 def print_section_title(string: str) -> None:
     """Convert a string to uppercase, wrap in new lines, then print."""
     print("\n# ---")
-    print(f"{string.upper()}")
+    print(f"# {string.upper()}")
     print("# ---\n")
 
 
@@ -166,154 +172,178 @@ def pipe(value, *funcs):
 
 
 def _basic_vector_scalar_arithmetic():
-    vec1 = np.array([3, -1])
-    scalar1 = 2
+    # Vector `v`, scalar `c`
+    v = np.array([3, -1])
+    c = 2
 
     pretty_print_results(
         {
-            "vec1": vec1,
-            "scalar1": scalar1,
-            "vec1 + scalar1": vec1 + scalar1,
-            "vec1 - scalar1": vec1 - scalar1,
-            "vec1 * scalar1": vec1 * scalar1,
-            "vec1 / scalar1": vec1 / scalar1,
+            "v": v,
+            "c": c,
+            "v + c": v + c,
+            "v - c": v - c,
+            "v * c": v * c,
+            "v / c": v / c,
         }
     )
 
 
 def _basic_vector_vector_arithmetic():
-    vec1 = np.array([3, -1])
-    vec2 = np.array([2, 4])
+    # Vectors v1, v2
+    v1 = np.array([3, -1])
+    v2 = np.array([2, 4])
 
     pretty_print_results(
         {
-            "vec1": vec1,
-            "vec2": vec2,
-            "vec1 + vec2": vec1 + vec2,
-            "vec1 - vec2": vec1 - vec2,
-            "vec1 * vec2": vec1 * vec2,
-            "vec1 / vec2": vec1 / vec2,
+            "v1": v1,
+            "v2": v2,
+            "v1 + v2": v1 + v2,
+            "v1 - v2": v1 - v2,
+            "v1 * v2": v1 * v2,
+            "v1 / v2": v1 / v2,
         }
     )
 
 
 def _basic_vector_dot_product():
     """Dot product: results in scalar."""
-    vec1 = np.array([1, 2, 3, 4, 5, 6])
-    vec2 = np.array([0, -4, -3, 6, 5, 4])
+    # Vectors v1, v2
+    v1 = np.array([1, 2, 3, 4, 5, 6])
+    v2 = np.array([0, -4, -3, 6, 5, 4])
 
-    def dot_product_loop(vec1: np.ndarray, vec2: np.ndarray):
+    def dot_product_loop(v1: np.ndarray, v2: np.ndarray):
         dp = 0
-        for val1, val2 in zip(vec1, vec2):
+        for val1, val2 in zip(v1, v2):
             dp = dp + (val1 * val2)
         return dp
 
     pretty_print_results(
         {
-            "vec1": vec1,
-            "vec2": vec2,
-            "sum(np.multiply(vec1, vec2))": sum(np.multiply(vec1, vec2)),
-            "np.dot(vec1, vec2)": np.dot(vec1, vec2),
-            "np.matmul(vec1, vec2)": np.matmul(vec1, vec2),
-            "dot_product_loop(vec1, vec2)": dot_product_loop(vec1, vec2),
+            "v1": v1,
+            "v2": v2,
+            "sum(np.multiply(v1, v2))": sum(np.multiply(v1, v2)),
+            "np.dot(v1, v2)": np.dot(v1, v2),
+            "np.matmul(v1, v2)": np.matmul(v1, v2),
+            "dot_product_loop(v1, v2)": dot_product_loop(v1, v2),
         }
     )
 
 
 def _basic_vector_dot_product_perspectives():
-    vec1 = np.array([2, 4, -3]).astype(np.float64)
-    vec2 = np.array([0, -3, -3]).astype(np.float64)
+    # Vectors v1, v2
+    v1 = np.array([2, 4, -3]).astype(np.float64)
+    v2 = np.array([0, -3, -3]).astype(np.float64)
 
-    def algebraic_dot_product(vec1, vec2):
-        res = np.dot(vec1, vec2)
+    def algebraic_dot_product(v1, v2):
+        """Dot product (algebraic)."""
+        res = np.dot(v1, v2)
         return np.round(res, 3)
 
-    def geometric_dot_product(vec1, vec2):
+    def geometric_dot_product(v1, v2):
+        """Dot product (geometric)."""
         # Angle between vectors
-        ang = np.arccos(np.dot(vec1, vec2) / (norm(vec1) * norm(vec2)))
-        res = norm(vec1) * norm(vec2) * np.cos(ang)
+        ang = np.arccos(np.dot(v1, v2) / (norm(v1) * norm(v2)))
+        res = norm(v1) * norm(v2) * np.cos(ang)
         return np.round(res, 3)
 
     pretty_print_results(
         {
-            "vec1": vec1,
-            "vec2": vec2,
-            "algebraic_dot_product(vec1, vec2)": algebraic_dot_product(vec1, vec2),
-            "geometric_dot_product(vec1, vec2)": geometric_dot_product(vec1, vec2),
+            "v1": v1,
+            "v2": v2,
+            "algebraic_dot_product(v1, v2)": algebraic_dot_product(v1, v2),
+            "geometric_dot_product(v1, v2)": geometric_dot_product(v1, v2),
         }
     )
 
 
 def _basic_vector_length():
     """Compute the length of a multidimensional vector."""
-    vec1 = np.array([1, 2, 3, 4, 5, 6])
+    # Vector `v`
+    v = np.array([1, 2, 3, 4, 5, 6])
+
+    def length(v: np.ndarray) -> np.generic:
+        """Manually calculate length."""
+        res = pipe(
+            v,
+            lambda v: np.multiply(v, v),
+            sum,
+            np.sqrt,
+        )
+        return cast(np.float64, res)
 
     pretty_print_results(
         {
-            "vec1": vec1,
-            "np.sqrt(sum(np.multiply(vec1, vec1)))": np.sqrt(
-                sum(np.multiply(vec1, vec1))
-            ),
-            "norm(vec1)": norm(vec1),
+            "v": v,
+            "length(v)": length(v),
+            "norm(v)": norm(v),
         }
     )
 
 
 def _basic_vector_hadamard_multiplication():
     """Hadamard: element-wise multiplication."""
-    vec1 = np.array([1, 3, 5])
+    # Vectors v1 and v2
+    v1 = np.array([1, 3, 5])
     v2 = np.array([3, 4, 2])
 
     pretty_print_results(
         {
-            "vec1": vec1,
+            "v1": v1,
             "v2": v2,
-            "np.multiply(vec1, v2)": np.multiply(vec1, v2),
+            "np.multiply(v1, v2)": np.multiply(v1, v2),
         }
     )
 
 
 def _basic_vector_outer_product():
-    vec1 = np.array([1, 2, 3])
+    # Vectors v1 and v2
+    v1 = np.array([1, 2, 3])
     v2 = np.array([-1, 0, 1])
 
-    def outer_product_explanation(vec1, v2):
+    def outer_product(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
         """Conceptual example (slow, but good for explaining)."""
-        op = np.zeros((len(vec1), len(vec1)))
-        for i, val1 in enumerate(vec1):
+        if not v1.size == v2.size:
+            raise ValueError("Vectors should be same size for outer product.")
+        count = v1.size
+        op = np.zeros((count, count))
+        for i, val1 in enumerate(v1):
             for j, val2 in enumerate(v2):
                 op[i, j] = val1 * val2
         return op
 
     pretty_print_results(
         {
-            "vec1": vec1,
+            "v1": v1,
             "v2": v2,
-            "np.outer(vec1, v2)": np.outer(vec1, v2),
-            "outer_product_explanation(vec1, v2)": outer_product_explanation(vec1, v2),
+            "np.outer(v1, v2)": np.outer(v1, v2),
+            "outer_product(v1, v2)": outer_product(v1, v2),
         }
     )
 
 
 def _basic_vector_cross_product():
-    vec1 = [-3, 2, 5]
-    v2 = [4, -3, 0]
+    # Vectors v1 and v2
+    v1 = np.array([-3, 2, 5])
+    v2 = np.array([4, -3, 0])
 
-    def manual_cross(vec1, v2):
-        count = len(vec1)
+    def manual_cross(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
+        """Conceptual example: slow, but good for explaining"""
+        if not v1.size == v2.size:
+            raise ValueError("Vectors should be same size for outer product.")
+        count = v1.size
         result = np.zeros(count)
         for i in range(count):
             plus_1 = (i + 1) % count  # Modulus used to wrap around
             plus_2 = (i + 2) % count
-            result[i] = vec1[plus_1] * v2[plus_2] - vec1[plus_2] * v2[plus_1]
+            result[i] = v1[plus_1] * v2[plus_2] - v1[plus_2] * v2[plus_1]
         return result
 
     pretty_print_results(
         {
-            "vec1": vec1,
+            "v1": v1,
             "v2": v2,
-            "np.cross(vec1, v2)": np.cross(vec1, v2),
-            "manual_cross(vec1, v2)": manual_cross(vec1, v2),
+            "np.cross(v1, v2)": np.cross(v1, v2),
+            "manual_cross(v1, v2)": manual_cross(v1, v2),
         }
     )
 
@@ -341,24 +371,30 @@ def _basic_vector_hermitian_transpose():
 
 
 def _basic_unit_vector():
-    vec1 = np.array([-3, 6])
-    mu = 1 / norm(vec1)
-    v1n = vec1 * mu
+    """Determine a vector's unit vector."""
+    # scalar `mu`, vector `v`, length `norm(v)`
+    # mu * norm(v) = 1
+    # v * mu = unit_v
+    v = np.array([-3, 6])
+    mu = 1 / norm(v)
+    unit_v = v * mu
 
     pretty_print_results(
         {
-            "vec1": vec1,
+            "v": v,
             "mu": mu,
-            "v1n": v1n,
+            "unit_v": unit_v,
         }
     )
 
 
 def _basic_vector_span():
-    # TODO: Check this (LLM example)
-    # Linear span: the span of a set of vectors
-    # The linear space formed by all vectors, as linear combinations of the vectors
-    vec1 = np.array([1, 2, 3])
+    """
+    Linear span: the span of a set of vectors.
+    The linear space formed by all vectors, as linear combinations of the vectors.
+    """
+    # Vectors v1/v2/v3
+    v1 = np.array([1, 2, 3])
     v2 = np.array([4, 5, 6])
     v3 = np.array([7, 8, 9])
 
@@ -371,76 +407,80 @@ def _basic_vector_span():
         basis = matrix[:, :rank]
         return basis
 
+    # TODO: Check this (LLM example)
+
     pretty_print_results(
         {
-            "vec1": vec1,
+            "v1": v1,
             "v2": v2,
             "v3": v3,
-            "linear_span_basis(vec1, v2, v3)": linear_span_basis(vec1, v2, v3),
+            "linear_span_basis(v1, v2, v3)": linear_span_basis(v1, v2, v3),
         }
     )
 
 
 def _basic_matrix_creation():
-    sq_mat = np.round(randn(5, 5), 2)
-    rect_mat = np.round(randn(3, 4), 2)
+    # Square matrix `S`, Rectangular matrix `A`
+    S = np.round(randn(5, 5), 2)
+    A = np.round(randn(3, 4), 2)
 
     pretty_print_results(
         {
-            "sq_mat": sq_mat,
-            "rect_mat": rect_mat,
+            "S": S,
+            "A": A,
             "np.zeros((4, 4))": np.zeros((4, 4)),
             "np.eye(3)": np.eye(3),
             "np.diag([1, 2, 3, 5, 2])": np.diag([1, 2, 3, 5, 2]),
-            "np.triu(sq_mat)": np.triu(sq_mat),
-            "np.tril(sq_mat)": np.tril(sq_mat),
-            "np.concatenate((rect_mat, rect_mat), axis=1)": np.concatenate(
-                (rect_mat, rect_mat), axis=1
-            ),
+            "np.triu(S)": np.triu(S),
+            "np.tril(S)": np.tril(S),
+            "np.concatenate((A, A), axis=1)": np.concatenate((A, A), axis=1),
         }
     )
 
 
 def _basic_matrix_scalar_arithmetic():
-    mat1 = np.arange(1, 10, 1).reshape(3, 3)
+    # Matrix `A`
+    A = np.arange(1, 10, 1).reshape(3, 3)
 
     pretty_print_results(
         {
-            "mat1": mat1,
-            "mat1 + 2": mat1 + 2,
-            "mat1 - 2": mat1 - 2,
-            "mat1 * 2": mat1 * 2,
-            "mat1 / 2": mat1 / 2,
-            "mat1**2": mat1**2,
+            "A": A,
+            "A + 2": A + 2,
+            "A - 2": A - 2,
+            "A * 2": A * 2,
+            "A / 2": A / 2,
+            "A**2": A**2,
         }
     )
 
 
 def _basic_matrix_vector_arithmetic():
-    mat1 = np.arange(1, 13, 1).reshape(4, 3)
-    vec1 = np.array([2, 1, 3])
+    # Matrix `A`, Vector `v`
+    A = np.arange(1, 13, 1).reshape(4, 3)
+    v = np.array([2, 1, 3])
 
     pretty_print_results(
         {
-            "mat1": mat1,
-            "vec1": vec1,
-            "mat1 + vec1": mat1 + vec1,
-            "mat1 - vec1": mat1 - vec1,
-            "mat1 * vec1": mat1 * vec1,
-            "vec1 * mat1": vec1 * mat1,  # Same as `mat1 * vec1`
-            "mat1 / vec1": mat1 / vec1,
-            "mat1**vec1": mat1**vec1,
+            "A": A,
+            "v": v,
+            "A + v": A + v,
+            "A - v": A - v,
+            "A * v": A * v,
+            "v * A": v * A,  # Same as `A * v`
+            "A / v": A / v,
+            "A**v": A**v,
             # Dot product
-            "np.dot(mat1, vec1)": np.dot(mat1, vec1),
+            "np.dot(A, v)": np.dot(A, v),
             # Multiply by transposed
-            "mat1.T * vec1.reshape(-1, 1)": mat1.T * vec1.reshape(-1, 1),
+            "A.T * v.reshape(-1, 1)": A.T * v.reshape(-1, 1),
         }
     )
 
 
 def _diagonal_and_trace():
-    vec1 = np.arange(1, 10)
-    mat1 = np.arange(1, 10).reshape(3, 3)
+    # Square matrix `S`, vector `v`
+    S = np.arange(1, 10).reshape(3, 3)
+    v = np.arange(1, 10)
 
     # NOTE:
     # matmul and hadamard multiplication are the same for diagonal matrices
@@ -448,129 +488,153 @@ def _diagonal_and_trace():
 
     pretty_print_results(
         {
-            "vec1": vec1,
-            "mat1": mat1,
-            "np.diag(mat1)": np.diag(mat1),  # diag matrix -> vector
-            "np.diag(vec1)": np.diag(vec1),  # vector -> diag matrix
-            "np.trace(mat1)": np.trace(mat1),
-            "sum(np.diag(mat1))": sum(np.diag(mat1)),
+            "S": S,
+            "v": v,
+            "np.diag(S)": np.diag(S),  # diag matrix -> vector
+            "np.diag(v)": np.diag(v),  # vector -> diag matrix
+            "np.trace(S)": np.trace(S),
+            "sum(np.diag(S))": sum(np.diag(S)),
         }
     )
 
 
 def basic_matrix_shift():
     """Shifting a matrix can be useful in concrete applications of linear algebra."""
-    mat1 = np.arange(1, 10, 1).reshape(3, 3)  # Must be square
-    diag1 = np.eye(3) * 2
+    # Square matrix `S`, diagonal matrix `D`
+    S = np.arange(1, 10, 1).reshape(3, 3)
+    D = np.eye(3) * 2
+
+    def matching_squares(A1, A2) -> bool:
+        """Return True if both are square and have same size"""
+        if not (A1.ndim == 2) and (A2.ndim == 2):
+            return False
+        m1, n1 = A1.shape
+        m2, n2 = A2.shape
+        return (m1 == n1) and (m2 == n2) and (m1 == m2)
+
+    if not matching_squares(S, D):
+        raise ValueError("Matrices must be square and have same shape")
 
     pretty_print_results(
         {
-            "mat1": mat1,
-            "diag1": diag1,
-            "mat1 + diag1": mat1 + diag1,
+            "S": S,
+            "D": D,
+            "S + D": S + D,
         }
     )
 
 
 def _transformation_matrices():
-    vec1 = np.array([3, -2])
-    mat1 = np.array([[1, -1], [2, 1]])
-    # res1 = mat1 @ vec1.T # [5, 4]
+    # Square matrix `S`, vector `V`
+    S = np.array([[1, -1], [2, 1]])
+    v = np.array([3, -2])
+
+    def matching_dimensions(A: np.ndarray, v: np.ndarray) -> bool:
+        """Check if `A.shape` matches `v.size`."""
+        if A.ndim != 2:
+            return False
+        if v.ndim != 1:
+            return False
+        m, n = A.shape
+        return (m == n) and (m == v.size)
+
+    if not matching_dimensions(S, v):
+        # If S is not square, input/output vectors will have different dimensionality
+        print(f"WARNING: dimensions don't match ({S.shape} and {v.size})")
 
     pretty_print_results(
         {
-            "vec1": vec1,
-            "mat1": mat1,
-            "mat1 @ vec1.T": mat1 @ vec1.T,
+            "v": v,
+            "S": S,
+            "S @ v.T": S @ v.T,  # [5, 4]
         }
     )
 
 
 def _transform_matrices_rotation():
-    vec1 = np.array([3, -2])
-    theta = np.pi / 2  # 90 degrees
-    mat1 = np.array(
-        [
-            [math.cos(theta), -math.sin(theta)],
-            [math.sin(theta), math.cos(theta)],
-        ]
-    )
-    # res1 = mat1 @ vec1.T # [2, 3]
+    # Square matrix `S`, vector `v`, angle `th` (theta)
+    v = np.array([3, -2])
+    th = np.pi / 2  # 90 degrees
+    S = np.array([[cos(th), -sin(th)], [sin(th), cos(th)]])
 
     pretty_print_results(
         {
-            "vec1": vec1,
-            "mat1": mat1,
-            "mat1 @ vec1.T": mat1 @ vec1.T,
+            "v": v,
+            "S": S,
+            "S @ v.T": S @ v.T,  # [2, 3]
         }
     )
 
 
 def _basic_matrix_matrix_arithmetic():
+    # Matrices A1 and A2
+    A1 = np.arange(1, 13, 1).reshape(4, 3)
+    A2 = np.arange(1, 13, 1).reshape(4, 3)
+
     # Matmul:
-    # mat1 left-multiples mat2
+    # For `A1 @ A2`, A1 left-multiples A2
     # For dimensions `(m1, n1) @ (m2, n2)`, n1 must equal m2
     # Shape `(m1, n1) @ (m2, n2)` produce shape `(m1, n2)`
 
-    mat1 = np.arange(1, 13, 1).reshape(4, 3)
-    mat2 = np.arange(1, 13, 1).reshape(4, 3)
-
     pretty_print_results(
         {
-            "mat1": mat1,
-            "mat2": mat2,
+            "A1": A1,
+            "A2": A2,
             # Element-wise operations
-            "mat1 + mat2": mat1 + mat2,
-            "mat1 - mat2": mat1 - mat2,
-            "mat1 * mat2": mat1 * mat2,  # Hadamard product
-            "np.multiply(mat1, mat2)": np.multiply(mat1, mat2),  # Hadamard product
-            "mat1 / mat2": mat1 / mat2,  # Hadamard division
-            "np.divide(mat1, mat2)": np.divide(mat1, mat2),  # Hadamard division
-            "mat1**mat2": mat1**mat2,
+            "A1 + A2": A1 + A2,
+            "A1 - A2": A1 - A2,
+            "A1 * A2": A1 * A2,  # Hadamard product
+            "np.multiply(A1, A2)": np.multiply(A1, A2),  # Hadamard product
+            "A1 / A2": A1 / A2,  # Hadamard division
+            "np.divide(A1, A2)": np.divide(A1, A2),  # Hadamard division
+            "A1**A2": A1**A2,
             # Matrix multiplication
-            "mat1 @ mat2.T": mat1 @ mat2.T,  # Dot product
-            "np.dot(mat1, mat2.T)": np.dot(mat1, mat2.T),  # Dot product
-            "np.matmul(mat1, mat2.T)": np.matmul(mat1, mat2.T),  # Dot product
+            "A1 @ A2.T": A1 @ A2.T,  # Dot product
+            "np.dot(A1, A2.T)": np.dot(A1, A2.T),  # Dot product
+            "np.matmul(A1, A2.T)": np.matmul(A1, A2.T),  # Dot product
         }
     )
 
 
 def _matmul_order_of_operations():
-    mat1 = np.arange(1, 10).reshape(3, 3)
-    mat2 = mat1.copy() + 1
-    mat3 = mat1.copy() - 1
-    mat4 = mat1.copy() * 2
+    # Square matrices S1 - S4
+    S1 = np.arange(1, 10).reshape(3, 3)
+    S2 = S1.copy() + 1
+    S3 = S1.copy() - 1
+    S4 = S1.copy() * 2
 
     pretty_print_results(
         {
-            "mat1": mat1,
-            "mat2": mat2,
-            "mat3": mat3,
-            "mat4": mat4,
+            "S1": S1,
+            "S2": S2,
+            "S3": S3,
+            "S4": S4,
             # Below results are the same (potential computer rounding errors)
-            "mat1 @ mat2 @ mat3 @ mat4": mat1 @ mat2 @ mat3 @ mat4,
-            "mat4.T @ mat3.T @ mat2.T @ mat1.T": mat4.T @ mat3.T @ mat2.T @ mat1.T,
+            "S1 @ S2 @ S3 @ S4": S1 @ S2 @ S3 @ S4,
+            "S4.T @ S3.T @ S2.T @ S1.T": S4.T @ S3.T @ S2.T @ S1.T,
         }
     )
 
 
 def _additive_symmetric_matrices():
-    mat1 = np.arange(1, 10).reshape(3, 3)
-    mat_sym = (mat1 + mat1.T) / 2
+    # Square matrix `S`, symmetric matris `S_sym`
+    S = np.arange(1, 10).reshape(3, 3)
+    S_sym = (S + S.T) / 2
 
     pretty_print_results(
         {
-            "mat1": mat1,
-            "mat_sym": mat_sym,
-            "mat_sym - mat_sym.T": mat_sym - mat_sym.T,  # zeros
+            "S": S,
+            "S_sym": S_sym,
+            "S_sym - S_sym.T": S_sym - S_sym.T,  # zeros
         }
     )
 
 
 def _multiplicative_symmetric_matrices():
-    mat1 = np.arange(1, 7).reshape(3, 2)
-    at_a = mat1.T @ mat1
-    a_at = mat1 @ mat1.T
+    # Matrix A
+    A = np.arange(1, 7).reshape(3, 2)
+    At_A = A.T @ A
+    A_At = A @ A.T
 
     def _is_symmetric(matrix: np.ndarray):
         shape = matrix.shape
@@ -583,20 +647,20 @@ def _multiplicative_symmetric_matrices():
 
     pretty_print_results(
         {
-            "mat1": mat1,
-            "at_a": at_a,
-            "a_at": a_at,
-            "_is_symmetric(at_a)": _is_symmetric(at_a),
-            "_is_symmetric(a_at)": _is_symmetric(a_at),
-            "at_a - at_a.T": at_a - at_a.T,
-            "a_at - a_at.T": a_at - a_at.T,
+            "A": A,
+            "At_A": At_A,
+            "A_At": A_At,
+            "_is_symmetric(At_A)": _is_symmetric(At_A),
+            "_is_symmetric(A_At)": _is_symmetric(A_At),
+            "At_A - At_A.T": At_A - At_A.T,
+            "A_At - A_At.T": A_At - A_At.T,
         }
     )
 
 
 def _multiplicative_symmetric_matrices_sympy():
-    # multiplication of two symmetric matrices (pt1)
-    # multiplying two symmetric matrices (most likely) produces a non-symmetric matrix
+    # Square matrices S1 and S2
+    # `S1_sym @ S2_sym -> S3_not_sym` (usually)
 
     def get_symbols():
         """Return the alphabet as a tuple of symbols."""
@@ -606,8 +670,8 @@ def _multiplicative_symmetric_matrices_sympy():
         get_symbols()
     )
     # symmetric and constant-diagonal matrices
-    mat1 = Matrix([[a, b, c, d], [b, a, e, f], [c, e, a, h], [d, f, h, a]])
-    mat2 = Matrix([[l, m, n, o], [m, l, q, r], [n, q, l, t], [o, r, t, l]])
+    S1 = Matrix([[a, b, c, d], [b, a, e, f], [c, e, a, h], [d, f, h, a]])
+    S2 = Matrix([[l, m, n, o], [m, l, q, r], [n, q, l, t], [o, r, t, l]])
 
     def _is_symmetric_sympy(matrix: Matrix):
         shape = matrix.shape
@@ -627,136 +691,147 @@ def _multiplicative_symmetric_matrices_sympy():
 
     pretty_print_results(
         {
-            "mat1": mat1,
-            "mat2": mat2,
+            "S1": S1,
+            "S2": S2,
             # Symmetric
-            "_is_symmetric_sympy(mat1)": _is_symmetric_sympy(mat1),
-            "_is_symmetric_sympy(mat2)": _is_symmetric_sympy(mat2),
+            "_is_symmetric_sympy(S1)": _is_symmetric_sympy(S1),
+            "_is_symmetric_sympy(S2)": _is_symmetric_sympy(S2),
             # Asymmetric
-            "_is_symmetric_sympy(mat1 @ mat2)": _is_symmetric_sympy(mat1 @ mat2),
+            "_is_symmetric_sympy(S1 @ S2)": _is_symmetric_sympy(S1 @ S2),
         }
     )
 
 
 def _frobenius_dot_product():
-    mat1 = np.arange(1, 13).reshape(4, 3)
-    mat2 = mat1.copy()
+    # Matrices A1 and A2
+    A1 = np.arange(1, 13).reshape(4, 3)
+    A2 = A1.copy()
 
     pretty_print_results(
         {
-            "mat1": mat1,
-            "mat2": mat2,
+            "A1": A1,
+            "A2": A2,
             # Sum of hadamard
-            "np.sum(mat1 * mat2)": np.sum(mat1 * mat2),
+            "np.sum(A1 * A2)": np.sum(A1 * A2),
             # Dot product of vectorized matrices (flatten, ravel, reshape)
-            "np.dot(mat1.ravel(), mat2.ravel())": np.dot(mat1.ravel(), mat2.ravel()),
+            "np.dot(A1.ravel(), A2.ravel())": np.dot(A1.ravel(), A2.ravel()),
             # trace(At @ B)
-            "np.trace(mat1.T @ mat2)": np.trace(mat1.T @ mat2),
+            "np.trace(A1.T @ A2)": np.trace(A1.T @ A2),
         }
     )
 
 
 def _matrix_rank():
-    # 4 rows, 3 cols
-    # Max rank of 3 (min dimension)
-    m, n = 4, 3
-    mat1 = np.round(randn(m, n), 2)
+    # Full-rank matrices A1/A2/A4/A5, rank-deficient matrix A3
+    m, n = 4, 3  # 4 rows, 3 cols; Max rank of 3 (min dimension)
+    A1 = np.round(randn(m, n), 2)
 
     # Make a row dependent (rank unaffected)
-    mat2 = mat1.copy()
-    mat2[m - 1] = mat2[m - 2]
+    A2 = A1.copy()
+    A2[m - 1] = A2[m - 2]
 
     # Make a col dependent (rank decreased)
-    mat3 = mat1.copy()
-    mat3[:, n - 1] = mat3[:, n - 2]
+    A3 = A1.copy()
+    A3[:, n - 1] = A3[:, n - 2]
 
     # Noise to fix rank-deficiency (rank restored)
-    mat4 = mat3.copy()
-    mat4 = mat4 + 0.001 * randn(m, n)
+    A4 = A3.copy()
+    A4 = A4 + 0.001 * randn(m, n)
 
     # Shift to fix rank-deficiency (rank restored)
-    mat5 = mat3.copy()
-    mat5 = mat5 + 0.001 * np.eye(m, n)
+    A5 = A3.copy()
+    A5 = A5 + 0.001 * np.eye(m, n)
 
     # Symmetric matrices
-    at_a = mat1.T @ mat1  # (3,3), rank 3
-    a_at = mat1 @ mat1.T  # (4,4), rank 3
+    At_A = A1.T @ A1  # (3,3), rank 3
+    A_At = A1 @ A1.T  # (4,4), rank 3
 
     pretty_print_results(
         {
             # 4 by 3, max rank is 3
-            "mat1": mat1,
-            "mat2": mat2,
-            "mat3": mat3,
-            "mat4": mat4,
-            "mat5": mat5,
+            "A1": A1,
+            "A2": A2,
+            "A3": A3,
+            "A4": A4,
+            "A5": A5,
             # Rank is 3 (no cols are dependent)
-            "matrix_rank(mat1)": matrix_rank(mat1),
+            "matrix_rank(A1)": matrix_rank(A1),
             # Rank is 3 (some rows are dependent, but no cols are)
-            "matrix_rank(mat2)": matrix_rank(mat2),
+            "matrix_rank(A2)": matrix_rank(A2),
             # Rank is 2 (some cols are dependent)
-            "matrix_rank(mat3)": matrix_rank(mat3),
+            "matrix_rank(A3)": matrix_rank(A3),
             # Rank is 3 (noise added to rank-deficient matrix)
-            "matrix_rank(mat4)": matrix_rank(mat4),
+            "matrix_rank(A4)": matrix_rank(A4),
             # Rank is 3 (shift added to rank-deficient matrix)
-            "matrix_rank(mat5)": matrix_rank(mat5),
+            "matrix_rank(A5)": matrix_rank(A5),
             # AtA (3,3) and AAt (4,4): rank 3
-            "at_a": at_a,
-            "a_at": a_at,
-            "matrix_rank(at_a)": matrix_rank(at_a),
-            "matrix_rank(a_at)": matrix_rank(a_at),
+            "At_A": At_A,
+            "A_At": A_At,
+            "matrix_rank(At_A)": matrix_rank(At_A),
+            "matrix_rank(A_At)": matrix_rank(A_At),
         }
     )
 
 
 def _systems_of_equations_and_rref():
     """Reduced row echelon form."""
-    mat1 = randn(4, 4)
-    mat2 = randn(4, 3)
+    # Square matrix `S`, matrix `A`
+    S = randn(4, 4)
+    A = randn(4, 3)
 
-    def rref(matrix: np.ndarray) -> np.ndarray:
-        result = pipe(matrix, Matrix, lambda m: m.rref(), first, np.array)
+    def rref(A: np.ndarray) -> np.ndarray:
+        if A.ndim != 2:
+            raise ValueError("A is not a matrix")
+        result = pipe(
+            A,
+            Matrix,
+            lambda m: m.rref(),
+            first,
+            np.array,
+        )
         return cast(np.ndarray, result)
 
     pretty_print_results(
         {
-            "mat1": mat1,
-            "mat2": mat2,
-            "rref(mat1)": rref(mat1),
-            "rref(mat2)": rref(mat2),
+            "S": S,
+            "A": A,
+            "rref(S)": rref(S),
+            "rref(A)": rref(A),
         }
     )
 
 
 def _matrix_inverse():
-    mat1 = randn(3, 3)  # Square matrix
+    # Square matrix `S`
+    S = randn(3, 3)
 
     pretty_print_results(
         {
-            "mat1": mat1,
-            "inv(mat1)": inv(mat1),
-            "mat1 @ inv(mat1)": np.round(mat1 @ inv(mat1), 2),
+            "S": S,
+            "inv(S)": inv(S),
+            "S @ inv(S)": np.round(S @ inv(S), 2),
         }
     )
 
 
 def _matrix_inverse_row_reduction():
-    size = 4
-    mat1 = pipe(
-        randn(size, size),
+    # Square matrix `S`
+    S = pipe(
+        randn(4, 4),
         lambda a: a * 10,
         np.round,
     )
 
-    def inv_rr(matrix: np.ndarray) -> np.ndarray:
+    def inv_rr(S: np.ndarray) -> np.ndarray:
         """Get the inverse using row reduction."""
-        rows, cols = matrix.shape
+        if S.ndim != 2:
+            raise ValueError("Not a matrix")
+        rows, cols = S.shape
         if rows != cols:
-            raise RuntimeError(f"Not a square matrix ({rows}, {cols})")
+            raise ValueError(f"Not a square matrix ({rows}, {cols})")
         size = rows
-
         return pipe(
-            mat1,
+            S,
             lambda a: Matrix(a, dtype="float64"),
             lambda m: Matrix(np.concatenate((m, np.eye(size, size)), axis=1)),
             lambda m: m.rref(),
@@ -767,76 +842,75 @@ def _matrix_inverse_row_reduction():
 
     pretty_print_results(
         {
-            "mat1": mat1,
-            "inv(mat1)": np.round(inv(mat1), 2),
-            "inv_rr(mat1)": np.round(inv_rr(mat1), 2),
+            "S": S,
+            "inv(S)": np.round(inv(S), 2),
+            "inv_rr(S)": np.round(inv_rr(S), 2),
         }
     )
 
 
+@retry
 def _basic_matrix_one_sided_inverse():
     """One-sided, left or right inverse."""
-    mat1 = randn(6, 3)  # Tall, use left inverse
-    at_a = mat1.T @ mat1
-    a_at = mat1 @ mat1.T
+    # tenacity.retry because randn can produce singular matrix
 
-    a_inv_left = inv(at_a) @ mat1.T
-    a_inv_right = mat1.T @ inv(a_at)
+    # Matrix `A`
+    A = randn(6, 3)  # Tall, use left inverse
+    At_A = A.T @ A
+    A_At = A @ A.T
 
-    left_check = a_inv_left @ mat1
-    right_check = mat1 @ a_inv_right
+    A_inv_left = inv(At_A) @ A.T
+    A_inv_right = A.T @ inv(A_At)
+
+    left_check = A_inv_left @ A
+    right_check = A @ A_inv_right
 
     pretty_print_results(
         {
-            "mat1": mat1,
+            "A": A,
             # Full rank (3 out of 3), left inverse will work
-            "at_a": np.round(at_a, 3),
-            "at_a.shape": at_a.shape,
-            "matrix_rank(at_a)": matrix_rank(at_a),
-            "a_inv_left": np.round(a_inv_left, 3),  # Left inverse
-            "a_inv_left @ mat1": np.round(left_check, 3),  # Left inverse check
+            "At_A": np.round(At_A, 3),
+            "At_A.shape": At_A.shape,
+            "matrix_rank(At_A)": matrix_rank(At_A),
+            "A_inv_left": np.round(A_inv_left, 3),  # Left inverse
+            "A_inv_left @ A": np.round(left_check, 3),  # Left inverse check
             # Rank deficient (3 out of 6), right inverse will not work
-            "a_at": np.round(a_at, 3),
-            "a_at.shape": a_at.shape,
-            "matrix_rank(a_at)": matrix_rank(a_at),
-            "a_inv_right": np.round(a_inv_right, 3),  # Right inverse
-            "mat1 @ a_inv_right": np.round(right_check, 3),  # Right inverse check
+            "A_At": np.round(A_At, 3),
+            "A_At.shape": A_At.shape,
+            "matrix_rank(A_At)": matrix_rank(A_At),
+            "A_inv_right": np.round(A_inv_right, 3),  # Right inverse
+            "A @ A_inv_right": np.round(right_check, 3),  # Right inverse check
         }
     )
 
 
 def _r2_projections():
-    # Line `a`, point `b`, scalar `beta`
-    a = np.array([2, 5])
-    b = np.array([4, 1])
-    beta = (a.T @ b) / (a.T @ a)
-
-    # check
-    # `at @ (b - a * beta) = 0`
+    # Line `v`, point `p`, scalar `c` (beta)
+    v = np.array([2, 5])
+    p = np.array([4, 1])
+    c = (v.T @ p) / (v.T @ v)
 
     pretty_print_results(
         {
-            "a": a,
-            "b": b,
-            "beta": np.round(beta, 2),
-            # Should equal 0
-            "a.T @ (b - a * beta)": np.round(a.T @ (b - a * beta), 2),
+            "v": v,
+            "p": p,
+            "c": np.round(c, 2),
+            # Should be 0
+            "v.T @ (p - v * c)": np.round(v.T @ (p - v * c), 2),
         }
     )
 
 
 def _rn_projections():
-    m = 3  # Rows
-    n = 5  # Cols
-
     # Matrix A, vector b, vector x
+    m, n = 3, 5  # Rows, Cols
     A = randn(m, n)
     b = randn(m, 1)
 
-    rank_a = matrix_rank(A.T @ A)  # Must be full rank
-    if rank_a != m:
+    At_A_rank = matrix_rank(A.T @ A)
+    if At_A_rank != m:
         # AtA must be full rank
-        raise RuntimeError(f"Matrix is not full rank ({rank_a} / {n})")
+        raise RuntimeError(f"Matrix is not full rank ({At_A_rank} / {m})")
 
     # Explicit inverse solution
     # Can cause computer rounding errors
@@ -850,12 +924,34 @@ def _rn_projections():
             "n": n,
             "A": A,
             "b": b,
-            "rank_a": rank_a,
+            "At_A_rank": At_A_rank,
             # Two ways to solve for `x`
             "inv(A.T @ A) @ (A.T @ b)": inv(A.T @ A) @ (A.T @ b),
-            "a.T @ (b - a * beta)": solve(A.T @ A, A.T @ b),
+            "solve(A.T @ A, A.T @ b)": solve(A.T @ A, A.T @ b),
             # Should be zeros vector
             "A.T @ (b - A @ x)": np.round(A.T @ (b - A @ x), 2),
+        }
+    )
+
+
+def _qr_decomposition():
+    # Matrix A
+    A = [[1, 0], [1, 0], [0, 1]]
+
+    # "reduced" QR decompmosition (economy) (default)
+    Q1, R1 = np.linalg.qr(A)
+    # "complete" QR decomposition (full)
+    Q2, R2 = np.linalg.qr(A, "complete")
+
+    pretty_print_results(
+        {
+            "A": A,
+            # economy
+            "Q1": np.round(Q1, 2),
+            "R1": np.round(R1, 2),
+            # full
+            "Q2": np.round(Q2, 2),
+            "R2": np.round(R2, 2),
         }
     )
 
