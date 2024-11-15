@@ -860,6 +860,7 @@ Inverse for tall or wide matrices
 - get Q
   - gram-schmidt procedure
 - get R
+  - Q is orthogonal, so `inv(Q)` is `Q.T`
   - `QtA = QtQR`
   - `QtA = R`
 

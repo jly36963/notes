@@ -4,10 +4,10 @@
 
 import json
 from math import cos, sin
-from typing import Any, Dict, List, Optional, TypeVar, cast
+from typing import Any, Dict, List, Optional, Tuple, TypeVar, cast
 
 import numpy as np
-from numpy.linalg import inv, matrix_rank, norm, solve, svd
+from numpy.linalg import inv, matrix_rank, norm, qr, solve, svd
 from numpy.random import randn
 from sympy import Matrix, symbols
 from tenacity import retry
@@ -114,6 +114,12 @@ def main():
 
     print_section_title("QR decomposition")
     _qr_decomposition()
+
+    print_section_title("QR gram-schmidt")
+    _qr_gram_schmidt()
+
+    # print_section_title("QR decomposition (2)")
+    # _qr_decomposition_2()
 
 
 # ---
@@ -939,9 +945,9 @@ def _qr_decomposition():
     A = [[1, 0], [1, 0], [0, 1]]
 
     # "reduced" QR decompmosition (economy) (default)
-    Q1, R1 = np.linalg.qr(A)
+    Q1, R1 = qr(A)
     # "complete" QR decomposition (full)
-    Q2, R2 = np.linalg.qr(A, "complete")
+    Q2, R2 = qr(A, "complete")
 
     pretty_print_results(
         {
@@ -954,6 +960,73 @@ def _qr_decomposition():
             "R2": np.round(R2, 2),
         }
     )
+
+
+def _qr_gram_schmidt():
+    """QR decomposition example using gram-schmidt procedure."""
+
+    def gs(A: np.ndarray) -> np.ndarray:
+        """Do gram-schmidt procedure on a matrix."""
+        if A.ndim != 2:
+            raise ValueError("A is not a matrix")
+        m, n = A.shape
+        Q = np.zeros((m, n))
+
+        for i in range(n):
+            Q[:, i] = A[:, i]
+            a = A[:, i]
+            # Orthogonalize
+            for j in range(i):
+                q = Q[:, j]
+                Q[:, i] = Q[:, i] - np.dot(a, q) / np.dot(q, q) * q
+            Q[:, i] = Q[:, i] / norm(Q[:, i])
+        return Q
+
+    def gs_qr_decomp(A: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """Do QR decomposition using gram-schmidt."""
+        Q = gs(A)
+        R = Q.T @ A
+        R = np.triu(Q.T @ A)
+        return Q, R
+
+    A = np.random.randn(4, 3)
+    Q1, R1 = qr(A)  # reduced
+    Q2, R2 = qr(A, "complete")  # complete
+    Q3, R3 = gs_qr_decomp(A)  # Q/R dimensions will be like `reduced`
+
+    pretty_print_results(
+        {
+            "A": A,
+            # qr reduced
+            "Q1": np.round(Q1, 2),
+            "R1": np.round(R1, 2),
+            # qr complete
+            "Q2": np.round(Q2, 2),
+            "R2": np.round(R2, 2),
+            # qr gs (manual)
+            "Q3": np.round(Q3, 2),
+            "R3": np.round(R3, 2),
+            # Check
+            "Q3 @ R3": np.round(Q3 @ R3, 2),
+        }
+    )
+
+
+# def _qr_decomposition_2():
+#     """For `A = QR`: given Q and A, find R."""
+#     # Matrix A
+#     A = np.array([[1, 1, -2], [3, -1, 1]])
+#     Q, R = qr(A, "complete")
+#     R2 = Q.T @ A
+
+#     pretty_print_results(
+#         {
+#             "A": A,
+#             "Q": np.round(Q, 2),
+#             "R": np.round(R, 2),
+#             "R2": np.round(R2, 2),
+#         }
+#     )
 
 
 # ---
