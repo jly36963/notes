@@ -7,7 +7,18 @@ from math import cos, sin
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, cast
 
 import numpy as np
-from numpy.linalg import inv, matrix_rank, norm, qr, solve, svd
+import scipy
+from numpy.linalg import (
+    eig,
+    inv,
+    lstsq,
+    matrix_power,
+    matrix_rank,
+    norm,
+    qr,
+    solve,
+    svd,
+)
 from numpy.random import randn
 from sympy import Matrix, symbols
 from tenacity import retry
@@ -115,11 +126,38 @@ def main():
     print_section_title("QR decomposition")
     _qr_decomposition()
 
+    print_section_title("QR decomposition (2)")
+    qr_decomp_2()
+
     print_section_title("QR gram-schmidt")
     _qr_gram_schmidt()
 
-    # print_section_title("QR decomposition (2)")
-    # _qr_decomposition_2()
+    print_section_title("inverse via QR decomposition")
+    _inverse_via_qr_decomposition()
+
+    print_section_title("sherman morrison inverse")
+    _sherman_morrison_inverse()
+
+    print_section_title("least squares row reduction")
+    _lease_squares_row_reduction()
+
+    print_section_title("least squares example")
+    _least_squares_example()
+
+    print_section_title("least squares via qr decomp")
+    _least_squares_via_qr_decomp()
+
+    print_section_title("eigendecomposition")
+    _eigendecomposition()
+
+    print_section_title("diagonalization")
+    _diagonalization()
+
+    print_section_title("matrix powers via diagonalization")
+    _matrix_powers_via_diagonalization()
+
+    print_section_title("eigenvectors of related symmetric matrices")
+    _eigenvectors_of_related_symmetric_matrices()
 
 
 # ---
@@ -962,6 +1000,27 @@ def _qr_decomposition():
     )
 
 
+def qr_decomp_2():
+    # QR decomposition where A = QR
+    # AtA = RtR
+
+    A = np.random.randn(4, 3)
+    Q, R = np.linalg.qr(A)
+
+    At_A = A.T @ A
+    Rt_R = R.T @ R
+
+    pretty_print_results(
+        {
+            "A": A,
+            "Q": np.round(Q, 2),
+            "R": np.round(R, 2),
+            "At_A": np.round(At_A, 2),
+            "Rt_R": np.round(Rt_R, 2),
+        }
+    )
+
+
 def _qr_gram_schmidt():
     """QR decomposition example using gram-schmidt procedure."""
 
@@ -979,13 +1038,13 @@ def _qr_gram_schmidt():
             for j in range(i):
                 q = Q[:, j]
                 Q[:, i] = Q[:, i] - np.dot(a, q) / np.dot(q, q) * q
+            # Normalize
             Q[:, i] = Q[:, i] / norm(Q[:, i])
         return Q
 
     def gs_qr_decomp(A: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Do QR decomposition using gram-schmidt."""
         Q = gs(A)
-        R = Q.T @ A
         R = np.triu(Q.T @ A)
         return Q, R
 
@@ -1012,21 +1071,234 @@ def _qr_gram_schmidt():
     )
 
 
-# def _qr_decomposition_2():
-#     """For `A = QR`: given Q and A, find R."""
-#     # Matrix A
-#     A = np.array([[1, 1, -2], [3, -1, 1]])
-#     Q, R = qr(A, "complete")
-#     R2 = Q.T @ A
+def _inverse_via_qr_decomposition():
+    # Square for this example so that `inv(A)` works
+    A = np.random.randn(3, 3)
 
-#     pretty_print_results(
-#         {
-#             "A": A,
-#             "Q": np.round(Q, 2),
-#             "R": np.round(R, 2),
-#             "R2": np.round(R2, 2),
-#         }
-#     )
+    # Inverse via QR decomposition
+    # A = QR
+    # inv(A) = inv(QR)
+    # inv(A) = inv(R) @ Qt
+    Q, R = qr(A)
+    A_inv_qr = inv(R) @ Q.T
+
+    # Regular inverse
+    A_inv = inv(A)
+
+    pretty_print_results(
+        {
+            "A": A,
+            "Q": np.round(Q, 2),
+            "R": np.round(R, 2),
+            "A_inv_qr": np.round(A_inv_qr, 2),
+            "A_inv": np.round(A_inv, 2),
+        }
+    )
+
+
+def _sherman_morrison_inverse():
+    print("...")
+
+
+def _lease_squares_row_reduction():
+    # Ax = beta
+    # A is square matrix
+    # x is (m, 1) vector of uknowns
+    # beta is (m, 1) vector of constants (solution vector)
+
+    # X is design matrix, y is outcome measures
+    X = np.random.randn(5, 3)
+    y = np.random.randn(5, 1)
+
+    def mat_to_ndarray(matrix: Matrix) -> np.ndarray:
+        res = pipe(
+            matrix,
+            lambda m: np.array(m).astype(np.float64),
+            lambda a: np.round(a, 2),
+        )
+        return cast(np.ndarray, res)
+
+    # Try directly applying RREF
+    Xy = Matrix(np.concatenate([X, y], axis=1))
+    Xy_rref, _ = Xy.rref()
+
+    # At_A_x = At_b
+    Xt_X = X.T @ X
+    Xt_y = X.T @ y
+
+    # Normal equation solution
+    normal_equations = Matrix(np.concatenate([Xt_X, Xt_y], axis=1))
+    X_solved, _ = normal_equations.rref()
+    beta1 = X_solved[:, -1]
+    # left-inverse solution
+    beta2 = inv(Xt_X) @ Xt_y
+    # `solve` solution
+    beta3 = solve(Xt_X, Xt_y)
+
+    pretty_print_results(
+        {
+            "Xy": mat_to_ndarray(Xy),
+            "Xy_rref": mat_to_ndarray(Xy_rref),
+            "X_solved": mat_to_ndarray(X_solved),
+            "beta1": mat_to_ndarray(beta1),
+            "beta2": np.round(beta2, 2),
+            "beta3": np.round(beta3, 2),
+        }
+    )
+
+
+def _least_squares_example():
+    data = scipy.io.loadmat("./data/EEG_RT_data.mat")
+    EEGdata: np.ndarray = data["EEGdata"]  # Matrix of channel/time (30, 99)
+    rts: np.ndarray = data["rts"][0]  # Real-time signals/samples (99,)
+    # frex: np.ndarray = data["frex"][0]  # frequency features (30,)
+
+    eeg = EEGdata.T  # row: times, col: channels
+
+    def get_beta(X_timeseries: np.ndarray, y: np.ndarray) -> np.ndarray:
+        # Initialize beta coefficients vector
+        rows, cols = X_timeseries.shape  # times, frequencies
+        beta = np.zeros(cols)
+        # Loop over frequencies
+        for idx in np.arange(cols):
+            # Design matrix
+            feature = X_timeseries[:, idx]
+            shape = (rows, 1)
+            X = np.concatenate(
+                [np.ones(shape), np.reshape(feature, shape)],
+                axis=1,
+            )
+            # Compute parameters
+            t = np.linalg.solve(X.T @ X, X.T @ y)
+            beta[idx] = t[1]
+
+        return beta
+
+    # Not sure what the result is supposed to be lmao
+    beta = get_beta(eeg, rts)
+
+    pretty_print_results(
+        {
+            "eeg.shape": eeg.shape,
+            "eeg": np.round(eeg, 2),
+            "len(beta)": len(beta),
+            "beta": np.round(beta, 2),
+        }
+    )
+
+
+def _least_squares_via_qr_decomp():
+    # X @ Beta = y
+    X = np.random.randn(10, 3)
+    y = np.random.randn(10, 1)
+
+    # QR least squares solution
+    Q, R = qr(X)
+    Beta1 = inv(R.T @ R) @ (Q @ R).T @ y
+
+    # `lstsq` solution
+    Beta2, *_ = lstsq(X, y, rcond=None)
+
+    pretty_print_results(
+        {
+            "X": X,
+            "y": y,
+            "Q": np.round(Q, 2),
+            "R": np.round(R, 2),
+            "Beta1": np.round(Beta1, 2),
+            "Beta2": np.round(Beta2, 2),
+        }
+    )
+
+
+def _eigendecomposition():
+    # Square matrix S
+    S = np.array([[1, 5], [2, 4]])
+    # S = np.array([[4, -2], [1, 1]])
+    eigenvalues, eigenvectors = eig(S)
+
+    def check(S: np.ndarray, eigenvalues: np.ndarray, eigenvectors: np.ndarray) -> None:
+        """Check eigenvalues/eigenvectors"""
+        # Eigenvectors are columns, transpose or use `eigenvectors[:, idx]`
+        for eigenval, eigenvec in zip(eigenvalues, eigenvectors.T):
+            # lambda @ v = w
+            # lambda @ v = A @ v
+            assert np.allclose(eigenval * eigenvec, S @ eigenvec)
+
+    check(S, eigenvalues, eigenvectors)
+
+    pretty_print_results(
+        {
+            "S": S,
+            "eigenvalues": eigenvalues,
+            "eigenvectors": np.round(eigenvectors, 2),
+        }
+    )
+
+
+def _diagonalization():
+    # Symmetric matrix S
+    A = np.round(10 * np.random.randn(4, 4))
+    S = A.T @ A
+    eigenvalues, eigenvectors = eig(S)
+    # Reconstruct `A = P @ D @ inv(P)`
+    S2 = eigenvectors @ np.diag(eigenvalues) @ np.linalg.inv(eigenvectors)
+
+    def rmse(diffs: np.ndarray) -> np.float64:
+        res = pipe(
+            diffs,
+            lambda m: np.reshape(m, (1, -1)),
+            np.square,
+            np.mean,
+            np.sqrt,
+        )
+        return cast(np.float64, res)
+
+    pretty_print_results(
+        {
+            "S": S,
+            "S2": S2,
+            "rmse(S - S2)": np.round(rmse(S - S2), 3),
+        }
+    )
+
+
+def _matrix_powers_via_diagonalization():
+    # A = P @ D @ inv(P)
+    # A^n = P @ (D^n) @ inv(P)
+    # D^n -- each diagonal element to the power of n
+
+    A = np.random.rand(3, 3)
+    S = A.T @ A
+
+    # Compute using diagonalization
+    def power_via_diagonalization(S: np.ndarray, power: int) -> np.ndarray:
+        """Diagonalize, then raise diagonal to power."""
+        eigenvalues, eigenvectors = np.linalg.eig(S)
+        D = np.diag(eigenvalues)
+        res = eigenvectors @ matrix_power(D, power) @ inv(eigenvectors)
+        return res
+
+    pretty_print_results(
+        {
+            "S": S,
+            "matrix_power(S, 3)": matrix_power(S, 3),
+            "power_via_diagonalization(S, 3)": power_via_diagonalization(S, 3),
+        }
+    )
+
+
+@retry
+def _eigenvectors_of_related_symmetric_matrices():
+    # Symmetric matrix S
+    A = np.random.rand(3, 3)
+    S = A.T @ A
+
+    _, V = np.linalg.eig(S)
+    _, V3 = np.linalg.eig(S @ S @ S)
+
+    assert np.allclose(V, V3)
+    print("...")
 
 
 # ---

@@ -571,7 +571,7 @@ Example2 (`D@A`):
   - organize like the following:
     - `2x + 3y - 4z = 5`
     - `-x + 7y + 9z = 7`
-  - be mindful of variables and position (if any equations don't have all variables\_)
+  - be mindful of variables and position (if any equations don't have all variables)
   - create `Ax = b`
     - `matrix[[2 3 -4][-1 7 9]] * vector[x y z] = vector[5 7]`
 - gaussian elimination
@@ -1131,7 +1131,7 @@ Inverse for tall or wide matrices
 - find eigenvectors
   - first, find eigenvalues
   - for each eigenvalue:
-    - find a vector that exists in N(A - gamma \* I)
+    - find a vector that exists in `N(A - gamma * I)`
     - that vector is the eigenvector for the eigenvalue used
   - process
     - `Ax = b`
@@ -1140,7 +1140,8 @@ Inverse for tall or wide matrices
 
 ### Diagonalization
 
-- diagonalization (sometimes called eigendecomposition)
+- diagonalization
+  - decompose a symmetric matrix and express it in terms of eigenvalues/eigenvectors
   - `A @ V = V @ (lambda * I)`
   - `A @ P = P @ D`
   - `A = P @ D @ inv(P)`
