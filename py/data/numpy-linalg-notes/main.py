@@ -3,8 +3,9 @@
 # pylint: disable=C0103
 
 import json
+from itertools import permutations
 from math import cos, sin
-from typing import Any, Dict, List, Optional, Tuple, TypeVar, cast
+from typing import Any, Dict, Iterable, List, Optional, Tuple, TypeVar, cast
 
 import numpy as np
 import scipy
@@ -158,6 +159,18 @@ def main():
 
     print_section_title("eigenvectors of related symmetric matrices")
     _eigenvectors_of_related_symmetric_matrices()
+
+    print_section_title("orthogonal eigenvectors of symmetric matrices")
+    _orthogonal_eigenvectors_of_symmetric_matrices()
+
+    print_section_title("eigenlayers")
+    _eigenlayers()
+
+    print_section_title("generalized decomposition")
+    _generalized_decomposition()
+
+    print_section_title("SVD")
+    _svd()
 
 
 # ---
@@ -1299,6 +1312,83 @@ def _eigenvectors_of_related_symmetric_matrices():
 
     assert np.allclose(V, V3)
     print("...")
+
+
+def _orthogonal_eigenvectors_of_symmetric_matrices():
+    # eigendecomposition of symmetric matrices
+    # symmetric matrices -- eigenvectors are all orthogonal to each other
+
+    A = np.random.randn(4, 4)
+    S = A.T @ A
+
+    _, eigenvectors = eig(S)
+
+    def check_orthogonality(vectors: Iterable[np.ndarray]) -> None:
+        """Check that each combination of vectors is orthogonal."""
+        vectors = list(vectors)
+        size = len(vectors)
+        combinations = permutations(range(size), 2)
+        for idx1, idx2 in combinations:
+            vec1, vec2 = vectors[idx1], vectors[idx2]
+            assert np.round(np.dot(vec1, vec2), 2) == 0
+
+    check_orthogonality(eigenvectors.T)
+    print("...")
+
+
+def _eigenlayers():
+    """Reconstruct matrix from eigenlayers (outer products)"""
+
+    # Symmetric matrix S
+    A = np.random.randn(4, 4)
+    S = A.T @ A
+    eigenvalues, eigenvectors = eig(S)
+    # get P and D (for P @ D @ inv(P))
+    D = np.diag(eigenvalues)
+    P = eigenvectors
+
+    # reconstruction in layers
+    S2 = np.zeros(S.shape)
+    for i in range(len(eigenvalues)):
+        layer = np.outer(P[:, i] * D[i, i], P[:, i].T)
+        S2 += layer
+
+    assert np.allclose(S, S2)
+    print("...")
+
+
+def _generalized_decomposition():
+    A = np.array([[3, 2], [1, 3]])
+    B = np.array([[1, 1], [4, 1]])
+
+    # GED
+    _, eigenvectors = scipy.linalg.eig(A, B)
+
+    # matrix-vector multiplication
+    Av = A @ eigenvectors[:, 1]
+    Bv = B @ eigenvectors[:, 1]
+    BinvAv = inv(B) @ A @ eigenvectors[:, 1]
+
+    # TODO: incomplete
+    print("...")
+
+
+def _svd():
+    # Matrix A
+    A = np.array([[3, 0, 5], [8, 1, 3]])
+    U, s, Vt = svd(A)  # matrix U, eigenvalues, matrix Vt
+
+    Sigma = np.zeros(A.shape)
+    max_rank = min(A.shape)
+    Sigma[:max_rank, :max_rank] = np.diag(s)
+    A2 = U @ Sigma @ Vt
+
+    pretty_print_results(
+        {
+            "A": A,
+            "A2": np.round(A2, 2),
+        }
+    )
 
 
 # ---
