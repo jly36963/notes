@@ -1,9 +1,11 @@
 """Convert graphql schema to pydantic models."""
 
+# ruff: noqa: E501
+
 import json
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, TypeVar
+from typing import TypeVar
 
 from datamodel_code_generator import DataModelType, InputFileType, generate
 from graphql import (
@@ -22,15 +24,21 @@ from graphql import (
 # Constants
 # ---
 
-DATA_DIR = os.path.join(".", "data")
+MAX_RECURSION_DEPTH = 8
 
-INPUT_DIR = os.path.join(DATA_DIR, "input")
-GRAPHQL_DIR = os.path.join(INPUT_DIR, "graphql")
+# ---
+# Constants (directories/files)
+# ---
 
-OUTPUT_DIR = os.path.join(DATA_DIR, "output")
-MERGED_SCHEMA_FP = os.path.join(OUTPUT_DIR, "schema.gql")
-MERGED_SCHEMA_FP2 = os.path.join(OUTPUT_DIR, "schema.json")
-MODELS_FP = os.path.join(OUTPUT_DIR, "models.py")
+DATA_DIR = Path("data")
+
+INPUT_DIR = DATA_DIR / "input"
+GRAPHQL_DIR = INPUT_DIR / "graphql"
+
+OUTPUT_DIR = DATA_DIR / "output"
+MERGED_SCHEMA_FP = OUTPUT_DIR / "schema.gql"
+MERGED_SCHEMA_FP2 = OUTPUT_DIR / "schema.json"
+MODELS_FP = OUTPUT_DIR / "models.py"
 
 # ---
 # Main
@@ -38,7 +46,7 @@ MODELS_FP = os.path.join(OUTPUT_DIR, "models.py")
 
 
 def main():
-    """Get graphql files, read/parse/merge, create gql schema, generate models"""
+    """Get graphql files, read/parse/merge, create gql schema, generate models."""
     setup()
     graphql_filepaths = get_gql_files(GRAPHQL_DIR)
     schema = merge_gql_files(graphql_filepaths)
@@ -57,26 +65,26 @@ T = TypeVar("T")
 
 
 def pick(dict_: dict, keys: list) -> dict:
-    """Pick keys from a dict"""
+    """Pick keys from a dict."""
     return {k: dict_[k] for k in keys if k in dict_}
 
 
-def first(input_list: List[T]) -> Optional[T]:
+def first(input_list: list[T]) -> T | None:
     """Return the first item in a list, returns None if empty."""
     if len(input_list) == 0:
         return None
     return input_list[0]
 
 
-def read_file(fp: str) -> str:
-    """Read a file (completely) to string"""
-    with open(fp, mode="r", encoding="utf-8") as f:
+def read_file(fp: Path) -> str:
+    """Read a file (completely) to string."""
+    with Path.open(fp) as f:
         return f.read()
 
 
-def write_to_file(fp: str, contents: str):
+def write_to_file(fp: Path, contents: str):
     """Write a string to file."""
-    with open(fp, mode="w", encoding="utf-8") as f:
+    with Path.open(fp, mode="w", encoding="utf-8") as f:
         f.write(contents)
 
 
@@ -95,26 +103,26 @@ def pipe(value, *funcs):
 def setup():
     """Make sure directories exist."""
     for d in [DATA_DIR, INPUT_DIR, OUTPUT_DIR, GRAPHQL_DIR]:
-        os.makedirs(d, exist_ok=True)
+        Path.mkdir(Path(d), parents=True, exist_ok=True)
 
 
-def get_gql_files(root_dir: str) -> List[str]:
+def get_gql_files(root_dir: Path) -> list[Path]:
     """Recursively search a directory for graphql files."""
 
     def recursively_get_gql_files(
-        current_path: str,
+        current_path: Path,
         current_depth: int,
-    ) -> List[str]:
+    ) -> list[Path]:
         """Inner recursive function."""
-        results: List[str] = []
+        results: list[Path] = []
 
-        if current_depth > 8:
+        if current_depth > MAX_RECURSION_DEPTH:
             raise RuntimeError("Recursion limit exceeded")
 
         for item_fn in sorted(os.listdir(current_path)):
-            item_path = os.path.join(current_path, item_fn)
+            item_path = Path(current_path) / item_fn
             # Dir
-            if os.path.isdir(item_path):
+            if item_path.is_dir():
                 # Recurse deeper
                 current_results = recursively_get_gql_files(
                     item_path,
@@ -130,10 +138,10 @@ def get_gql_files(root_dir: str) -> List[str]:
     return recursively_get_gql_files(root_dir, 0)
 
 
-def merge_gql_files(filepaths: List[str]) -> Optional[GraphQLSchema]:
+def merge_gql_files(filepaths: list[Path]) -> GraphQLSchema | None:
     """Read in multiple graphql SDL (schema) files, parse, merge AST, return schema."""
     # Read each gql schema file and parse to DocumentNode
-    document_nodes: List[DocumentNode] = []
+    document_nodes: list[DocumentNode] = []
     for fp in filepaths:
         contents = read_file(fp)
         document_node = parse(contents)
@@ -165,7 +173,7 @@ def merge_gql_files(filepaths: List[str]) -> Optional[GraphQLSchema]:
 def merge_similar_definitions(document_node: DocumentNode) -> DocumentNode:
     """Merge similar definitions to prevent separate Query/Mutation/etc from overwriting."""
     # DefinitionNode: kind, description, name, directives, interfaces, fields
-    def_map: Dict[str, DefinitionNode] = {}
+    def_map: dict[str, DefinitionNode] = {}
     for curr_def in document_node.definitions:
         key = f"{curr_def.name.kind}:{curr_def.name.value}"  # type: ignore
         if key in def_map:

@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
+# ruff: noqa: E501
+
 # ---
 # Main
 # ---
@@ -12,40 +14,40 @@ import seaborn as sns
 def main():
     """Run a bunch of matplotlib code snippets."""
     print_section_title("setup")
-    setup()
+    _setup()
 
     print_section_title("basic histogram")
-    basic_histogram()
+    _basic_histogram()
 
     print_section_title("basic functional method")
-    basic_functional_method()
+    _basic_functional_method()
 
     print_section_title("basic subplot functional method")
-    basic_subplot_functional_method()
+    _basic_subplot_functional_method()
 
     print_section_title("basic object oriented")
-    basic_object_oriented()
+    _basic_object_oriented()
 
     print_section_title("basic oop method insert")
-    basic_oop_method_insert()
+    _basic_oop_method_insert()
 
     print_section_title("basic oop method subplots")
-    basic_oop_method_subplots()
+    _basic_oop_method_subplots()
 
     print_section_title("basic figure size and dpi")
-    basic_figure_size_and_dpi()
+    _basic_figure_size_and_dpi()
 
     print_section_title("basic figure size and dpi 2")
-    basic_figure_size_and_dpi_2()
+    _basic_figure_size_and_dpi_2()
 
     print_section_title("basic save figure and legend")
-    basic_save_figure_and_legend()
+    _basic_save_figure_and_legend()
 
     print_section_title("basic control appearance")
-    basic_control_appearance()
+    _basic_control_appearance()
 
     print_section_title("basic control appearance axis")
-    basic_control_appearance_axis()
+    _basic_control_appearance_axis()
 
 
 # ---
@@ -58,8 +60,8 @@ def print_section_title(string: str) -> None:
     print(f"\n{string.upper()}\n")
 
 
-def setup():
-    """Set seaborn defaults"""
+def _setup():
+    """Set seaborn defaults."""
     sns.set_theme(style="white", color_codes=True)
 
 
@@ -68,8 +70,7 @@ def setup():
 # ---
 
 
-def basic_histogram():
-    """Basic histogram example"""
+def _basic_histogram():
     # histogram (multiple datasets)
     ds1: np.ndarray = np.random.randn(100)
     ds2: np.ndarray = np.random.randn(80)
@@ -111,7 +112,7 @@ def basic_histogram():
     plt.show()
 
 
-def basic_functional_method():
+def _basic_functional_method():
     # dataset
     x: np.ndarray = np.linspace(0, 5, 11)
     y: np.ndarray = x**2
@@ -124,7 +125,7 @@ def basic_functional_method():
     plt.show()
 
 
-def basic_subplot_functional_method():
+def _basic_subplot_functional_method():
     # dataset
     x = np.linspace(0, 5, 11)
     y = x**2
@@ -135,7 +136,7 @@ def basic_subplot_functional_method():
     plt.plot(y, x, "g")
 
 
-def basic_object_oriented():
+def _basic_object_oriented():
     # dataset
     x = np.linspace(0, 5, 11)
     y = x**2
@@ -150,7 +151,7 @@ def basic_object_oriented():
     axes.set_title("y = x ** 2")
 
 
-def basic_oop_method_insert():
+def _basic_oop_method_insert():
     # dataset
     x = np.linspace(0, 5, 11)
     y = x**2
@@ -166,12 +167,12 @@ def basic_oop_method_insert():
     axes2.plot(y, x)
 
 
-def basic_oop_method_subplots():
+def _basic_oop_method_subplots():
     # dataset
     x = np.linspace(0, 5, 11)
     y = x**2
     # figure object
-    fig, axes = plt.subplots(nrows=1, ncols=2)
+    _, axes = plt.subplots(nrows=1, ncols=2)
     # axes
     axes[0].plot(x, y)
     axes[0].set_title("plot1")
@@ -181,7 +182,7 @@ def basic_oop_method_subplots():
     plt.tight_layout()
 
 
-def basic_figure_size_and_dpi():
+def _basic_figure_size_and_dpi():
     # dataset
     x = np.linspace(0, 5, 11)
     y = x**2
@@ -192,12 +193,12 @@ def basic_figure_size_and_dpi():
     ax.plot(x, y)
 
 
-def basic_figure_size_and_dpi_2():
+def _basic_figure_size_and_dpi_2():
     # dataset
     x = np.linspace(0, 5, 11)
     y = x**2
     # fig size & dpi
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(4, 2), dpi=150)
+    _, axes = plt.subplots(nrows=1, ncols=2, figsize=(4, 2), dpi=150)
     # axes
     axes[0].plot(x, y)
     axes[1].plot(y, x)
@@ -205,7 +206,7 @@ def basic_figure_size_and_dpi_2():
     plt.tight_layout()
 
 
-def basic_save_figure_and_legend():
+def _basic_save_figure_and_legend():
     # dataset
     x = np.linspace(0, 5, 11)
     # figure object
@@ -219,7 +220,7 @@ def basic_save_figure_and_legend():
     fig.savefig("lines.png", dpi=200)
 
 
-def basic_control_appearance():
+def _basic_control_appearance():
     # dataset
     x = np.linspace(0, 5, 11)
     # figure object
@@ -241,7 +242,7 @@ def basic_control_appearance():
     )
 
 
-def basic_control_appearance_axis():
+def _basic_control_appearance_axis():
     # dataset
     x = np.linspace(0, 5, 11)
     # figure object

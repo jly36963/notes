@@ -1,7 +1,9 @@
 """Seaborn notes."""
 
+# ruff: noqa: E501
+
 import json
-import os
+from pathlib import Path
 from typing import cast
 
 import matplotlib.pyplot as plt
@@ -16,9 +18,9 @@ from sklearn.datasets import load_iris
 # Constants
 # ---
 
-DATA_DIR = os.path.join(".", "data")
-INPUT_DIR = os.path.join(DATA_DIR, "input")
-OUTPUT_DIR = os.path.join(DATA_DIR, "output")
+DATA_DIR = Path("data")
+INPUT_DIR = DATA_DIR / "input"
+OUTPUT_DIR = DATA_DIR / "output"
 
 
 # ---
@@ -76,7 +78,7 @@ def main():
 # ---
 
 
-def get_fair_df() -> pd.DataFrame:
+def _get_fair_df() -> pd.DataFrame:
     return cast(pd.DataFrame, sm.datasets.fair.load_pandas().data)  # type: ignore
 
 
@@ -86,25 +88,25 @@ def print_section_title(string: str) -> None:
 
 
 def map_res(val):
-    """Map type to more print-friendly type"""
+    """Map type to more print-friendly type."""
     if isinstance(val, pd.DataFrame):
         return val.to_dict(orient="records")
     return val
 
 
 def pretty_print_result_map(results: dict) -> None:
-    """Convert values to more print-friendly types, then print"""
+    """Convert values to more print-friendly types, then print."""
     mapped = {k: map_res(v) for k, v in results.items()}
     print(json.dumps(mapped, indent=2, ensure_ascii=False))
 
 
-def get_output_path(filename: str) -> str:
-    """Get path to input file"""
-    return os.path.join(OUTPUT_DIR, filename)
+def get_output_path(filename: str) -> Path:
+    """Get path to input file."""
+    return OUTPUT_DIR / filename
 
 
 def save_output_image(filename: str) -> None:
-    """Save current plot to file"""
+    """Save current plot to file."""
     print(f"Saving image: {filename}")
     plt.savefig(get_output_path(filename))
     plt.clf()
@@ -120,14 +122,14 @@ def setup():
     sns.set_style(style="white")
 
     for d in [DATA_DIR, INPUT_DIR, OUTPUT_DIR]:
-        os.makedirs(d, exist_ok=True)
+        Path.mkdir(d, parents=True, exist_ok=True)
+        # os.makedirs(d, exist_ok=True)
 
     print("...")
 
 
 def basic_matplotlib_histogram():
     """Histogram examples (matplotlib)."""
-
     # Histograms 1 and 2
     bins = [-4, -3, -2, -1, 0, 1, 2, 3, 4]
     arr1 = np.random.randn(100)
@@ -149,7 +151,7 @@ def basic_matplotlib_histogram():
         orientation="vertical",  # vertical, horizontal
         color="#aaaaff",  # str -- color, list -- colors (1:1 color:ds ratio)
         label="label1",  # str -- label, list -- labels for multiple datasets
-        density=True,  # idk lol
+        density=True,
     )
     save_output_image("basic-matplotlib-histogram-3.png")
 
@@ -223,7 +225,6 @@ def basic_rugplot():
 
 def basic_kde():
     """KDE examples."""
-
     # kde (kernal density estimation plot) (probability density function)
     # gaussian distribution plots on every data point -- sum of gaussian curves.
 
@@ -332,7 +333,7 @@ def basic_violin_plot():
 
 
 def basic_box_and_violin_comparison():
-    """Box vs violin comparison"""
+    """Box vs violin comparison."""
     # normal distribution, 100 points
     ds1 = stats.norm(0, 5).rvs(100)
     # gamma distribution, 50 points
@@ -347,7 +348,6 @@ def basic_box_and_violin_comparison():
 
 def basic_regression_plots():
     """Regression plot examples."""
-
     # linear regression
     tips = sns.load_dataset("tips")  # example dataset (df)
     tips.head()  # first 5 rows
@@ -421,7 +421,7 @@ def basic_regression_plots():
     # regplot + violinplot (subplots)
     tips = sns.load_dataset("tips")  # example dataset (df)
     tips["tip_pct"] = 100 * (tips["tip"] / tips["total_bill"])
-    fig, (axis1, axis2) = plt.subplots(nrows=1, ncols=2, sharey=True)
+    _, (axis1, axis2) = plt.subplots(nrows=1, ncols=2, sharey=True)
     sns.regplot(x="total_bill", y="tip_pct", data=tips, ax=axis1)
     sns.violinplot(x="size", y="tip_pct", data=tips, ax=axis2, inner="quartile")
     save_output_image("basic-reg-and-violin-plot.png")
@@ -450,7 +450,7 @@ def basic_heatmap():
     df_flight = df_flight.pivot(
         index="month", columns="year", values="passengers"
     )  # pivot table
-    fig, (axis1, axis2, axis3) = plt.subplots(nrows=3, ncols=1)
+    _, (axis1, axis2, axis3) = plt.subplots(nrows=3, ncols=1)
     srs_fpy = df_flight.sum()  # sum of flights per year
     srs_years = pd.Series(srs_fpy.index.values)
     df_years = pd.DataFrame(srs_years)
@@ -496,7 +496,7 @@ def basic_categorical_plot():
     def r1(x):
         return round(x, 1)
 
-    df = get_fair_df()
+    df = _get_fair_df()
     df["Had_Affair"] = df["affairs"].apply(zero_or_one)  # type: ignore # pylint: disable=E1136,E1137
     df_grouped = df.groupby("Had_Affair").mean().applymap(r1)  # type: ignore
 

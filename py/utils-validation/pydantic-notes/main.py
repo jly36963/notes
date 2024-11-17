@@ -1,14 +1,15 @@
-"""Pydantic examples"""
+"""Pydantic examples."""
 
-# pylint: disable=C0115,E0213,E0611
+# ruff: noqa: E501
+# pylint: disable=C0115,E0213,E0611,C0301
 
 import json
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Type, TypeVar
+from typing import Any, TypeVar
 
 import humps
-from pydantic import BaseModel, StrictInt, StrictStr, constr
+from pydantic import BaseModel, StrictInt, StrictStr
 
 # ---
 # Types
@@ -16,6 +17,8 @@ from pydantic import BaseModel, StrictInt, StrictStr, constr
 
 
 class Village(Enum):
+    """The village a ninja is from."""
+
     LEAF = "Leaf"
     SAND = "Sand"
     MIST = "Mist"
@@ -29,6 +32,8 @@ class Village(Enum):
 
 
 class ChakraNature(Enum):
+    """The chakra nature a jutsu uses."""
+
     FIRE = "Fire"
     WATER = "Water"
     WIND = "Wind"
@@ -39,43 +44,53 @@ class ChakraNature(Enum):
 T = TypeVar("T")
 
 
-def model_from_dict(model: Type[T], value: dict) -> T:
+def model_from_dict(model: type[T], value: dict) -> T:
     """Convert dict to pydantic model."""
     snake = humps.decamelize(value)
     return model(**snake)
 
 
-def model_from_json(model: Type[T], json_string: str) -> T:
-    """Convert json to a pydantic model"""
+def model_from_json(model: type[T], json_string: str) -> T:
+    """Convert json to a pydantic model."""
     value = json.loads(json_string)
     return model_from_dict(model, value)
 
 
 class Ninja(BaseModel):
+    """TODO."""
+
     id: StrictStr
-    first_name: constr(strict=True, min_length=2, max_length=50)  # type: ignore [reportInvalidTypeForm]
-    last_name: constr(strict=True, min_length=2, max_length=50)  # type: ignore [reportInvalidTypeForm]
+    first_name: StrictStr
+    last_name: StrictStr
+    # first_name: constr(strict=True, min_length=2, max_length=50)  # type: ignore [reportInvalidTypeForm]
+    # last_name: constr(strict=True, min_length=2, max_length=50)  # type: ignore [reportInvalidTypeForm]
     age: StrictInt
     village: Village
     created_at: StrictStr
-    updated_at: Optional[StrictStr] = None
+    updated_at: StrictStr | None = None
 
 
 class Jutsu(BaseModel):
+    """TODO."""
+
     id: StrictStr
-    name: constr(strict=True, min_length=2, max_length=50)  # type: ignore [reportInvalidTypeForm]
-    description: constr(strict=True, min_length=2, max_length=50)  # type: ignore [reportInvalidTypeForm]
+    name: StrictStr
+    description: StrictStr
     chakra_nature: ChakraNature
     created_at: StrictStr
-    updated_at: Optional[StrictStr] = None
+    updated_at: StrictStr | None = None
 
 
 class NinjaWithJutsus(Ninja):
-    jutsus: Optional[List[Jutsu]] = None
+    """TODO."""
+
+    jutsus: list[Jutsu] | None = None
 
 
 class JutsuWithNinjas(Jutsu):
-    ninjas: Optional[List[Ninja]] = None
+    """TODO."""
+
+    ninjas: list[Ninja] | None = None
 
 
 # ---
@@ -117,7 +132,7 @@ def print_section_title(string: str) -> None:
     print("# ---\n")
 
 
-def pretty_print_results(results: Dict[str, Any]) -> None:
+def pretty_print_results(results: dict[str, Any]) -> None:
     """Pretty print each key/value."""
     for k, v in results.items():
         print(k)

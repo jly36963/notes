@@ -14,7 +14,26 @@ dependencies = [
 dev-dependencies = ["ruff", "pylint"]
 
 [tool.ruff.lint]
-extend-select = ["I"]
+extend-select = [
+    "I",
+    "W",
+    "E",
+    "D",
+    "UP",
+    "B",
+    "SIM",
+    "F",
+    "S",
+    "A",
+    "C4",
+    "ISC",
+    "TCH",
+    "PTH",
+    "PL",
+    "PERF",
+    "FURB",
+    # "RUF",
+]
 
 [tool.pyright]
 typeCheckingMode = "basic"

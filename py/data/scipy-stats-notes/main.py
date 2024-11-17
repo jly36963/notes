@@ -1,8 +1,10 @@
-"""Scipy notes."""
+"""Scipy stats notes."""
+
+# ruff: noqa: E501
 
 import json
-import os
-from typing import Any, Dict, Optional, cast
+from pathlib import Path
+from typing import cast
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -31,9 +33,9 @@ from statsmodels.stats.weightstats import ztest
 # Constants
 # ---
 
-DATA_DIR = os.path.join(".", "data")
-INPUT_DATA_DIR = os.path.join(DATA_DIR, "input")
-OUTPUT_DATA_DIR = os.path.join(DATA_DIR, "output")
+DATA_DIR = Path("data")
+INPUT_DATA_DIR = DATA_DIR / "input"
+OUTPUT_DATA_DIR = DATA_DIR / "output"
 
 
 # ---
@@ -41,7 +43,7 @@ OUTPUT_DATA_DIR = os.path.join(DATA_DIR, "output")
 # ---
 
 
-def main():
+def main():  # noqa: PLR0915
     """Run a bunch of example code snippets."""
     setup()
 
@@ -132,11 +134,11 @@ def main():
 
 
 def setup():
-    """Set defaults for seaborn"""
+    """Set defaults for seaborn."""
     sns.set_theme(style="white", color_codes=True)
 
     for d in [DATA_DIR, INPUT_DATA_DIR, OUTPUT_DATA_DIR]:
-        os.makedirs(d, exist_ok=True)
+        Path.mkdir(d, parents=True, exist_ok=True)
 
     print("Setup complete")
 
@@ -151,12 +153,12 @@ def print_section_title(string: str) -> None:
     print(f"\n{string.upper()}\n")
 
 
-def pretty_print(value: Any) -> None:
+def pretty_print(value) -> None:
     """Pretty print any value in json format."""
     print(json.dumps(value, indent=2, default=str))
 
 
-def pretty_print_results(results: Dict[str, Any]) -> None:
+def pretty_print_results(results: dict) -> None:
     """Pretty print each key/value."""
     for k, v in results.items():
         print(k)
@@ -166,14 +168,14 @@ def pretty_print_results(results: Dict[str, Any]) -> None:
             pretty_print(v)
 
 
-def get_input_path(filename: str) -> str:
+def get_input_path(filename: str) -> Path:
     """Get path to input file."""
-    return os.path.join(INPUT_DATA_DIR, filename)
+    return INPUT_DATA_DIR / filename
 
 
-def get_output_path(filename: str) -> str:
+def get_output_path(filename: str) -> Path:
     """Get path to output file."""
-    return os.path.join(OUTPUT_DATA_DIR, filename)
+    return OUTPUT_DATA_DIR / filename
 
 
 def save_output_image(filename: str) -> None:
@@ -190,10 +192,10 @@ def flatten_multiple_index(df: pd.DataFrame, sep="_") -> pd.DataFrame:
 
 def distplot(
     data: ArrayLike,
-    bins: Optional[ArrayLike] = None,
+    bins: ArrayLike | None = None,
     **kwargs,
 ) -> Axes:
-    """A histplot-based replacement for deprecated distplot."""
+    """Make a distplot. This is a histplot-based replacement for deprecated distplot."""
     # Merge defaults with provided
     kwargs = {
         **kwargs,
@@ -497,11 +499,9 @@ def basic_discrete_poisson_distribution():
 
 
 def coin_toss_experiment(simulations: int, tosses: int) -> pd.Series:
-    """
-    Do a bunch of coin toss simulations.
-    With scipy, just use `st.binom.rvs`.
-    Eg: `arr_coin = coin_toss_experiment(simulations=100, tosses=20)`
-    """
+    """Do a bunch of coin toss simulations."""
+    # With scipy, just use `st.binom.rvs`.
+    # Eg: `arr_coin = coin_toss_experiment(simulations=100, tosses=20)`
     arr_coin = []
     for _ in np.arange(simulations):
         result = np.random.randint(0, 2, tosses).sum()
@@ -510,7 +510,7 @@ def coin_toss_experiment(simulations: int, tosses: int) -> pd.Series:
 
 
 def basic_binomial_distribution_metrics():
-    """Basic frequency distribution metrics (on a binomial distribution)."""
+    """Get basic frequency distribution metrics (on a binomial distribution)."""
     arr: np.ndarray = st.binom.rvs(
         n=20,  # trials
         size=100,  # simulations
@@ -610,7 +610,10 @@ def basic_shapiro_wilk_test() -> None:
 def basic_anderson_darling_test() -> None:
     """Use anderson-darling test to test normality."""
     samples: np.ndarray = st.norm.rvs(size=100, loc=0, scale=1)  # type: ignore
-    res: AndersonResult = st.anderson(samples, dist="norm")  # type: ignore
+    res = cast(
+        AndersonResult,
+        st.anderson(samples, dist="norm"),  # type: ignore
+    )
     print(
         f"samples.mean(): {np.round(samples.mean(), 3)}",
         f"samples.std(): {np.round(samples.std(), 3)}",
@@ -687,11 +690,14 @@ def basic_chi_square_test() -> None:
 def basic_goodness_of_fit_test():
     """TODO."""
     samples: np.ndarray = st.norm.rvs(size=100, loc=0, scale=1)  # type: ignore
-    res: GoodnessOfFitResult = st.goodness_of_fit(
-        dist=st.norm,
-        data=samples,
-        # known_params={"loc": 0, "scale": 1},
-        statistic="ks",  # 'ad',
+    res = cast(
+        GoodnessOfFitResult,
+        st.goodness_of_fit(
+            dist=st.norm,
+            data=samples,
+            # known_params={"loc": 0, "scale": 1},
+            statistic="ks",  # 'ad',
+        ),
     )
     print(
         f"samples.mean(): {np.round(samples.mean(), 3)}",
@@ -824,7 +830,10 @@ def basic_binomial_test():
 
     # args:  outcome, total trials, predicted p-value
     # test null hypothesis -- probablity of success in bernoulli experiment is 'p'
-    res: BinomTestResult = st.binomtest(k=50, n=100, p=0.5)
+    res = cast(
+        BinomTestResult,
+        st.binomtest(k=50, n=100, p=0.5),
+    )
     print(
         "st.binomtest(k=50, n=100, p=0.5)",
         res,

@@ -1,7 +1,6 @@
 """Numpy notes."""
 
 import json
-from typing import Any, Dict
 
 import numpy as np
 import scipy.stats as st
@@ -14,46 +13,46 @@ import scipy.stats as st
 def main():
     """Run a bunch of example code snippets."""
     print_section_title("basic array creation")
-    basic_array_creation()
+    _basic_array_creation()
 
     print_section_title("basic multidimensional array")
-    basic_multidimensional_array()
+    _basic_multidimensional_array()
 
     print_section_title("basic array stats")
-    basic_array_stats()
+    _basic_array_stats()
 
     print_section_title("basic array shaping")
-    basic_array_shaping()
+    _basic_array_shaping()
 
     print_section_title("basic array arithmetic")
-    basic_array_arithmetic()
+    _basic_array_arithmetic()
 
     print_section_title("basic array agg")
-    basic_array_agg()
+    _basic_array_agg()
 
     print_section_title("basic array methods")
-    basic_array_methods()
+    _basic_array_methods()
 
     print_section_title("basic array round")
-    basic_array_round()
+    _basic_array_round()
 
     print_section_title("basic vectorization")
-    basic_vectorization()
+    _basic_vectorization()
 
     print_section_title("basic ufunc unary")
-    basic_ufunc_unary()
+    _basic_ufunc_unary()
 
     print_section_title("basic ufunc binary")
-    basic_ufunc_binary()
+    _basic_ufunc_binary()
 
     print_section_title("basic ufunc comparison")
-    basic_ufunc_comparison()
+    _basic_ufunc_comparison()
 
     print_section_title("basic array sets")
-    basic_array_sets()
+    _basic_array_sets()
 
     print_section_title("basic array bool")
-    basic_array_bool()
+    _basic_array_bool()
 
 
 # ---
@@ -66,12 +65,12 @@ def print_section_title(string: str) -> None:
     print(f"\n{string.upper()}\n")
 
 
-def pretty_print(value: Any) -> None:
+def pretty_print(value) -> None:
     """Pretty print any value in json format."""
     print(json.dumps(value, indent=2, default=str))
 
 
-def pretty_print_results(results: Dict[str, Any]) -> None:
+def pretty_print_results(results: dict) -> None:
     """Pretty print each key/value."""
     for k, v in results.items():
         print(k)
@@ -83,8 +82,7 @@ def pretty_print_results(results: Dict[str, Any]) -> None:
 # ---
 
 
-def basic_array_creation():
-    """Basic np.ndarray creation."""
+def _basic_array_creation():
     pretty_print_results(
         {
             "np.array([1, 2, 3])": np.array([1, 2, 3]),  # np.ndarray
@@ -119,7 +117,7 @@ def basic_array_creation():
     )
 
 
-def basic_multidimensional_array():
+def _basic_multidimensional_array():
     """TODO."""
     arr = np.arange(1, 13).reshape(3, 4)
 
@@ -130,12 +128,18 @@ def basic_multidimensional_array():
             "arr.ndim": arr.ndim,
             "arr.size": arr.size,
             "arr.itemsize": arr.itemsize,
-            "arr[0, 2]": arr[0, 2],  # row 1, col 3
-            "arr[:, 0]": arr[:, 0],  # all rows, col 1
-            "arr[2, :]": arr[2, :],  # row 3, all cols
-            "arr[0:2, 1:3]": arr[0:2, 1:3],  # rows 1 and2, cols 2 and 3
-            "arr[arr > 5]": arr[arr > 5],  # filter with mask
-            "arr[[0,2]]": arr[[0, 2]],  # select specific
+            # row 1, col 3
+            "arr[0, 2]": arr[0, 2],
+            # all rows, col 1
+            "arr[:, 0]": arr[:, 0],
+            # row 3, all cols
+            "arr[2, :]": arr[2, :],
+            # rows 1 and2, cols 2 and 3
+            "arr[0:2, 1:3]": arr[0:2, 1:3],
+            # filter with mask
+            "arr[arr > 5]": arr[arr > 5], # noqa: PLR2004
+            # select specific
+            "arr[[0,2]]": arr[[0, 2]],
         }
     )
 
@@ -145,8 +149,8 @@ def basic_multidimensional_array():
         print(n)
 
 
-def basic_array_stats():
-    """Get stats about the array"""
+def _basic_array_stats():
+    """Get stats about the array."""
     arr: np.ndarray = st.binom.rvs(n=6, size=10, p=0.5)  # type: ignore
 
     pretty_print_results(
@@ -167,7 +171,7 @@ def basic_array_stats():
     )
 
 
-def basic_array_shaping():
+def _basic_array_shaping():
     """Reshaping arrays."""
     arr = np.arange(1, 7)
 
@@ -182,8 +186,8 @@ def basic_array_shaping():
     )
 
 
-def basic_array_arithmetic():
-    """Aggregation functions."""
+def _basic_array_arithmetic():
+    """Show array arithmetic examples."""
     arr = np.arange(1, 6)
 
     pretty_print_results(
@@ -200,8 +204,8 @@ def basic_array_arithmetic():
     )
 
 
-def basic_array_agg():
-    """Aggregation functions."""
+def _basic_array_agg():
+    """Show aggregation function examples."""
     arr = np.arange(9).reshape(3, 3)
     pretty_print_results(
         {
@@ -218,7 +222,7 @@ def basic_array_agg():
     # Also cumprod, cumsum
 
 
-def basic_array_methods():
+def _basic_array_methods():
     """TODO."""
     # tolist, view, fill, reshape/resize, transpose, ravel, squeeze
     # take, sort, nonzero
@@ -231,7 +235,7 @@ def basic_array_methods():
     )
 
 
-def basic_array_round():
+def _basic_array_round():
     """TODO."""
     arr: np.ndarray = st.norm.rvs(size=10, loc=0, scale=10)  # type: ignore
 
@@ -246,7 +250,7 @@ def basic_array_round():
     )
 
 
-def basic_vectorization():
+def _basic_vectorization():
     """Use vectorization to apply a func element-wise."""
     arr = np.arange(11)
 
@@ -263,7 +267,7 @@ def basic_vectorization():
     )
 
 
-def basic_ufunc_unary():
+def _basic_ufunc_unary():
     """Element-wise operations over a single array."""
     arr = np.arange(1, 6)
 
@@ -285,7 +289,7 @@ def basic_ufunc_unary():
     )
 
 
-def basic_ufunc_binary():
+def _basic_ufunc_binary():
     """Element-wise operations over two arrays."""
     arr1 = np.arange(1, 6)
     arr2 = np.ones(5) + np.round(np.random.normal(size=5), 2)
@@ -304,7 +308,7 @@ def basic_ufunc_binary():
     )
 
 
-def basic_ufunc_comparison():
+def _basic_ufunc_comparison():
     """Element-wise comparisons."""
     arr1 = np.arange(1, 6)
     arr2 = arr1.copy() + np.round(np.random.normal(size=5), 2)
@@ -324,7 +328,7 @@ def basic_ufunc_comparison():
     )
 
 
-def basic_array_sets():
+def _basic_array_sets():
     """TODO."""
     pretty_print_results(
         {
@@ -343,21 +347,22 @@ def basic_array_sets():
     )
 
 
-def basic_array_bool():
+def _basic_array_bool():
     """Boolean operations with arrays."""
     arr = np.arange(1, 6)
 
     arr1 = np.array([True, True, False])
     arr2 = np.array([True, False, False])
 
-    # Typically prefer `&` / `|` over `and` / `or`
+    # Use `&` `|`
+    # Don't use `and` `or`
 
     pretty_print_results(
         {
             "arr": arr,
-            "arr >= 3": arr >= 3,
+            "arr >= 3": arr >= 3, # noqa: PLR2004
             "arr[arr % 2 == 0]": arr[arr % 2 == 0],
-            "(arr >= 2) & (arr <= 4)": (arr >= 2) | (arr <= 4),
+            "(arr >= 2) & (arr <= 4)": (arr >= 2) | (arr <= 4), # noqa: PLR2004
             "arr1": arr1,
             "arr2": arr2,
             "np.logical_and(arr1, arr2)": np.logical_and(arr1, arr2),
@@ -368,8 +373,7 @@ def basic_array_bool():
         }
     )
 
-    # TODO
-    # np.logical_not, np.where
+    # TODO: np.logical_not, np.where
 
 
 # ---

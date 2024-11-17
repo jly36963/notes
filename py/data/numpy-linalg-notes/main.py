@@ -5,7 +5,7 @@
 import json
 from itertools import permutations
 from math import cos, sin
-from typing import Any, Dict, Iterable, List, Optional, Tuple, TypeVar, cast
+from typing import Any, Iterable, TypeVar, cast  # noqa: UP035
 
 import numpy as np
 import scipy
@@ -26,12 +26,21 @@ from sympy import Matrix, symbols
 from tenacity import retry
 
 # ---
+# Constants
+# ---
+
+MATRIX_DIM = 2
+"""How many dimensions a matrix should have."""
+VECTOR_DIM = 1
+"""How many dimensions a vector should have."""
+
+# ---
 # Main
 # ---
 
 
 def main():
-    """Numpy linalg examples"""
+    """Numpy linalg examples."""
     print_section_title("Basic vector-scalar arithmetic")
     _basic_vector_scalar_arithmetic()
 
@@ -129,7 +138,7 @@ def main():
     _qr_decomposition()
 
     print_section_title("QR decomposition (2)")
-    qr_decomp_2()
+    _qr_decomp_2()
 
     print_section_title("QR gram-schmidt")
     _qr_gram_schmidt()
@@ -212,7 +221,7 @@ def pretty_print(value: Any) -> None:
     print(json.dumps(value, indent=2, default=str))
 
 
-def pretty_print_results(results: Dict[str, Any]) -> None:
+def pretty_print_results(results: dict[str, Any]) -> None:
     """Pretty print each key/value."""
     for k, v in results.items():
         print(k)
@@ -224,14 +233,14 @@ def pretty_print_results(results: Dict[str, Any]) -> None:
 T = TypeVar("T")
 
 
-def first(input_list: List[T]) -> Optional[T]:
+def first(input_list: list[T]) -> T | None:
     """Return the first item in a list, returns None if empty."""
     if len(input_list) == 0:
         return None
     return input_list[0]
 
 
-def last(input_list: List[T]) -> Optional[T]:
+def last(input_list: list[T]) -> T | None:
     """Return the last item in a list, returns None if empty."""
     if len(input_list) == 0:
         return None
@@ -292,7 +301,7 @@ def _basic_vector_dot_product():
 
     def dot_product_loop(v1: np.ndarray, v2: np.ndarray):
         dp = 0
-        for val1, val2 in zip(v1, v2):
+        for val1, val2 in zip(v1, v2, strict=True):
             dp = dp + (val1 * val2)
         return dp
 
@@ -406,7 +415,7 @@ def _basic_vector_cross_product():
     v2 = np.array([4, -3, 0])
 
     def manual_cross(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
-        """Conceptual example: slow, but good for explaining"""
+        """Conceptual example: slow, but good for explaining."""
         if not v1.size == v2.size:
             raise ValueError("Vectors should be same size for outer product.")
         count = v1.size
@@ -429,7 +438,7 @@ def _basic_vector_cross_product():
 
 def _basic_vector_hermitian_transpose():
     # Hermitian transpose (conjugate transpose)
-    # Transpose of matrix, then taking complex conjugate of each entry (negate imaginary)
+    # Transpose of matrix, then take complex conjugate of each entry (negate imaginary)
     z = complex(3, 4)
     v = np.array([3, 4j, 5 + 2j, complex(2, -5)])
 
@@ -468,10 +477,8 @@ def _basic_unit_vector():
 
 
 def _basic_vector_span():
-    """
-    Linear span: the span of a set of vectors.
-    The linear space formed by all vectors, as linear combinations of the vectors.
-    """
+    # Linear span: the span of a set of vectors.
+    # The linear space formed by all vectors, as linear combinations of the vectors.
     # Vectors v1/v2/v3
     v1 = np.array([1, 2, 3])
     v2 = np.array([4, 5, 6])
@@ -487,7 +494,6 @@ def _basic_vector_span():
         return basis
 
     # TODO: Check this (LLM example)
-
     pretty_print_results(
         {
             "v1": v1,
@@ -584,8 +590,8 @@ def basic_matrix_shift():
     D = np.eye(3) * 2
 
     def matching_squares(A1, A2) -> bool:
-        """Return True if both are square and have same size"""
-        if not (A1.ndim == 2) and (A2.ndim == 2):
+        """Return True if both are square and have same size."""
+        if (A1.ndim != MATRIX_DIM) or (A2.ndim != MATRIX_DIM):
             return False
         m1, n1 = A1.shape
         m2, n2 = A2.shape
@@ -610,9 +616,9 @@ def _transformation_matrices():
 
     def matching_dimensions(A: np.ndarray, v: np.ndarray) -> bool:
         """Check if `A.shape` matches `v.size`."""
-        if A.ndim != 2:
+        if A.ndim != MATRIX_DIM:
             return False
-        if v.ndim != 1:
+        if v.ndim != VECTOR_DIM:
             return False
         m, n = A.shape
         return (m == n) and (m == v.size)
@@ -717,7 +723,7 @@ def _multiplicative_symmetric_matrices():
 
     def _is_symmetric(matrix: np.ndarray):
         shape = matrix.shape
-        if len(shape) != 2:
+        if len(shape) != MATRIX_DIM:
             raise ValueError("Not a matrix")
         m, n = shape
         if m != n:
@@ -754,7 +760,7 @@ def _multiplicative_symmetric_matrices_sympy():
 
     def _is_symmetric_sympy(matrix: Matrix):
         shape = matrix.shape
-        if len(shape) != 2:
+        if len(shape) != MATRIX_DIM:
             raise ValueError("Not a matrix")
         m, n = shape
         if m != n:
@@ -813,13 +819,15 @@ def _matrix_rank():
     A3 = A1.copy()
     A3[:, n - 1] = A3[:, n - 2]
 
+    noise_amplifier = 0.001
+
     # Noise to fix rank-deficiency (rank restored)
     A4 = A3.copy()
-    A4 = A4 + 0.001 * randn(m, n)
+    A4 = A4 + noise_amplifier * randn(m, n)
 
     # Shift to fix rank-deficiency (rank restored)
     A5 = A3.copy()
-    A5 = A5 + 0.001 * np.eye(m, n)
+    A5 = A5 + noise_amplifier * np.eye(m, n)
 
     # Symmetric matrices
     At_A = A1.T @ A1  # (3,3), rank 3
@@ -859,7 +867,7 @@ def _systems_of_equations_and_rref():
     A = randn(4, 3)
 
     def rref(A: np.ndarray) -> np.ndarray:
-        if A.ndim != 2:
+        if A.ndim != MATRIX_DIM:
             raise ValueError("A is not a matrix")
         result = pipe(
             A,
@@ -903,7 +911,7 @@ def _matrix_inverse_row_reduction():
 
     def inv_rr(S: np.ndarray) -> np.ndarray:
         """Get the inverse using row reduction."""
-        if S.ndim != 2:
+        if S.ndim != MATRIX_DIM:
             raise ValueError("Not a matrix")
         rows, cols = S.shape
         if rows != cols:
@@ -1035,10 +1043,9 @@ def _qr_decomposition():
     )
 
 
-def qr_decomp_2():
+def _qr_decomp_2():
     # QR decomposition where A = QR
     # AtA = RtR
-
     A = np.random.randn(4, 3)
     Q, R = np.linalg.qr(A)
 
@@ -1061,7 +1068,7 @@ def _qr_gram_schmidt():
 
     def gs(A: np.ndarray) -> np.ndarray:
         """Do gram-schmidt procedure on a matrix."""
-        if A.ndim != 2:
+        if A.ndim != MATRIX_DIM:
             raise ValueError("A is not a matrix")
         m, n = A.shape
         Q = np.zeros((m, n))
@@ -1077,7 +1084,7 @@ def _qr_gram_schmidt():
             Q[:, i] = Q[:, i] / norm(Q[:, i])
         return Q
 
-    def gs_qr_decomp(A: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def gs_qr_decomp(A: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Do QR decomposition using gram-schmidt."""
         Q = gs(A)
         R = np.triu(Q.T @ A)
@@ -1253,12 +1260,13 @@ def _eigendecomposition():
     eigenvalues, eigenvectors = eig(S)
 
     def check(S: np.ndarray, eigenvalues: np.ndarray, eigenvectors: np.ndarray) -> None:
-        """Check eigenvalues/eigenvectors"""
+        """Check eigenvalues/eigenvectors."""
         # Eigenvectors are columns, transpose or use `eigenvectors[:, idx]`
-        for eigenval, eigenvec in zip(eigenvalues, eigenvectors.T):
+        for eigenval, eigenvec in zip(eigenvalues, eigenvectors.T, strict=True):
             # lambda @ v = w
             # lambda @ v = A @ v
-            assert np.allclose(eigenval * eigenvec, S @ eigenvec)
+            if not np.allclose(eigenval * eigenvec, S @ eigenvec):
+                raise RuntimeError("Eigenvalues/eigenvectors don't match")
 
     check(S, eigenvalues, eigenvectors)
 
@@ -1332,7 +1340,8 @@ def _eigenvectors_of_related_symmetric_matrices():
     _, V = np.linalg.eig(S)
     _, V3 = np.linalg.eig(S @ S @ S)
 
-    assert np.allclose(V, V3)
+    if not np.allclose(V, V3):
+        raise RuntimeError("Vectors are not close in value.")
     print("...")
 
 
@@ -1352,15 +1361,15 @@ def _orthogonal_eigenvectors_of_symmetric_matrices():
         combinations = permutations(range(size), 2)
         for idx1, idx2 in combinations:
             vec1, vec2 = vectors[idx1], vectors[idx2]
-            assert np.round(np.dot(vec1, vec2), 2) == 0
+            if not np.round(np.dot(vec1, vec2), 2) == 0:
+                raise ValueError("Vectors are not all orthogonal.")
 
     check_orthogonality(eigenvectors.T)
     print("...")
 
 
 def _eigenlayers():
-    """Reconstruct matrix from eigenlayers (outer products)"""
-
+    """Reconstruct matrix from eigenlayers (outer products)."""
     # Symmetric matrix S
     A = np.random.randn(4, 4)
     S = A.T @ A
@@ -1375,7 +1384,8 @@ def _eigenlayers():
         layer = np.outer(P[:, i] * D[i, i], P[:, i].T)
         S2 += layer
 
-    assert np.allclose(S, S2)
+    if not np.allclose(S, S2):
+        raise RuntimeError("Matrices are not close in value")
     print("...")
 
 
@@ -1414,7 +1424,7 @@ def _svd():
 
 
 def _svd_spectral_theory():
-    def _get_g2d(shape: Tuple[int, int]) -> np.ndarray:
+    def _get_g2d(shape: tuple[int, int]) -> np.ndarray:
         """Define a 2D Gaussian for smoothing."""
         k = int(sum(shape) / 4)
         xx = np.linspace(-3, 3, k)
@@ -1448,7 +1458,7 @@ def _svd_spectral_theory():
 def _svd_to_percent_variance():
     """Get percent-change-normalized singular values."""
 
-    def _get_g2d(shape: Tuple[int, int]) -> np.ndarray:
+    def _get_g2d(shape: tuple[int, int]) -> np.ndarray:
         """Define a 2D Gaussian for smoothing."""
         k = int(sum(shape) / 4)
         xx = np.linspace(-3, 3, k)
@@ -1505,8 +1515,9 @@ def _svd_pseudoinverse():
 
     def invert_singular_values(s: np.ndarray) -> np.ndarray:
         s_inv = s.copy()
-        s_inv[s_inv > 0.001] **= -1
-        s_inv[s_inv <= 0.001] *= 0
+        threshold = 0.001
+        s_inv[s_inv > threshold] **= -1
+        s_inv[s_inv <= threshold] *= 0
         S_inv = np.zeros(A.shape)
         S_inv[:max_rank, :max_rank] = np.diag(s_inv)
         return S_inv
@@ -1592,7 +1603,7 @@ def _pca():
         covariance_matrix = np.cov(data.T)
         eigenvalues, eigenvectors = eig(covariance_matrix)
         eigenvalue_indices = eigenvalues.argsort()[::-1]
-        eigenvalues_sorted = np.real(eigenvalues[eigenvalue_indices])
+        # eigenvalues_sorted = np.real(eigenvalues[eigenvalue_indices])
         eigenvectors_sorted = eigenvectors[:, eigenvalue_indices]
         data_pca = data_normalized.dot(eigenvectors_sorted[:, :top_components])
         return data_pca
@@ -1603,7 +1614,7 @@ def _pca():
     data_normalized = normalize(data)
     data_pca = pca(data_normalized, 2)
 
-    # Not sure if the results are correct
+    # TODO: Not sure if the results are correct
     pretty_print_results(
         {
             "data": np.round(data, 2),
