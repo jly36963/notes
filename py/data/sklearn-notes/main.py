@@ -1,7 +1,7 @@
 """Scikit-learn (sklearn) examples."""
 
 import math
-from typing import Any, List, Tuple, cast
+from typing import Any, cast
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,8 +18,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
-# from sklearn.utils._bunch import Bunch
-
 # ---
 # Main
 # ---
@@ -27,41 +25,38 @@ from sklearn.tree import DecisionTreeClassifier
 
 def main():
     """Scikit-learn examples."""
-    # print_section_title("basic linear regression numpy")
-    # basic_linear_regression_numpy()
-
     print_section_title("basic_multivariate_linear_regression")
-    basic_multivariate_linear_regression()
+    _basic_multivariate_linear_regression()
 
     print_section_title("basic_linear_regression train test split")
-    basic_linear_regression_train_test_split()
+    _basic_linear_regression_train_test_split()
 
     print_section_title("basic_logistic_function")
-    basic_logistic_function()
+    _basic_logistic_function()
 
     print_section_title("basic_logistic_regression")
-    basic_logistic_regression()
+    _basic_logistic_regression()
 
     print_section_title("basic_logistic_regression_multiclass")
-    basic_logistic_regression_multiclass()
+    _basic_logistic_regression_multiclass()
 
     print_section_title("basic_classification_knn_multiclass")
-    basic_classification_knn_multiclass()
+    _basic_classification_knn_multiclass()
 
     print_section_title("basic_svm_classification")
-    basic_svm_classification()
+    _basic_svm_classification()
 
     print_section_title("basic_svm_classification_different_models")
-    basic_svm_classification_different_models()
+    _basic_svm_classification_different_models()
 
     print_section_title("basic_gaussian_naive_bayes_classification_multiclass")
-    basic_gaussian_naive_bayes_classification_multiclass()
+    _basic_gaussian_naive_bayes_classification_multiclass()
 
     print_section_title("basic_decision_trees")
-    basic_decision_trees()
+    _basic_decision_trees()
 
     print_section_title("basic_random_forest_regression")
-    basic_random_forest_regression()
+    _basic_random_forest_regression()
 
 
 # ---
@@ -74,32 +69,32 @@ def print_section_title(string: str) -> None:
     print(f"\n{string.upper()}\n")
 
 
-def get_housing_df() -> pd.DataFrame:
+def _get_housing_df() -> pd.DataFrame:
     """Get housing data and return it as a df."""
     housing = cast(dict, fetch_california_housing())
     data: np.ndarray = housing["data"]
-    columns: List[str] = housing["feature_names"]
+    columns: list[str] = housing["feature_names"]
     price = housing["target"]
     df = pd.DataFrame(data, columns=columns)
     df["Price"] = price
     return df
 
 
-def get_iris_df() -> pd.DataFrame:
+def _get_iris_df() -> pd.DataFrame:
     iris = load_iris()
     data: np.ndarray = iris["data"]  # type: ignore
-    columns: List[str] = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
+    columns: list[str] = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
     df = pd.DataFrame(data, columns=columns)
     target: np.ndarray = iris["target"]  # type: ignore
     df["Species"] = target
     return df
 
 
-def train_test_split_2d(
+def _train_test_split_2d(
     x: pd.DataFrame,
     y: pd.Series,
     **kwargs,
-) -> Tuple[Any, Any, Any, Any]:
+) -> tuple[Any, Any, Any, Any]:
     x_train, x_test, y_train, y_test = train_test_split(x, y, **kwargs)
     print(type(x_train), type(x_test), type(y_train), type(x_test))
     return x_train, x_test, y_train, y_test
@@ -110,8 +105,8 @@ def train_test_split_2d(
 # ---
 
 
-def basic_multivariate_linear_regression():
-    df = get_housing_df()
+def _basic_multivariate_linear_regression():
+    df = _get_housing_df()
 
     lr = LinearRegression()
     lr.fit(
@@ -130,11 +125,11 @@ def basic_multivariate_linear_regression():
     print(coef_df)
 
 
-def basic_linear_regression_train_test_split():
-    df = get_housing_df()
+def _basic_linear_regression_train_test_split():
+    df = _get_housing_df()
     X = df.drop(columns=["Price"])
     y = df["Price"]
-    x_train, x_test, y_train, y_test = train_test_split_2d(X, y)
+    x_train, x_test, y_train, y_test = _train_test_split_2d(X, y)
 
     lr = LinearRegression()
     lr.fit(X=x_train, y=y_train)
@@ -164,7 +159,7 @@ def basic_linear_regression_train_test_split():
 # ---
 
 
-def basic_logistic_function():
+def _basic_logistic_function():
     def logistic(t):
         # sigmoid function is a special case of the logistic function (1 / (1 + e^-t))
         return 1.0 / (1 + math.exp((-1.0) * t))
@@ -175,9 +170,9 @@ def basic_logistic_function():
     plt.title("Logistic Function Example")
 
 
-def basic_logistic_regression():
+def _basic_logistic_regression():
     df = cast(pd.DataFrame, sm.datasets.fair.load_pandas().data)
-    df["Had_Affair"] = df["affairs"].apply(lambda x: 0 if x == 0 else 1)
+    df["Had_Affair"] = df["affairs"].apply(lambda x: 0 if x == 0 else 1)  # pylint: disable=E1137,E1136
     # df2 = df.groupby("Had_Affair").mean().applymap(lambda x: round(x, 1))
     sns.catplot(
         x="rate_marriage",
@@ -188,8 +183,8 @@ def basic_logistic_regression():
     )
 
 
-def basic_logistic_regression_multiclass():
-    df = get_iris_df()
+def _basic_logistic_regression_multiclass():
+    df = _get_iris_df()
     species_map = {0: "Setosa", 1: "Versicolour", 2: "Virginica"}
     df["Species"] = df["Species"].replace(species_map)
     sns.pairplot(df, hue="Species")
@@ -199,7 +194,7 @@ def basic_logistic_regression_multiclass():
 
     x = df.drop(columns=["Species"])
     y = df["Species"]
-    x_train, x_test, y_train, y_test = train_test_split_2d(
+    x_train, x_test, y_train, y_test = _train_test_split_2d(
         x,
         y,
         test_size=0.3,
@@ -214,8 +209,8 @@ def basic_logistic_regression_multiclass():
     print(f"accuracy: {accuracy}")
 
 
-def basic_classification_knn_multiclass():
-    df = get_iris_df()
+def _basic_classification_knn_multiclass():
+    df = _get_iris_df()
     species_map = {0: "Setosa", 1: "Versicolour", 2: "Virginica"}
     df["Species"] = df["Species"].replace(species_map)
     sns.pairplot(df, hue="Species")
@@ -223,7 +218,7 @@ def basic_classification_knn_multiclass():
 
     x = df.drop(columns=["Species"])
     y = df["Species"]
-    x_train, x_test, y_train, y_test = train_test_split_2d(
+    x_train, x_test, y_train, y_test = _train_test_split_2d(
         x,
         y,
         test_size=0.3,
@@ -237,8 +232,8 @@ def basic_classification_knn_multiclass():
     print(f"accuracy: {accuracy}")
 
 
-def basic_svm_classification():
-    df = get_iris_df()
+def _basic_svm_classification():
+    df = _get_iris_df()
     species_map = {0: "Setosa", 1: "Versicolour", 2: "Virginica"}
     df["Species"] = df["Species"].replace(species_map)
     sns.pairplot(df, hue="Species")
@@ -246,7 +241,7 @@ def basic_svm_classification():
 
     x = df.drop(columns=["Species"])
     y = df["Species"]
-    x_train, x_test, y_train, y_test = train_test_split_2d(
+    x_train, x_test, y_train, y_test = _train_test_split_2d(
         x,
         y,
         test_size=0.3,
@@ -264,8 +259,8 @@ def basic_svm_classification():
     print(f"accuracy: {round(accuracy, 2)}")
 
 
-def basic_svm_classification_different_models():
-    df = get_iris_df()
+def _basic_svm_classification_different_models():
+    df = _get_iris_df()
     species_map = {0: "Setosa", 1: "Versicolour", 2: "Virginica"}
     df["Species"] = df["Species"].replace(species_map)
     sns.pairplot(df, hue="Species")
@@ -273,7 +268,7 @@ def basic_svm_classification_different_models():
 
     x = df.drop(columns=["Species"])
     y = df["Species"]
-    x_train, x_test, y_train, y_test = train_test_split_2d(
+    x_train, x_test, y_train, y_test = _train_test_split_2d(
         x,
         y,
         test_size=0.3,
@@ -305,10 +300,10 @@ def basic_svm_classification_different_models():
     print(f"acc_lin_svc: {acc_lin_svc}")
 
 
-def basic_gaussian_naive_bayes_classification_multiclass():
+def _basic_gaussian_naive_bayes_classification_multiclass():
     # operates with the naive assumption that every feature is independent of each other
 
-    df = get_iris_df()
+    df = _get_iris_df()
     species_map = {0: "Setosa", 1: "Versicolour", 2: "Virginica"}
     df["Species"] = df["Species"].replace(species_map)
     sns.pairplot(df, hue="Species")
@@ -316,7 +311,7 @@ def basic_gaussian_naive_bayes_classification_multiclass():
 
     x = df.drop(columns=["Species"])
     y = df["Species"]
-    x_train, x_test, y_train, y_test = train_test_split_2d(
+    x_train, x_test, y_train, y_test = _train_test_split_2d(
         x,
         y,
         test_size=0.3,
@@ -330,13 +325,13 @@ def basic_gaussian_naive_bayes_classification_multiclass():
     print(f"accuracy: {round(accuracy, 2)}")
 
 
-def basic_decision_trees():
+def _basic_decision_trees():
     # decision trees
     # - ensemble learner -- ensemble of weak learners
     # - binary questions
 
     # make blobs (random clusters of points)
-    x, y = make_blobs(
+    x, y, *_ = make_blobs(
         n_samples=500,
         centers=4,
         random_state=8,
@@ -356,7 +351,7 @@ def basic_decision_trees():
     # TODO: complete
 
 
-def basic_random_forest_regression():
+def _basic_random_forest_regression():
     def add_noise(x):
         noise = 0.2 * np.random.rand(len(x))
         return np.sin(5 * x) + np.sin(0.5 * x) + noise

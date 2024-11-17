@@ -29,6 +29,29 @@ wheels = [
 ]
 
 [[package]]
+name = "ffmpeg-notes"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "ffmpeg-python" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pylint" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "ffmpeg-python", specifier = ">=0.2.0" }]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pylint" },
+    { name = "ruff" },
+]
+
+[[package]]
 name = "ffmpeg-python"
 version = "0.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -117,29 +140,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/a1/16/8969304f25bcd0e4af1778342e63b715e91db8a2dbb51807acd858cba915/ruff-0.7.2-py3-none-win32.whl", hash = "sha256:fa993cfc9f0ff11187e82de874dfc3611df80852540331bc85c75809c93253a8", size = 8650268 },
     { url = "https://files.pythonhosted.org/packages/d9/18/c4b00d161def43fe5968e959039c8f6ce60dca762cec4a34e4e83a4210a0/ruff-0.7.2-py3-none-win_amd64.whl", hash = "sha256:dd8800cbe0254e06b8fec585e97554047fb82c894973f7ff18558eee33d1cb88", size = 9433693 },
     { url = "https://files.pythonhosted.org/packages/7f/7b/c920673ac01c19814dd15fc617c02301c522f3d6812ca2024f4588ed4549/ruff-0.7.2-py3-none-win_arm64.whl", hash = "sha256:bb8368cd45bba3f57bb29cbb8d64b4a33f8415d0149d2655c5c8539452ce7760", size = 8735845 },
-]
-
-[[package]]
-name = "seaborn-notes"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "ffmpeg-python" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pylint" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "ffmpeg-python", specifier = ">=0.2.0" }]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pylint" },
-    { name = "ruff" },
 ]
 
 [[package]]

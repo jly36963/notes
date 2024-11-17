@@ -1,9 +1,9 @@
 """Polars notes."""
 
 import json
-import os
 from io import StringIO
-from typing import List, TypedDict, TypeVar
+from pathlib import Path
+from typing import TypedDict, TypeVar
 
 import polars as pl
 
@@ -17,23 +17,6 @@ import polars as pl
 # py-polars
 # https://pola-rs.github.io/polars/py-polars/html/reference/
 
-# ---
-# Utils
-# ---
-
-T = TypeVar("T")
-
-
-def chunk(list_: List[T], size: int) -> List[List[T]]:
-    """
-    Split array into chunks of a specified size. Remainder will be in final chunk.
-
-    Example:
-        >>> chunk([1, 2, 3, 4, 5], 2)
-        [[1, 2], [3, 4], [5]]
-    """
-    return [list_[i: i + size] for i in range(0, len(list_), size)]  # fmt: skip
-
 
 # ---
 # Main
@@ -41,58 +24,76 @@ def chunk(list_: List[T], size: int) -> List[List[T]]:
 
 
 def main():
+    """Run polars examples."""
     print_section_title("Basic series")
-    basic_series()
+    _basic_series()
 
     print_section_title("Basic df creation")
-    basic_df_creation()
+    _basic_df_creation()
 
     print_section_title("Basic df details")
-    basic_df_details()
+    _basic_df_details()
 
     print_section_title("Basic df export")
-    basic_df_export()
+    _basic_df_export()
 
     print_section_title("Basic df selection")
-    basic_df_selection()
+    _basic_df_selection()
 
     print_section_title("Basic df math")
-    basic_df_math()
+    _basic_df_math()
 
     print_section_title("Basic df agg")
-    basic_df_agg()
+    _basic_df_agg()
 
     print_section_title("Basic df mutation")
-    basic_df_mutation()
+    _basic_df_mutation()
 
     # TODO: fix
     # print_section_title("Basic df mutation (in-place)")
-    # basic_df_mutation2()
+    # _basic_df_mutation2()
 
     print_section_title("Basic df combine")
-    basic_df_combine()
+    _basic_df_combine()
 
     print_section_title("Basic df add columns")
-    basic_df_add_columns()
+    _basic_df_add_columns()
 
     print_section_title("Basic df mask")
-    basic_df_mask()
+    _basic_df_mask()
 
     print_section_title("Basic df null")
-    basic_df_null()
+    _basic_df_null()
 
     # TODO: fix
     # print_section_title("Basic df grouping")
-    # basic_df_grouping()
+    # _basic_df_grouping()
 
     print_section_title("Basic df partition")
-    basic_df_partition()
+    _basic_df_partition()
 
     print_section_title("Basic df column aggregation")
-    basic_df_column_aggregation()
+    _basic_df_column_aggregation()
 
     print_section_title("Basic df expressions")
-    basic_df_expressions()
+    _basic_df_expressions()
+
+
+# ---
+# Utils
+# ---
+
+T = TypeVar("T")
+
+
+def chunk(list_: list[T], size: int) -> list[list[T]]:
+    """Split array into chunks of a specified size. Remainder will be in final chunk."""
+    return [list_[i: i + size] for i in range(0, len(list_), size)]  # fmt: skip
+
+
+def print_section_title(s: str) -> None:
+    """Convert a string to uppercase and wrap with newlines."""
+    print(f"\n{s.upper()}\n")
 
 
 # ---
@@ -100,7 +101,7 @@ def main():
 # ---
 
 
-def basic_series():
+def _basic_series():
     # Attributes
     s1 = pl.Series("s1", range(1, 6))
     print("s1:", s1.to_list())
@@ -170,7 +171,7 @@ def basic_series():
 # ---
 
 
-def basic_df_creation():
+def _basic_df_creation():
     # Columns: Dict[str, Any]
     data = {
         "a": [1, 6, 11, 16, 21],
@@ -202,8 +203,9 @@ def basic_df_creation():
     print(df)
 
 
-def basic_df_details():
-    df = pl.read_csv(os.path.join("data", "iris.csv"))
+def _basic_df_details():
+    input_fp = Path("data") / "iris.csv"
+    df = pl.read_csv(input_fp)
 
     print("columns: ", df.columns)
     print("dtypes: ", df.dtypes)
@@ -216,7 +218,7 @@ def basic_df_details():
     print("estimated_size('kb'): ", round(df.estimated_size("kb"), 2))
 
 
-def basic_df_export():
+def _basic_df_export():
     data = chunk(list(range(1, 26)), 5)
     df = pl.DataFrame(data, schema=["a", "b", "c", "d", "e"], orient="row")
 
@@ -224,7 +226,8 @@ def basic_df_export():
 
     # CSV
     csv = df.write_csv()
-    assert isinstance(csv, str)
+    if not isinstance(csv, str):
+        raise TypeError("csv should be a string")
     print(csv)
 
     df = pl.read_csv(StringIO(csv))
@@ -232,7 +235,8 @@ def basic_df_export():
 
     # JSON
     df_json = df.write_json()
-    assert isinstance(df_json, str)
+    if not isinstance(df_json, str):
+        raise TypeError("df_json should be a string")
     print(df_json)
 
     df = pl.DataFrame(json.loads(df_json))
@@ -246,14 +250,15 @@ def basic_df_export():
     print(df.head())
 
 
-def basic_df_selection():
+def _basic_df_selection():
     # indexing
     # https://pola-rs.github.io/polars-book/user-guide/howcani/selecting_data/selecting_data_indexing.html
 
-    df = pl.read_csv("./data/iris.csv")
+    input_fp = Path("data") / "iris.csv"
+    df = pl.read_csv(input_fp)
 
     print("row:", df.row(0))  # Tuple
-    print("row (obj):", dict(zip(df.columns, df.row(0))))  # Dict
+    print("row (obj):", dict(zip(df.columns, df.row(0), strict=True)))  # Dict
     print("slice:", df.slice(1, 2))  # Df
     print("column:", df.get_column("species").head())  # Series # Also `df['species']`
     print("columns:", df.select(["sepal_width", "sepal_length"]).head())  # Df
@@ -278,7 +283,7 @@ def basic_df_selection():
     # TODO: select(more advanced)
 
 
-def basic_df_math():
+def _basic_df_math():
     data = chunk(list(range(1, 26)), 5)
     df = pl.DataFrame(data, schema=["a", "b", "c", "d", "e"], orient="row")
 
@@ -292,8 +297,9 @@ def basic_df_math():
     print(df.select(pl.all().map_elements(lambda x: x / 2)))
 
 
-def basic_df_agg():
-    df = pl.read_csv(os.path.join("data", "iris.csv"))
+def _basic_df_agg():
+    input_fp = Path("data") / "iris.csv"
+    df = pl.read_csv(input_fp)
 
     print("max: ", df.max())
     print("min: ", df.min())
@@ -305,7 +311,7 @@ def basic_df_agg():
     print("quantile (50%): ", df.quantile(0.5))
 
 
-def basic_df_mutation():
+def _basic_df_mutation():
     data = chunk(list(range(1, 26)), 5)
     df = pl.DataFrame(data, schema=["a", "b", "c", "d", "e"], orient="row")
 
@@ -316,7 +322,7 @@ def basic_df_mutation():
     print("sample: ", df.sample(fraction=0.5))
 
 
-# def basic_df_mutation2():
+# def _basic_df_mutation2():
 #     data = chunk(list(range(1, 26)), 5)
 #     df = pl.DataFrame(data, schema=["a", "b", "c", "d", "e"], orient="row")
 
@@ -326,7 +332,7 @@ def basic_df_mutation():
 #     print(df)
 
 
-def basic_df_combine():
+def _basic_df_combine():
     data = chunk(list(range(1, 26)), 5)
     df = pl.DataFrame(data, schema=["a", "b", "c", "d", "e"], orient="row")
 
@@ -338,15 +344,17 @@ def basic_df_combine():
     print(f"vstack: {df.vstack(df.clone())}")
 
 
-def basic_df_add_columns():
+def _basic_df_add_columns():
     class Ninja(TypedDict):
+        """TODO."""
+
         id: str
         first_name: str
         last_name: str
         age: int
 
     # Records
-    ninja_records: List[Ninja] = [
+    ninja_records: list[Ninja] = [
         {
             "id": "fa6c4c93-fb64-4cd7-8b21-0e5e0f717fd6",
             "first_name": "Kakashi",
@@ -393,8 +401,9 @@ def basic_df_add_columns():
     print(df.head())
 
 
-def basic_df_mask():
-    df = pl.read_csv(os.path.join("data", "iris.csv"))
+def _basic_df_mask():
+    input_fp = Path("data") / "iris.csv"
+    df = pl.read_csv(input_fp)
     df = df.sample(10)
 
     print("species is setosa", (df["species"] == "Setosa").to_list())
@@ -403,13 +412,14 @@ def basic_df_mask():
     print("is_unique", df.is_unique().to_list())
 
 
-def basic_df_null():
+def _basic_df_null():
     # TODO: fill_null, null_count, drop_null
     print("TODO")
 
 
-# def basic_df_grouping():
-#     df = pl.read_csv(os.path.join("data", "iris.csv"))
+# def _basic_df_grouping():
+#     input_fp = Path("data") / "iris.csv"
+#     df = pl.read_csv(input_fp)
 
 #     # Can be grouped by List[str]
 #     grouped = df.group_by("species")
@@ -424,8 +434,9 @@ def basic_df_null():
 #         print("count:", group_df.height)
 
 
-def basic_df_partition():
-    df = pl.read_csv(os.path.join("data", "iris.csv"))
+def _basic_df_partition():
+    input_fp = Path("data") / "iris.csv"
+    df = pl.read_csv(input_fp)
 
     # Can be partitioned by List[str]
     groups = df.partition_by("species", maintain_order=True)
@@ -435,8 +446,9 @@ def basic_df_partition():
         print("count:", group_df.height)
 
 
-def basic_df_column_aggregation():
-    df = pl.read_csv(os.path.join("data", "iris.csv"))
+def _basic_df_column_aggregation():
+    input_fp = Path("data") / "iris.csv"
+    df = pl.read_csv(input_fp)
     df = df.sample(fraction=0.25)
 
     print(f"max: {df['sepal_length'].max()}")
@@ -456,7 +468,7 @@ def basic_df_column_aggregation():
     # sin, cos, tan, arcsin, arccos, arctan
 
 
-def basic_df_expressions():
+def _basic_df_expressions():
     print("TODO")
     # Context
     # https://pola-rs.github.io/polars-book/user-guide/dsl/contexts.html
@@ -465,10 +477,6 @@ def basic_df_expressions():
     # https://pola-rs.github.io/polars-book/user-guide/dsl/window_functions.html
     # Expression API
     # https://pola-rs.github.io/polars-book/user-guide/dsl/api.html
-
-
-def print_section_title(s: str):
-    print(f"\n{s.upper()}\n")
 
 
 if __name__ == "__main__":
