@@ -188,6 +188,12 @@ def main():
     print_section_title("condition number")
     _condition_number()
 
+    print_section_title("quadratic form")
+    _quadratic_form()
+
+    print_section_title("PCA")
+    _pca()
+
 
 # ---
 # Utils
@@ -1549,6 +1555,59 @@ def _condition_number():
             "get_condition_number(A)": get_condition_number(A),
             "get_condition_number(A2)": get_condition_number(A2),
             "get_condition_number(A3)": get_condition_number(A3),
+        }
+    )
+
+
+def _quadratic_form():
+    S = [[1, 3, -2], [0, 3, 4], [-5, -2, 4]]
+    w = np.transpose([[-2, 4, 3]])
+    # compute the quadratic form
+    # marix and vector produce scalar value
+    quadratic_form = np.transpose(w) @ S @ w
+    print(f"quadratic_form: {quadratic_form}")
+
+
+def _pca():
+    def create_data(m: int, n: int) -> np.ndarray:
+        # time vector (radian units)
+        t = np.linspace(0, 6 * np.pi, n)
+        # Create relationship across channels (imposing covariance)
+        channel_relationship = np.sin(np.linspace(0, 2 * np.pi, m))
+        # initialize data
+        data = np.zeros((m, n))
+        # create dataset
+        for i in np.arange(0, m):
+            data[i, :] = np.sin(t) * channel_relationship[i]
+        # add noise
+        data = data + np.random.randn(m, n) / 3
+        return data
+
+    def normalize(data: np.ndarray) -> np.ndarray:
+        data_centered: np.ndarray = data - data.mean()
+        data_normalized: np.ndarray = data_centered / data_centered.std()
+        return data_normalized
+
+    def pca(data: np.ndarray, top_components: int) -> np.ndarray:
+        covariance_matrix = np.cov(data.T)
+        eigenvalues, eigenvectors = eig(covariance_matrix)
+        eigenvalue_indices = eigenvalues.argsort()[::-1]
+        eigenvalues_sorted = np.real(eigenvalues[eigenvalue_indices])
+        eigenvectors_sorted = eigenvectors[:, eigenvalue_indices]
+        data_pca = data_normalized.dot(eigenvectors_sorted[:, :top_components])
+        return data_pca
+
+    m, n = (4, 10)  # channels, time points
+    # m, n = (20, 1000)  # channels, time points
+    data = create_data(m, n)
+    data_normalized = normalize(data)
+    data_pca = pca(data_normalized, 2)
+
+    # Not sure if the results are correct
+    pretty_print_results(
+        {
+            "data": np.round(data, 2),
+            "data_pca": np.round(data_pca, 2),
         }
     )
 
