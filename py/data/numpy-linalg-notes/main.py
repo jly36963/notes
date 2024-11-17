@@ -16,6 +16,7 @@ from numpy.linalg import (
     matrix_power,
     matrix_rank,
     norm,
+    pinv,
     qr,
     solve,
     svd,
@@ -171,6 +172,21 @@ def main():
 
     print_section_title("SVD")
     _svd()
+
+    print_section_title("SVD spectral theory")
+    _svd_spectral_theory()
+
+    print_section_title("SVD to percent variance")
+    _svd_to_percent_variance()
+
+    print_section_title("pseudoinverse")
+    _pseudoinverse()
+
+    print_section_title("SVD pseudoinverse")
+    _svd_pseudoinverse()
+
+    print_section_title("condition number")
+    _condition_number()
 
 
 # ---
@@ -723,7 +739,7 @@ def _multiplicative_symmetric_matrices_sympy():
         """Return the alphabet as a tuple of symbols."""
         return symbols("a b c d e f g h i j k l m n o p q r s t u v w x y z", real=True)
 
-    a, b, c, d, e, f, _, h, _, _, _, l, m, n, o, _, q, r, _, t, _, _, _, _, _, _ = (
+    a, b, c, d, e, f, _, h, _, _, _, l, m, n, o, _, q, r, _, t, _, _, _, _, _, _ = (  # noqa: E741
         get_symbols()
     )
     # symmetric and constant-diagonal matrices
@@ -1387,6 +1403,152 @@ def _svd():
         {
             "A": A,
             "A2": np.round(A2, 2),
+        }
+    )
+
+
+def _svd_spectral_theory():
+    def _get_g2d(shape: Tuple[int, int]) -> np.ndarray:
+        """Define a 2D Gaussian for smoothing."""
+        k = int(sum(shape) / 4)
+        xx = np.linspace(-3, 3, k)
+        [X, Y] = np.meshgrid(xx, xx)
+        g2d = np.exp(-(X**2 + Y**2) / (k / 8))
+        return g2d
+
+    # Rectangular matrix A
+    shape = (40, 30)
+    g2d = _get_g2d(shape)
+    A = scipy.signal.convolve2d(np.random.randn(*shape), g2d, "same")
+
+    # SVD
+    # Singular values for A are related to the eigenvalues of At_A and A_At
+    U, s, Vt = np.linalg.svd(A)
+
+    # Reconstruct
+    Sigma = np.zeros(shape)
+    max_rank = min(*shape)
+    Sigma[:max_rank, :max_rank] = np.diag(s)
+    A2 = U @ Sigma @ Vt
+
+    pretty_print_results(
+        {
+            "A": A,
+            "A2": np.round(A2, 2),
+        }
+    )
+
+
+def _svd_to_percent_variance():
+    """Get percent-change-normalized singular values."""
+
+    def _get_g2d(shape: Tuple[int, int]) -> np.ndarray:
+        """Define a 2D Gaussian for smoothing."""
+        k = int(sum(shape) / 4)
+        xx = np.linspace(-3, 3, k)
+        [X, Y] = np.meshgrid(xx, xx)
+        g2d = np.exp(-(X**2 + Y**2) / (k / 8))
+        return g2d
+
+    # Rectangular matrix A
+    shape = (40, 30)
+    g2d = _get_g2d(shape)
+    A = scipy.signal.convolve2d(np.random.randn(*shape), g2d, "same")
+
+    # SVD
+    _, s, _ = np.linalg.svd(A)
+    percent_variance = 100 * s / np.sum(s)
+    print(f"percent_variance: {np.round(percent_variance, 2)}")
+
+
+def _pseudoinverse():
+    # # pseudoinverse for square matrix
+
+    # Singular matrix
+    A = np.arange(1, 10, 1).reshape(3, 3)
+    A_rank = matrix_rank(A)
+    # A = np.random.randn(4, 4)
+
+    # Singular matrix won't have an inverse
+    # A @ A_inv != I
+    A_inv = inv(A)
+
+    # A @ pinv(A) != I
+    # pinv(A) @ A != I
+    A_pinv = pinv(A)
+
+    pretty_print_results(
+        {
+            "A": A,
+            "A_rank": A_rank,
+            "A_inv": A_inv,
+            "A_inv @ A": A_inv @ A,
+            "A @ A_inv": A @ A_inv,
+            "A_pinv": np.round(A_pinv, 3),
+            "A_pinv @ A": np.round(A_pinv @ A, 3),
+            "A @ A_pinv": np.round(A @ A_pinv, 3),
+        }
+    )
+
+
+def _svd_pseudoinverse():
+    # Singular matrix
+    A = np.arange(1, 10, 1).reshape(3, 3)
+    max_rank = min(*A.shape)
+    A_rank = matrix_rank(A)
+
+    def invert_singular_values(s: np.ndarray) -> np.ndarray:
+        s_inv = s.copy()
+        s_inv[s_inv > 0.001] **= -1
+        s_inv[s_inv <= 0.001] *= 0
+        S_inv = np.zeros(A.shape)
+        S_inv[:max_rank, :max_rank] = np.diag(s_inv)
+        return S_inv
+
+    U, s, Vt = svd(A)
+    V = Vt.T
+    S_inv = invert_singular_values(s)
+    A_pinv = V @ S_inv.T @ U.T
+
+    pretty_print_results(
+        {
+            "A": A,
+            "A_rank": A_rank,
+            "max_rank": max_rank,
+            "A_pinv": np.round(A_pinv, 3),
+            "A_pinv @ A": np.round(A_pinv @ A, 3),
+            "pinv(A) @ A": np.round(pinv(A) @ A, 3),
+        }
+    )
+
+
+def _condition_number():
+    """Show condition number for different matrices."""
+    m = 40
+    n = 40
+
+    # define a 2D Gaussian for smoothing
+    k = int((m + n) / 4)
+    xx = np.linspace(-3, 3, k)
+    [X, Y] = np.meshgrid(xx, xx)
+    g2d = np.exp(-(X**2 + Y**2) / (k / 8))
+
+    # matrix
+    A = np.random.randn(m, m)
+    A2 = scipy.signal.convolve2d(np.random.randn(m, n), g2d, "same")
+    A3 = np.arange(1, 10, 1).reshape(3, 3)
+
+    def get_condition_number(A: np.ndarray) -> np.float64:
+        _, s, _ = svd(A)
+        condition_number = s[0] / s[-1]  # max(s) / min(s)
+        return condition_number
+
+    pretty_print_results(
+        {
+            # Larger condition numbers indicate ill-conditioned matrix
+            "get_condition_number(A)": get_condition_number(A),
+            "get_condition_number(A2)": get_condition_number(A2),
+            "get_condition_number(A3)": get_condition_number(A3),
         }
     )
 
