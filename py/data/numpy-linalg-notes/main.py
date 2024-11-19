@@ -2,7 +2,6 @@
 
 # pylint: disable=C0103
 
-import json
 from itertools import permutations
 from math import cos, sin
 from typing import Any, Iterable, TypeVar, cast  # noqa: UP035
@@ -214,11 +213,6 @@ def print_section_title(string: str) -> None:
     print("\n# ---")
     print(f"# {string.upper()}")
     print("# ---\n")
-
-
-def pretty_print(value: Any) -> None:
-    """Pretty print any value in json format."""
-    print(json.dumps(value, indent=2, default=str))
 
 
 def pretty_print_results(results: dict[str, Any]) -> None:
@@ -1046,7 +1040,7 @@ def _qr_decomposition():
 def _qr_decomp_2():
     # QR decomposition where A = QR
     # AtA = RtR
-    A = np.random.randn(4, 3)
+    A = randn(4, 3)
     Q, R = np.linalg.qr(A)
 
     At_A = A.T @ A
@@ -1090,7 +1084,7 @@ def _qr_gram_schmidt():
         R = np.triu(Q.T @ A)
         return Q, R
 
-    A = np.random.randn(4, 3)
+    A = randn(4, 3)
     Q1, R1 = qr(A)  # reduced
     Q2, R2 = qr(A, "complete")  # complete
     Q3, R3 = gs_qr_decomp(A)  # Q/R dimensions will be like `reduced`
@@ -1115,7 +1109,7 @@ def _qr_gram_schmidt():
 
 def _inverse_via_qr_decomposition():
     # Square for this example so that `inv(A)` works
-    A = np.random.randn(3, 3)
+    A = randn(3, 3)
 
     # Inverse via QR decomposition
     # A = QR
@@ -1149,8 +1143,8 @@ def _lease_squares_row_reduction():
     # beta is (m, 1) vector of constants (solution vector)
 
     # X is design matrix, y is outcome measures
-    X = np.random.randn(5, 3)
-    y = np.random.randn(5, 1)
+    X = randn(5, 3)
+    y = randn(5, 1)
 
     def mat_to_ndarray(matrix: Matrix) -> np.ndarray:
         res = pipe(
@@ -1231,8 +1225,8 @@ def _least_squares_example():
 
 def _least_squares_via_qr_decomp():
     # X @ Beta = y
-    X = np.random.randn(10, 3)
-    y = np.random.randn(10, 1)
+    X = randn(10, 3)
+    y = randn(10, 1)
 
     # QR least squares solution
     Q, R = qr(X)
@@ -1281,7 +1275,7 @@ def _eigendecomposition():
 
 def _diagonalization():
     # Symmetric matrix S
-    A = np.round(10 * np.random.randn(4, 4))
+    A = np.round(10 * randn(4, 4))
     S = A.T @ A
     eigenvalues, eigenvectors = eig(S)
     # Reconstruct `A = P @ D @ inv(P)`
@@ -1349,7 +1343,7 @@ def _orthogonal_eigenvectors_of_symmetric_matrices():
     # eigendecomposition of symmetric matrices
     # symmetric matrices -- eigenvectors are all orthogonal to each other
 
-    A = np.random.randn(4, 4)
+    A = randn(4, 4)
     S = A.T @ A
 
     _, eigenvectors = eig(S)
@@ -1371,7 +1365,7 @@ def _orthogonal_eigenvectors_of_symmetric_matrices():
 def _eigenlayers():
     """Reconstruct matrix from eigenlayers (outer products)."""
     # Symmetric matrix S
-    A = np.random.randn(4, 4)
+    A = randn(4, 4)
     S = A.T @ A
     eigenvalues, eigenvectors = eig(S)
     # get P and D (for P @ D @ inv(P))
@@ -1435,7 +1429,7 @@ def _svd_spectral_theory():
     # Rectangular matrix A
     shape = (40, 30)
     g2d = _get_g2d(shape)
-    A = scipy.signal.convolve2d(np.random.randn(*shape), g2d, "same")
+    A = scipy.signal.convolve2d(randn(*shape), g2d, "same")
 
     # SVD
     # Singular values for A are related to the eigenvalues of At_A and A_At
@@ -1469,7 +1463,7 @@ def _svd_to_percent_variance():
     # Rectangular matrix A
     shape = (40, 30)
     g2d = _get_g2d(shape)
-    A = scipy.signal.convolve2d(np.random.randn(*shape), g2d, "same")
+    A = scipy.signal.convolve2d(randn(*shape), g2d, "same")
 
     # SVD
     _, s, _ = np.linalg.svd(A)
@@ -1483,7 +1477,7 @@ def _pseudoinverse():
     # Singular matrix
     A = np.arange(1, 10, 1).reshape(3, 3)
     A_rank = matrix_rank(A)
-    # A = np.random.randn(4, 4)
+    # A = randn(4, 4)
 
     # Singular matrix won't have an inverse
     # A @ A_inv != I
@@ -1551,8 +1545,8 @@ def _condition_number():
     g2d = np.exp(-(X**2 + Y**2) / (k / 8))
 
     # matrix
-    A = np.random.randn(m, m)
-    A2 = scipy.signal.convolve2d(np.random.randn(m, n), g2d, "same")
+    A = randn(m, m)
+    A2 = scipy.signal.convolve2d(randn(m, n), g2d, "same")
     A3 = np.arange(1, 10, 1).reshape(3, 3)
 
     def get_condition_number(A: np.ndarray) -> np.float64:
@@ -1591,7 +1585,7 @@ def _pca():
         for i in np.arange(0, m):
             data[i, :] = np.sin(t) * channel_relationship[i]
         # add noise
-        data = data + np.random.randn(m, n) / 3
+        data = data + randn(m, n) / 3
         return data
 
     def normalize(data: np.ndarray) -> np.ndarray:
