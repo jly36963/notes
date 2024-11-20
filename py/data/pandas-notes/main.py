@@ -156,30 +156,6 @@ def pretty_print_results(results: dict) -> None:
                 print()
 
 
-T = TypeVar("T")
-
-
-def first(input_list: list[T]) -> T | None:
-    """Return the first item in a list, returns None if empty."""
-    if len(input_list) == 0:
-        return None
-    return input_list[0]
-
-
-def last(input_list: list[T]) -> T | None:
-    """Return the last item in a list, returns None if empty."""
-    if len(input_list) == 0:
-        return None
-    return input_list[-1]
-
-
-def pipe(value, *funcs):
-    """Unary piping."""
-    for func in funcs:
-        value = func(value)
-    return value
-
-
 # ---
 # Examples
 # ---
@@ -277,7 +253,7 @@ def _series_string():
     def _decode(srs: pd.Series, encoding="utf-8") -> pd.Series:
         return srs.str.decode(encoding)
 
-    # TODO: extract, find, get, join, normalize, pad, splice, split, zfill
+    # Also: extract, find, get, join, normalize, pad, splice, split, zfill
 
     pretty_print_results(
         {
@@ -383,6 +359,8 @@ def _series_discrete_math():
     srs1 = pd.Series(range(1, 6))
     srs2 = pd.Series(list(reversed(range(1, 6))))
     joined = pd.concat([srs1, srs2]).reset_index(drop=True)
+
+    T = TypeVar("T")
 
     def intersection(i1: Iterable[T], i2: Iterable[T]) -> list[T]:
         return list(set(i1).intersection(i2))
@@ -575,6 +553,8 @@ def _dataframe_updating():
     df = df.rename(columns={"first_name": "firstName", "last_name": "lastName"})
     df = df.sort_values(by=["age"], ascending=[False])
     df = df.set_index("id")
+
+    # TODO: map, applymap, apply
 
     pretty_print_results({"df": df})
 
