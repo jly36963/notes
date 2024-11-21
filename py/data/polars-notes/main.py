@@ -7,17 +7,6 @@ import numpy as np
 import polars as pl
 
 # ---
-# About
-# ---
-
-# polars user guide
-# https://pola-rs.github.io/polars-book/user-guide/introduction.html
-
-# py-polars
-# https://pola-rs.github.io/polars/py-polars/html/reference/
-
-
-# ---
 # Types
 # ---
 
@@ -102,13 +91,6 @@ def main():
 # ---
 # Utils
 # ---
-
-T = TypeVar("T")
-
-
-def chunk(list_: list[T], size: int) -> list[list[T]]:
-    """Split array into chunks of a specified size. Remainder will be in final chunk."""
-    return [list_[i: i + size] for i in range(0, len(list_), size)]  # fmt: skip
 
 
 def print_section_title(string: str) -> None:
@@ -297,6 +279,8 @@ def _series_discrete_math():
     s2 = pl.Series("s2", list(reversed(range(1, 6))))
     joined = pl.concat([s1, s2])
 
+    T = TypeVar("T")
+
     def intersection(i1: Iterable[T], i2: Iterable[T]) -> list[T]:
         return list(set(i1).intersection(i2))
 
@@ -331,7 +315,7 @@ def _series_missing_data():
     s1 = pl.Series([0, None, 2, None, 4, None])
     s2 = pl.Series(range(0, 6))
 
-    # NOTE: null/nan are different in polars
+    # NOTE: null/nan have different meaning in polars
 
     pretty_print_results(
         {

@@ -1,0 +1,53 @@
+[project]
+name = 'hf-notes'
+version = "0.1.0"
+# No torch built for python 3.12 or 3.13 (MacOS Intel)
+requires-python = ">=3.11"
+dependencies = [
+    "numpy<2",
+    "pandas<2",
+    "pydantic>=2.9.2",
+    # Last torch wheel built is v2.2.2 (MacOS Intel)
+    "torch==2.2.2",
+    "datasets>=3.1.0",
+    "evaluate>=0.4.3",
+    "transformers>=4.46.3",
+    # Required for "Helsinki-NLP/opus-mt-tc-big-en-es"
+    "sentencepiece>=0.2.0",
+]
+
+[tool.uv]
+dev-dependencies = ["ruff", "pylint"]
+
+[tool.ruff.lint]
+extend-select = [
+    "I",
+    "W",
+    "E",
+    "D",
+    "UP",
+    "B",
+    "SIM",
+    "F",
+    "S",
+    "A",
+    "C4",
+    "ISC",
+    "TCH",
+    "PTH",
+    "PL",
+    "PERF",
+    "FURB",
+    # "RUF",
+]
+
+[tool.uv.sources]
+torch = { index = "pytorch" }
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.pyright]
+typeCheckingMode = "basic"
