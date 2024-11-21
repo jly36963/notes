@@ -1,9 +1,16 @@
 """Hugging face examples."""
 
+from pathlib import Path
 from typing import TypedDict, cast
 
 import pandas as pd
-from torch import Tensor
+import torch
+from diffusers import (
+    DiffusionPipeline,  # type: ignore [reportPrivateImportUsage]
+    StableDiffusionPipeline,  # type: ignore [reportPrivateImportUsage]
+    StableDiffusionUpscalePipeline,  # type: ignore [reportPrivateImportUsage]
+)
+from PIL import Image
 from transformers import (
     BatchEncoding,
     MBart50TokenizerFast,
@@ -21,7 +28,11 @@ from transformers import (
 # Constants
 # ---
 
-# ...
+DATA_DIR = Path("data")
+INPUT_DIR = DATA_DIR / "input"
+OUTPUT_DIR = DATA_DIR / "output"
+
+SKIP_EXPENSIVE_COMPUTE = True
 
 # ---
 # Main
@@ -30,12 +41,18 @@ from transformers import (
 
 def main():
     """Run HF examples."""
+    _setup()
+
     examples = {
+        # # Transfomer
         "text classification basics": _text_classification_basics,
         "text generation basics": _text_generation_basics,
         "translation basics": _translation_basics,
         "translation custom": _translation_custom,
         "summarization basics": _summarization_basics,
+        # # Diffuser
+        "diffusion basics": _diffusion_basics,
+        "diffusion upscale": _diffusion_upscale,
     }
 
     for title, example_fn in examples.items():
@@ -67,9 +84,26 @@ def pretty_print_results(results: dict) -> None:
                 print()
 
 
+def get_input_path(filename: str) -> Path:
+    """Get path to input file."""
+    return INPUT_DIR / filename
+
+
+def get_output_path(filename: str) -> Path:
+    """Get path to output file."""
+    return OUTPUT_DIR / filename
+
+
 # ---
 # Examples
 # ---
+
+
+def _setup():
+    for d in [DATA_DIR, INPUT_DIR, OUTPUT_DIR]:
+        Path.mkdir(d, parents=True, exist_ok=True)
+
+    print("Setup complete")
 
 
 def _text_classification_basics():
@@ -171,9 +205,15 @@ def _translation_custom():
 
     def translate(text: str) -> str:
         batch_encoding = cast(BatchEncoding, tokenizer(text, return_tensors="pt"))
-        input_ids = cast(Tensor, batch_encoding.input_ids)
-        attention_mask = cast(Tensor, batch_encoding.attention_mask)
-        result = cast(Tensor, model.generate(input_ids, attention_mask=attention_mask))
+        input_ids = cast(torch.Tensor, batch_encoding.input_ids)
+        attention_mask = cast(torch.Tensor, batch_encoding.attention_mask)
+        result = cast(
+            torch.Tensor,
+            model.generate(
+                input_ids,
+                attention_mask=attention_mask,
+            ),
+        )
         return tokenizer.decode(result[0], skip_special_tokens=True)
 
     values: list[str] = [
@@ -237,6 +277,60 @@ def _summarization_basics():
     for val, result in zip(values, results, strict=True):
         print(val)
         print(result)
+
+
+def _diffusion_basics():
+    if SKIP_EXPENSIVE_COMPUTE:
+        print("...")
+        return
+
+    model_name = "stable-diffusion-v1-5/stable-diffusion-v1-5"
+    diffusion_pipeline = cast(
+        StableDiffusionPipeline,
+        DiffusionPipeline.from_pretrained(model_name, use_safetensors=True),
+    )
+
+    values: list[str] = ["A starfish in Picasso style."]
+
+    def get_image(text: str):
+        result = diffusion_pipeline(text)
+        return result
+
+    results = [get_image(v) for v in values]
+
+    for val, result in zip(values, results, strict=True):
+        print(val)
+        print(type(result))
+
+
+def _diffusion_upscale():
+    if SKIP_EXPENSIVE_COMPUTE:
+        print("...")
+        return
+
+    model_name = "stabilityai/stable-diffusion-x4-upscaler"
+    model_revision = "fp16"
+    upscale_pipeline = cast(
+        StableDiffusionUpscalePipeline,
+        StableDiffusionUpscalePipeline.from_pretrained(
+            model_name,
+            variant=model_revision,
+            torch_dtype=torch.float32,
+        ),
+    )
+
+    def upscale_image(
+        prompt: str,
+        input_fp: Path,
+        output_fp: Path,
+    ):
+        img = Image.open(str(input_fp)).convert("RGB")
+        img_upscaled = upscale_pipeline(prompt=prompt, image=img).images[0]  # type: ignore
+        img_upscaled.save(output_fp)
+
+    input_fp = Path(get_input_path("polaris.jpg"))
+    output_fp = Path(get_output_path("polaris.jpg"))
+    upscale_image("A cool colored pattern", input_fp, output_fp)
 
 
 # ---

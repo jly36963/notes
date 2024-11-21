@@ -4,16 +4,22 @@ version = "0.1.0"
 # No torch built for python 3.12 or 3.13 (MacOS Intel)
 requires-python = ">=3.11"
 dependencies = [
-    "numpy<2",
-    "pandas<2",
+    # Must have numpy/pandas lt 2
+    "numpy==1.26.4",
+    "pandas==1.5.3",
     "pydantic>=2.9.2",
     # Last torch wheel built is v2.2.2 (MacOS Intel)
     "torch==2.2.2",
     "datasets>=3.1.0",
     "evaluate>=0.4.3",
     "transformers>=4.46.3",
+    "diffusers>=0.31.0",
     # Required for "Helsinki-NLP/opus-mt-tc-big-en-es"
     "sentencepiece>=0.2.0",
+    # Makes "stable-diffusion" faster
+    "accelerate>=1.1.1",
+    # Recommended by "transformers/models/marian" warning
+    "sacremoses>=0.1.1",
 ]
 
 [tool.uv]
