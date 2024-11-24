@@ -1,6 +1,7 @@
 """Numpy linalg notes."""
 
-# pylint: disable=C0103
+# pylint: disable=C0103,C0302,C0301
+# ruff: noqa: E501
 
 from itertools import permutations
 from math import cos, sin
@@ -40,167 +41,68 @@ VECTOR_DIM = 1
 
 def main():
     """Numpy linalg examples."""
-    print_section_title("Basic vector-scalar arithmetic")
-    _basic_vector_scalar_arithmetic()
+    examples = {
+        # Vector
+        "Basic vector-scalar arithmetic": _basic_vector_scalar_arithmetic,
+        "Basic vector-vector arithmetic": _basic_vector_vector_arithmetic,
+        "Basic vector dot product": _basic_vector_dot_product,
+        "Basic vector dot product (perspectives)": _basic_vector_dot_product_perspectives,
+        "Basic vector length": _basic_vector_length,
+        "Basic vector hadamard multiplication": _basic_vector_hadamard_multiplication,
+        "Basic vector outer product": _basic_vector_outer_product,
+        "Basic vector cross product": _basic_vector_cross_product,
+        "Basic vector hermitian transpose": _basic_vector_hermitian_transpose,
+        "Basic unit vector": _basic_unit_vector,
+        "Basic vector span": _basic_vector_span,
+        # Matrix
+        "Basic matrix creation": _basic_matrix_creation,
+        "Basic matrix-scalar arithmetic": _basic_matrix_scalar_arithmetic,
+        "Basic matrix-vector arithmetic": _basic_matrix_vector_arithmetic,
+        "diagonal and trace": _diagonal_and_trace,
+        "Basic matrix shift": basic_matrix_shift,
+        "transformation matrices": _transformation_matrices,
+        "transformation matrices (rotation)": _transform_matrices_rotation,
+        "matrix-matrix arithmetic": _basic_matrix_matrix_arithmetic,
+        "matmul order of operations": _matmul_order_of_operations,
+        "additive symmetric matrices": _additive_symmetric_matrices,
+        "multiplicative symmetric matrices": _multiplicative_symmetric_matrices,
+        "multiplicative symmetric matrices (sympy)": _multiplicative_symmetric_matrices_sympy,
+        "frobenius dot product": _frobenius_dot_product,
+        "matrix rank": _matrix_rank,
+        "systems of equations and rref": _systems_of_equations_and_rref,
+        "matrix inverse": _matrix_inverse,
+        "matrix inverse (row reduction)": _matrix_inverse_row_reduction,
+        "matrix inverse one-sided (left and right)": _basic_matrix_one_sided_inverse,
+        "Projections in R2": _r2_projections,
+        "Projections in RN": _rn_projections,
+        "QR decomposition": _qr_decomposition,
+        "QR decomposition (2)": _qr_decomp_2,
+        "QR gram-schmidt": _qr_gram_schmidt,
+        "inverse via QR decomposition": _inverse_via_qr_decomposition,
+        "sherman morrison inverse": _sherman_morrison_inverse,
+        "least squares row reduction": _lease_squares_row_reduction,
+        "least squares example": _least_squares_example,
+        "least squares via qr decomp": _least_squares_via_qr_decomp,
+        "eigendecomposition": _eigendecomposition,
+        "diagonalization": _diagonalization,
+        "matrix powers via diagonalization": _matrix_powers_via_diagonalization,
+        "eigenvectors of related symmetric matrices": _eigenvectors_of_related_symmetric_matrices,
+        "orthogonal eigenvectors of symmetric matrices": _orthogonal_eigenvectors_of_symmetric_matrices,
+        "eigenlayers": _eigenlayers,
+        "generalized decomposition": _generalized_decomposition,
+        "SVD": _svd,
+        "SVD spectral theory": _svd_spectral_theory,
+        "SVD to percent variance": _svd_to_percent_variance,
+        "pseudoinverse": _pseudoinverse,
+        "SVD pseudoinverse": _svd_pseudoinverse,
+        "condition number": _condition_number,
+        "quadratic form": _quadratic_form,
+        "PCA": _pca,
+    }
 
-    print_section_title("Basic vector-vector arithmetic")
-    _basic_vector_vector_arithmetic()
-
-    print_section_title("Basic vector dot product")
-    _basic_vector_dot_product()
-
-    print_section_title("Basic vector dot product (perspectives)")
-    _basic_vector_dot_product_perspectives()
-
-    print_section_title("Basic vector length")
-    _basic_vector_length()
-
-    print_section_title("Basic vector hadamard multiplication")
-    _basic_vector_hadamard_multiplication()
-
-    print_section_title("Basic vector outer product")
-    _basic_vector_outer_product()
-
-    print_section_title("Basic vector cross product")
-    _basic_vector_cross_product()
-
-    print_section_title("Basic vector hermitian transpose")
-    _basic_vector_hermitian_transpose()
-
-    print_section_title("Basic unit vector")
-    _basic_unit_vector()
-
-    print_section_title("Basic vector span")
-    _basic_vector_span()
-
-    print_section_title("Basic matrix creation")
-    _basic_matrix_creation()
-
-    print_section_title("Basic matrix-scalar arithmetic")
-    _basic_matrix_scalar_arithmetic()
-
-    print_section_title("Basic matrix-vector arithmetic")
-    _basic_matrix_vector_arithmetic()
-
-    print_section_title("diagonal and trace")
-    _diagonal_and_trace()
-
-    print_section_title("Basic matrix shift")
-    basic_matrix_shift()
-
-    print_section_title("transformation matrices")
-    _transformation_matrices()
-
-    print_section_title("transformation matrices (rotation)")
-    _transform_matrices_rotation()
-
-    print_section_title("matrix-matrix arithmetic")
-    _basic_matrix_matrix_arithmetic()
-
-    print_section_title("matmul order of operations")
-    _matmul_order_of_operations()
-
-    print_section_title("additive symmetric matrices")
-    _additive_symmetric_matrices()
-
-    print_section_title("multiplicative symmetric matrices")
-    _multiplicative_symmetric_matrices()
-
-    print_section_title("multiplicative symmetric matrices (sympy)")
-    _multiplicative_symmetric_matrices_sympy()
-
-    print_section_title("frobenius dot product")
-    _frobenius_dot_product()
-
-    print_section_title("matrix rank")
-    _matrix_rank()
-
-    print_section_title("systems of equations and rref")
-    _systems_of_equations_and_rref()
-
-    print_section_title("matrix inverse")
-    _matrix_inverse()
-
-    print_section_title("matrix inverse (row reduction)")
-    _matrix_inverse_row_reduction()
-
-    print_section_title("matrix inverse one-sided (left and right)")
-    _basic_matrix_one_sided_inverse()
-
-    print_section_title("Projections in R2")
-    _r2_projections()
-
-    print_section_title("Projections in RN")
-    _rn_projections()
-
-    print_section_title("QR decomposition")
-    _qr_decomposition()
-
-    print_section_title("QR decomposition (2)")
-    _qr_decomp_2()
-
-    print_section_title("QR gram-schmidt")
-    _qr_gram_schmidt()
-
-    print_section_title("inverse via QR decomposition")
-    _inverse_via_qr_decomposition()
-
-    print_section_title("sherman morrison inverse")
-    _sherman_morrison_inverse()
-
-    print_section_title("least squares row reduction")
-    _lease_squares_row_reduction()
-
-    print_section_title("least squares example")
-    _least_squares_example()
-
-    print_section_title("least squares via qr decomp")
-    _least_squares_via_qr_decomp()
-
-    print_section_title("eigendecomposition")
-    _eigendecomposition()
-
-    print_section_title("diagonalization")
-    _diagonalization()
-
-    print_section_title("matrix powers via diagonalization")
-    _matrix_powers_via_diagonalization()
-
-    print_section_title("eigenvectors of related symmetric matrices")
-    _eigenvectors_of_related_symmetric_matrices()
-
-    print_section_title("orthogonal eigenvectors of symmetric matrices")
-    _orthogonal_eigenvectors_of_symmetric_matrices()
-
-    print_section_title("eigenlayers")
-    _eigenlayers()
-
-    print_section_title("generalized decomposition")
-    _generalized_decomposition()
-
-    print_section_title("SVD")
-    _svd()
-
-    print_section_title("SVD spectral theory")
-    _svd_spectral_theory()
-
-    print_section_title("SVD to percent variance")
-    _svd_to_percent_variance()
-
-    print_section_title("pseudoinverse")
-    _pseudoinverse()
-
-    print_section_title("SVD pseudoinverse")
-    _svd_pseudoinverse()
-
-    print_section_title("condition number")
-    _condition_number()
-
-    print_section_title("quadratic form")
-    _quadratic_form()
-
-    print_section_title("PCA")
-    _pca()
+    for title, example_fn in examples.items():
+        print_section_title(title)
+        example_fn()
 
 
 # ---
@@ -1395,7 +1297,7 @@ def _generalized_decomposition():
     Bv = B @ eigenvectors[:, 1]
     BinvAv = inv(B) @ A @ eigenvectors[:, 1]
 
-    # TODO: incomplete
+    # This example is incomplete...
     print("...")
 
 
