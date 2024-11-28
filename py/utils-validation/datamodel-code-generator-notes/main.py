@@ -10,8 +10,11 @@ from typing import TypeVar
 from datamodel_code_generator import DataModelType, InputFileType, generate
 from graphql import (
     DefinitionNode,
+    DirectiveDefinitionNode,
     DocumentNode,
+    EnumTypeDefinitionNode,
     GraphQLSchema,
+    ScalarTypeDefinitionNode,
     ast_to_dict,
     build_ast_schema,
     concat_ast,
@@ -157,6 +160,7 @@ def merge_gql_files(filepaths: list[Path]) -> GraphQLSchema | None:
     )
     # Merge the similar/repeat definitions
     joined_document_node = merge_similar_definitions(joined_document_node)
+    joined_document_node = strip_field_comments(joined_document_node)
     # Build schema from AST
     schema = build_ast_schema(
         joined_document_node,
@@ -186,6 +190,22 @@ def merge_similar_definitions(document_node: DocumentNode) -> DocumentNode:
             def_map[key] = curr_def
 
     document_node.definitions = tuple(def_map.values())
+    return document_node
+
+
+def strip_field_comments(document_node: DocumentNode) -> DocumentNode:
+    """Remove field comments (to make types simpler)."""
+    for curr_def in document_node.definitions:
+        if isinstance(
+            curr_def,
+            ScalarTypeDefinitionNode | DirectiveDefinitionNode | EnumTypeDefinitionNode,
+        ):
+            # Skip node if no 'field' attr
+            continue
+        fields: list = curr_def.fields  # type: ignore
+        for field in fields:
+            if field.description:
+                field.description = None
     return document_node
 
 
