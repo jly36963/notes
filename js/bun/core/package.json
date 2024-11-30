@@ -1,14 +1,18 @@
 {
-  "name": "bun-notes",
-  "module": "index.ts",
-  "type": "module",
-  "scripts": {
-    "start": "bun run index.ts"
-  },
-  "devDependencies": {
-    "bun-types": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  }
+	"name": "bun-notes",
+	"module": "index.ts",
+	"type": "module",
+	"scripts": {
+		"start": "bun run index.ts",
+		"dev": "bun run index.ts"
+	},
+	"devDependencies": {
+		"bun-types": "latest",
+		"@biomejs/biome": "^1.9.4",
+		"@types/node": "^22.10.1",
+		"gts": "^6.0.2"
+	},
+	"peerDependencies": {
+		"typescript": "^5.7.2"
+	}
 }

@@ -1,0 +1,18 @@
+dev:
+	deno run  --allow-all --watch mod.ts
+
+build:
+	mkdir -p build
+	deno bundle mod.ts ./build/mod.js
+
+run:
+	deno run --allow-all ./build/mod.js
+
+lint:
+    deno lint
+
+format:
+    deno fmt
+
+test:
+    deno test

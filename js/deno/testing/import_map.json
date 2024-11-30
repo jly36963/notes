@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "testing/": "https://deno.land/std@0.182.0/testing/",
+    "async": "https://deno.land/std@0.182.0/async/mod.ts"
+  }
+}

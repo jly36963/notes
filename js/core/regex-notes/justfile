@@ -1,0 +1,8 @@
+install:
+	pnpm install
+
+dev:
+	pnpm dev
+
+run:
+	pnpm start

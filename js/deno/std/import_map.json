@@ -1,0 +1,22 @@
+{
+  "imports": {
+    "async": "jsr:@std/async",
+    "bytes": "jsr:@std/bytes",
+    "cli": "jsr:@std/cli",
+    "collections": "jsr:@std/collections",
+    "crypto": "jsr:@std/crypto",
+    "datetime": "jsr:@std/datetime",
+    "dotenv": "jsr:@std/dotenv",
+    "encoding": "jsr:@std/encoding",
+    "fmt": "jsr:@std/fmt",
+    "io": "jsr:@std/io",
+    "fs": "jsr:@std/fs",
+    "flags": "jsr:@std/flags",
+    "log": "jsr:@std/log",
+    "path": "jsr:@std/path",
+    "streams": "jsr:@std/streams",
+    "tar": "jsr:@std/tar",
+    "testing": "jsr:@std/testing",
+    "uuid": "jsr:@std/uuid"
+  }
+}

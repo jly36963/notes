@@ -1,0 +1,20 @@
+{
+  "deno.enable": true,
+  // "deno.importMap": "import_map.json",
+  "[typescript]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[javascript]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[markdown]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[json]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  }
+}

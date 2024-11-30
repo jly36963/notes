@@ -48,7 +48,8 @@ const basicDenoFiles = async () => {
   // Encoder/Decoder
   // ---
 
-  let bytes: Uint8Array, text: string;
+  let bytes: Uint8Array;
+  let text: string;
 
   // Create and write to file
   const encoder = new TextEncoder();
@@ -129,7 +130,7 @@ const basicDenoPermissions = async () => {
 // TODO: globals -- console, fetch, crypto
 
 const printSectionTitle = (title: string) => {
-  console.log("\n" + title.toUpperCase() + "\n");
+  console.log(`\n${title.toUpperCase()}\n`);
 };
 
 const main = async () => {

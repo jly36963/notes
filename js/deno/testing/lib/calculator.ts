@@ -1,10 +1,6 @@
 import { delay } from "async";
 
 export default class Calculator {
-  // ---
-  // Basic
-  // ---
-
   /** Add two numbers */
   add(a: number, b: number): number {
     return a + b;
@@ -21,10 +17,6 @@ export default class Calculator {
   divide(a: number, b: number): number {
     return a / b;
   }
-
-  // ---
-  // Aggregations
-  // ---
 
   /** Get the sum of the provided numbers */
   getSum(numbers: number[]): number {
@@ -46,17 +38,13 @@ export default class Calculator {
     }
     const mean = this.getMean(numbers);
     const sumOfSquaredDiffs = numbers.reduce(
-      (acc, curr) => acc + Math.pow(curr - mean, 2),
+      (acc, curr) => acc + (curr - mean) ** 2,
       0,
     );
     const populationSize = completeSample ? n : n - 1;
     const std = Math.sqrt(sumOfSquaredDiffs / populationSize);
     return std;
   }
-
-  // ---
-  // Random
-  // ---
 
   /** Pretend to get a random integer asynchronously */
   async randInt(max: number): Promise<number> {

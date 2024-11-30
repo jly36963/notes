@@ -1,13 +1,17 @@
 {
-	"name": "ts-notes",
+	"name": "js-regex-notes",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.ts",
 	"type": "module",
+	"main": "index.js",
+	"engines": {
+		"node": ">=23"
+	},
 	"scripts": {
 		"start": "node --experimental-strip-types index.ts ",
 		"dev": "node --experimental-strip-types index.ts "
 	},
+	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {

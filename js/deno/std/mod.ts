@@ -1,36 +1,18 @@
+import { abortable, deadline, debounce, delay } from "async";
+import { concat, endsWith, repeat, startsWith } from "bytes";
+import { parseArgs } from "cli/parse-args";
 import {
-  abortable,
-  Buffer,
   chunk,
-  concat,
-  config,
-  copy,
-  crypto,
-  dayOfYear,
-  deadline,
-  debounce,
-  decode,
   deepMerge,
-  delay,
-  difference,
   distinct,
   distinctBy,
-  encode,
-  endsWith,
-  ensureDir,
-  ensureFile,
   filterEntries,
   filterKeys,
   filterValues,
   findSingle,
   firstNotNullishOf,
-  flagsParse,
-  format,
-  groupBy,
-  he,
   includesValue,
   intersect,
-  log,
   mapEntries,
   mapKeys,
   mapNotNullish,
@@ -39,23 +21,111 @@ import {
   maxOf,
   minBy,
   minOf,
-  parse,
   partition,
-  posix,
-  readAll,
-  readLines,
-  repeat,
   sample,
   sortBy,
-  sprintf,
-  startsWith,
-  Tar,
   union,
-  Untar,
-  v4,
-} from "./deps.ts";
+} from "collections";
+import { crypto } from "crypto";
+import { dayOfYear, difference, format, parse } from "datetime";
+import { load as loadEnv } from "dotenv";
+import { decodeBase64, encodeBase64 } from "encoding/base64";
+import { encodeHex } from "encoding/hex";
+import { sprintf } from "fmt/printf";
+import { ensureDir } from "fs"; // ensureFile
+import * as log from "log";
+import * as posix from "path/posix";
+import { TextLineStream } from "streams/text-line-stream";
+import { TarStream, TarStreamFile, TarStreamInput, UntarStream } from "tar";
+import { v4 } from "uuid";
 
-const basicAsync = async () => {
+// ---
+// Main
+// ---
+
+async function main() {
+  printSectionTitle("basic async");
+  await basicAsync();
+
+  printSectionTitle("basic bytes");
+  basicBytes();
+
+  printSectionTitle("basic collections (functions)");
+  basicCollectionsFunctions();
+
+  printSectionTitle("basic collections (structures)");
+  basicCollectionsStructures();
+
+  printSectionTitle("basic crypto");
+  await basicCrypto();
+
+  printSectionTitle("basic crypto (aes)");
+  await basicCryptoAes();
+
+  printSectionTitle("basic crypto (rsa)");
+  await basicCryptoRsa();
+
+  printSectionTitle("basic datetime");
+  basicDatetime();
+
+  printSectionTitle("basic encoding (base64)");
+  basicEncodingBase64();
+
+  printSectionTitle("basic dotenv");
+  await basicDotenv();
+
+  printSectionTitle("basic flags");
+  basicFlags();
+
+  printSectionTitle("basic fmt");
+  basicFmt();
+
+  printSectionTitle("basic fs");
+  await basicFs();
+
+  printSectionTitle("basic io");
+  await basicIo();
+
+  printSectionTitle("basic log");
+  await basicLog();
+
+  printSectionTitle("basic path");
+  basicPath();
+
+  printSectionTitle("basic streams");
+  await basicStreams();
+
+  printSectionTitle("basic tar");
+  await basicTar();
+
+  printSectionTitle("basic uuid");
+  basicUuid();
+}
+
+// ---
+// Utils
+// ---
+
+/** Uppercase a string, wrap with new lines, print */
+function printSectionTitle(title: string) {
+  console.log(`\n${title.toUpperCase()}\n`);
+}
+
+/** Encode a utf-8 string */
+function utf8Encode(s: string): Uint8Array {
+  return new TextEncoder().encode(s);
+}
+
+/** Decode a utf-8 string */
+function utf8Decode(bytes: Uint8Array): string {
+  return new TextDecoder("utf-8").decode(bytes);
+}
+
+// ---
+// Examples
+// ---
+
+async function basicAsync() {
   // abortable
   try {
     const p = delay(1000);
@@ -85,55 +155,64 @@ const basicAsync = async () => {
   }
 
   // TODO: deferred, MuxAsyncIterator, pooledMap, tee
-};
+}
 
-const basicArchive = async () => {
-  // Temp directory
-  const dir = "./temp/";
-  await Deno.mkdir(dir, { recursive: true });
-  // File
-  const input = "./temp/my-file.txt";
-  const output = "./temp/out.tar";
-  // Tar
-  const tar = new Tar();
-  const content = new TextEncoder().encode("Is mayonaise an instrument?");
-  await tar.append(input, {
-    reader: new Buffer(content),
-    contentSize: content.byteLength,
-  });
-  // Write
-  const writer = await Deno.open(output, { write: true, create: true });
-  await copy(tar.getReader(), writer);
-  writer.close();
-  // Untar
-  const reader = await Deno.open(output, { read: true });
-  const untar = new Untar(reader);
-  for await (const entry of untar) {
-    if (entry.type === "directory") {
-      await ensureDir(entry.fileName);
+async function getTarStreamFile(filepath: string): Promise<TarStreamFile> {
+  const [stat, fsfile] = await Promise.all([
+    Deno.stat(filepath),
+    Deno.open(filepath),
+  ]);
+  return {
+    type: "file",
+    path: filepath,
+    size: stat.size,
+    readable: fsfile.readable,
+  };
+}
+
+async function tarzipFiles(
+  inputFilepaths: Array<string>,
+  outputTarPath: string,
+): Promise<void> {
+  const stream = ReadableStream.from<TarStreamInput>(
+    await Promise.all(
+      inputFilepaths.map(getTarStreamFile),
+    ),
+  );
+  await stream.pipeThrough(new TarStream())
+    .pipeThrough(new CompressionStream("gzip"))
+    .pipeTo((await Deno.create(outputTarPath)).writable);
+}
+
+/** Unzip a tar into a target directory */
+async function untarzip(
+  tarPath: string,
+  targetDir: string,
+): Promise<Array<string>> {
+  const paths: Array<string> = [];
+  const gzip = new DecompressionStream("gzip");
+  const stream = (await Deno.open(tarPath)).readable;
+  for await (
+    const entry of stream.pipeThrough(gzip).pipeThrough(new UntarStream())
+  ) {
+    const path = posix.normalize(entry.path);
+    const basename = posix.basename(path);
+    const targetPath = posix.join(targetDir, basename);
+    await ensureDir(posix.dirname(targetPath));
+    if (!entry.readable) {
       continue;
     }
-
-    await ensureFile(entry.fileName);
-    const file = await Deno.open(entry.fileName, { write: true });
-    await copy(entry, file); // entry implements Reader
+    await entry.readable.pipeTo((await Deno.create(targetPath)).writable);
+    paths.push(targetPath);
   }
-  reader.close();
-  // Read
-  const text = await Deno.readTextFile(input);
-  console.log("read result: ", text);
-  // Cleanup
-  await Deno.remove(input);
-  await Deno.remove(output);
-};
+  return paths;
+}
 
-const basicBytes = () => {
-  const te = (s: string): Uint8Array => new TextEncoder().encode(s);
-  const td = (bytes: Uint8Array): string =>
-    new TextDecoder("utf-8").decode(bytes);
-
-  const concatenated = td(concat(te("Hello"), te(" friend")));
-  const repeated = td(repeat(te("foo"), 2));
+function basicBytes() {
+  const concatenated = utf8Decode(
+    concat([utf8Encode("Hello"), utf8Encode(" friend")]),
+  );
+  const repeated = utf8Decode(repeat(utf8Encode("foo"), 2));
   const startsWithPrefix = startsWith(new Uint8Array(5), new Uint8Array(2));
   const endsWithSuffix = endsWith(new Uint8Array(5), new Uint8Array(2));
 
@@ -141,9 +220,9 @@ const basicBytes = () => {
   console.log("repeated: ", repeated);
   console.log("startsWithPrefix: ", startsWithPrefix);
   console.log("endsWithSuffix: ", endsWithSuffix);
-};
+}
 
-const basicCollectionsFunctions = () => {
+function basicCollectionsFunctions() {
   // aggregateGroups: basically reduce for Record<string, Array<any>> (current, key, first, acc)
   // associateBy: similar to lodash keyBy (element is value, callback determines key)
   // associateWith: like associateBy, but element is key and callback determines value
@@ -161,7 +240,7 @@ const basicCollectionsFunctions = () => {
     [undefined, 1, 2, 3, 4],
     (v) => v,
   );
-  const groupByResult = groupBy(
+  const groupByResult = Object.groupBy(
     [{ a: 1, b: "abc" }, { a: 2, b: "def" }],
     ({ b }) => b,
   );
@@ -238,24 +317,24 @@ const basicCollectionsFunctions = () => {
   console.log("sampleResult: ", sampleResult);
   console.log("sortByResult: ", sortByResult);
   console.log("unionResult: ", unionResult);
-};
+}
 
-const basicCollectionsStructures = () => {
+function basicCollectionsStructures() {
   // BSTree
   // RBTree
-};
+}
 
-const basicCrypto = async () => {
+async function basicCrypto() {
   const message = "No one can know, not even Squidward's house";
-  const messageBytes = new TextEncoder().encode(message);
+  const messageBytes = utf8Encode(message);
   const hashedBytes = new Uint8Array(
     await crypto.subtle.digest(
       "SHA-256",
       messageBytes,
     ),
   );
-  const hashedStringUtf8 = new TextDecoder("utf-8").decode(hashedBytes);
-  const hashedStringBase64 = encode(hashedBytes);
+  const hashedStringUtf8 = utf8Decode(hashedBytes);
+  const hashedStringBase64 = encodeBase64(hashedBytes);
   console.log("message: ", message);
   console.log("messageBytes: ", messageBytes);
   console.log("hashedBytes: ", hashedBytes);
@@ -263,14 +342,14 @@ const basicCrypto = async () => {
   console.log("hashedStringBase64: ", hashedStringBase64);
 
   // TODO: hmac
-};
+}
 
-const basicCryptoAes = async () => {
+async function basicCryptoAes() {
   // Message
   const message =
     "You focus on the trivial, and lose sight of what is most important. Change is impossible in this fog of ignorance.";
 
-  const messageBytes = new TextEncoder().encode(message);
+  const messageBytes = utf8Encode(message);
 
   // Key
   const key = await crypto.subtle.generateKey(
@@ -303,7 +382,7 @@ const basicCryptoAes = async () => {
     encryptedBytes,
   );
   const decryptedBytes = new Uint8Array(decryptedBuffer);
-  const decryptedMessage = new TextDecoder().decode(decryptedBytes);
+  const decryptedMessage = utf8Decode(decryptedBytes);
 
   // Result
   console.log("message: ", message);
@@ -311,12 +390,12 @@ const basicCryptoAes = async () => {
   console.log("encryptedBytes: ", encryptedBytes);
   console.log("decryptedBytes: ", decryptedBytes);
   console.log("decryptedMessage: ", decryptedMessage);
-};
+}
 
-const basicCryptoRsa = async () => {
+async function basicCryptoRsa() {
   // Message
   const message = "The owner of the white sedan, you left your lights on.";
-  const messageBytes = new TextEncoder().encode(message);
+  const messageBytes = utf8Encode(message);
 
   // Get key pair
   const keyPair = await crypto.subtle.generateKey(
@@ -348,7 +427,7 @@ const basicCryptoRsa = async () => {
     encryptedBuffer,
   );
   const decryptedBytes = new Uint8Array(decryptedBuffer);
-  const decryptedMessage = new TextDecoder().decode(decryptedBytes);
+  const decryptedMessage = utf8Decode(decryptedBytes);
 
   // Result
   console.log("message: ", message);
@@ -356,9 +435,9 @@ const basicCryptoRsa = async () => {
   console.log("encryptedBytes: ", encryptedBytes);
   console.log("decryptedBytes: ", decryptedBytes);
   console.log("decryptedMessage: ", decryptedMessage);
-};
+}
 
-const basicDatetime = () => {
+function basicDatetime() {
   const now = new Date();
   const formatted = format(now, "yyyy-MM-dd");
   const doy = dayOfYear(now);
@@ -370,18 +449,18 @@ const basicDatetime = () => {
   console.log("doy: ", doy);
   console.log("parsed: ", parsed);
   console.log("diff.milliseconds: ", diff.milliseconds);
-};
+}
 
-const basicDotenv = async () => {
-  const env = await config({ path: "./dev.env" });
+async function basicDotenv() {
+  const env = await loadEnv({ envPath: "./dev.env" });
   console.log("env", env);
-};
+}
 
-const basicEncodingBase64 = () => {
+function basicEncodingBase64() {
   const message = "Where's the leak, mam?";
-  const messageBytesUtf8 = new TextEncoder().encode(message);
-  const messageStringBase64 = encode(message);
-  const messageBytesBase64 = decode(messageStringBase64);
+  const messageBytesUtf8 = utf8Encode(message);
+  const messageStringBase64 = encodeBase64(message);
+  const messageBytesBase64 = decodeBase64(messageStringBase64);
 
   console.log("message: ", message);
   console.log("messageBytesUtf8: ", messageBytesUtf8);
@@ -389,58 +468,59 @@ const basicEncodingBase64 = () => {
   console.log("messageStringBase64: ", messageStringBase64);
 
   // TODO: encoding -- csv, jsonc, toml, yaml
-};
+}
 
-const basicFlags = () => {
-  const parsed = flagsParse(["pipenv", "install", "--dev"]);
+function basicFlags() {
+  const parsed = parseArgs(["pipenv", "install", "--dev"]);
   console.log("parsed", parsed);
-};
+}
 
-const basicFmt = () => {
+function basicFmt() {
   const formatted = sprintf("Hey there, %s", "Kakashi");
   console.log("formatted: ", formatted);
-};
+}
 
-const basicFs = async () => {
+async function basicFs() {
   // unstable
-};
+}
 
-const basicIo = async () => {
-  const td = (bytes: Uint8Array): string =>
-    new TextDecoder("utf-8").decode(bytes);
-
-  // Open file
-  const fileReader = await Deno.open("./deps.ts");
-
-  // Read lines (async iterator)
+async function basicIo() {
+  const fsFile = await Deno.open("./import_map.json");
   let text = "";
-  for await (const line of readLines(fileReader)) {
-    text += line + "\n";
+  const readable = fsFile.readable.pipeThrough(new TextDecoderStream())
+    .pipeThrough(new TextLineStream());
+  for await (const data of readable) {
+    text += `${data}\n`;
   }
 
   // MD5 hash of text contents
-  const hashedText = td(he(
+  const hashedText = encodeHex(
     new Uint8Array(
       await crypto.subtle.digest(
         "MD5",
-        new TextEncoder().encode(text),
+        utf8Encode(text),
       ),
     ),
-  ));
+  );
 
   // Result
   console.log("hashedText", hashedText);
-};
+}
 
-const basicLog = async () => {
+/** Custom log formatter */
+function customFormatter(lr: log.LogRecord) {
+  return `${lr.loggerName}:${lr.levelName}:${lr.msg}`;
+}
+
+async function basicLog() {
   const logFilename = "./log.txt";
   // Set up loggers
-  await log.setup({
+  log.setup({
     handlers: {
-      console: new log.handlers.ConsoleHandler("DEBUG", {
-        formatter: "{loggerName}:{levelName}:{msg}",
+      console: new log.ConsoleHandler("DEBUG", {
+        formatter: customFormatter, // Try `log.formatters.jsonFormatter`
       }),
-      file: new log.handlers.FileHandler("DEBUG", { filename: logFilename }),
+      file: new log.FileHandler("DEBUG", { filename: logFilename }),
     },
     loggers: {
       default: { level: "INFO", handlers: ["console", "file"] },
@@ -450,14 +530,14 @@ const basicLog = async () => {
   // Use default logger
   log.debug("Something happened");
   log.info("Something more important happened");
-  log.warning("Something bad might happen");
+  log.warn("Something bad might happen");
   log.error("Something bad happened");
   log.critical("An unrecoverable error happened");
   // Use custom logger
   const tasksLogger = log.getLogger("tasks");
   tasksLogger.debug("Something happened");
   tasksLogger.info("Something more important happened");
-  tasksLogger.warning("Something bad might happen");
+  tasksLogger.warn("Something bad might happen");
   tasksLogger.error("Something bad happened");
   tasksLogger.critical("An unrecoverable error happened");
   // Read file logs
@@ -466,9 +546,9 @@ const basicLog = async () => {
   console.log(text);
   // Cleanup
   await Deno.remove(logFilename);
-};
+}
 
-const basicPath = () => {
+function basicPath() {
   const filepath = "./temp/my-file.txt";
   const basename = posix.basename(filepath); // my-file.txt
   const dirname = posix.dirname(filepath); // ./temp
@@ -487,88 +567,60 @@ const basicPath = () => {
   console.log("parsed: ", parsed);
 
   // TODO: format, relative, resolve, common
-};
+}
 
-const basicStreams = async () => {
-  const result = Deno.run({
-    cmd: ["ls", "-a"],
+async function basicStreams() {
+  const command = new Deno.Command("ls", {
+    args: ["-a"],
     stdout: "piped",
     stderr: "piped",
   });
-  const output = (new TextDecoder()).decode(await readAll(result.stdout));
-  const error = (new TextDecoder()).decode(await readAll(result.stderr));
+
+  const result = await command.output();
+  console.log(result);
+
+  const output = utf8Decode(result.stdout);
+  const error = utf8Decode(result.stderr);
+  console.log("ls code: ", result.code);
   console.log("ls output: ", output);
   console.log("ls error: ", error);
-};
+}
 
-const basicUuid = () => {
+async function basicTar() {
+  // Setup
+  const filename = "my-file.txt";
+  const inputDir = posix.join(".", "temp", "input");
+  const outputDir = posix.join(".", "temp", "output");
+  const inputPath = posix.join(inputDir, filename);
+  const outputPath = posix.join(outputDir, "my-files.tar");
+  for (const dir of [inputDir, outputDir]) {
+    await Deno.mkdir(dir, { recursive: true });
+  }
+  Deno.writeFile(inputPath, utf8Encode("Is mayonaise an instrument?"));
+
+  // Zip and unzip files
+  await tarzipFiles([inputPath], outputPath);
+  const unzipped = await untarzip(outputPath, outputDir);
+  for (const path of unzipped) {
+    const text = await Deno.readTextFile(path);
+    console.log({ path, text });
+  }
+
+  const cleanupPaths = [inputPath, outputPath, posix.join(outputDir, filename)];
+  for (const path of cleanupPaths) {
+    await Deno.remove(path);
+  }
+}
+
+function basicUuid() {
   const id = crypto.randomUUID();
   const isValid = v4.validate(id);
   console.log("id: ", id);
   console.log("isValid: ", isValid);
-};
+}
 
-const printSectionTitle = (title: string) => {
-  console.log("\n" + title.toUpperCase() + "\n");
-};
-
-const main = async () => {
-  printSectionTitle("basic async");
-  await basicAsync();
-
-  printSectionTitle("basic archive");
-  await basicArchive();
-
-  printSectionTitle("basic bytes");
-  basicBytes();
-
-  printSectionTitle("basic collections (functions)");
-  basicCollectionsFunctions();
-
-  printSectionTitle("basic collections (structures)");
-  basicCollectionsStructures();
-
-  printSectionTitle("basic crypto");
-  await basicCrypto();
-
-  printSectionTitle("basic crypto (aes)");
-  await basicCryptoAes();
-
-  printSectionTitle("basic crypto (rsa)");
-  await basicCryptoRsa();
-
-  printSectionTitle("basic datetime");
-  basicDatetime();
-
-  printSectionTitle("basic encoding (base64)");
-  basicEncodingBase64();
-
-  printSectionTitle("basic dotenv");
-  await basicDotenv();
-
-  printSectionTitle("basic flags");
-  basicFlags();
-
-  printSectionTitle("basic fmt");
-  basicFmt();
-
-  printSectionTitle("basic fs");
-  await basicFs();
-
-  printSectionTitle("basic io");
-  await basicIo();
-
-  printSectionTitle("basic log");
-  await basicLog();
-
-  printSectionTitle("basic path");
-  basicPath();
-
-  printSectionTitle("basic streams");
-  await basicStreams();
-
-  printSectionTitle("basic uuid");
-  basicUuid();
-};
+// ---
+// Run
+// ---
 
 main();

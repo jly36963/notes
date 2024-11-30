@@ -11,17 +11,17 @@
 
 /** Generic function that returns its input */
 function identity<T>(a: T): T {
-  return a;
+	return a;
 }
 
 /** Generic array function that returns the first element or a fallback value */
 function firstOr<T>(array: T[], fallback: T): T {
-  return array.length ? array[0] : fallback;
+	return array.length ? array[0] : fallback;
 }
 
 /** Generic array map function */
 function map<A, B>(array: A[], fn: (value: A) => B): B[] {
-  return array.map(fn);
+	return array.map(fn);
 }
 
 // ---
@@ -106,18 +106,18 @@ type ABKeys = keyof AB; // "a" | "b"
 // Exclude key from object
 // type RemoveId<T> = Omit<T, 'id'>
 type RemoveId<T> = {
-  [K in keyof T as Exclude<K, "id">]: T[K];
+	[K in keyof T as Exclude<K, "id">]: T[K];
 };
 
 // Object assign example
 // type Assign<A, B> = Omit<A, keyof B> & B;
 type Assign<A, B> = {
-  [K in keyof A as Exclude<K, keyof B>]: A[K];
+	[K in keyof A as Exclude<K, keyof B>]: A[K];
 } & B;
 
 const assign = <A, B>(obj1: A, obj2: B): Assign<A, B> => ({
-  ...obj1,
-  ...obj2,
+	...obj1,
+	...obj2,
 });
 
 // ---
@@ -137,8 +137,8 @@ type b = If<false, {}, []>; // []
 
 // Infer (obj)
 type GetRole<User> = User extends { name: string; role: infer Role }
-  ? Role
-  : never;
+	? Role
+	: never;
 type GetRoleRes = GetRole<{ name: "Gabriel"; role: "admin" }>; // 'admin'
 
 // Infer (tuple)
@@ -161,72 +161,74 @@ type SetValue<S> = S extends Set<infer V> ? V : never;
 // ---
 
 type Column = {
-  name: string;
-  values: unknown[];
+	name: string;
+	values: unknown[];
 };
 
 type Table = [Column, ...Column[]];
 
 type UserTable = [
-  { name: "firstName"; values: string[] },
-  { name: "age"; values: number[] },
-  { name: "isAdmin"; values: boolean[] }
+	{ name: "firstName"; values: string[] },
+	{ name: "age"; values: number[] },
+	{ name: "isAdmin"; values: boolean[] },
 ];
 
 // Find
 type GetColumn<List, Name> = List extends [infer First, ...infer Rest]
-  ? First extends { name: Name; values: infer Values }
-    ? Values
-    : GetColumn<Rest, Name>
-  : undefined;
+	? First extends { name: Name; values: infer Values }
+		? Values
+		: GetColumn<Rest, Name>
+	: undefined;
 
 // Map
 type GetName<Obj> = Obj extends { name: infer Name } ? Name : undefined;
 type ToNames<List> = List extends [infer First, ...infer Rest]
-  ? [GetName<First>, ...ToNames<Rest>]
-  : [];
+	? [GetName<First>, ...ToNames<Rest>]
+	: [];
 
 // Filter
 type FilterTable<Table, NameUnion> = Table extends [infer Col, ...infer Rest]
-  ? Col extends { name: NameUnion }
-    ? [Col, ...FilterTable<Rest, NameUnion>]
-    : FilterTable<Rest, NameUnion>
-  : [];
+	? Col extends { name: NameUnion }
+		? [Col, ...FilterTable<Rest, NameUnion>]
+		: FilterTable<Rest, NameUnion>
+	: [];
 
 // Filter (numbers)
 type OnlyNumbers<List> = List extends [infer First, ...infer Rest]
-  ? First extends number
-    ? [First, ...OnlyNumbers<Rest>]
-    : OnlyNumbers<Rest>
-  : [];
+	? First extends number
+		? [First, ...OnlyNumbers<Rest>]
+		: OnlyNumbers<Rest>
+	: [];
 
 type OnlyNumbersRes = OnlyNumbers<[1, 2, "oops", 3, "hello"]>; // => [1, 2, 3]
 
 // Reduce
-type FromEntriesRecursive<Entries, Acc = {}> =
-  // `Acc` is optional, with a `{}` default value
-  Entries extends [infer Entry, ...infer Rest]
-    ? FromEntriesRecursive<
-        Rest,
-        Entry extends [infer Key extends string, infer Value]
-          ? Acc & { [K in Key]: Value }
-          : Acc
-      >
-    : Acc;
+type FromEntriesRecursive<Entries, Acc = {}> = Entries extends [
+	// `Acc` is optional, with a `{}` default value
+	infer Entry,
+	...infer Rest,
+]
+	? FromEntriesRecursive<
+			Rest,
+			Entry extends [infer Key extends string, infer Value]
+				? Acc & { [K in Key]: Value }
+				: Acc
+		>
+	: Acc;
 
 type User = FromEntriesRecursive<[["name", "Gabriel"], ["age", 29]]>;
 // => { name: "Gabriel"; age: 29 }
 
 // Reduce (Take)
 type Take<
-  Tuple extends any[],
-  N extends number,
-  Output extends any[] = []
+	Tuple extends any[],
+	N extends number,
+	Output extends any[] = [],
 > = Tuple extends [infer First, ...infer Rest]
-  ? Output["length"] extends N
-    ? Output
-    : Take<Rest, N, [...Output, First]>
-  : Output;
+	? Output["length"] extends N
+		? Output
+		: Take<Rest, N, [...Output, First]>
+	: Output;
 
 type TakeRes = Take<[1, 2, 3], 2>;
 
@@ -236,50 +238,50 @@ type TakeRes = Take<[1, 2, 3], 2>;
 
 // Get first and last names
 type GetLastWord<Str> = Str extends `${string} ${infer Rest}`
-  ? GetLastWord<Rest>
-  : Str;
+	? GetLastWord<Rest>
+	: Str;
 type GetNameTuple<Name> = Name extends `${infer FirstName} ${infer Rest}`
-  ? [FirstName, GetLastWord<Rest>]
-  : never;
+	? [FirstName, GetLastWord<Rest>]
+	: never;
 type AlbusDumbledore = GetNameTuple<"Albus Perceval Wulfric Brian Dumbledore">;
 
 // To snake case (regular sentence)
 type ToSnake<Str> = Str extends `${infer Start} ${infer Rest}`
-  ? `${Start}_${ToSnake<Rest>}`
-  : Str;
+	? `${Start}_${ToSnake<Rest>}`
+	: Str;
 type Punctuation = "." | "!" | "?" | "," | "-";
 type RemovePunctuation<
-  Str,
-  Output extends string = ""
+	Str,
+	Output extends string = "",
 > = Str extends `${infer First}${infer Rest}`
-  ? First extends Punctuation
-    ? RemovePunctuation<Rest, Output>
-    : RemovePunctuation<Rest, `${Output}${First}`>
-  : Output;
+	? First extends Punctuation
+		? RemovePunctuation<Rest, Output>
+		: RemovePunctuation<Rest, `${Output}${First}`>
+	: Output;
 type TitleToSnake<Str extends string> = Lowercase<
-  RemovePunctuation<ToSnake<Str>>
+	RemovePunctuation<ToSnake<Str>>
 >;
 type DidYouEnjoyThisChapter = TitleToSnake<"Do you enjoy this chapter?">;
 
 // Snake to camel
 type SnakeToCamel<Str> = Str extends `${infer First}_${infer Rest}`
-  ? `${First}${SnakeToCamel<Capitalize<Rest>>}`
-  : Str;
+	? `${First}${SnakeToCamel<Capitalize<Rest>>}`
+	: Str;
 type helloWorld = SnakeToCamel<"hello_world">;
 
 // To snake case (split, join)
 type SpacesToUnderscores<Str> = Join<Split<Str, " ">, "_">;
 type Split<
-  Str,
-  Sep extends string
+	Str,
+	Sep extends string,
 > = Str extends `${infer First}${Sep}${infer Rest}`
-  ? [First, ...Split<Rest, Sep>]
-  : [Str];
+	? [First, ...Split<Rest, Sep>]
+	: [Str];
 type Join<List, Sep extends string> = List extends [infer First]
-  ? First
-  : List extends [infer First extends string, ...infer Rest extends string[]]
-  ? `${First}${Sep}${Join<Rest, Sep>}`
-  : "";
+	? First
+	: List extends [infer First extends string, ...infer Rest extends string[]]
+		? `${First}${Sep}${Join<Rest, Sep>}`
+		: "";
 type ABCArray = Split<"a.b.c", ".">;
 type ABC = Join<["a", "b", "c"], ".">;
 type TLTS = SpacesToUnderscores<"type level typescript">;
@@ -289,24 +291,24 @@ type TLTS = SpacesToUnderscores<"type level typescript">;
 // ---
 
 namespace mappedTypes {
-  type ValueOf<T> = T[keyof T];
-  type Entries<Obj> = ValueOf<{
-    [Key in keyof Obj]: [Key, Obj[Key]];
-  }>;
-  type FromEntries<Entries extends [any, any]> = {
-    [Entry in Entries as Entry[0]]: Entry[1];
-  };
-  type AnyFunction = (...args: any) => any;
-  type OmitByValue<T, Omitted> = FromEntries<
-    Exclude<Entries<T>, [any, Omitted]>
-  >;
-  type PickByValue<T, Keep> = FromEntries<Extract<Entries<T>, [any, Keep]>>;
+	type ValueOf<T> = T[keyof T];
+	type Entries<Obj> = ValueOf<{
+		[Key in keyof Obj]: [Key, Obj[Key]];
+	}>;
+	type FromEntries<Entries extends [any, any]> = {
+		[Entry in Entries as Entry[0]]: Entry[1];
+	};
+	type AnyFunction = (...args: any) => any;
+	type OmitByValue<T, Omitted> = FromEntries<
+		Exclude<Entries<T>, [any, Omitted]>
+	>;
+	type PickByValue<T, Keep> = FromEntries<Extract<Entries<T>, [any, Keep]>>;
 
-  type OmitByValueRes = OmitByValue<
-    { a: () => string; b: string },
-    AnyFunction
-  >;
-  // { b: string }
-  type PickByValueRes = PickByValue<{ a: () => string; b: string }, string>;
-  // { b: string }
+	type OmitByValueRes = OmitByValue<
+		{ a: () => string; b: string },
+		AnyFunction
+	>;
+	// { b: string }
+	type PickByValueRes = PickByValue<{ a: () => string; b: string }, string>;
+	// { b: string }
 }

@@ -1,0 +1,16 @@
+{
+	"linter": {
+		"rules": {
+			"suspicious": {
+				"noExplicitAny": {
+					"level": "off"
+				}
+			},
+			"complexity": {
+				"noBannedTypes": {
+					"level": "off"
+				}
+			}
+		}
+	}
+}
