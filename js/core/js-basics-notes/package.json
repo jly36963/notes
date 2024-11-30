@@ -8,8 +8,8 @@
 		"node": ">=23"
 	},
 	"scripts": {
-		"start": "node --experimental-strip-types index.ts ",
-		"dev": "node --experimental-strip-types index.ts "
+		"start": "node --experimental-strip-types index.ts",
+		"dev": "node --experimental-strip-types index.ts"
 	},
 	"keywords": [],
 	"author": "",

@@ -1,24 +1,36 @@
 {
-  "name": "playground",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@tensorflow/tfjs-node": "^2.0.0",
-    "dataframe-js": "^1.4.3",
-    "escape-html": "^1.0.3",
-    "mathjs": "^7.0.1",
-    "ml": "^5.0.0",
-    "ml-hclust": "^3.0.0",
-    "ml-kmeans": "^5.0.0",
-    "ml-pca": "^4.0.1",
-    "ml-regression-simple-linear": "^2.0.2",
-    "papaparse": "^5.2.0",
-    "sharp": "^0.25.3"
-  }
+	"name": "playground",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"type": "module",
+	"scripts": {
+		"start": "node --experimental-strip-types index.ts",
+		"dev": "node --experimental-strip-types index.ts"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@tensorflow/tfjs-node": "^2.8.6",
+		"dataframe-js": "^1.4.4",
+		"escape-html": "^1.0.3",
+		"mathjs": "^7.6.0",
+		"ml": "^5.0.0",
+		"ml-confusion-matrix": "^2.0.0",
+		"ml-hclust": "^3.1.0",
+		"ml-kmeans": "^5.0.0",
+		"ml-pca": "^4.1.1",
+		"ml-regression-simple-linear": "^2.0.5",
+		"papaparse": "^5.4.1",
+		"sharp": "^0.25.4"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/dataframe-js": "^1.4.3",
+		"@types/lodash-es": "^4.17.12",
+		"@types/mathjs": "^9.4.2",
+		"@types/node": "^22.10.1",
+		"gts": "^6.0.2",
+		"typescript": "^5.7.2"
+	}
 }

@@ -1,14 +1,19 @@
 {
-  "name": "std-lib-notes",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^17.0.39"
-  }
+	"name": "std-lib-notes",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.ts",
+	"type": "module",
+	"scripts": {
+		"start": "node --experimental-strip-types index.ts",
+		"dev": "node --experimental-strip-types index.ts"
+	},
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/node": "^22.10.1",
+		"gts": "^6.0.2",
+		"typescript": "^5.7.2"
+	}
 }

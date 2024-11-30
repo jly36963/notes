@@ -1,15 +1,24 @@
 {
-  "name": "danfo-js-notes",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "danfojs-node": "^1.1.1",
-    "lodash": "^4.17.21"
-  }
+	"name": "danfo-js-notes",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"type": "module",
+	"scripts": {
+		"start": "node --experimental-strip-types index.ts",
+		"dev": "node --experimental-strip-types index.ts"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"danfojs-node": "^1.1.2",
+		"lodash-es": "^4.17.21"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/lodash-es": "^4.17.12",
+		"@types/node": "^22.10.1",
+		"gts": "^6.0.2",
+		"typescript": "^5.7.2"
+	}
 }
