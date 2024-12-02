@@ -1,42 +1,32 @@
-import { abortable, deadline, debounce, delay } from "async";
-import { concat, endsWith, repeat, startsWith } from "bytes";
+import * as async from "async";
+import * as bytes from "bytes";
+import { LruCache, memoize } from "cache";
+import { decodeCbor, encodeCbor } from "cbor";
 import { parseArgs } from "cli/parse-args";
-import {
-  chunk,
-  deepMerge,
-  distinct,
-  distinctBy,
-  filterEntries,
-  filterKeys,
-  filterValues,
-  findSingle,
-  firstNotNullishOf,
-  includesValue,
-  intersect,
-  mapEntries,
-  mapKeys,
-  mapNotNullish,
-  mapValues,
-  maxBy,
-  maxOf,
-  minBy,
-  minOf,
-  partition,
-  sample,
-  sortBy,
-  union,
-} from "collections";
+import * as collections from "collections";
 import { crypto } from "crypto";
-import { dayOfYear, difference, format, parse } from "datetime";
+import * as csv from "csv";
+import * as structures from "data-structures";
+import * as datetime from "datetime";
 import { load as loadEnv } from "dotenv";
 import { decodeBase64, encodeBase64 } from "encoding/base64";
-import { encodeHex } from "encoding/hex";
+import { decodeHex, encodeHex } from "encoding/hex";
+import { expect } from "expect";
+import { format as formatBytes } from "fmt/bytes";
+import { bgBlue, inverse, italic, underline, white } from "fmt/colors";
+import { format as formatDuration } from "fmt/duration";
 import { sprintf } from "fmt/printf";
-import { ensureDir } from "fs"; // ensureFile
+import * as fs from "fs";
+import * as ini from "ini";
+import * as json from "json";
+import * as jsonc from "jsonc";
 import * as log from "log";
+import * as msgpack from "msgpack";
 import * as posix from "path/posix";
+import * as random from "random";
 import { TextLineStream } from "streams/text-line-stream";
-import { TarStream, TarStreamFile, TarStreamInput, UntarStream } from "tar";
+import * as tar from "tar";
+import * as text from "text";
 import { v4 } from "uuid";
 
 // ---
@@ -50,11 +40,17 @@ async function main() {
   printSectionTitle("basic bytes");
   basicBytes();
 
+  printSectionTitle("basic cache");
+  basicCache();
+
+  printSectionTitle("basic cbor");
+  basicCbor();
+
+  printSectionTitle("basic CLI");
+  basicCli();
+
   printSectionTitle("basic collections (functions)");
   basicCollectionsFunctions();
-
-  printSectionTitle("basic collections (structures)");
-  basicCollectionsStructures();
 
   printSectionTitle("basic crypto");
   await basicCrypto();
@@ -65,17 +61,26 @@ async function main() {
   printSectionTitle("basic crypto (rsa)");
   await basicCryptoRsa();
 
+  printSectionTitle("basic CSV");
+  basicCsv();
+
+  printSectionTitle("basic data structures");
+  basicDataStructures();
+
   printSectionTitle("basic datetime");
   basicDatetime();
-
-  printSectionTitle("basic encoding (base64)");
-  basicEncodingBase64();
 
   printSectionTitle("basic dotenv");
   await basicDotenv();
 
-  printSectionTitle("basic flags");
-  basicFlags();
+  printSectionTitle("basic encoding (base64)");
+  basicEncodingBase64();
+
+  printSectionTitle("basic encoding (hex)");
+  basicEncodingHex();
+
+  printSectionTitle("basic expect");
+  basicExpect();
 
   printSectionTitle("basic fmt");
   basicFmt();
@@ -83,20 +88,38 @@ async function main() {
   printSectionTitle("basic fs");
   await basicFs();
 
+  printSectionTitle("basic INI");
+  await basicIni();
+
   printSectionTitle("basic io");
   await basicIo();
+
+  printSectionTitle("basic JSON");
+  await basicJson();
+
+  printSectionTitle("basic JSONC");
+  basicJsonc();
 
   printSectionTitle("basic log");
   await basicLog();
 
+  printSectionTitle("basic msgpack");
+  basicMsgpack();
+
   printSectionTitle("basic path");
   basicPath();
+
+  printSectionTitle("basic random");
+  basicRandom();
 
   printSectionTitle("basic streams");
   await basicStreams();
 
   printSectionTitle("basic tar");
   await basicTar();
+
+  printSectionTitle("basic text");
+  basicText();
 
   printSectionTitle("basic uuid");
   basicUuid();
@@ -121,207 +144,564 @@ function utf8Decode(bytes: Uint8Array): string {
   return new TextDecoder("utf-8").decode(bytes);
 }
 
+/** Return a random boolean. `p` is the probability of success in the Bernoulli trial. */
+function coinToss(p = 0.5) {
+  return Math.random() > p;
+}
+
+function prettyPrintResults(results: Record<string, unknown>) {
+  for (const [k, v] of Object.entries(results)) {
+    console.log(k);
+    console.log(typeof v);
+    console.log(v);
+    console.log();
+  }
+}
+
+function getNinjaRecords() {
+  return [
+    {
+      id: "fa6c4c93-fb64-4cd7-8b21-0e5e0f717fd6",
+      firstName: "Kakashi",
+      lastName: "Hatake",
+      age: 27,
+    },
+    {
+      id: "2c6c74c3-b9d6-4d49-a113-4f1a8164abe3",
+      firstName: "Tenzo",
+      lastName: "Yamato",
+      age: 26,
+    },
+    {
+      id: "2e9093d5-f466-40bb-be14-993276f0a497",
+      firstName: "Iruka",
+      lastName: "Umino",
+      age: 25,
+    },
+    {
+      id: "71547b9d-f28e-4511-b767-860bc37f148f",
+      firstName: "Itachi",
+      lastName: "Uchiha",
+      age: 21,
+    },
+  ];
+}
+
 // ---
 // Examples
 // ---
 
 async function basicAsync() {
-  // abortable
   try {
-    const p = delay(1000);
-    const c = new AbortController();
-    setTimeout(() => c.abort(), 10);
-    await abortable(p, c.signal);
+    const promise = async.delay(1000);
+    const ac = new AbortController();
+    setTimeout(() => ac.abort(), 10);
+    await async.abortable(promise, ac.signal);
   } catch (err) {
     console.log("promise aborted: ");
     console.log(err);
   }
 
   // debounce
-  const debouncedLog = debounce((v) => console.log(v), 100);
-  console.log("debounce result: ");
-  (["a", "b", "c"] as string[]).forEach((v) => debouncedLog(v)); // Take latest (c)
+  {
+    const debouncedLog = async.debounce((v) => console.log(v), 100);
+    console.log("debounce result: ");
+    (["a", "b", "c"] as string[]).forEach((v) => debouncedLog(v)); // Take latest (c)
+  }
 
   // delay
-  await delay(100); // async sleep
-
-  // deadline
+  await async.delay(100); // async sleep
   try {
-    const p = delay(100);
-    await deadline(p, 10);
+    const promise = async.delay(100);
+    await async.deadline(promise, 10);
   } catch (err) {
     console.log("promise deadline reached: ");
     console.log(err);
   }
 
-  // TODO: deferred, MuxAsyncIterator, pooledMap, tee
-}
-
-async function getTarStreamFile(filepath: string): Promise<TarStreamFile> {
-  const [stat, fsfile] = await Promise.all([
-    Deno.stat(filepath),
-    Deno.open(filepath),
-  ]);
-  return {
-    type: "file",
-    path: filepath,
-    size: stat.size,
-    readable: fsfile.readable,
-  };
-}
-
-async function tarzipFiles(
-  inputFilepaths: Array<string>,
-  outputTarPath: string,
-): Promise<void> {
-  const stream = ReadableStream.from<TarStreamInput>(
-    await Promise.all(
-      inputFilepaths.map(getTarStreamFile),
-    ),
-  );
-  await stream.pipeThrough(new TarStream())
-    .pipeThrough(new CompressionStream("gzip"))
-    .pipeTo((await Deno.create(outputTarPath)).writable);
-}
-
-/** Unzip a tar into a target directory */
-async function untarzip(
-  tarPath: string,
-  targetDir: string,
-): Promise<Array<string>> {
-  const paths: Array<string> = [];
-  const gzip = new DecompressionStream("gzip");
-  const stream = (await Deno.open(tarPath)).readable;
-  for await (
-    const entry of stream.pipeThrough(gzip).pipeThrough(new UntarStream())
-  ) {
-    const path = posix.normalize(entry.path);
-    const basename = posix.basename(path);
-    const targetPath = posix.join(targetDir, basename);
-    await ensureDir(posix.dirname(targetPath));
-    if (!entry.readable) {
-      continue;
-    }
-    await entry.readable.pipeTo((await Deno.create(targetPath)).writable);
-    paths.push(targetPath);
+  // pooledMap
+  {
+    const numbers = [1, 2, 3, 4, 5];
+    const mapper = async (n: number) => {
+      await async.delay(10);
+      return n * 2;
+    };
+    const asyncIterator = async.pooledMap(3, numbers, mapper);
+    const mapped = await Array.fromAsync(asyncIterator);
+    console.log("mapped: ", mapped);
   }
-  return paths;
+
+  // retry
+  {
+    const numbers = [1, 2, 3, 4, 5];
+    const mapper = async (n: number) => {
+      await async.delay(10);
+      // Make it flakey
+      if (coinToss(.75)) {
+        throw new Error("Oops, something went wrong");
+      }
+      return n * 2;
+    };
+    const mapperWithRetry = (n: number) =>
+      async.retry(() => mapper(n), {
+        maxAttempts: 5,
+        minTimeout: 10,
+        maxTimeout: 15,
+      });
+
+    const mapped = await Promise.all(
+      numbers.map(mapperWithRetry),
+    );
+    console.log("mapped: ", mapped);
+  }
 }
 
 function basicBytes() {
-  const concatenated = utf8Decode(
-    concat([utf8Encode("Hello"), utf8Encode(" friend")]),
-  );
-  const repeated = utf8Decode(repeat(utf8Encode("foo"), 2));
-  const startsWithPrefix = startsWith(new Uint8Array(5), new Uint8Array(2));
-  const endsWithSuffix = endsWith(new Uint8Array(5), new Uint8Array(2));
+  // concat
+  {
+    const bytes1 = utf8Encode("Hello");
+    const bytes2 = utf8Encode(" friend");
+    const concatenated = utf8Decode(bytes.concat([bytes1, bytes2]));
+    console.log("concatenated: ", concatenated);
+  }
+  // copy
+  {
+    const bytes1 = utf8Encode("Doodle");
+    const bytes2 = utf8Encode("Spongebob");
+    bytes.copy(bytes1, bytes2);
+    const result = utf8Decode(bytes2); // Doodlebob
+    console.log("result: ", result);
+  }
 
-  console.log("concatenated: ", concatenated);
-  console.log("repeated: ", repeated);
-  console.log("startsWithPrefix: ", startsWithPrefix);
-  console.log("endsWithSuffix: ", endsWithSuffix);
+  // repeat
+  {
+    const bytes1 = utf8Encode("foo");
+    const result = utf8Decode(bytes.repeat(bytes1, 2));
+    console.log("result: ", result);
+  }
+
+  // startsWith
+  {
+    const bytes1 = new Uint8Array([1, 2, 3, 4, 5]);
+    const bytes2 = new Uint8Array([1, 2, 3]);
+    const result = bytes.startsWith(bytes1, bytes2);
+    console.log("result: ", result);
+  }
+
+  // includesNeedle
+  {
+    const bytes1 = new Uint8Array([1, 2, 3, 4, 5]);
+    const bytes2 = new Uint8Array([2, 3, 4]);
+    const result = bytes.includesNeedle(bytes1, bytes2);
+    console.log("result: ", result);
+  }
+
+  // endsWith
+  {
+    const bytes1 = new Uint8Array([1, 2, 3, 4, 5]);
+    const bytes2 = new Uint8Array([3, 4, 5]);
+    const result = bytes.endsWith(bytes1, bytes2);
+    console.log("result: ", result);
+  }
+}
+
+function basicCache() {
+  const cache = new LruCache<unknown, bigint>(1000);
+  const factorial = (n: bigint): bigint => {
+    return (n <= 1n) ? 1n : n * factorial(n - 1n);
+  };
+
+  const factorialMemoized = memoize(factorial, { cache });
+  const result1 = factorialMemoized(5n);
+  console.log("result1: ", result1);
+  const result2 = factorialMemoized(10n);
+  console.log("result2: ", result2);
+  const result3 = factorialMemoized(15n);
+  console.log("result3: ", result3);
+}
+
+function basicCbor() {
+  const data = { message: "No one can know, not even Squidward's house!" };
+
+  const encoded = encodeCbor(data);
+  console.log("encoded: ", encoded);
+
+  const decoded = decodeCbor(encoded);
+  console.log("decoded: ", decoded);
+}
+
+function basicCli() {
+  const parsed = parseArgs(["pipenv", "install", "--dev"]);
+  console.log("parsed", parsed);
 }
 
 function basicCollectionsFunctions() {
-  // aggregateGroups: basically reduce for Record<string, Array<any>> (current, key, first, acc)
-  // associateBy: similar to lodash keyBy (element is value, callback determines key)
-  // associateWith: like associateBy, but element is key and callback determines value
-  const chunkResult = chunk(Array(10).fill(0), 5);
-  const deepMergeResult = deepMerge({ a: 1, b: 2 }, { a: 3, c: 4 });
-  const distinctByResult = distinctBy([1, 2, 3, 4, 1], (v) => v);
-  const distinctResult = distinct([1, 2, 3, 4, 1]);
-  // dropWhile: drop array elements before first element that fails predicate
-  // dropLastWhile: drop array elements including and after last element that fails predicate
-  const filterEntriesResult = filterEntries({ a: 0, b: 2 }, ([_k, v]) => v > 0);
-  const filterKeysResult = filterKeys({ a: 0, b: 2 }, (k) => k !== "b");
-  const filterValuesResult = filterValues({ a: 0, b: 2 }, (v) => v > 0);
-  const findSingleResult = findSingle([1, 2, 3, 4, 5], (n) => n === 2);
-  const firstNotNullishOfResult = firstNotNullishOf(
-    [undefined, 1, 2, 3, 4],
-    (v) => v,
-  );
-  const groupByResult = Object.groupBy(
-    [{ a: 1, b: "abc" }, { a: 2, b: "def" }],
-    ({ b }) => b,
-  );
-  const includesValueResult = includesValue({ a: 1, b: 2 }, 2);
-  const intersectResult = intersect([1, 2, 3], [2, 3, 4]);
-  // joinToString: fancy join (suffix, prefix, limit, truncated, etc)
-  const mapEntriesResult = mapEntries(
-    { a: 1, b: 2 },
-    ([k, v]) => [`${k}${k}`, v * 2],
-  );
-  const mapKeysResult = mapKeys({ a: 1, b: 2 }, (k) => k.toUpperCase());
-  const mapValuesResult = mapValues({ a: 1, b: 2 }, (v) => v * 2);
-  const mapNotNullishResult = mapNotNullish(
-    [undefined, 1, 2, 3, 4],
-    (v) => v && v * 2,
-  );
-  const maxByResult = maxBy(
-    [{ name: "Kakashi", age: 27 }, { name: "Yamato", age: 24 }],
-    ({ age }) => age,
-  );
-  const maxOfResult = maxOf(
-    [{ name: "Kakashi", age: 27 }, { name: "Yamato", age: 24 }],
-    ({ age }) => age,
-  );
-  // maxWith: find max element using custom comparator
-  const minByResult = minBy(
-    [{ name: "Kakashi", age: 27 }, { name: "Yamato", age: 24 }],
-    ({ age }) => age,
-  );
-  const minOfResult = minOf(
-    [{ name: "Kakashi", age: 27 }, { name: "Yamato", age: 24 }],
-    ({ age }) => age,
-  );
-  // minWith: find min element using custom comparator
-  const partitionResult = partition([1, 2, 3, 4, 5], (n) => n > 3);
-  // permutations: return array of all order permutations
-  // reduceGroups: basically reduce for Record<string, Array<any>>
-  // runningReduce: reduce, but returns an array of intermediate accumulator results
-  // sumOf: get sum of array using selector
-  const sampleResult = sample([1, 2, 3, 4]);
-  // slidingWindows: return array of sliding views of a given size
-  const sortByResult = sortBy(
-    [{ name: "Kakashi", age: 27 }, { name: "Yamato", age: 24 }],
-    ({ name }) => name,
-  );
-  // takeLastWhile: ...
-  // takeWhile: ...
-  const unionResult = union([1, 2, 3], [2, 3, 4]);
-  // unzip: split array of 2-tuples into 2 separate arrays
-  // withoutAll: remove elements in arr2 from arr1
-  // zip: combine 2 arrays into an array of 2-tuples
+  // aggregateGroups
+  {
+    const valuesRecord = {
+      "x": [1, 2, 3],
+      "x**2": [1, 4, 9],
+      "x**3": [1, 8, 27],
+    };
+    const result = collections.aggregateGroups(
+      valuesRecord,
+      (curr, _key, first, acc) => {
+        return first ? 0 + curr : acc as number + curr;
+      },
+    );
+    console.log("result: ", result);
+  }
 
-  console.log("chunkResult: ", chunkResult);
-  console.log("deepMergeResult: ", deepMergeResult);
-  console.log("distinctByResult: ", distinctByResult);
-  console.log("distinctResult: ", distinctResult);
-  console.log("filterEntriesResult: ", filterEntriesResult);
-  console.log("filterKeysResult: ", filterKeysResult);
-  console.log("filterValuesResult: ", filterValuesResult);
-  console.log("findSingleResult: ", findSingleResult);
-  console.log("firstNotNullishOfResult: ", firstNotNullishOfResult);
-  console.log("groupByResult: ", groupByResult);
-  console.log("includesValueResult: ", includesValueResult);
-  console.log("intersectResult: ", intersectResult);
-  console.log("mapEntriesResult: ", mapEntriesResult);
-  console.log("mapKeysResult: ", mapKeysResult);
-  console.log("mapValuesResult: ", mapValuesResult);
-  console.log("mapNotNullishResult: ", mapNotNullishResult);
-  console.log("maxByResult: ", maxByResult);
-  console.log("maxOfResult: ", maxOfResult);
-  console.log("minByResult: ", minByResult);
-  console.log("minOfResult: ", minOfResult);
-  console.log("partitionResult: ", partitionResult);
-  console.log("sampleResult: ", sampleResult);
-  console.log("sortByResult: ", sortByResult);
-  console.log("unionResult: ", unionResult);
-}
+  // associateBy
+  {
+    const ninjas = [
+      { firstName: "Kakashi", lastName: "Hatake" },
+      { firstName: "Iruka", lastName: "Umino" },
+    ];
+    const result = collections.associateBy(
+      ninjas,
+      (n) => `${n.firstName}-${n.lastName}`,
+    );
+    console.log("associateBy result: ", result);
+  }
 
-function basicCollectionsStructures() {
-  // BSTree
-  // RBTree
+  // associateBy
+  {
+    const names = ["Kakashi", "Itachi"];
+    const result = collections.associateWith(
+      names,
+      (n) => n.toLowerCase(),
+    );
+    console.log("associateWith result: ", result);
+  }
+
+  // chunk
+  {
+    const zeros = Array(10).fill(0);
+    const result = collections.chunk(zeros, 5);
+    console.log("chunk result: ", result);
+  }
+
+  // deepMerge
+  {
+    const object1 = { a: 1, b: 2 };
+    const object2 = { a: 3, c: 4 };
+    const result = collections.deepMerge(object1, object2);
+    console.log("deepMerge result: ", result);
+  }
+
+  // distinct
+  {
+    const numbers = [1, 2, 3, 4, 1];
+    const result = collections.distinct(numbers);
+    console.log("distinct result: ", result);
+  }
+
+  // distinctBy
+  {
+    const objects = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 1 }];
+    const result = collections.distinctBy(objects, (v) => v.id);
+    console.log("distinctBy result: ", result);
+  }
+
+  // dropWhile (also `dropLastWhile)
+  {
+    const numbers = [0, -1, 0, 1, 2, 3];
+    const result = collections.dropWhile(numbers, (n) => n <= 0);
+    console.log("dropWhile result: ", result);
+  }
+
+  // filterEntries
+  {
+    const record = { a: 0, b: 2, c: -1, d: 3 };
+    const result = collections.filterEntries(
+      record,
+      ([_k, v]) => v > 0,
+    );
+    console.log("filterEntries result: ", result);
+  }
+
+  // filterKeys
+  {
+    const record = { a: 0, b: 2, c: -1, d: 3 };
+    const result = collections.filterKeys(
+      record,
+      (k) => k !== "b",
+    );
+    console.log("filterKeys result: ", result);
+  }
+
+  // filterValues
+  {
+    const record = { a: 0, b: 2, c: -1, d: 3 };
+    const result = collections.filterValues(
+      record,
+      (v) => v > 0,
+    );
+    console.log("filterValues result: ", result);
+  }
+
+  // findSingle
+  {
+    const numbers1 = [1, 2, 3, 4, 5];
+    const numbers2 = [1, 2, 3, 2, 1];
+    const result1 = collections.findSingle(
+      numbers1,
+      (n) => n === 2,
+    );
+    const result2 = collections.findSingle(
+      numbers2,
+      (n) => n === 2,
+    );
+    console.log("findSingle result1: ", result1);
+    console.log("findSingle result2: ", result2);
+  }
+
+  // firstNotNullishOf
+  {
+    const maybeNumbers = [undefined, 1, 2, null, 4];
+    const result = collections.firstNotNullishOf(
+      maybeNumbers,
+      (v) => v,
+    );
+    console.log("firstNotNullishOf result: ", result);
+  }
+
+  // Object.groupBy (`groupBy` was removed from deno std)
+  {
+    const values = [{ a: 1, b: "abc" }, { a: 2, b: "def" }];
+    const result = Object.groupBy(
+      values,
+      (v) => v.b,
+    );
+    console.log("Object.groupBy result: ", result);
+  }
+
+  // includesValue
+  {
+    const record = { a: 1, b: 2 };
+    const result = collections.includesValue(record, 2);
+    console.log("includesValue result: ", result);
+  }
+
+  // invert
+  {
+    const record = { a: 1, b: 2 };
+    const result = collections.invert(record);
+    console.log("invert result: ", result);
+  }
+
+  // intersect
+  {
+    const values1 = [1, 2, 3];
+    const values2 = [2, 3, 4];
+    const result = collections.intersect(values1, values2);
+    console.log("intersect result: ", result);
+  }
+
+  // mapEntries
+  {
+    const record = { a: 1, b: 2, c: 3 };
+    const result = collections.mapEntries(
+      record,
+      ([k, v]) => [`${k}**2`, v ** 2],
+    );
+    console.log("mapEntries result: ", result);
+  }
+
+  // mapKeys
+  {
+    const record = { a: 1, b: 2, c: 3 };
+    const result = collections.mapKeys(
+      record,
+      (k) => k.toUpperCase(),
+    );
+    console.log("mapKeys result: ", result);
+  }
+
+  // mapValues
+  {
+    const record = { a: 1, b: 2, c: 3 };
+    const result = collections.mapValues(record, (v) => v * 2);
+    console.log("mapValues result: ", result);
+  }
+
+  // mapNotNullish
+  {
+    const maybeNumbers = [undefined, 1, 2, null, 4];
+    const result = collections.mapNotNullish(
+      maybeNumbers,
+      (v) => v && v * 2,
+    );
+    console.log("mapNotNullish result: ", result);
+  }
+
+  // maxBy
+  {
+    const records = [{ name: "Kakashi", age: 27 }, { name: "Yamato", age: 24 }];
+    const result = collections.maxBy(records, (n) => n.age);
+    console.log("maxBy result: ", result);
+  }
+
+  // maxOf
+  {
+    const records = [{ name: "Kakashi", age: 27 }, { name: "Yamato", age: 24 }];
+    const result = collections.maxOf(records, (n) => n.age);
+    console.log("maxOf result: ", result);
+  }
+
+  // maxWith
+  {
+    const records = [{ name: "Kakashi", age: 27 }, { name: "Yamato", age: 24 }];
+    const result = collections.maxWith(records, (n1, n2) => n1.age - n2.age);
+    console.log("maxWith result: ", result);
+  }
+
+  // minBy
+  {
+    const records = [{ name: "Kakashi", age: 27 }, { name: "Yamato", age: 24 }];
+    const result = collections.minBy(records, (n) => n.age);
+    console.log("minBy result: ", result);
+  }
+
+  // minOf
+  {
+    const records = [{ name: "Kakashi", age: 27 }, { name: "Yamato", age: 24 }];
+    const result = collections.minOf(records, (n) => n.age);
+    console.log("minOf result: ", result);
+  }
+
+  // minWith
+  {
+    const records = [{ name: "Kakashi", age: 27 }, { name: "Yamato", age: 24 }];
+    const result = collections.minWith(records, (n1, n2) => n1.age - n2.age);
+    console.log("minWith result: ", result);
+  }
+
+  // omit
+  {
+    const record = { a: 1, b: 2, c: 3 };
+    const result = collections.omit(record, ["a", "b"]);
+    console.log("omit result: ", result);
+  }
+
+  // partition
+  {
+    const numbers = [1, 2, 3, 4, 5];
+    const result = collections.partition(numbers, (n) => n % 2 == 0);
+    console.log("partition result: ", result);
+  }
+
+  // permutations
+  {
+    const numbers = [1, 2, 3];
+    const result = collections.permutations(numbers);
+    console.log("partition result: ", result);
+  }
+
+  // pick
+  {
+    const record = { a: 1, b: 2, c: 3 };
+    const result = collections.pick(record, ["a", "b"]);
+    console.log("pick result: ", result);
+  }
+
+  // reduceGroups
+  {
+    const valuesRecord = {
+      "x": [1, 2, 3],
+      "x**2": [1, 4, 9],
+      "x**3": [1, 8, 27],
+    };
+    const result = collections.reduceGroups(
+      valuesRecord,
+      (acc, curr) => acc + curr,
+      0,
+    );
+    console.log("reduceGroups result: ", result);
+  }
+
+  // runningReduce
+  {
+    const numbers = [1, 2, 3, 4, 5];
+    const result = collections.runningReduce(
+      numbers,
+      (acc, curr) => acc + curr,
+      0,
+    );
+    console.log("runningReduce result: ", result);
+  }
+  // sumOf
+  {
+    const records = [{ id: "a", count: 3 }, { id: "b", count: 2 }];
+    const result = collections.sumOf(
+      records,
+      (r) => r.count,
+    );
+    console.log("sumOf result: ", result);
+  }
+
+  // sample
+  {
+    const numbers = [1, 2, 3, 4, 5];
+    const result = collections.sample(numbers);
+    console.log("sample result: ", result);
+  }
+  // slidingWindows
+  {
+    const numbers = [1, 2, 3, 4, 5];
+    const result = collections.slidingWindows(numbers, 3);
+    console.log("slidingWindows result: ", result);
+  }
+
+  // sortBy
+  {
+    const records = [{ name: "Kakashi", age: 27 }, { name: "Yamato", age: 24 }];
+    const result = collections.sortBy(records, (r) => r.name);
+    console.log("sortBy result: ", result);
+  }
+
+  // takeWhile (also `takeLastWhile)
+  {
+    const numbers = [1, 2, 1, 0, -1, 0, 1, 2, 1];
+    const result = collections.takeWhile(numbers, (n) => n > 0);
+    console.log("takeWhile result: ", result);
+  }
+
+  // union
+  {
+    const values1 = [1, 2, 3];
+    const values2 = [2, 3, 4];
+    const result = collections.union(values1, values2);
+    console.log("union result: ", result);
+  }
+
+  // zip
+  {
+    const values1 = [1, 2, 3];
+    const values2 = ["a", "b", "c"];
+    const result = collections.zip(values1, values2);
+    console.log("zip result: ", result);
+  }
+
+  // zip
+  {
+    const tuples = [[1, "a"], [2, "b"], [3, "c"]] as Array<[number, string]>;
+    const result = collections.unzip(tuples);
+    console.log("unzip result: ", result);
+  }
+
+  // withoutAll
+  {
+    const values1 = [1, 2, 3];
+    const values2 = [2, 3, 4];
+    const result = collections.withoutAll(values1, values2);
+    console.log("withoutAll result: ", result);
+  }
+
+  // // unzip: split array of 2-tuples into 2 separate arrays
+  // // withoutAll: remove elements in arr2 from arr1
+  // // zip: combine 2 arrays into an array of 2-tuples
 }
 
 async function basicCrypto() {
@@ -367,7 +747,7 @@ async function basicCryptoAes() {
   );
 
   // Encrypt
-  const iv = await crypto.getRandomValues(new Uint8Array(16)); // 12 or 16
+  const iv = crypto.getRandomValues(new Uint8Array(16)); // 12 or 16
   const encryptedBuffer = await crypto.subtle.encrypt(
     { name: "AES-GCM", iv }, // AesGcmParams, AesCbcParams
     importedKey,
@@ -437,18 +817,42 @@ async function basicCryptoRsa() {
   console.log("decryptedMessage: ", decryptedMessage);
 }
 
-function basicDatetime() {
-  const now = new Date();
-  const formatted = format(now, "yyyy-MM-dd");
-  const doy = dayOfYear(now);
-  const parsed = parse("2022-05-25", "yyyy-MM-dd");
-  const diff = difference(now, new Date());
+function basicCsv() {
+  const records = getNinjaRecords();
+  const columns = Object.keys(records[0]);
 
-  console.log("now: ", now);
-  console.log("formatted: ", formatted);
-  console.log("doy: ", doy);
+  const data = csv.stringify(records, { columns });
+  console.log("data: ", data);
+
+  const parsed = csv.parse(data, { columns });
   console.log("parsed: ", parsed);
-  console.log("diff.milliseconds: ", diff.milliseconds);
+}
+
+function basicDataStructures() {
+  // TODO
+  structures;
+}
+
+function basicDatetime() {
+  const iso8601Format = "yyyy-MM-dd";
+  const formatIso8601date = (d: Date) => datetime.format(d, iso8601Format);
+  const parseIso8601date = (d: string) => datetime.parse(d, iso8601Format);
+  const diffMs = (d1: Date, d2: Date) => {
+    return datetime.difference(d1, d2).milliseconds;
+  };
+
+  const now = new Date();
+
+  prettyPrintResults({
+    now,
+    "datetime.dayOfYear(now)": datetime.dayOfYear(now),
+    "datetime.isLeap(now)": datetime.isLeap(now),
+    "datetime.weekOfYear(now)": datetime.weekOfYear(now),
+    // Custom
+    "formatIso8601date(now)": formatIso8601date(now),
+    'parseIso8601date("2022-05-25")': parseIso8601date("2022-05-25"),
+    "diffMs(now, new Date())": diffMs(now, new Date()),
+  });
 }
 
 async function basicDotenv() {
@@ -458,30 +862,86 @@ async function basicDotenv() {
 
 function basicEncodingBase64() {
   const message = "Where's the leak, mam?";
-  const messageBytesUtf8 = utf8Encode(message);
-  const messageStringBase64 = encodeBase64(message);
-  const messageBytesBase64 = decodeBase64(messageStringBase64);
 
-  console.log("message: ", message);
-  console.log("messageBytesUtf8: ", messageBytesUtf8);
-  console.log("messageBytesBase64: ", messageBytesBase64);
-  console.log("messageStringBase64: ", messageStringBase64);
-
-  // TODO: encoding -- csv, jsonc, toml, yaml
+  prettyPrintResults({
+    "utf8Encode(message)": utf8Encode(message),
+    "encodeBase64(message)": encodeBase64(message),
+    "decodeBase64(encodeBase64(message))": decodeBase64(encodeBase64(message)),
+  });
 }
 
-function basicFlags() {
-  const parsed = parseArgs(["pipenv", "install", "--dev"]);
-  console.log("parsed", parsed);
+function basicEncodingHex() {
+  const message = "Where's the leak, mam?";
+
+  prettyPrintResults({
+    "utf8Encode(message)": utf8Encode(message),
+    "encodeHex(message)": encodeHex(message),
+    "decodeHex(encodeHex(message))": decodeHex(encodeHex(message)),
+  });
+}
+
+function basicExpect() {
+  // TODO
+  expect(2 * 2).toStrictEqual(4);
+  expect("abc").toMatch(/^a/);
+  expect(2).toBeDefined();
+  expect(undefined).not.toBeDefined();
+  expect(null).toBeNull();
+  expect(false).not.toBeNull();
+  expect("hello").toBeTruthy();
+  expect("").toBeFalsy();
+  expect([1, 2, 3]).toContain(1);
+  expect([1, 2, 3]).not.toContain(0);
+  expect([{ a: 1 }]).toContainEqual({ a: 1 });
+  expect(4.002).toBeCloseTo(4);
+  expect(4).toBeGreaterThan(0);
+  expect(4).toBeGreaterThanOrEqual(0);
+  expect(-4).toBeLessThan(0);
+  expect(-4).toBeLessThanOrEqual(0);
+  expect([1, 2, 3]).toHaveLength(3);
+  expect(new Date()).toBeInstanceOf(Date);
+  expect({ a: 1 }).toHaveProperty("a");
+  expect(2).toEqual(expect.any(Number));
+  expect(2).toEqual(expect.anything());
+  expect([1, 2, 3]).toEqual(expect.arrayContaining([1, 2]));
 }
 
 function basicFmt() {
-  const formatted = sprintf("Hey there, %s", "Kakashi");
-  console.log("formatted: ", formatted);
+  prettyPrintResults({
+    'italic(underline(sprintf("Hi %s", "Kakashi")))': italic(
+      underline(sprintf("Hi %s", "Kakashi")),
+    ),
+    "bgBlue(white(formatBytes(123456)))": bgBlue(white(formatBytes(123456))),
+    "inverse(formatDuration(123456))": inverse(formatDuration(123456)),
+  });
 }
 
 async function basicFs() {
-  // unstable
+  // Setup
+  const filename = "my-file.txt";
+  const inputDir = posix.join(".", "temp", "input");
+  const outputDir = posix.join(".", "temp", "output");
+  const inputPath = posix.join(inputDir, filename);
+  const outputPath = posix.join(outputDir, filename);
+  for (const dir of [inputDir, outputDir]) {
+    await Deno.mkdir(dir, { recursive: true });
+  }
+  Deno.writeFile(inputPath, utf8Encode("Is mayonaise an instrument?"));
+  await fs.ensureFile(inputPath);
+
+  // Examples
+  await fs.copy(inputPath, outputPath); // {overwrite: true}
+
+  // Cleanup
+  const cleanupPaths = [outputPath, inputPath, outputDir, inputDir];
+  for (const path of cleanupPaths) {
+    await Deno.remove(path);
+  }
+}
+
+async function basicIni() {
+  // TODO
+  ini;
 }
 
 async function basicIo() {
@@ -507,8 +967,29 @@ async function basicIo() {
   console.log("hashedText", hashedText);
 }
 
+async function basicJson() {
+  const records = getNinjaRecords();
+  const stream = ReadableStream.from(records).pipeThrough(
+    new json.JsonStringifyStream(),
+  );
+  const recordStrings = await Array.fromAsync(stream);
+  const result = `[${recordStrings.join(",").replaceAll("\n", "")}]`;
+  console.log("result: ", result);
+}
+
+function basicJsonc() {
+  const records = getNinjaRecords();
+  const comment = "// Are you going to finish that croissant?";
+  const jsonWithComment = comment + "\n" + JSON.stringify(records);
+  const result = jsonc.parse(jsonWithComment);
+  prettyPrintResults({
+    jsonWithComment,
+    result,
+  });
+}
+
 /** Custom log formatter */
-function customFormatter(lr: log.LogRecord) {
+function _customFormatter(lr: log.LogRecord) {
   return `${lr.loggerName}:${lr.levelName}:${lr.msg}`;
 }
 
@@ -518,7 +999,7 @@ async function basicLog() {
   log.setup({
     handlers: {
       console: new log.ConsoleHandler("DEBUG", {
-        formatter: customFormatter, // Try `log.formatters.jsonFormatter`
+        formatter: _customFormatter, // Try `log.formatters.jsonFormatter`
       }),
       file: new log.FileHandler("DEBUG", { filename: logFilename }),
     },
@@ -548,6 +1029,10 @@ async function basicLog() {
   await Deno.remove(logFilename);
 }
 
+function basicMsgpack() {
+  msgpack;
+}
+
 function basicPath() {
   const filepath = "./temp/my-file.txt";
   const basename = posix.basename(filepath); // my-file.txt
@@ -569,6 +1054,10 @@ function basicPath() {
   // TODO: format, relative, resolve, common
 }
 
+function basicRandom() {
+  random;
+}
+
 async function basicStreams() {
   const command = new Deno.Command("ls", {
     args: ["-a"],
@@ -586,6 +1075,57 @@ async function basicStreams() {
   console.log("ls error: ", error);
 }
 
+async function getTarStreamFile(filepath: string): Promise<tar.TarStreamFile> {
+  const [stat, fsfile] = await Promise.all([
+    Deno.stat(filepath),
+    Deno.open(filepath),
+  ]);
+  return {
+    type: "file",
+    path: filepath,
+    size: stat.size,
+    readable: fsfile.readable,
+  };
+}
+
+async function tarzipFiles(
+  inputFilepaths: Array<string>,
+  outputTarPath: string,
+): Promise<void> {
+  const stream = ReadableStream.from<tar.TarStreamInput>(
+    await Promise.all(
+      inputFilepaths.map(getTarStreamFile),
+    ),
+  );
+  await stream.pipeThrough(new tar.TarStream())
+    .pipeThrough(new CompressionStream("gzip"))
+    .pipeTo((await Deno.create(outputTarPath)).writable);
+}
+
+/** Unzip a tar into a target directory */
+async function untarzip(
+  tarPath: string,
+  targetDir: string,
+): Promise<Array<string>> {
+  const paths: Array<string> = [];
+  const gzip = new DecompressionStream("gzip");
+  const stream = (await Deno.open(tarPath)).readable;
+  for await (
+    const entry of stream.pipeThrough(gzip).pipeThrough(new tar.UntarStream())
+  ) {
+    const path = posix.normalize(entry.path);
+    const basename = posix.basename(path);
+    const targetPath = posix.join(targetDir, basename);
+    await fs.ensureDir(posix.dirname(targetPath));
+    if (!entry.readable) {
+      continue;
+    }
+    await entry.readable.pipeTo((await Deno.create(targetPath)).writable);
+    paths.push(targetPath);
+  }
+  return paths;
+}
+
 async function basicTar() {
   // Setup
   const filename = "my-file.txt";
@@ -597,6 +1137,7 @@ async function basicTar() {
     await Deno.mkdir(dir, { recursive: true });
   }
   Deno.writeFile(inputPath, utf8Encode("Is mayonaise an instrument?"));
+  await fs.ensureFile(inputPath);
 
   // Zip and unzip files
   await tarzipFiles([inputPath], outputPath);
@@ -610,6 +1151,10 @@ async function basicTar() {
   for (const path of cleanupPaths) {
     await Deno.remove(path);
   }
+}
+
+function basicText() {
+  text;
 }
 
 function basicUuid() {
