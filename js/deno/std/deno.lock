@@ -37,6 +37,7 @@
     "jsr:@std/path@*": "1.0.8",
     "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/random@*": "0.1.0",
+    "jsr:@std/regexp@*": "1.0.0",
     "jsr:@std/streams@*": "1.0.8",
     "jsr:@std/streams@^1.0.7": "1.0.8",
     "jsr:@std/streams@^1.0.8": "1.0.8",
@@ -164,6 +165,9 @@
     },
     "@std/random@0.1.0": {
       "integrity": "70a006be0ffb77d036bab54aa8ae6bd0119ba77ace0f2f56f63273d4262a5667"
+    },
+    "@std/regexp@1.0.0": {
+      "integrity": "158628d134c49a0858afe05017c4666f5f73d3a56602c346549ca42f3fab244a"
     },
     "@std/streams@1.0.8": {
       "integrity": "b41332d93d2cf6a82fe4ac2153b930adf1a859392931e2a19d9fabfb6f154fb3",

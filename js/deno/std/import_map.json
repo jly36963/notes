@@ -24,6 +24,7 @@
     "msgpack": "jsr:@std/msgpack",
     "path": "jsr:@std/path",
     "random": "jsr:@std/random",
+    "regexp": "jsr:@std/regexp",
     "streams": "jsr:@std/streams",
     "tar": "jsr:@std/tar",
     "text": "jsr:@std/text",

@@ -1,6 +1,5 @@
 {
   "deno.enable": true,
-  // "deno.importMap": "import_map.json",
   "[typescript]": {
     "editor.tabSize": 2,
     "editor.defaultFormatter": "denoland.vscode-deno"

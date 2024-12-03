@@ -24,7 +24,8 @@ import * as log from "log";
 import * as msgpack from "msgpack";
 import * as posix from "path/posix";
 import * as random from "random";
-import { TextLineStream } from "streams/text-line-stream";
+import * as regexp from "regexp";
+import * as streams from "streams";
 import * as tar from "tar";
 import * as text from "text";
 import { v4 } from "uuid";
@@ -49,6 +50,9 @@ async function main() {
   printSectionTitle("basic CLI");
   basicCli();
 
+  printSectionTitle("basic command");
+  basicCommand();
+
   printSectionTitle("basic collections (functions)");
   basicCollectionsFunctions();
 
@@ -57,6 +61,12 @@ async function main() {
 
   printSectionTitle("basic crypto (aes)");
   await basicCryptoAes();
+
+  printSectionTitle("basic crypto (hmac)");
+  await basicCryptoHmac();
+
+  printSectionTitle("basic crypto (md5)");
+  await basicCryptoMd5();
 
   printSectionTitle("basic crypto (rsa)");
   await basicCryptoRsa();
@@ -88,11 +98,11 @@ async function main() {
   printSectionTitle("basic fs");
   await basicFs();
 
+  printSectionTitle("basic fs (walk)");
+  await basicFsWalk();
+
   printSectionTitle("basic INI");
   await basicIni();
-
-  printSectionTitle("basic io");
-  await basicIo();
 
   printSectionTitle("basic JSON");
   await basicJson();
@@ -111,6 +121,9 @@ async function main() {
 
   printSectionTitle("basic random");
   basicRandom();
+
+  printSectionTitle("basic regexp");
+  basicRegexp();
 
   printSectionTitle("basic streams");
   await basicStreams();
@@ -153,6 +166,7 @@ function prettyPrintResults(results: Record<string, unknown>) {
   for (const [k, v] of Object.entries(results)) {
     console.log(k);
     console.log(typeof v);
+    console.log(Object.prototype.toString.call(v));
     console.log(v);
     console.log();
   }
@@ -333,6 +347,25 @@ function basicCbor() {
 function basicCli() {
   const parsed = parseArgs(["pipenv", "install", "--dev"]);
   console.log("parsed", parsed);
+}
+
+async function basicCommand() {
+  const command = new Deno.Command("ls", {
+    args: ["-a"],
+    stdout: "piped",
+    stderr: "piped",
+  });
+  const result = await command.output();
+
+  const code = result.code;
+  const output = utf8Decode(result.stdout);
+  const error = utf8Decode(result.stderr);
+
+  prettyPrintResults({
+    code,
+    output,
+    error,
+  });
 }
 
 function basicCollectionsFunctions() {
@@ -698,10 +731,6 @@ function basicCollectionsFunctions() {
     const result = collections.withoutAll(values1, values2);
     console.log("withoutAll result: ", result);
   }
-
-  // // unzip: split array of 2-tuples into 2 separate arrays
-  // // withoutAll: remove elements in arr2 from arr1
-  // // zip: combine 2 arrays into an array of 2-tuples
 }
 
 async function basicCrypto() {
@@ -715,19 +744,21 @@ async function basicCrypto() {
   );
   const hashedStringUtf8 = utf8Decode(hashedBytes);
   const hashedStringBase64 = encodeBase64(hashedBytes);
-  console.log("message: ", message);
-  console.log("messageBytes: ", messageBytes);
-  console.log("hashedBytes: ", hashedBytes);
-  console.log("hashedStringUtf8: ", hashedStringUtf8);
-  console.log("hashedStringBase64: ", hashedStringBase64);
 
-  // TODO: hmac
+  prettyPrintResults({
+    message,
+    messageBytes,
+    hashedBytes,
+    hashedStringUtf8,
+    hashedStringBase64,
+  });
 }
 
 async function basicCryptoAes() {
   // Message
-  const message =
-    "You focus on the trivial, and lose sight of what is most important. Change is impossible in this fog of ignorance.";
+  const message = "You focus on the trivial, " +
+    "and lose sight of what is most important. " +
+    "Change is impossible in this fog of ignorance.";
 
   const messageBytes = utf8Encode(message);
 
@@ -765,11 +796,31 @@ async function basicCryptoAes() {
   const decryptedMessage = utf8Decode(decryptedBytes);
 
   // Result
-  console.log("message: ", message);
-  console.log("messageBytes: ", messageBytes);
-  console.log("encryptedBytes: ", encryptedBytes);
-  console.log("decryptedBytes: ", decryptedBytes);
-  console.log("decryptedMessage: ", decryptedMessage);
+  prettyPrintResults({
+    message,
+    messageBytes,
+    encryptedBytes,
+    decryptedBytes,
+    decryptedMessage,
+  });
+}
+
+async function basicCryptoHmac() {
+  // TODO: hmac
+}
+
+async function basicCryptoMd5() {
+  const text = "The owner of the white sedan, you left your lights on.";
+  const bytes = utf8Encode(text);
+  const hashedBytes = await crypto.subtle.digest("MD5", bytes);
+  const hashedHexText = encodeHex(new Uint8Array(hashedBytes));
+
+  prettyPrintResults({
+    text,
+    bytes,
+    hashedBytes,
+    hashedHexText,
+  });
 }
 
 async function basicCryptoRsa() {
@@ -881,7 +932,6 @@ function basicEncodingHex() {
 }
 
 function basicExpect() {
-  // TODO
   expect(2 * 2).toStrictEqual(4);
   expect("abc").toMatch(/^a/);
   expect(2).toBeDefined();
@@ -919,52 +969,63 @@ function basicFmt() {
 async function basicFs() {
   // Setup
   const filename = "my-file.txt";
+  const filename2 = "my-file2.txt";
   const inputDir = posix.join(".", "temp", "input");
   const outputDir = posix.join(".", "temp", "output");
   const inputPath = posix.join(inputDir, filename);
+  const inputPath2 = posix.join(inputDir, filename2);
   const outputPath = posix.join(outputDir, filename);
+  const outputPath2 = posix.join(outputDir, filename2);
   for (const dir of [inputDir, outputDir]) {
     await Deno.mkdir(dir, { recursive: true });
   }
   Deno.writeFile(inputPath, utf8Encode("Is mayonaise an instrument?"));
   await fs.ensureFile(inputPath);
 
-  // Examples
+  // Examples (sync and async)
+  // copy, emptyDir, ensureDir, ensureFile, exists, move,
+  await fs.ensureDir(outputDir);
+  fs.ensureDirSync(outputDir);
+  await fs.emptyDir(outputDir);
   await fs.copy(inputPath, outputPath); // {overwrite: true}
+  await fs.move(outputPath, outputPath2);
+  fs.copySync(inputPath, outputPath); // { overwrite: true }
+  fs.moveSync(inputPath, inputPath2);
+  await fs.ensureFile(outputPath);
+  fs.ensureFileSync(outputPath);
 
   // Cleanup
-  const cleanupPaths = [outputPath, inputPath, outputDir, inputDir];
+  const cleanupPaths = [
+    outputPath,
+    outputPath2,
+    inputPath,
+    inputPath2,
+    outputDir,
+    inputDir,
+  ];
   for (const path of cleanupPaths) {
-    await Deno.remove(path);
+    const exists = await fs.exists(path);
+    if (exists) {
+      await Deno.remove(path).catch(() => {});
+    }
+  }
+}
+
+async function basicFsWalk() {
+  for await (const entry of fs.walk(".")) {
+    if (entry.isDirectory) {
+      console.log(`${entry.path} is a directory`);
+    } else if (entry.isFile) {
+      console.log(`${entry.path} is a file`);
+    } else if (entry.isSymlink) {
+      console.log(`${entry.path} is a symlink`);
+    }
   }
 }
 
 async function basicIni() {
   // TODO
   ini;
-}
-
-async function basicIo() {
-  const fsFile = await Deno.open("./import_map.json");
-  let text = "";
-  const readable = fsFile.readable.pipeThrough(new TextDecoderStream())
-    .pipeThrough(new TextLineStream());
-  for await (const data of readable) {
-    text += `${data}\n`;
-  }
-
-  // MD5 hash of text contents
-  const hashedText = encodeHex(
-    new Uint8Array(
-      await crypto.subtle.digest(
-        "MD5",
-        utf8Encode(text),
-      ),
-    ),
-  );
-
-  // Result
-  console.log("hashedText", hashedText);
 }
 
 async function basicJson() {
@@ -1030,49 +1091,82 @@ async function basicLog() {
 }
 
 function basicMsgpack() {
-  msgpack;
+  const records = getNinjaRecords();
+  const packed = msgpack.encode(records);
+  const unpacked = msgpack.decode(packed);
+
+  prettyPrintResults({
+    records,
+    packed,
+    unpacked,
+  });
 }
 
 function basicPath() {
-  const filepath = "./temp/my-file.txt";
-  const basename = posix.basename(filepath); // my-file.txt
-  const dirname = posix.dirname(filepath); // ./temp
-  const extname = posix.extname(filepath); // .txt
-  const isAbsolute = posix.isAbsolute(filepath); // false
-  const joined = posix.join(".", "temp", "my-file.txt");
-  const normalized = posix.normalize("./temp/../temp/");
-  const parsed = posix.parse(filepath); // { root, dir, base, ext, name }
+  const filename = "my-file.txt";
+  const filename2 = "my-file-2.txt";
+  const tempDir = posix.join(".", "temp");
+  const filepath = posix.join(tempDir, filename);
+  const filepath2 = posix.join(tempDir, filename2);
+  const glob = "vscode/*.json";
 
-  console.log("basename: ", basename);
-  console.log("dirname: ", dirname);
-  console.log("extname: ", extname);
-  console.log("isAbsolute: ", isAbsolute);
-  console.log("joined: ", joined);
-  console.log("normalized: ", normalized);
-  console.log("parsed: ", parsed);
-
-  // TODO: format, relative, resolve, common
+  prettyPrintResults({
+    filepath,
+    filepath2,
+    glob,
+    "posix.basename(filepath)": posix.basename(filepath), // my-file.txt
+    "posix.common([filepath, filepath2])": posix.common([filepath, filepath2]),
+    "posix.dirname(filepath)": posix.dirname(filepath), // ./temp
+    "posix.extname(filepath)": posix.extname(filepath), // .txt
+    'posix.format({dir: "temp", base: "my-file.txt"})': posix.format({
+      dir: "temp",
+      base: "my-file.txt",
+    }),
+    "posix.globToRegExp(glob)": posix.globToRegExp(glob),
+    "posix.isAbsolute(filepath)": posix.isAbsolute(filepath), // false
+    "posix.isGlob(glob)": posix.isGlob(glob),
+    'posix.join("temp", "my-file.txt")': posix.join("temp", "my-file.txt"),
+    'posix.normalize("./temp/../temp/")': posix.normalize("./temp/../temp/"),
+    "posix.normalizeGlob(`temp/../${glob}`)": posix.normalizeGlob(
+      `temp/../${glob}`,
+    ),
+    "posix.parse(filepath)": posix.parse(filepath), // { root, dir, base, ext, name }
+  });
 }
 
 function basicRandom() {
-  random;
+  const prng = random.randomSeeded(1n);
+
+  prettyPrintResults({
+    prng,
+    "random.randomBetween(1, 10)": random.randomBetween(1, 10),
+    "random.randomIntegerBetween(1, 10);": random.randomIntegerBetween(1, 10),
+    "random.randomIntegerBetween(1, 10, { prng });": random
+      .randomIntegerBetween(1, 10, {
+        prng,
+      }),
+    "random.sample([1, 2, 3])": random.sample([1, 2, 3]),
+    "random.shuffle([1, 2, 3])": random.shuffle([1, 2, 3]),
+  });
+}
+
+function basicRegexp() {
+  // TODO
+  regexp;
 }
 
 async function basicStreams() {
-  const command = new Deno.Command("ls", {
-    args: ["-a"],
-    stdout: "piped",
-    stderr: "piped",
-  });
-
-  const result = await command.output();
-  console.log(result);
-
-  const output = utf8Decode(result.stdout);
-  const error = utf8Decode(result.stderr);
-  console.log("ls code: ", result.code);
-  console.log("ls output: ", output);
-  console.log("ls error: ", error);
+  // TextLineStream
+  {
+    const fsFile = await Deno.open("./import_map.json");
+    let text = "";
+    const readable = fsFile.readable.pipeThrough(new TextDecoderStream())
+      .pipeThrough(new streams.TextLineStream());
+    for await (const data of readable) {
+      text += `${data}\n`;
+    }
+    console.log("text: ", text);
+  }
 }
 
 async function getTarStreamFile(filepath: string): Promise<tar.TarStreamFile> {
@@ -1154,7 +1248,37 @@ async function basicTar() {
 }
 
 function basicText() {
-  text;
+  prettyPrintResults({
+    'text.closestString("ab", ["abc", "def"]);': text.closestString("ab", [
+      "abc",
+      "def",
+    ]),
+    'text.compareSimilarity("ab")("abc", "def")': text.compareSimilarity("ab")(
+      "abc",
+      "def",
+    ),
+    'text.levenshteinDistance("spongebob", "doodlebob")': text
+      .levenshteinDistance("spongebob", "doodlebob"),
+    "text.toCamelCase(\"Where's the leak, ma'am?\")": text.toCamelCase(
+      "Where's the leak, ma'am?",
+    ),
+    "text.toKebabCase(\"Where's the leak, ma'am?\")": text.toKebabCase(
+      "Where's the leak, ma'am?",
+    ),
+    "text.toPascalCase(\"Where's the leak, ma'am?\")": text.toPascalCase(
+      "Where's the leak, ma'am?",
+    ),
+    "text.toSnakeCase(\"Where's the leak, ma'am?\")": text.toSnakeCase(
+      "Where's the leak, ma'am?",
+    ),
+    'text.wordSimilaritySort("ab", ["abc", "def"]);': text.wordSimilaritySort(
+      "ab",
+      [
+        "abc",
+        "def",
+      ],
+    ),
+  });
 }
 
 function basicUuid() {
