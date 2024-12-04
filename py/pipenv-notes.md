@@ -1,6 +1,28 @@
 # Pipenv
 
-# Setup and usage
+## Example Pipfile
+
+```toml
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+numpy = "*"
+seaborn = "*"
+matplotlib = "*"
+
+[dev-packages]
+pylint = "*"
+ruff = "*"
+
+[requires]
+python_version = "3.12"
+```
+
+## Setup and usage
 
 ```sh
 # Install pipenv
