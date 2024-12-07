@@ -1,18 +1,22 @@
 # standard library
 from contextlib import contextmanager
+
 # package
 import arrow
-from sqlalchemy import inspect
-from sqlalchemy.orm import lazyload, noload
+
 # connection
-from connections.pg import engine, Session
-# models
-from models.ninja import Ninja
-from models.jutsu import Jutsu
-from models.join_tables.ninjas_jutsus import NinjaJutsu
+from connections.pg import Session
+
 # marshmallow
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow_sqlalchemy.fields import Nested
+from models.join_tables.ninjas_jutsus import NinjaJutsu
+from models.jutsu import Jutsu
+
+# models
+from models.ninja import Ninja
+from sqlalchemy import inspect
+from sqlalchemy.orm import noload
 
 # marshmallow schemas
 
@@ -25,7 +29,7 @@ class SmartNested(Nested):
 
 
 class NinjaSchema(SQLAlchemyAutoSchema):
-    jutsus = Nested('NinjaJutsuSchema', exclude=('jutsu', 'ninja'), many=True)
+    jutsus = Nested("NinjaJutsuSchema", exclude=("jutsu", "ninja"), many=True)
 
     class Meta:
         model = Ninja
@@ -33,7 +37,7 @@ class NinjaSchema(SQLAlchemyAutoSchema):
 
 
 class JutsuSchema(SQLAlchemyAutoSchema):
-    ninjas = Nested('NinjaJutsuSchema', exclude=('ninja', 'jutsu'), many=True)
+    ninjas = Nested("NinjaJutsuSchema", exclude=("ninja", "jutsu"), many=True)
 
     class Meta:
         model = Jutsu
@@ -41,8 +45,8 @@ class JutsuSchema(SQLAlchemyAutoSchema):
 
 
 class NinjaJutsuSchema(SQLAlchemyAutoSchema):
-    jutsu = Nested('JutsuSchema')
-    ninja = Nested('NinjaSchema')
+    jutsu = Nested("JutsuSchema")
+    ninja = Nested("NinjaSchema")
 
     class Meta:
         model = NinjaJutsu
@@ -56,8 +60,7 @@ ninja_jutsu_schema = NinjaJutsuSchema()
 # DAL class
 
 
-class PostgresDAL():
-
+class PostgresDAL:
     @staticmethod
     @contextmanager
     def get_session():
@@ -79,12 +82,12 @@ class PostgresDAL():
     # ninjas
     # ---
 
-    def get_ninja(self, id):
+    def get_ninja(self, ninja_id):
         with self.get_session() as session:
             ninja = (
                 session.query(Ninja)
-                .options(noload('jutsus'))
-                .filter(Ninja.id == id)
+                .options(noload("jutsus"))
+                .filter(Ninja.id == ninja_id)
                 .filter(Ninja.deleted_at == None)
                 .first()
             )
@@ -99,24 +102,24 @@ class PostgresDAL():
             session.add(ninja_record)
             return
 
-    def update_ninja(self, id, updates):
+    def update_ninja(self, ninja_id, updates):
         with self.get_session() as session:
             (
                 session.query(Ninja)
-                .filter(Ninja.id == id)
+                .filter(Ninja.id == ninja_id)
                 .filter(Ninja.deleted_at == None)
                 .update(updates)
             )
             return
 
-    def delete_ninja(self, id):
+    def delete_ninja(self, ninja_id):
         now = arrow.utcnow().format()
         with self.get_session() as session:
             (
                 session.query(Ninja)
-                .filter(Ninja.id == id)
+                .filter(Ninja.id == ninja_id)
                 .filter(Ninja.deleted_at == None)
-                .update({'deleted_at', now})
+                .update({"deleted_at", now})
             )
             return
 
@@ -124,12 +127,12 @@ class PostgresDAL():
     # jutsus
     # ---
 
-    def get_jutsu(self, id):
+    def get_jutsu(self, jutsu_id):
         with self.get_session() as session:
             jutsu = (
                 session.query(Jutsu)
-                .options(noload('ninjas'))
-                .filter(Jutsu.id == id)
+                .options(noload("ninjas"))
+                .filter(Jutsu.id == jutsu_id)
                 .filter(Jutsu.deleted_at == None)
                 .first()
             )
@@ -144,24 +147,24 @@ class PostgresDAL():
             session.add(jutsu_record)
             return
 
-    def update_jutsu(self, id, updates):
+    def update_jutsu(self, jutsu_id, updates):
         with self.get_session() as session:
             (
                 session.query(Jutsu)
-                .filter(Jutsu.id == id)
+                .filter(Jutsu.id == jutsu_id)
                 .filter(Jutsu.deleted_at == None)
                 .update(updates)
             )
             return
 
-    def delete_jutsu(self, id):
+    def delete_jutsu(self, jutsu_id):
         now = arrow.utcnow().format()
         with self.get_session() as session:
             (
                 session.query(Jutsu)
-                .filter(Jutsu.id == id)
+                .filter(Jutsu.id == jutsu_id)
                 .filter(Jutsu.deleted_at == None)
-                .update({'deleted_at', now})
+                .update({"deleted_at", now})
             )
             return
 
@@ -169,22 +172,22 @@ class PostgresDAL():
     # ninjas_jutsus
     # ---
 
-    def get_ninja_with_related_jutsu(self, id):
+    def get_ninja_with_related_jutsu(self, ninja_id):
         with self.get_session() as session:
             ninja = (
                 session.query(Ninja)
-                .filter(Ninja.id == id)
+                .filter(Ninja.id == ninja_id)
                 .filter(Ninja.deleted_at == None)
                 .first()
             )
             row = ninja_schema.dump(ninja)
             return row
 
-    def get_jutsu_with_related_ninja(self, id):
+    def get_jutsu_with_related_ninja(self, jutsu_id):
         with self.get_session() as session:
             jutsu = (
                 session.query(Jutsu)
-                .filter(Jutsu.id == id)
+                .filter(Jutsu.id == jutsu_id)
                 .filter(Jutsu.deleted_at == None)
                 .first()
             )
@@ -193,10 +196,7 @@ class PostgresDAL():
 
     def add_known_jutsu(self, ninja_id, jutsu_id):
         # prepare record
-        join_record = NinjaJutsu(
-            ninja_id=ninja_id,
-            jutsu_id=jutsu_id
-        )
+        join_record = NinjaJutsu(ninja_id=ninja_id, jutsu_id=jutsu_id)
         # insert record
         with self.get_session() as session:
             session.add(join_record)
