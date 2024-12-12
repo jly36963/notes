@@ -1,8 +1,4 @@
-# ---
-# regular expressions
-# ---
-
-# https://docs.python.org/3/library/re.html
+"""regex notes."""
 
 import re
 
@@ -19,7 +15,7 @@ import re
 # raw and formatted string literals can be combined
 # rf'hey there {name}!'
 
-raw_string = r'string'
+raw_string = r"string"
 
 
 # ---
@@ -61,23 +57,23 @@ raw_string = r'string'
 # re.search (boolean value) (1 -- what is searched for, 2 -- what is searched)
 # ---
 
-patterns = ['term1', 'term2']
-text = 'This is a string containing term1.'
+patterns = ["term1", "term2"]
+text = "This is a string containing term1."
 
 for pattern in patterns:
-    print(f'searching for {pattern}')
+    print(f"searching for {pattern}")
 
     if re.search(pattern, text):
-        print('MATCH!')
+        print("MATCH!")
     else:
-        print('no match.')
+        print("no match.")
 
 # ---
 # re.search (returns re object)
 # ---
 
-text = 'This is a string containing term1.'
-match = re.search('term1', text)
+text = "This is a string containing term1."
+match = re.search("term1", text)
 if match:
     print(match.start())  # 22
 
@@ -85,8 +81,8 @@ if match:
 # re.split (1 -- split by what, 2 -- what is split)
 # ---
 
-split_term = '@'
-email = 'user@gmail.com'
+split_term = "@"
+email = "user@gmail.com"
 print(re.split(split_term, email))  # ['user', 'gmail.com']
 
 
@@ -95,18 +91,18 @@ print(re.split(split_term, email))  # ['user', 'gmail.com']
 # ---
 
 # example 1
-match = re.findall('match', 'test phrase with the word "match".')  # ['match']
+match = re.findall("match", 'test phrase with the word "match".')  # ['match']
 
 # example 2
 
 
 def multi_re_find(pattern, phrase):
-    print(f'searching for pattern: {pattern}')
+    print(f"searching for pattern: {pattern}")
     print(re.findall(pattern, phrase))
-    print('\n')
+    print("\n")
 
 
-test_phrase = 'sdsd..sssddd..sdddsddd...dsds...dssssss...sddddd'
-test_pattern = r'sd*'
+test_phrase = "sdsd..sssddd..sdddsddd...dsds...dssssss...sddddd"
+test_pattern = r"sd*"
 
 multi_re_find(test_pattern, test_phrase)  # returns all matches (s, sd, sdd, etc)
