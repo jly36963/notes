@@ -68,7 +68,13 @@
 
 ### Vector multiplication (vector)
 
-- dot product
+#### Dot product
+
+- dimensions
+  - row_vector \* col_vector
+  - `a_t * b`
+  - `(1 x m) * (n x 1)` produces 1x1 matrix
+  - only works if `m == n`
 - vectors need to have the same dimensions
 - the result of the dot product is a scalar
 - `sum v1[i]*v2[i]`
@@ -80,7 +86,22 @@
   <img src="./images/vector-dot-product.jpg" width="300" alt="Vector dot product">
 </div>
 
-### Vector dot product (geometric perspective)
+#### Outer product
+
+- dimensions:
+  - col_vector \* row_vector
+  - `a_t * b`
+  - `(m x 1) * (1 x n)` produces m x n matrix
+- python
+  - `np.outer(v1,v2)`
+  - `v1 @ v2.T`
+
+<div>
+  <p>Vector outer product</p>
+  <img src="./images/vector-outer-product.jpg" width="300" alt="Vector outer product">
+</div>
+
+#### Vector dot product (geometric perspective)
 
 - vector dot product produces single value
   - `dot_product = magnitude_a * magnitude_b * cos(angle_between)`
@@ -105,23 +126,7 @@
   <img src="./images/orthogonal-vectors.jpg" width="300" alt="Orthogonal vectors">
 </div>
 
-### Vector outer product
-
-- dimensions:dv
-  - `dot product = at * b`
-    - `(1 x m) * (n x 1)` produces 1x1 matrix
-    - only works if `m == n`
-  - `outer product = a * bt`
-    - `(m x 1) * (1 x n)` produces m x n matrix
-- `np.outer(v1,v2)`
-- `v1 @ v2.T`
-
-<div>
-  <p>Vector outer product</p>
-  <img src="./images/vector-outer-product.jpg" width="300" alt="Vector outer product">
-</div>
-
-### Vector cross product (3d vectors)
+#### Vector cross product (3d vectors)
 
 - produces vector that is orthogonal to both vectors
 - method 1
@@ -296,6 +301,19 @@
     - eg: `[A | B]`
   - [augmented matrix](https://en.wikipedia.org/wiki/Augmented_matrix)
 
+### Matrix transpose
+
+- transposing a vector (or matrix) is to flip the elements around the diagonal
+- transposing twice will return the original vector (or matrix)
+
+### Diagonal and trace
+
+- diagonal elements (matrix Aij): Aij where i = j
+- `trace = sum of diagonal elements`
+- `trace = sum of eigenvalues`
+- trace only exists for square matrices
+- `trace(A1 + A2) = trace(A1) + trace(A2)`
+
 ### Matrix add/subtract
 
 - matrix addition and subtraction
@@ -313,27 +331,45 @@
 - `A1*scalar*A2 = scalar*A1*A2 = A1*A2*scalar`
 - `scalar * (A1 + A2) = scalar*A1 + scalar*A2`
 
-### Matrix transpose
+### Matrix-vector multiplication
 
-- transposing a vector (or matrix) is to flip the elements around the diagonal
-- transposing twice will return the original vector (or matrix)
+- dimensionality
+  - vector-matrix
+    - `v_t * A`
+    - `row_vector * matrix`
+  - matrix-vector
+    - `A * v`
+    - `matrix * col_vector`
 
-### Diagonal and trace
+### Matrix-matrix multiplication
 
-- diagonal elements (matrix Aij): Aij where i = j
-- `trace = sum of diagonal elements`
-- `trace = sum of eigenvalues`
-- trace only exists for square matrices
-- `trace(A1 + A2) = trace(A1) + trace(A2)`
+Perspectives:
 
-### matrix multiplication
+- `AB` each cell is the inner product of each combination of `A` rows and `B` cols
+- `AB` is the sum of outer products of each combination of `A` cols and `B` rows
 
 <div>
-  <p>Matrix multiplication</p>
-  <img src="./images/matrix-multiplication-perspectives.jpg" width="300" alt="Matrix multiplication">
+  <p>Matrix multiplication (1)</p>
+  <img src="./images/matmul-1.jpg" width="300" alt="Matrix multiplication (1)">
+</div>
+<div>
+  <p>Matrix multiplication (2)</p>
+  <img src="./images/matmul-2.jpg" width="300" alt="Matrix multiplication (2)">
+</div>
+<div>
+  <p>Matrix multiplication (3)</p>
+  <img src="./images/matmul-3.jpg" width="300" alt="Matrix multiplication (3)">
+</div>
+<div>
+  <p>Matrix multiplication (4)</p>
+  <img src="./images/matmul-4.jpg" width="300" alt="Matrix multiplication (4)">
+</div>
+<div>
+  <p>Matrix multiplication (visual)</p>
+  <img src="./images/matrix-multiplication-perspectives.jpg" width="300" alt="Matrix multiplication (visual)">
 </div>
 
-### matrix multiplication validity
+### Matrix multiplication validity
 
 - standard matrix multiplication (matmul in python)
 - A1 left-multiples A2 (not commutative)

@@ -437,7 +437,7 @@ def _basic_matrix_scalar_arithmetic():
 
 def _basic_matrix_vector_arithmetic():
     # Matrix `A`, Vector `v`
-    A = np.arange(1, 13, 1).reshape(4, 3)
+    A = np.arange(1, 10, 1).reshape(3, 3)
     v = np.array([2, 1, 3])
 
     pretty_print_results(
@@ -446,8 +446,12 @@ def _basic_matrix_vector_arithmetic():
             "v": v,
             "A + v": A + v,
             "A - v": A - v,
+            # element-wise multiplication, produces matrix
             "A * v": A * v,
             "v * A": v * A,  # Same as `A * v`
+            # matrix multiplication, produces vector
+            "A @ v": A @ v,
+            "v.T @ A": v.T @ A,
             "A / v": A / v,
             "A**v": A**v,
             # Dot product

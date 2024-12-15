@@ -1,4 +1,5 @@
 dev:
     gleam run
+
 install:
     gleam deps download

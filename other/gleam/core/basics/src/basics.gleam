@@ -5,6 +5,7 @@ import gleam/dict
 import gleam/dynamic
 import gleam/erlang
 import gleam/erlang/os
+import gleam/erlang/process
 import gleam/float
 import gleam/function
 import gleam/int
@@ -12,20 +13,15 @@ import gleam/io
 import gleam/json
 import gleam/list
 import gleam/option.{type Option, None, Some}
-import gleam/regex
+import gleam/otp/task
+import gleam/regexp
 import gleam/result
 import gleam/string.{inspect}
+import gleam/yielder
 import prng/random
 import simplifile as file
 import snag
 import youid/uuid
-
-// import decode
-// import gleam/erlang/process
-// import gleam/otp/actor
-// import gleam/otp/process
-// import gleam/otp/supervisor
-// import gleam/otp/task
 
 // ---
 // Main
@@ -71,14 +67,14 @@ pub fn main() {
   print_section_title("basic records")
   basic_records()
 
-  print_section_title("basic function curry")
-  basic_function_curry()
-
   print_section_title("basic function recursion")
   basic_function_recursion()
 
   print_section_title("basic function captures")
   basic_function_captures()
+
+  print_section_title("basic yielder")
+  basic_yielder()
 
   print_section_title("basic use")
   basic_use()
@@ -92,8 +88,8 @@ pub fn main() {
   print_section_title("basic erlang")
   basic_erlang()
 
-  print_section_title("basic regex")
-  basic_regex()
+  print_section_title("basic regexp")
+  basic_regexp()
 
   print_section_title("basic path")
   basic_path()
@@ -110,6 +106,9 @@ pub fn main() {
   print_section_title("basic process")
   basic_process()
 
+  print_section_title("basic task")
+  basic_task()
+
   print_section_title("basic env")
   basic_env()
 
@@ -124,12 +123,6 @@ pub fn main() {
 
   print_section_title("basic prng")
   basic_prng()
-
-  print_section_title("basic http")
-  basic_http()
-
-  print_section_title("basic spawn")
-  basic_spawn()
 }
 
 // ---
@@ -161,14 +154,12 @@ fn basic_bool() -> Nil {
     "t: " <> t |> inspect,
     "f: " <> f |> inspect,
     "bool.and(t, t): " <> bool.and(t, t) |> inspect,
-    "bool.compare(t, t): " <> bool.compare(t, t) |> inspect,
     "bool.exclusive_nor(t, t): " <> bool.exclusive_nor(t, t) |> inspect,
     "bool.exclusive_or(t, f): " <> bool.exclusive_or(t, f) |> inspect,
     "bool.nand(t, f): " <> bool.nand(t, f) |> inspect,
     "bool.negate(t): " <> bool.negate(t) |> inspect,
     "bool.nor(f, f): " <> bool.nor(f, f) |> inspect,
     "bool.or(f, t): " <> bool.or(f, t) |> inspect,
-    "bool.to_int(t): " <> bool.to_int(t) |> inspect,
   ]
 
   list.each(results, io.println)
@@ -270,9 +261,9 @@ fn basic_strings() -> Nil {
       <> string.length("Meet my darling daughter, Pearl!") |> inspect,
     "string.lowercase(\"I CAN'T SEE MY FOREHEAD\"): "
       <> string.lowercase("I CAN'T SEE MY FOREHEAD"),
-    "string.pad_left(\"25\", 4, \"0\"): " <> string.pad_left("25", 4, "0"),
+    "string.pad_start(\"25\", 4, \"0\"): " <> string.pad_start("25", 4, "0"),
     "string.repeat(\"I'm ready!  \", 3): " <> string.repeat("I'm ready!  ", 3),
-    "string.pad_right(\"25\", 4, \".\"): " <> string.pad_right("25", 4, "."),
+    "string.pad_end(\"25\", 4, \".\"): " <> string.pad_end("25", 4, "."),
     "string.pop_grapheme(\"This is a load of barnacles!\"): "
       <> string.pop_grapheme("This is a load of barnacles!") |> inspect,
     "string.replace(\"I'm ready!  \", \"ready\", \"not ready\"): "
@@ -429,7 +420,6 @@ fn basic_lists() -> Nil {
       <> list.combination_pairs([1, 2, 3]) |> inspect,
     "list.combinations([1,2,3,4], 3): "
       <> list.combinations([1, 2, 3, 4], 3) |> inspect,
-    "list.concat([l1, [6]]): " <> list.concat([l1, [6]]) |> inspect,
     "list.contains(l1, 2): " <> list.contains(l1, 2) |> inspect,
     "list.each([], fn (v) { v |> inspect |> io.println }): "
       <> list.each([], fn(v) { v |> inspect |> io.println })
@@ -546,11 +536,6 @@ fn basic_records() -> Nil {
   greet(student)
 }
 
-fn basic_function_curry() -> Nil {
-  let add_one = function.curry2(int.add)(1)
-  io.println("add_one(2): " <> add_one(2) |> inspect)
-}
-
 fn recursive_sum(ints: List(Int), total: Int) -> Int {
   case ints {
     [first, ..rest] -> recursive_sum(rest, total + first)
@@ -567,6 +552,17 @@ fn basic_function_recursion() -> Nil {
 fn basic_function_captures() -> Nil {
   let add_one = int.add(1, _)
   io.println("add_one(2): " <> add_one(2) |> inspect)
+}
+
+fn basic_yielder() -> Nil {
+  let numbers = [1, 2, 3, 4, 5]
+  numbers
+  |> yielder.from_list
+  |> yielder.filter(int.is_even)
+  |> yielder.map(fn(n) { n |> int.power(2.0) |> result.unwrap(0.0) })
+  |> yielder.map(float.round)
+  |> inspect
+  |> io.println
 }
 
 type Person =
@@ -669,7 +665,7 @@ fn basic_let_assert() -> Nil {
   list.each(results, io.println)
 }
 
-fn basic_regex() -> Nil {
+fn basic_regexp() -> Nil {
   // String to test against
   let s1 =
     "In order to survive, we cling to all we know and understand. "
@@ -679,8 +675,8 @@ fn basic_regex() -> Nil {
     <> "All humans live with the wrong assumptions."
 
   let check = fn(pattern: String, str: String) -> Bool {
-    let assert Ok(re) = regex.from_string(pattern)
-    regex.check(re, str)
+    let assert Ok(re) = regexp.from_string(pattern)
+    regexp.check(re, str)
   }
 
   io.println(s1)
@@ -800,21 +796,24 @@ fn basic_file_io() -> Nil {
 
 fn basic_os() -> Nil {
   let dir1 = "."
-
-  let results = [
-    "dir1: " <> dir1,
-    "os.family(): " <> os.family() |> inspect,
-    "os.get_all_env() |> dict.get(\"HOME\"): "
-      <> os.get_all_env() |> dict.get("HOME") |> inspect,
-    "os.get_env(\"USER\"): " <> os.get_env("USER") |> inspect,
-  ]
-
+  let results = ["dir1: " <> dir1, "os.family(): " <> os.family() |> inspect]
   list.each(results, io.println)
 }
 
 fn basic_process() -> Nil {
-  // https://hexdocs.pm/gleam_erlang/0.25.0/gleam/erlang/process.html#call
-  io.println("...")
+  process.sleep(1)
+
+  let results = ["process.self(): " <> process.self() |> inspect]
+
+  list.each(results, io.println)
+}
+
+fn basic_task() -> Nil {
+  list.range(0, 10)
+  |> list.map(fn(n) { task.async(fn() { n * 2 }) })
+  |> list.map(fn(t) { task.await(t, 100) })
+  |> inspect
+  |> io.println
 }
 
 fn basic_env() -> Nil {
@@ -823,8 +822,6 @@ fn basic_env() -> Nil {
       <> envoy.all() |> dict.get("HOME") |> inspect,
     "envoy.get(\"USER\"): " <> envoy.get("USER") |> inspect,
   ]
-  // envoy.set
-  // envoy.unset
 
   list.each(results, io.println)
 }
@@ -991,12 +988,4 @@ fn basic_prng() -> Nil {
   ]
 
   list.each(results, io.println)
-}
-
-fn basic_http() -> Nil {
-  io.println("...")
-}
-
-fn basic_spawn() -> Nil {
-  io.println("...")
 }
