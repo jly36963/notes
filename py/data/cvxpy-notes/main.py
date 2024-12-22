@@ -94,7 +94,8 @@ def save_output_image(filename: str) -> None:
 
 def _setup():
     """Set defaults for seaborn."""
-    sns.set_style(style="white")
+    sns.set_style(style="whitegrid")
+    sns.set_palette(palette=sns.color_palette("pastel"))
 
     for d in [DATA_DIR, INPUT_DIR, OUTPUT_DIR]:
         Path.mkdir(d, parents=True, exist_ok=True)
@@ -256,7 +257,8 @@ def _portfolio_rebalance_long_only():
     pretty_print_results({"results": results_df})
 
     # Compare risk/returns for each gamma
-    ax = sns.lineplot(results_df, x="risk", y="returns", color="black")
+    color = sns.color_palette("pastel")[0]
+    ax = sns.lineplot(results_df, x="risk", y="returns", color=color)
     # Add gamma labels at some points
     for i, risk_i, returns_i, gamma_i in zip(
         range(len(results_df)),
@@ -268,7 +270,7 @@ def _portfolio_rebalance_long_only():
         if (i < 15) or (i > 55) or (i % 5 != 0):  # noqa: PLR2004
             # Thin out points
             continue
-        ax.plot(risk_i, returns_i, marker="o", color="black")
+        ax.plot(risk_i, returns_i, marker="o", color=color)
         ax.text(
             x=risk_i + 0.05,
             y=returns_i - 0.05,
