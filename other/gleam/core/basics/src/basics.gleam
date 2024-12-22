@@ -16,6 +16,7 @@ import gleam/option.{type Option, None, Some}
 import gleam/otp/task
 import gleam/regexp
 import gleam/result
+import gleam/set
 import gleam/string.{inspect}
 import gleam/yielder
 import prng/random
@@ -63,6 +64,9 @@ pub fn main() {
 
   print_section_title("basic dicts")
   basic_dicts()
+
+  print_section_title("basic sets")
+  basic_sets()
 
   print_section_title("basic records")
   basic_records()
@@ -508,6 +512,33 @@ fn basic_dicts() -> Nil {
     "dict.to_list(d1): " <> dict.to_list(d1) |> inspect,
     // dict.update
     "dict.values(d1): " <> dict.values(d1) |> inspect,
+  ]
+
+  list.each(results, io.println)
+}
+
+fn basic_sets() -> Nil {
+  let set1 = set.from_list([1, 2, 2, 3])
+  let set2 = set.from_list([2, 3, 4])
+
+  let inspect_set = fn(values: set.Set(a)) -> String {
+    values
+    |> set.to_list()
+    |> list.map(inspect)
+    |> string.join(", ")
+    |> fn(contents) { "{" <> contents <> "}" }
+  }
+
+  let results = [
+    "set1: " <> set1 |> inspect_set,
+    "set.insert(set1, 4): " <> set.insert(set1, 4) |> inspect_set,
+    "set.delete(set1, 3): " <> set.delete(set1, 3) |> inspect_set,
+    "set.contains(set1, 3): " <> set.contains(set1, 3) |> inspect,
+    "set.intersection(set1, set2): "
+      <> set.intersection(set1, set2) |> inspect_set,
+    "set.union(set1, set2): " <> set.union(set1, set2) |> inspect_set,
+    "set.filter(set1, int.is_even): "
+      <> set.filter(set1, int.is_even) |> inspect_set,
   ]
 
   list.each(results, io.println)
