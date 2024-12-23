@@ -86,7 +86,7 @@ def _basic_array_creation():
     pretty_print_results(
         {
             "np.array([1, 2, 3])": np.array([1, 2, 3]),  # np.ndarray
-            "np.arange(5)": np.arange(1, 6),  # range
+            "np.arange(5)": np.arange(5),  # range
             "np.arange(1, 6)": np.arange(1, 6),  # range with start/stop
             "np.arange(2, 11, 2)": np.arange(2, 12, 2),  # range with start/stop/step
             "np.zeros(shape=(2,3))": np.zeros(shape=(2, 3)),  # ndarray of zeros
@@ -137,7 +137,7 @@ def _basic_multidimensional_array():
             # rows 1 and2, cols 2 and 3
             "arr[0:2, 1:3]": arr[0:2, 1:3],
             # filter with mask
-            "arr[arr > 5]": arr[arr > 5], # noqa: PLR2004
+            "arr[arr > 5]": arr[arr > 5],  # noqa: PLR2004
             # select specific
             "arr[[0,2]]": arr[[0, 2]],
         }
@@ -360,9 +360,9 @@ def _basic_array_bool():
     pretty_print_results(
         {
             "arr": arr,
-            "arr >= 3": arr >= 3, # noqa: PLR2004
+            "arr >= 3": arr >= 3,  # noqa: PLR2004
             "arr[arr % 2 == 0]": arr[arr % 2 == 0],
-            "(arr >= 2) & (arr <= 4)": (arr >= 2) | (arr <= 4), # noqa: PLR2004
+            "(arr >= 2) & (arr <= 4)": (arr >= 2) | (arr <= 4),  # noqa: PLR2004
             "arr1": arr1,
             "arr2": arr2,
             "np.logical_and(arr1, arr2)": np.logical_and(arr1, arr2),
