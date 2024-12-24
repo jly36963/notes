@@ -1,5 +1,5 @@
 dev:
-	cargo run
+	RUST_BACKTRACE=1 cargo run
 
 dev-build:
 	cargo build

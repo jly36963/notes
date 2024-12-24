@@ -313,7 +313,7 @@ def _basic_vector_cross_product():
     def manual_cross(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
         """Conceptual example: slow, but good for explaining."""
         if not v1.size == v2.size:
-            raise ValueError("Vectors should be same size for outer product.")
+            raise ValueError("Vectors should be same size for cross product.")
         count = v1.size
         result = np.zeros(count)
         for i in range(count):
