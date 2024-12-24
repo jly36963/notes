@@ -39,14 +39,18 @@ fn main() {
     array_elementwise();
 
     // linalg
-    print_section_header(String::from("basic vector-scalar arithmetic"));
+    print_section_header(String::from("vector-scalar arithmetic"));
     vector_scalar_arithmetic();
-    print_section_header(String::from("basic vector-vector arithmetic"));
+    print_section_header(String::from("vector-vector arithmetic"));
     vector_vector_arithmetic();
-    print_section_header(String::from("basic vector-vector product"));
+    print_section_header(String::from("vector-vector product"));
     vector_vector_product();
-    print_section_header(String::from("basic vector length (norm)"));
-    basic_vector_length();
+    print_section_header(String::from("vector length (norm)"));
+    vector_length();
+    print_section_header(String::from("vector cross product"));
+    vector_cross_product();
+    print_section_header(String::from("unit vector"));
+    unit_vector();
 }
 
 // ---
@@ -84,6 +88,29 @@ fn std_norm_vec(n: usize) -> Array1<f64> {
 fn symmetric_square(n: usize) -> Array2<f64> {
     let arr: Array2<f64> = Array::random((n, n), StandardNormal {});
     (&arr.t()).dot(&arr)
+}
+
+/// Assert that two arrays have equal length.
+fn assert_equal_length<T, Dim>(arr1: &Array<T, Dim>, arr2: &Array<T, Dim>) -> ()
+where
+    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
+    Dim: ndarray::Dimension,
+{
+    if arr1.len() != arr2.len() {
+        panic!(
+            "Arrays have different lengths: {} and {}",
+            arr1.len(),
+            arr2.len()
+        )
+    }
+}
+
+/// Get the length of a vector
+fn vector_norm<T>(v1: &Array1<T>) -> T
+where
+    T: Float + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
+{
+    v1.pow2().sum().sqrt()
 }
 
 // ---
@@ -349,15 +376,9 @@ fn vector_vector_arithmetic() {
 /// Get dot product of two 1D Arrays. Panics if different lengths.
 fn inner_product<T>(v1: &Array1<T>, v2: &Array1<T>) -> T
 where
-    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy,
+    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
 {
-    if v1.len() != v2.len() {
-        panic!(
-            "Arrays have different lengths: {} and {}",
-            v1.len(),
-            v2.len()
-        )
-    }
+    assert_equal_length(v1, v2);
     v1.iter()
         .zip(v2.iter())
         .fold(T::zero(), |acc, (&val1, &val2)| acc + val1 * val2)
@@ -381,7 +402,7 @@ fn vector_vector_product() {
     let results = vec![
         format!("v1: {}", v1),
         format!("v2: {}", v2),
-        // element-wise product
+        // hadamard (element-wise) product
         format!("&v1 * &v2: {}", round2(&(&v1 * &v2))),
         // inner product (manual)
         format!("inner_product(&v1, &v2): {}", inner_product(&v1, &v2)),
@@ -396,10 +417,55 @@ fn vector_vector_product() {
     results.iter().for_each(|s| println!("{}", s));
 }
 
-fn basic_vector_length() {
+fn vector_length() {
     let v1: Array1<f64> = array![1.0, 2.0, 3.0];
-    let length = v1.pow2().sum().sqrt();
+    let length = vector_norm(&v1);
 
     let results = vec![format!("v1: {}", v1), format!("length: {}", length)];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+/// Get outer product of two Array1. Produces Array2 (dimensions mxn).
+fn cross_product<T>(v1: &Array1<T>, v2: &Array1<T>) -> Array1<T>
+where
+    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
+{
+    assert_equal_length(v1, v2);
+
+    let size = v1.len();
+    let mut result: Array1<T> = Array1::zeros(size);
+    for i in 0..size {
+        let plus_1 = (i + 1) % size; // modulus used to wrap around
+        let plus_2 = (i + 2) % size; // modulus used to wrap around
+        result[i] = v1[plus_1] * v2[plus_2] - v1[plus_2] * v2[plus_1]
+    }
+    result
+}
+
+fn vector_cross_product() {
+    let v1: Array1<f64> = round2(&std_norm_vec(6));
+    let v2: Array1<f64> = round2(&std_norm_vec(6));
+
+    let results = vec![
+        format!("v1: {}", v1),
+        format!("v2: {}", v2),
+        format!(
+            "cross_product(&v1, &v2):\n{}",
+            round2(&cross_product(&v1, &v2))
+        ),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn unit_vector() {
+    let v1: Array1<f64> = array![1.0, 2.0, 3.0];
+    let mu = 1.0 / vector_norm(&v1);
+    let unit_v: Array1<f64> = &v1 * mu;
+
+    let results = vec![
+        format!("v1: {}", v1),
+        format!("mu: {}", mu),
+        format!("unit_v: {}", unit_v),
+    ];
     results.iter().for_each(|s| println!("{}", s));
 }
