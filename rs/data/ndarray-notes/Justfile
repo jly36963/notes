@@ -1,6 +1,9 @@
 dev:
 	RUST_BACKTRACE=1 cargo run
 
+check:
+	RUST_BACKTRACE=1 cargo run
+
 dev-build:
 	cargo build
 

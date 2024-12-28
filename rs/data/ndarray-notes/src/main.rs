@@ -2,6 +2,7 @@
 
 use ndarray::prelude::*;
 use ndarray::{array, Array, Array1, Array2, Axis, Zip};
+use ndarray_linalg::qr::QR;
 use ndarray_linalg::*;
 use ndarray_rand::rand_distr::{
     Bernoulli, Binomial, Exp, Geometric, Normal, Poisson, Standard, StandardNormal, Uniform,
@@ -16,69 +17,58 @@ use std::f64::consts::PI;
 // ---
 
 fn main() {
-    // ndarray
-    print_section_header(String::from("array creation"));
-    array_creation();
-    print_section_header(String::from("distributions"));
-    distributions();
-    print_section_header(String::from("array shape"));
-    array_shape();
-    print_section_header(String::from("square array"));
-    square_array();
-    print_section_header(String::from("array selection"));
-    array_selection();
-    print_section_header(String::from("array view"));
-    array_view();
-    print_section_header(String::from("array iter"));
-    array_iter();
-    print_section_header(String::from("array stats"));
-    array_stats();
-    print_section_header(String::from("array checks"));
-    array_checks();
-    print_section_header(String::from("array element-wise operations"));
-    array_elementwise();
+    let examples: Vec<(&str, fn() -> ())> = vec![
+        // ndarray
+        ("array creation", array_creation),
+        ("distributions", distributions),
+        ("array shape", array_shape),
+        ("square array", square_array),
+        ("array selection", array_selection),
+        ("array view", array_view),
+        ("array iter", array_iter),
+        ("array stats", array_stats),
+        ("array checks", array_checks),
+        ("array element-wise operations", array_elementwise),
+        // linalg
+        ("vector-scalar arithmetic", vector_scalar_arithmetic),
+        ("vector-vector arithmetic", vector_vector_arithmetic),
+        ("vector-vector product", vector_vector_product),
+        ("vector length (norm)", vector_length),
+        ("vector cross product", vector_cross_product),
+        ("unit vector", unit_vector),
+        ("matrix scalar arithmetic", matrix_scalar_arithmetic),
+        ("matrix vector arithmetic", matrix_vector_arithmetic),
+        ("matrix shift", matrix_shift),
+        ("transformation matrices", transformation_matrices),
+        (
+            "transformation matrices rotation",
+            transform_matrices_rotation,
+        ),
+        ("matrix-matrix arithmetic", matrix_matrix_arithmetic),
+        ("matmul order of operations", matmul_order_of_operations),
+        (
+            "multiplicative symmetric matrices",
+            multiplicative_symmetric_matrices,
+        ),
+        ("frobenius dot product", frobenius_dot_product),
+        ("matrix rref", matrix_rref),
+        ("matrix rank", matrix_rank),
+        ("rank deficient matrix", rank_deficient_matrix),
+        ("matrix inverse", matrix_inverse),
+        ("matrix inverse via row reduction", matrix_inv_row_reduction),
+        ("matrix one-sided inverse", one_sided_inverse),
+        ("r2 projections", r2_projections),
+        ("qr decomposition", qr_decomposition),
+        ("qr decomposition 2", qr_decomposition_2),
+        ("qr gram-schmidt", qr_gram_schmidt),
+        ("qr decomp inverse", qr_decomp_inverse),
+        ("least squares row reduction", least_squares_row_reduction),
+    ];
 
-    // linalg
-    print_section_header(String::from("vector-scalar arithmetic"));
-    vector_scalar_arithmetic();
-    print_section_header(String::from("vector-vector arithmetic"));
-    vector_vector_arithmetic();
-    print_section_header(String::from("vector-vector product"));
-    vector_vector_product();
-    print_section_header(String::from("vector length (norm)"));
-    vector_length();
-    print_section_header(String::from("vector cross product"));
-    vector_cross_product();
-    print_section_header(String::from("unit vector"));
-    unit_vector();
-    print_section_header(String::from("matrix scalar arithmetic"));
-    matrix_scalar_arithmetic();
-    print_section_header(String::from("matrix vector arithmetic"));
-    matrix_vector_arithmetic();
-    print_section_header(String::from("matrix shift"));
-    matrix_shift();
-    print_section_header(String::from("transformation matrices"));
-    transformation_matrices();
-    print_section_header(String::from("transformation matrices rotation"));
-    transform_matrices_rotation();
-    print_section_header(String::from("matrix-matrix arithmetic"));
-    matrix_matrix_arithmetic();
-    print_section_header(String::from("matmul order of operations"));
-    matmul_order_of_operations();
-    print_section_header(String::from("multiplicative symmetric matrices"));
-    multiplicative_symmetric_matrices();
-    print_section_header(String::from("frobenius dot product"));
-    frobenius_dot_product();
-    print_section_header(String::from("matrix rref"));
-    matrix_rref();
-    print_section_header(String::from("matrix rank"));
-    matrix_rank();
-    print_section_header(String::from("rank deficient matrix"));
-    rank_deficient_matrix();
-    print_section_header(String::from("matrix inverse"));
-    matrix_inverse();
-    print_section_header(String::from("matrix inverse via row reduction"));
-    matrix_inv_row_reduction();
+    for (title, example_func) in examples {
+        print_section_header(title.into());
+        example_func();
+    }
 }
 
 // ---
@@ -325,6 +315,44 @@ fn inv_via_row_reduction(arr: &Array2<f64>) -> Array2<f64> {
     matrix = ndarray::concatenate(Axis(1), &[matrix.view(), eye.view()]).unwrap();
     let matrix_rref: Array2<f64> = rref(&matrix);
     matrix_rref.slice_move(s![.., size..(size * 2)])
+}
+
+fn gram_schmidt(a: &Array2<f64>) -> Array2<f64> {
+    let (rows, cols) = a.dim();
+    let mut q: Array2<f64> = Array2::zeros((rows, cols));
+
+    for col in 0..cols {
+        // Copy col from A to Q
+        for row in 0..rows {
+            q[[row, col]] = a[[row, col]];
+        }
+        // Get newly-copied col as slice
+        let a_col = a.slice(s![.., col]);
+        // Orthogonalize
+        for inner_col in 0..col {
+            let q_col = q.slice(s![.., inner_col]);
+            let orth_res = (&a_col).dot(&q_col) / (&q_col).dot(&q_col) * &q_col;
+            for (idx, val) in orth_res.iter().enumerate() {
+                q[[idx, col]] = q[[idx, col]] - val;
+            }
+        }
+        // Normalize
+        let q_col_norm = vector_norm(&q.slice(s![.., col]).to_owned());
+        for row in 0..rows {
+            q[[row, col]] = q[[row, col]] / q_col_norm;
+        }
+    }
+
+    q
+}
+
+fn gs_qr_decomp(a: &Array2<f64>) -> (Array2<f64>, Array2<f64>) {
+    let q: Array2<f64> = gram_schmidt(a);
+    let r: Array2<f64> = (|| {
+        let m: Array2<f64> = (&q.t()).dot(a);
+        m.triu(0)
+    })();
+    (q, r)
 }
 
 // ---
@@ -894,12 +922,18 @@ fn rank_deficient_matrix() {
 }
 
 fn matrix_inverse() {
-    println!("`inv` is broken")
+    let m: Array2<f64> = random_square_matrix(3);
+    let rank = get_matrix_rank(&m);
+    let m_inv: Array2<f64> = m.inv().unwrap();
+    let eye = &m.dot(&m_inv);
 
-    // let m: Array2<f64> = random_square_matrix(3);
-    // let rank = get_matrix_rank(&m);
-    // let m_inv: Array2<f64> = m.inv().unwrap();
-    // let eye = &m.dot(&m_inv);
+    let results = vec![
+        format!("m:\n{}", round2(&m)),
+        format!("rank:\n{}", rank),
+        format!("m_inv:\n{}", round2(&m_inv)),
+        format!("eye:\n{}", round2(&eye)),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
 }
 
 fn matrix_inv_row_reduction() {
@@ -913,4 +947,130 @@ fn matrix_inv_row_reduction() {
         format!("eye:\n{}", round2(&eye)),
     ];
     results.iter().for_each(|s| println!("{}", s));
+}
+
+fn one_sided_inverse() {
+    // Tall 6x3
+    let m: Array2<f64> = random_matrix(6, 3);
+    // Square 3x3
+    let mt_m = (&m.t()).dot(&m);
+    // Square 6x6
+    let m_mt = (&m).dot(&m.t());
+
+    // Tall: use left inverse
+    // Wide: use right inverse
+
+    // Left inverse: `inv(At_A) @ A.T`
+    let m_left_inv = (&inv_via_row_reduction(&mt_m)).dot(&m.t());
+    // Right inverse: `A.T @ inv(A_At)`
+    let m_right_inv = (&m.t()).dot(&inv_via_row_reduction(&m_mt));
+
+    // Identity matrix (use left inverse for tall matrices)
+    let left_check = (&m_left_inv).dot(&m);
+    // NOT identity matrix (use right inverse for wide matrices)
+    let right_check = (&m).dot(&m_right_inv);
+
+    let results = vec![
+        format!("m:\n{}", round2(&m)),
+        format!("mt_m:\n{}", round2(&mt_m)),
+        format!("m_mt:\n{}", round2(&m_mt)),
+        format!("m_left_inv:\n{}", round2(&m_left_inv)),
+        format!("m_right_inv:\n{}", round2(&m_right_inv)),
+        format!("left_check:\n{}", round2(&left_check)),
+        format!("right_check:\n{}", round2(&right_check)),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn r2_projections() {
+    // Line `v`, point `p`, scalar `c` (beta)
+    let v: Array1<f64> = array![2., 5.];
+    let p: Array1<f64> = array![4., 1.];
+    let c = (&v.t()).dot(&p) / (&v.t()).dot(&v);
+
+    // Should be 0.0
+    let res = (&v.t()).dot(&(&p - &v * c));
+
+    let results = vec![
+        format!("v:\n{}", &v),
+        format!("p:\n{}", &p),
+        format!("c:\n{}", round(c, 2)),
+        format!("res:\n{}", round(res, 2)),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn qr_decomposition() {
+    let m: Array2<f64> = array![[1., 0.], [1., 0.], [0., 1.]];
+    let (q, r) = (&m).qr().unwrap();
+
+    let results = vec![
+        format!("m:\n{}", round2(&m)),
+        format!("q:\n{}", round2(&q)),
+        format!("r:\n{}", round2(&r)),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn qr_decomposition_2() {
+    // A = QR
+    // AtA = RtR
+
+    let m: Array2<f64> = random_matrix(4, 3);
+    let (q, r) = (&m).qr().unwrap();
+
+    let mt_m = (&m.t()).dot(&m);
+    let rt_r = (&r.t()).dot(&r);
+
+    let results = vec![
+        format!("m:\n{}", round2(&m)),
+        format!("q:\n{}", round2(&q)),
+        format!("r:\n{}", round2(&r)),
+        format!("mt_m:\n{}", round2(&mt_m)),
+        format!("rt_r:\n{}", round2(&rt_r)),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn qr_gram_schmidt() {
+    let m: Array2<f64> = random_matrix(4, 3);
+    let (q1, r1) = (&m).qr().unwrap();
+    let (q2, r2) = gs_qr_decomp(&m);
+
+    let results = vec![
+        format!("m:\n{}", round2(&m)),
+        // Built-in QR
+        format!("q1:\n{}", round2(&q1)),
+        format!("r1:\n{}", round2(&r1)),
+        // Gram-Schmidt QR
+        format!("q2:\n{}", round2(&q2)),
+        format!("r2:\n{}", round2(&r2)),
+        format!("(&q2).dot(&r2):\n{}", round2(&(&q2).dot(&r2))),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn qr_decomp_inverse() {
+    // Inverse via QR decomposition
+    // A = QR
+    // inv(A) = inv(QR)
+    // inv(A) = inv(R) @ Qt
+
+    let a: Array2<f64> = random_square_matrix(3);
+    let (q, r) = (&a).qr().unwrap();
+    let a_inv: Array2<f64> = (&r.inv().unwrap()).dot(&q.t());
+    let eye = (&a).dot(&a_inv);
+
+    let results = vec![
+        format!("a:\n{}", round2(&a)),
+        format!("q:\n{}", round2(&q)),
+        format!("r:\n{}", round2(&r)),
+        format!("a_inv:\n{}", round2(&a_inv)),
+        format!("eye:\n{}", round2(&eye)),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn least_squares_row_reduction() {
+    // ...
 }
