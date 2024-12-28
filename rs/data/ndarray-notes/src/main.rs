@@ -1,15 +1,15 @@
 #![allow(non_snake_case)]
 
 use ndarray::prelude::*;
-use ndarray::{array, Array, Array1, Array2, Axis};
+use ndarray::{array, Array, Array1, Array2, Axis, Zip};
+use ndarray_linalg::*;
 use ndarray_rand::rand_distr::{
     Bernoulli, Binomial, Exp, Geometric, Normal, Poisson, Standard, StandardNormal, Uniform,
 };
 use ndarray_rand::RandomExt;
 use ndarray_stats::{CorrelationExt, DeviationExt, QuantileExt, SummaryStatisticsExt};
 use num::{Float, Num};
-
-// [TODO] boolean masks?
+use std::f64::consts::PI;
 
 // ---
 // Main
@@ -51,6 +51,34 @@ fn main() {
     vector_cross_product();
     print_section_header(String::from("unit vector"));
     unit_vector();
+    print_section_header(String::from("matrix scalar arithmetic"));
+    matrix_scalar_arithmetic();
+    print_section_header(String::from("matrix vector arithmetic"));
+    matrix_vector_arithmetic();
+    print_section_header(String::from("matrix shift"));
+    matrix_shift();
+    print_section_header(String::from("transformation matrices"));
+    transformation_matrices();
+    print_section_header(String::from("transformation matrices rotation"));
+    transform_matrices_rotation();
+    print_section_header(String::from("matrix-matrix arithmetic"));
+    matrix_matrix_arithmetic();
+    print_section_header(String::from("matmul order of operations"));
+    matmul_order_of_operations();
+    print_section_header(String::from("multiplicative symmetric matrices"));
+    multiplicative_symmetric_matrices();
+    print_section_header(String::from("frobenius dot product"));
+    frobenius_dot_product();
+    print_section_header(String::from("matrix rref"));
+    matrix_rref();
+    print_section_header(String::from("matrix rank"));
+    matrix_rank();
+    print_section_header(String::from("rank deficient matrix"));
+    rank_deficient_matrix();
+    print_section_header(String::from("matrix inverse"));
+    matrix_inverse();
+    print_section_header(String::from("matrix inverse via row reduction"));
+    matrix_inv_row_reduction();
 }
 
 // ---
@@ -84,10 +112,34 @@ fn std_norm_vec(n: usize) -> Array1<f64> {
     Array::random(n, StandardNormal {})
 }
 
+/// Create a (mxn) matrix (Array2) with random elements.
+fn random_matrix(m: usize, n: usize) -> Array2<f64> {
+    let arr: Array2<f64> = Array::random((m, n), StandardNormal {});
+    arr
+}
+
+/// Create a square (nxn) matrix (Array2) with random elements.
+fn random_square_matrix(n: usize) -> Array2<f64> {
+    random_matrix(n, n)
+}
+
 /// Create a square, symmetric nxn matrix (Array2) with random elements.
 fn symmetric_square(n: usize) -> Array2<f64> {
-    let arr: Array2<f64> = Array::random((n, n), StandardNormal {});
+    let arr: Array2<f64> = random_square_matrix(n);
     (&arr.t()).dot(&arr)
+}
+
+fn rect_eye<T>(m: usize, n: usize) -> Array2<T>
+where
+    T: Num + Copy,
+{
+    let mut matrix = Array2::zeros((m, n));
+    let smaller_dimension = std::cmp::min(m, n);
+    for i in 0..smaller_dimension {
+        matrix[[i, i]] = T::one()
+    }
+
+    return matrix;
 }
 
 /// Assert that two arrays have equal length.
@@ -104,6 +156,43 @@ where
         )
     }
 }
+/// Assert that two arrays have equal length.
+fn assert_equal_dimensions<T, Dim>(arr1: &Array<T, Dim>, arr2: &Array<T, Dim>) -> ()
+where
+    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
+    Dim: ndarray::Dimension,
+{
+    if arr1.dim() != arr2.dim() {
+        panic!(
+            "Arrays have different dimensions: {:?} and {:?}",
+            arr1.dim(),
+            arr2.dim()
+        )
+    }
+}
+/// Assert that two arrays have equal length.
+fn assert_square<T>(arr: &Array2<T>) -> ()
+where
+    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
+{
+    let (rows, cols) = arr.dim();
+    if rows != cols {
+        panic!("Array is not square: {:?}x{:?}", rows, cols)
+    }
+}
+
+/// Assert that two arrays have equal length.
+fn assert_equal_ndarray<T, Dim>(arr1: &Array<T, Dim>, arr2: &Array<T, Dim>) -> ()
+where
+    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static + std::fmt::Debug,
+    Dim: ndarray::Dimension,
+{
+    assert_equal_dimensions(&arr1, &arr2);
+
+    for (val1, val2) in arr1.iter().zip(arr2.iter()) {
+        assert_eq!(val1, val2);
+    }
+}
 
 /// Get the length of a vector
 fn vector_norm<T>(v1: &Array1<T>) -> T
@@ -111,6 +200,131 @@ where
     T: Float + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
 {
     v1.pow2().sum().sqrt()
+}
+
+/// Get dot product of two 1D Arrays. Panics if different lengths.
+fn inner_product<T>(v1: &Array1<T>, v2: &Array1<T>) -> T
+where
+    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
+{
+    assert_equal_length(v1, v2);
+    v1.iter()
+        .zip(v2.iter())
+        .fold(T::zero(), |acc, (&val1, &val2)| acc + val1 * val2)
+}
+
+/// Get outer product of two 1D. Produces an Array2 (dimensions mxn).
+fn outer_product<T>(v1: &Array1<T>, v2: &Array1<T>) -> Array2<T>
+where
+    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
+{
+    let v1_view = v1.view().into_shape_with_order((v1.dim(), 1)).unwrap();
+    let v2_view = v2.view().into_shape_with_order((1, v2.dim())).unwrap();
+
+    v1_view.dot(&v2_view)
+}
+
+/// Get outer product of two Array1. Produces Array2 (dimensions mxn).
+fn cross_product<T>(v1: &Array1<T>, v2: &Array1<T>) -> Array1<T>
+where
+    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
+{
+    assert_equal_length(v1, v2);
+
+    let size = v1.len();
+    let mut result: Array1<T> = Array1::zeros(size);
+    for i in 0..size {
+        let plus_1 = (i + 1) % size; // modulus used to wrap around
+        let plus_2 = (i + 2) % size;
+        result[i] = v1[plus_1] * v2[plus_2] - v1[plus_2] * v2[plus_1]
+    }
+    result
+}
+
+/// Sum of elements along diagonal of matrix (Array2).
+fn trace<T>(arr: &Array2<T>) -> T
+where
+    T: Num + std::ops::Add<T, Output = T> + Copy,
+{
+    arr.diag().sum()
+}
+
+/// Swap two rows in a matrix (Array2)
+fn swap_rows(arr: &mut Array2<f64>, index1: usize, index2: usize) -> () {
+    let mut it = arr.axis_iter_mut(Axis(0));
+    Zip::from(it.nth(index1).unwrap())
+        .and(it.nth(index2 - (index1 + 1)).unwrap())
+        .for_each(std::mem::swap);
+}
+
+/// Get the reduced row echelon form of a matrix (Array2).
+fn rref(arr: &Array2<f64>) -> Array2<f64> {
+    let mut matrix: Array2<f64> = arr.clone();
+
+    let (rows, cols) = matrix.dim();
+    let mut row = 0;
+    let mut col = 0;
+
+    while row < rows && col < cols {
+        // Find the pivot row and swap it to the current row
+        let mut pivot_row = row;
+        for r in row + 1..rows {
+            if matrix[[r, col]].abs() > matrix[[pivot_row, col]].abs() {
+                pivot_row = r;
+            }
+        }
+        // If the pivot is zero, skip this column and move to the next one
+        if matrix[[pivot_row, col]].abs() < f64::EPSILON {
+            col += 1;
+            continue;
+        }
+        // Swap the current row with the pivot row
+        if row != pivot_row {
+            swap_rows(&mut matrix, row, pivot_row);
+        }
+        // Scale the pivot row to make the pivot element 1
+        let pivot_value = matrix[[row, col]];
+        for c in col..cols {
+            matrix[[row, c]] /= pivot_value;
+        }
+        // Eliminate all entries in the column above and below the pivot
+        for r in 0..rows {
+            if r != row {
+                let factor = matrix[[r, col]];
+                for c in col..cols {
+                    matrix[[r, c]] -= factor * matrix[[row, c]];
+                }
+            }
+        }
+        // Move to the next row and column
+        row += 1;
+        col += 1;
+    }
+
+    matrix
+}
+
+/// Get the rank of a matrix (Array2)
+fn get_matrix_rank(arr: &Array2<f64>) -> usize {
+    let m_rref = rref(arr);
+    // Count rows with any non-zero values
+    let rank = m_rref
+        .rows()
+        .into_iter()
+        .map(|r| r.iter().any(|&v| v > 1e-10))
+        .filter(|&v| v)
+        .count();
+    rank
+}
+
+fn inv_via_row_reduction(arr: &Array2<f64>) -> Array2<f64> {
+    assert_square(arr);
+    let size = arr.nrows();
+    let eye = Array2::eye(size);
+    let mut matrix: Array2<f64> = arr.clone();
+    matrix = ndarray::concatenate(Axis(1), &[matrix.view(), eye.view()]).unwrap();
+    let matrix_rref: Array2<f64> = rref(&matrix);
+    matrix_rref.slice_move(s![.., size..(size * 2)])
 }
 
 // ---
@@ -373,28 +587,6 @@ fn vector_vector_arithmetic() {
     results.iter().for_each(|s| println!("{}", s));
 }
 
-/// Get dot product of two 1D Arrays. Panics if different lengths.
-fn inner_product<T>(v1: &Array1<T>, v2: &Array1<T>) -> T
-where
-    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
-{
-    assert_equal_length(v1, v2);
-    v1.iter()
-        .zip(v2.iter())
-        .fold(T::zero(), |acc, (&val1, &val2)| acc + val1 * val2)
-}
-
-/// Get outer product of two 1D. Produces an Array2 (dimensions mxn).
-fn outer_product<T>(v1: &Array1<T>, v2: &Array1<T>) -> Array2<T>
-where
-    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
-{
-    let v1_view = v1.view().into_shape_with_order((v1.dim(), 1)).unwrap();
-    let v2_view = v2.view().into_shape_with_order((1, v2.dim())).unwrap();
-
-    v1_view.dot(&v2_view)
-}
-
 fn vector_vector_product() {
     let v1: Array1<f64> = round2(&std_norm_vec(6));
     let v2: Array1<f64> = round2(&std_norm_vec(6));
@@ -425,23 +617,6 @@ fn vector_length() {
     results.iter().for_each(|s| println!("{}", s));
 }
 
-/// Get outer product of two Array1. Produces Array2 (dimensions mxn).
-fn cross_product<T>(v1: &Array1<T>, v2: &Array1<T>) -> Array1<T>
-where
-    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
-{
-    assert_equal_length(v1, v2);
-
-    let size = v1.len();
-    let mut result: Array1<T> = Array1::zeros(size);
-    for i in 0..size {
-        let plus_1 = (i + 1) % size; // modulus used to wrap around
-        let plus_2 = (i + 2) % size; // modulus used to wrap around
-        result[i] = v1[plus_1] * v2[plus_2] - v1[plus_2] * v2[plus_1]
-    }
-    result
-}
-
 fn vector_cross_product() {
     let v1: Array1<f64> = round2(&std_norm_vec(6));
     let v2: Array1<f64> = round2(&std_norm_vec(6));
@@ -465,7 +640,277 @@ fn unit_vector() {
     let results = vec![
         format!("v1: {}", v1),
         format!("mu: {}", mu),
-        format!("unit_v: {}", unit_v),
+        format!("unit_v: {}", round2(&unit_v)),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn matrix_scalar_arithmetic() {
+    let m1: Array2<f64> = round2(&symmetric_square(3));
+
+    let results = vec![
+        format!("m1:\n{}", m1),
+        format!("&m1 + 2.0:\n{}", round2(&(&m1 + 2.0))),
+        format!("&m1 - 2.0:\n{}", round2(&(&m1 - 2.0))),
+        format!("&m1 * 2.0:\n{}", &m1 * 2.0),
+        format!("&m1 / 2.0:\n{}", &m1 / 2.0),
+        format!("&m1.pow2():\n{}", round2(&(&m1.pow2()))),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn matrix_vector_arithmetic() {
+    let m1: Array2<f64> = round2(&symmetric_square(3));
+    let v1: Array1<f64> = round2(&std_norm_vec(3));
+
+    let results = vec![
+        format!("m1:\n{}", m1),
+        format!("v1:\n{}", v1),
+        format!("&m1 + &v1:\n{}", round2(&(&m1 + &v1))),
+        format!("&m1 - &v1:\n{}", round2(&(&m1 - &v1))),
+        format!("&m1 * &v1:\n{}", round2(&(&m1 * &v1))),
+        format!("&m1 / &v1:\n{}", round2(&(&m1 / &v1))),
+        format!("&m1.dot(&v1):\n{}", round2(&(&m1.dot(&v1)))),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn matrix_shift() {
+    let m1: Array2<f64> = round2(&symmetric_square(3));
+    let m2: Array2<f64> = Array::eye(3) * 2.0;
+
+    assert_equal_dimensions(&m1, &m2);
+
+    let results = vec![
+        format!("m1:\n{}", m1),
+        format!("m2:\n{}", m2),
+        format!("&m1 + &m2:\n{}", round2(&(&m1 + &m2))),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn transformation_matrices() {
+    let m1: Array2<f64> = array![[1.0, -1.0], [2.0, 1.0]];
+    let v1: Array1<f64> = array![3.0, -2.0];
+
+    let results = vec![
+        format!("m1:\n{}", m1),
+        format!("v1:\n{}", v1),
+        format!("&m1.dot(&v1.t()):\n{}", round2(&(&m1.dot(&v1.t())))),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn transform_matrices_rotation() {
+    let theta = PI / 2.0;
+    let m1: Array2<f64> = round2(&array![
+        [f64::cos(theta), -f64::sin(theta)],
+        [f64::sin(theta), f64::cos(theta)]
+    ]);
+    let v1: Array1<f64> = array![3.0, -2.0];
+
+    let results = vec![
+        format!("theta: {}", theta),
+        format!("m1:\n{}", m1),
+        format!("v1:\n{}", v1),
+        format!("&m1.dot(&v1.t()):\n{}", round2(&(&m1.dot(&v1.t())))),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn matrix_matrix_arithmetic() {
+    let m1: Array2<f64> = round2(&symmetric_square(3));
+    let m2: Array2<f64> = round2(&symmetric_square(3));
+
+    let results = vec![
+        format!("m1:\n{}", m1),
+        format!("m2:\n{}", m2),
+        format!("&m1 + &m2:\n{}", round2(&(&m1 + &m2))),
+        format!("&m1 - &m2:\n{}", round2(&(&m1 - &m2))),
+        format!("&m1 * &m2:\n{}", round2(&(&m1 * &m2))),
+        format!("&m1 / &m2:\n{}", round2(&(&m1 / &m2))),
+        format!("&m1.dot(&m2.t()):\n{}", round2(&(&m1.dot(&m2.t())))),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn matmul_order_of_operations() {
+    let m1: Array2<f64> = round2(&symmetric_square(3));
+    let m2: Array2<f64> = round2(&symmetric_square(3));
+    let m3: Array2<f64> = round2(&symmetric_square(3));
+
+    // A1 @ A2 @ A3
+    // should equal
+    // (A3.t @ A2.t @ A1.t).t
+
+    let results = vec![
+        format!("m1:\n{}", m1),
+        format!("m2:\n{}", m2),
+        format!("m3:\n{}", m3),
+        format!(
+            "&m1.dot(&m2).dot(&m3):\n{}",
+            round2(&(&m1.dot(&m2).dot(&m3)))
+        ),
+        format!(
+            "&m3.t().dot(&m2.t()).dot(&m3.t()):\n{}",
+            round2(&(&m3.t().dot(&m2.t()).dot(&m1.t())))
+        ),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn multiplicative_symmetric_matrices() {
+    let m1: Array2<f64> = random_square_matrix(3);
+
+    let at_a: Array2<f64> = (&m1.t()).dot(&m1);
+    let a_at: Array2<f64> = (&m1).dot(&m1.t());
+
+    let results = vec![
+        format!("m1:\n{}", round2(&m1)),
+        format!("at_a:\n{}", round2(&at_a)),
+        format!("a_at:\n{}", round2(&a_at)),
+        // One is the negative of the other
+        format!("&at_a - &a_at.t():\n{}", round2(&(&at_a - &a_at.t()))),
+        format!("&a_at - &at_a.t():\n{}", round2(&(&a_at - &at_a.t()))),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn frobenius_dot_product() {
+    let m1: Array2<f64> = round2(&symmetric_square(3));
+    let m2: Array2<f64> = round2(&symmetric_square(3));
+
+    let results = vec![
+        format!("m1:\n{}", m1),
+        format!("m2:\n{}", m2),
+        // Sum of hadamard product
+        format!("(&m1 * &m2).sum():\n{}", (&m1 * &m2).sum()),
+        // Dot product of vectorized matrices
+        format!(
+            "(&m1.flatten() * &m2.flatten()).sum():\n{}",
+            (&m1.flatten() * &m2.flatten()).sum()
+        ),
+        // Trace of `At @ B`
+        format!("trace(&m1.t().dot(&m2)):\n{}", trace(&m1.t().dot(&m2))),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn matrix_rref() {
+    let m1: Array2<f64> = array![[1.0, 2.0, -1.0], [2.0, 3.0, 1.0], [3.0, 3.0, 3.0],];
+    let expected1: Array2<f64> = Array::eye(3);
+
+    let m2: Array2<f64> = array![[2.0, 1.0, -1.0], [-3.0, -1.0, 2.0], [-2.0, 1.0, 2.0],];
+    let expected2: Array2<f64> = Array::eye(3);
+
+    let m3: Array2<f64> = random_square_matrix(3);
+    let expected3: Array2<f64> = Array::eye(3);
+
+    let m4: Array2<f64> = random_matrix(4, 3);
+    let expected4: Array2<f64> = rect_eye(4, 3);
+
+    let scenarios: Vec<(Array2<f64>, Array2<f64>)> = vec![
+        (m1, expected1),
+        (m2, expected2),
+        (m3, expected3),
+        (m4, expected4),
+    ];
+    for (i, (m, expected)) in scenarios.iter().enumerate() {
+        println!("Scenario {}", i + 1);
+        let rref_res: Array2<f64> = rref(m);
+        let results = vec![
+            format!("m:\n{}", m),
+            format!("rref_res:\n{}", rref_res),
+            format!("expected:\n{}", expected),
+        ];
+        results.iter().for_each(|s| println!("{}", s));
+        assert_equal_ndarray(&rref_res, &expected);
+    }
+}
+
+fn matrix_rank() {
+    let m1: Array2<f64> = array![[1.0, 2.0, -1.0], [2.0, 3.0, 1.0], [3.0, 3.0, 3.0],];
+    let m2: Array2<f64> = array![[2.0, 1.0, -1.0], [-3.0, -1.0, 2.0], [-2.0, 1.0, 2.0],];
+    let m3: Array2<f64> = random_square_matrix(3);
+    let m4: Array2<f64> = random_matrix(4, 3);
+
+    let scenarios: Vec<Array2<f64>> = vec![m1, m2, m3, m4];
+    for (i, m) in scenarios.iter().enumerate() {
+        println!("Scenario {}", i + 1);
+        let rref_res: Array2<f64> = rref(m);
+        let rank = get_matrix_rank(m);
+        let results = vec![
+            format!("m:\n{}", m),
+            format!("rref_res:\n{}", rref_res),
+            format!("rank:\n{}", rank),
+        ];
+        results.iter().for_each(|s| println!("{}", s));
+    }
+}
+
+fn rank_deficient_matrix() {
+    // Max rank of mxn matrix is min(m,n)
+    let m = 4;
+    let n = 3;
+
+    // Rank 3 (max rank is 3)
+    let m1: Array2<f64> = random_matrix(m, n);
+
+    // Rank 3 (one row is dependent)
+    let mut m2: Array2<f64> = m1.clone();
+    for i in 0..n {
+        // Overwrite row 4 with row 3
+        m2[[3, i]] = m2[[2, i]];
+    }
+
+    // Rank 2 (one col is dependent)
+    let mut m3: Array2<f64> = m1.clone();
+    for i in 0..m {
+        // Overwrite col 3 with col 2
+        m3[[i, 2]] = m3[[i, 1]];
+    }
+
+    // Rank 3 (restore with noise)
+    let mut m4: Array2<f64> = m3.clone();
+    m4 = &m4 + &random_matrix(m, n) * 0.01;
+
+    // Rank 3 (restore with shift)
+    let mut m5: Array2<f64> = m3.clone();
+    m5 += &rect_eye(m, n);
+
+    let scenarios: Vec<Array2<f64>> = vec![m1, m2, m3, m4, m5];
+    for (i, m) in scenarios.iter().enumerate() {
+        println!("Scenario {}", i + 1);
+        let rref_res: Array2<f64> = rref(m);
+        let rank = get_matrix_rank(m);
+        let results = vec![
+            format!("m:\n{}", round2(m)),
+            format!("m.dim():\n{:?}", m.dim()),
+            format!("rref_res:\n{}", rref_res),
+            format!("rank:\n{}", rank),
+        ];
+        results.iter().for_each(|s| println!("{}", s));
+    }
+}
+
+fn matrix_inverse() {
+    println!("`inv` is broken")
+
+    // let m: Array2<f64> = random_square_matrix(3);
+    // let rank = get_matrix_rank(&m);
+    // let m_inv: Array2<f64> = m.inv().unwrap();
+    // let eye = &m.dot(&m_inv);
+}
+
+fn matrix_inv_row_reduction() {
+    let m: Array2<f64> = random_square_matrix(3);
+    let m_inv: Array2<f64> = inv_via_row_reduction(&m);
+    let eye: Array2<f64> = (&m).dot(&m_inv);
+
+    let results = vec![
+        format!("m:\n{}", round2(&m)),
+        format!("m_inv:\n{}", round2(&m_inv)),
+        format!("eye:\n{}", round2(&eye)),
     ];
     results.iter().for_each(|s| println!("{}", s));
 }
