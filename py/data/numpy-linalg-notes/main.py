@@ -1045,7 +1045,7 @@ def _sherman_morrison_inverse():
 def _lease_squares_row_reduction():
     # Ax = beta
     # A is square matrix
-    # x is (m, 1) vector of uknowns
+    # x is (m, 1) vector of unknowns
     # beta is (m, 1) vector of constants (solution vector)
 
     # X is design matrix, y is outcome measures
@@ -1185,7 +1185,7 @@ def _diagonalization():
     S = A.T @ A
     eigenvalues, eigenvectors = eig(S)
     # Reconstruct `A = P @ D @ inv(P)`
-    S2 = eigenvectors @ np.diag(eigenvalues) @ np.linalg.inv(eigenvectors)
+    S2 = eigenvectors @ np.diag(eigenvalues) @ inv(eigenvectors)
 
     def rmse(diffs: np.ndarray) -> np.float64:
         res = pipe(

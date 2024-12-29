@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
-use ndarray::prelude::*;
 use ndarray::{array, Array, Array1, Array2, Axis, Zip};
+use ndarray::{concatenate, prelude::*};
 use ndarray_linalg::qr::QR;
 use ndarray_linalg::*;
 use ndarray_rand::rand_distr::{
@@ -9,7 +9,7 @@ use ndarray_rand::rand_distr::{
 };
 use ndarray_rand::RandomExt;
 use ndarray_stats::{CorrelationExt, DeviationExt, QuantileExt, SummaryStatisticsExt};
-use num::{Float, Num};
+use num::{Float, Num, Signed};
 use std::f64::consts::PI;
 
 // ---
@@ -63,6 +63,9 @@ fn main() {
         ("qr gram-schmidt", qr_gram_schmidt),
         ("qr decomp inverse", qr_decomp_inverse),
         ("least squares row reduction", least_squares_row_reduction),
+        ("least squares via qr decomp", least_squares_via_qr_decomp),
+        ("eigendecomposition", eigendecomposition),
+        ("diagonalization", diagonalization),
     ];
 
     for (title, example_func) in examples {
@@ -171,23 +174,33 @@ where
     }
 }
 
-/// Assert that two arrays have equal length.
-fn assert_equal_ndarray<T, Dim>(arr1: &Array<T, Dim>, arr2: &Array<T, Dim>) -> ()
+fn assert_close<T>(n1: T, n2: T, epsilon: T) -> ()
 where
-    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static + std::fmt::Debug,
+    T: Num + Signed + std::cmp::PartialOrd + Copy + std::fmt::Debug,
+{
+    if num::abs(n1 - n2) > epsilon {
+        panic!("Values {:?} and {:?} are different", n1, n2);
+    }
+}
+
+/// Assert that two arrays have equal contents.
+fn assert_equal_ndarray<T, Dim>(arr1: &Array<T, Dim>, arr2: &Array<T, Dim>, epsilon: T) -> ()
+where
+    T: Num + Signed + std::cmp::PartialOrd + Copy + 'static + std::fmt::Debug,
     Dim: ndarray::Dimension,
 {
     assert_equal_dimensions(&arr1, &arr2);
 
-    for (val1, val2) in arr1.iter().zip(arr2.iter()) {
-        assert_eq!(val1, val2);
+    for (&val1, &val2) in arr1.iter().zip(arr2.iter()) {
+        // assert_eq!(val1, val2);
+        assert_close(val1, val2, epsilon);
     }
 }
 
 /// Get the length of a vector
 fn vector_norm<T>(v1: &Array1<T>) -> T
 where
-    T: Float + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
+    T: Float + std::ops::Mul<T, Output = T> + Copy + 'static,
 {
     v1.pow2().sum().sqrt()
 }
@@ -195,7 +208,7 @@ where
 /// Get dot product of two 1D Arrays. Panics if different lengths.
 fn inner_product<T>(v1: &Array1<T>, v2: &Array1<T>) -> T
 where
-    T: Num + std::ops::Mul<T, Output = T> + num::Zero + Copy + 'static,
+    T: Num + std::ops::Mul<T, Output = T> + Copy + 'static,
 {
     assert_equal_length(v1, v2);
     v1.iter()
@@ -353,6 +366,22 @@ fn gs_qr_decomp(a: &Array2<f64>) -> (Array2<f64>, Array2<f64>) {
         m.triu(0)
     })();
     (q, r)
+}
+
+/// Check that eigendecomposition results are correct
+fn check_eigendecomposition(
+    matrix: &Array2<f64>,
+    eigenvalues: &Array1<f64>,
+    eigenvectors: &Array2<f64>,
+) -> () {
+    for (&eval, evec) in (&eigenvalues)
+        .iter()
+        .zip((&eigenvectors.t()).rows().into_iter())
+    {
+        let result = &evec * eval;
+        let expected = (&matrix).dot(&evec);
+        assert_equal_ndarray(&result, &expected, 0.001);
+    }
 }
 
 // ---
@@ -852,7 +881,7 @@ fn matrix_rref() {
             format!("expected:\n{}", expected),
         ];
         results.iter().for_each(|s| println!("{}", s));
-        assert_equal_ndarray(&rref_res, &expected);
+        assert_equal_ndarray(&rref_res, &expected, 0.001);
     }
 }
 
@@ -1072,5 +1101,103 @@ fn qr_decomp_inverse() {
 }
 
 fn least_squares_row_reduction() {
-    // ...
+    // Ax = beta
+    // A is square matrix
+    // x is (m, 1) vector of unknowns
+    // beta is (m, 1) vector of constants (solution vector)
+
+    // X is design matrix, y is outcome measures
+    let m = 5;
+    let n = 3;
+    let x: Array2<f64> = random_matrix(m, n);
+    let y: Array2<f64> = random_matrix(m, 1);
+    let xy: Array2<f64> = concatenate(Axis(1), &[x.view(), y.view()]).unwrap();
+    let xy_rref: Array2<f64> = rref(&xy);
+
+    // At_A_x = At_b
+    let xt_x: Array2<f64> = (&x.t()).dot(&x);
+    let xt_y: Array2<f64> = (&x.t()).dot(&y);
+
+    // Normal equation solution
+    let normal_equations: Array2<f64> = concatenate(Axis(1), &[xt_x.view(), xt_y.view()]).unwrap();
+    let x_solved: Array2<f64> = rref(&normal_equations);
+    let beta1: Array1<f64> = x_solved.slice(s![.., -1]).to_owned();
+    // left-inverse solution
+    let beta2: Array2<f64> = (&xt_x.inv().unwrap()).dot(&xt_y);
+
+    let results = vec![
+        format!("xy:\n{}", round2(&xy)),
+        format!("xy_rref:\n{}", round2(&xy_rref)),
+        format!("x_solved:\n{}", round2(&x_solved)),
+        format!("beta1:\n{}", round2(&beta1)),
+        format!("beta2:\n{}", round2(&beta2)),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn least_squares_via_qr_decomp() {
+    // X @ Beta = y
+    let m = 10;
+    let n = 3;
+    let x: Array2<f64> = random_matrix(m, n);
+    let y: Array2<f64> = random_matrix(m, 1);
+
+    let (q, r) = x.qr().unwrap();
+
+    let beta: Array2<f64> = (|| {
+        let rt_r: Array2<f64> = (&r.t()).dot(&r);
+        let rt_r_inv: Array2<f64> = (&rt_r).inv().unwrap();
+        let qr_t: Array2<f64> = (&q).dot(&r).t().to_owned();
+        // inv(R.T @ R) @ (Q @ R).T @ y
+        (&rt_r_inv).dot(&qr_t).dot(&y)
+    })();
+
+    let results = vec![
+        format!("x:\n{}", round2(&x)),
+        format!("y:\n{}", round2(&y)),
+        format!("q:\n{}", round2(&q)),
+        format!("r:\n{}", round2(&r)),
+        format!("beta:\n{}", round2(&beta)),
+        format!("(&x).dot(&beta):\n{}", round2(&(&x).dot(&beta))),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn eigendecomposition() {
+    let m: Array2<f64> = array![[1., 5.], [2., 4.]];
+    let (eigval, eigvec) = m.eig().unwrap();
+
+    let eigenvalues: Array1<f64> = eigval.map(|n| n.re());
+    let eigenvectors: Array2<f64> = eigvec.map(|n| n.re());
+
+    check_eigendecomposition(&m, &eigenvalues, &eigenvectors);
+
+    let results = vec![
+        format!("m:\n{}", round2(&m)),
+        format!("eigenvalues:\n{}", round2(&eigenvalues)),
+        format!("eigenvectors:\n{}", round2(&eigenvectors)),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn diagonalization() {
+    let m: Array2<f64> = symmetric_square(4);
+
+    let (eigval, eigvec) = m.eig().unwrap();
+    let eigenvalues: Array1<f64> = eigval.map(|n| n.re());
+    let eigenvectors: Array2<f64> = eigvec.map(|n| n.re());
+
+    // Reconstruct `A = P @ D @ inv(P)`
+    // A = eigenvectors @ np.diag(eigenvalues) @ inv(eigenvectors)
+    let m2 = (&eigenvectors)
+        .dot(&Array::from_diag(&eigenvalues))
+        .dot(&eigenvectors.inv().unwrap());
+
+    let results = vec![
+        format!("m:\n{}", round2(&m)),
+        format!("m2:\n{}", round2(&m2)),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+
+    assert_equal_ndarray(&m, &m2, 0.001);
 }
