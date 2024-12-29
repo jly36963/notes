@@ -19,4 +19,6 @@ ndarray-linalg = { git = "https://github.com/rust-ndarray/ndarray-linalg", featu
 # openblas-src = "0.10"
 # ndarray-linalg = "0.16.0" # Does not work with ndarray 0.16.x
 
-# brew install openblas
+# NOTE:
+# Feature `openblas-system` requires local install of openblas.
+# `brew install openblas`

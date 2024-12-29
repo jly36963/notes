@@ -1,9 +1,10 @@
-#![allow(non_snake_case)]
-
 use ndarray::{array, Array, Array1, Array2, Axis, Zip};
 use ndarray::{concatenate, prelude::*};
+use ndarray_linalg::eig::Eig;
 use ndarray_linalg::qr::QR;
-use ndarray_linalg::*;
+use ndarray_linalg::solve::Inverse;
+use ndarray_linalg::svd::SVD;
+use ndarray_linalg::Scalar;
 use ndarray_rand::rand_distr::{
     Bernoulli, Binomial, Exp, Geometric, Normal, Poisson, Standard, StandardNormal, Uniform,
 };
@@ -66,6 +67,14 @@ fn main() {
         ("least squares via qr decomp", least_squares_via_qr_decomp),
         ("eigendecomposition", eigendecomposition),
         ("diagonalization", diagonalization),
+        (
+            "matrix powers via diagonalization",
+            matrix_powers_via_diagonalization,
+        ),
+        ("singular value decomposition", singular_value_decomposition),
+        ("pseudoinverse", pseudoinverse),
+        ("svd_pseudoinverse", svd_pseudoinverse),
+        ("quadratic_form", quadratic_form),
     ];
 
     for (title, example_func) in examples {
@@ -394,7 +403,7 @@ fn array_creation() {
     let array_from_macro: Array1<i32> = array![1, 2, 3];
     let array_from_vec: Array1<i32> = Array::from_vec(vec![1, 2, 3]);
     let array_from_range: Array1<f64> = Array1::range(1.0, 6.0, 1.0);
-    let array_linspace: Array1<f64> = Array1::linspace(1.0, 6.0, 5);
+    let array_linspace: Array1<f64> = Array1::linspace(1.0, 5.0, 5);
     let array_from_iter: Array1<i32> = Array1::from_iter(1..6);
     let array_of_zeros: Array1<i32> = Array1::zeros(5);
     let array_of_ones: Array1<i32> = Array1::ones(5);
@@ -1200,4 +1209,106 @@ fn diagonalization() {
     results.iter().for_each(|s| println!("{}", s));
 
     assert_equal_ndarray(&m, &m2, 0.001);
+}
+
+fn power_via_diagonalization(m: &Array2<f64>, power: i32) -> Array2<f64> {
+    // A = P @ D @ inv(P)
+    // A^n = P @ (D^n) @ inv(P)
+    // D^n -- each diagonal element to the power of n
+
+    let (eigval, eigvec) = m.eig().unwrap();
+    let eigenvalues: Array1<f64> = eigval.map(|n| n.re());
+    let eigenvectors: Array2<f64> = eigvec.map(|n| n.re());
+
+    let result = (&eigenvectors)
+        .dot(&Array::from_diag(&eigenvalues).powi(power))
+        .dot(&eigenvectors.inv().unwrap());
+    result
+}
+
+fn matrix_powers_via_diagonalization() {
+    let m: Array2<f64> = symmetric_square(3);
+    let m2: Array2<f64> = power_via_diagonalization(&m, 2);
+
+    let results = vec![
+        format!("m:\n{}", round2(&m)),
+        format!("m2:\n{}", round2(&m2)),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn singular_value_decomposition() {
+    let m: Array2<f64> = array![[3., 0., 5.], [8., 1., 3.]];
+
+    // U, s, V.T -- matrix U, eigenvalues, matrix V.T
+    let (u_opt, s, vt_opt) = m.svd(true, true).unwrap();
+    let u = u_opt.unwrap();
+    let vt = vt_opt.unwrap();
+
+    let sigma: Array2<f64> = (|| {
+        let mut diag = Array::zeros((m.nrows(), m.ncols()));
+        for (i, &eval) in s.iter().enumerate() {
+            diag[[i, i]] = eval
+        }
+        diag
+    })();
+
+    // A = U @ Sigma @ V.T
+    let m2 = (&u).dot(&sigma).dot(&vt);
+
+    let results = vec![
+        format!("m:\n{}", round2(&m)),
+        format!("m2:\n{}", round2(&m2)),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn pseudoinverse() {
+    println!("...");
+}
+
+fn svd_pseudoinverse() {
+    // Singular matrix
+    let m: Array2<f64> = Array::linspace(1.0, 9.0, 9)
+        .into_shape_with_order((3, 3))
+        .unwrap();
+
+    let max_rank = std::cmp::min(m.nrows(), m.ncols());
+    let rank = get_matrix_rank(&m);
+
+    // u, s, vt
+    let (u_opt, s, vt_opt) = m.svd(true, true).unwrap();
+    let u = u_opt.unwrap();
+    let vt = vt_opt.unwrap();
+    let v = vt.t();
+
+    // Inverse of diagonal matrix is reciprocal of non-zero values
+    let sigma_inv: Array2<f64> = (|| {
+        let threshold = 0.001;
+        let s_inv: Array1<f64> = s.map(|&n| if n > threshold { n.pow(-1.0) } else { 0.0 });
+        let mut diag: Array2<f64> = Array::zeros((m.nrows(), m.ncols()));
+        for (i, &eval) in s_inv.iter().enumerate() {
+            diag[[i, i]] = eval
+        }
+        diag
+    })();
+
+    let m_pinv: Array2<f64> = (&v).dot(&sigma_inv.t()).dot(&u.t());
+
+    let results = vec![
+        format!("m:\n{}", round2(&m)),
+        format!("max_rank:\n{}", max_rank),
+        format!("rank:\n{}", rank),
+        format!("m_pinv:\n{}", round2(&m_pinv)),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn quadratic_form() {
+    let s: Array2<f64> = array![[1., 3., 2.,], [0., 3., 4.], [-5., -2., 4.]];
+    let w: Array2<f64> = array![[-2.], [4.], [3.]];
+    // w.T @ S @ w -> scalar
+    let quadratic_form: Array2<f64> = (&w.t()).dot(&s).dot(&w);
+    let &result = quadratic_form.first().unwrap();
+    println!("result: {:?}", result);
 }
