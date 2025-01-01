@@ -262,9 +262,7 @@ def _basic_gamma_correction():
     img: np.ndarray = read_image(fp)
     # 0 < γ < 1 (brighter), γ > 1 (darker)
     gamma = 3 / 4
-    # (I/255) ^ γ
     img = ((img / 255) ** gamma) * 255
-    # img = np.power(img/255, gamma)  # type: ignore
     write_image(_get_output_fp("orchid-gamma.jpg"), img)
 
 

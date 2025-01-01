@@ -15,8 +15,6 @@ openblas-src = "0.10.11"
 ndarray-linalg = { git = "https://github.com/rust-ndarray/ndarray-linalg", features = [
     "openblas-system",
 ] }
-
-# openblas-src = "0.10"
 # ndarray-linalg = "0.16.0" # Does not work with ndarray 0.16.x
 
 # NOTE:

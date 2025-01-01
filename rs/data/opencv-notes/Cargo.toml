@@ -1,0 +1,14 @@
+[package]
+name = "opencv-notes"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.95"
+opencv = { version = "0.93.5", features = ["clang-runtime"] }
+
+# NOTE:
+# Must have installation of opencv
+# `brew install opencv`
