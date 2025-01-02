@@ -564,8 +564,6 @@ fn array_stats() {
         ),
         format!("arr.std(0.0): {}", arr.std(0.0)),
         format!("arr.var(0.0): {}", arr.var(0.0)),
-        // format!("arr.mode(): {}", arr.mode().unwrap()),
-        // format!("arr.median(): {}", arr.median().unwrap()),
     ];
     results.iter().for_each(|s| println!("{}", s));
 }

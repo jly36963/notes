@@ -1,16 +1,23 @@
+use num::clamp;
 use opencv::core::{
     add_def, add_weighted, convert_scale_abs, copy_make_border_def, flip, max, min, multiply_def,
-    pow, rotate, subtract_def, Mat, MatExprTraitConst, ModifyInplace, Size, Vector,
-    BORDER_CONSTANT, BORDER_DEFAULT, CV_64F, CV_8U, ROTATE_180,
+    no_array, normalize, pow, rotate, split, subtract_def, KeyPoint, Mat, MatExprTraitConst,
+    MatTrait, ModifyInplace, Scalar, Size, Vec3b, VecN, Vector, BORDER_CONSTANT, BORDER_DEFAULT,
+    CV_32F, CV_64F, CV_8U, NORM_MINMAX, ROTATE_180,
 };
+use opencv::dnn_superres::DnnSuperResImpl;
+use opencv::features2d::{draw_keypoints, DrawMatchesFlags, ORB_ScoreType, AKAZE, KAZE, ORB};
 use opencv::imgcodecs::{imread, imread_def, imwrite, imwrite_def, IMREAD_GRAYSCALE};
 use opencv::imgproc::{
-    adaptive_threshold, cvt_color_def, dilate_def, erode_def, gaussian_blur_def,
-    get_rotation_matrix_2d, laplacian, morphology_ex_def, resize, resize_def, sobel_def, threshold,
-    warp_affine_def, ADAPTIVE_THRESH_GAUSSIAN_C, COLOR_BGR2HLS, COLOR_BGR2RGB, INTER_AREA,
-    MORPH_CLOSE, MORPH_GRADIENT, MORPH_OPEN, THRESH_BINARY,
+    adaptive_threshold, canny_def, corner_harris_def, cvt_color_def, dilate_def, equalize_hist,
+    erode_def, gaussian_blur_def, get_rotation_matrix_2d, laplacian, morphology_ex_def, resize,
+    resize_def, sobel_def, threshold, warp_affine_def, ADAPTIVE_THRESH_GAUSSIAN_C, COLOR_BGR2GRAY,
+    COLOR_BGR2HLS, COLOR_BGR2HSV, COLOR_BGR2RGB, COLOR_HSV2BGR, INTER_AREA, MORPH_CLOSE,
+    MORPH_GRADIENT, MORPH_OPEN, THRESH_BINARY,
 };
-use opencv::prelude::MatTraitConst;
+use opencv::photo::fast_nl_means_denoising_colored;
+use opencv::prelude::{DnnSuperResImplTrait, Feature2DTrait, MatTraitConst, MatTraitConstManual};
+use peroxide::statistics::stat::OrderedStat;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -43,6 +50,13 @@ fn main() {
         ("blurring", blurring),
         ("morphological operators", morphological_operators),
         ("gradients", gradients),
+        ("histogram_equalization", histogram_equalization),
+        ("corner_detection", corner_detection),
+        ("canny_edge_detector", canny_edge_detector),
+        ("feature_detection", feature_detection),
+        ("feature_matching", feature_matching),
+        ("upscaling", upscaling),
+        ("denoising", denoising),
     ];
 
     for (title, example_func) in examples {
@@ -75,11 +89,11 @@ fn read_image_with_options(filepath: &str, flags: i32) -> Mat {
     imread(filepath, flags).unwrap()
 }
 
-fn write_image(filepath: &str, img: &Mat) -> () {
+fn write_image(filepath: &str, img: &Mat) {
     imwrite_def(filepath, img).unwrap();
 }
 
-fn _write_image_with_options(filepath: &str, img: &Mat, params: &Vector<i32>) -> () {
+fn _write_image_with_options(filepath: &str, img: &Mat, params: &Vector<i32>) {
     imwrite(filepath, img, params).unwrap();
 }
 
@@ -87,7 +101,7 @@ fn _write_image_with_options(filepath: &str, img: &Mat, params: &Vector<i32>) ->
 // Utils (arithmetic)
 // ---
 
-fn img_pow(img: &mut Mat, value: f64) -> () {
+fn img_pow(img: &mut Mat, value: f64) {
     unsafe {
         img.modify_inplace(|input, output| {
             pow(input, value, output).unwrap();
@@ -95,27 +109,27 @@ fn img_pow(img: &mut Mat, value: f64) -> () {
     }
 }
 
-fn _img_max(img: &mut Mat, value: f64) -> () {
+fn _img_max(img: &mut Mat, value: f64) {
     max(&img.clone(), &value, img).unwrap();
 }
 
-fn _img_min(img: &mut Mat, value: f64) -> () {
+fn _img_min(img: &mut Mat, value: f64) {
     min(&img.clone(), &value, img).unwrap();
 }
 
-fn _img_add(img: &mut Mat, value: f64) -> () {
+fn _img_add(img: &mut Mat, value: f64) {
     add_def(&img.clone(), &value, img).unwrap();
 }
 
-fn _img_sub(img: &mut Mat, value: f64) -> () {
+fn _img_sub(img: &mut Mat, value: f64) {
     subtract_def(&img.clone(), &value, img).unwrap();
 }
 
-fn img_mul(img: &mut Mat, value: f64) -> () {
+fn img_mul(img: &mut Mat, value: f64) {
     multiply_def(&img.clone(), &value, img).unwrap();
 }
 
-fn img_div(img: &mut Mat, value: f64) -> () {
+fn img_div(img: &mut Mat, value: f64) {
     multiply_def(&img.clone(), &(1.0 / value), img).unwrap();
 }
 
@@ -136,12 +150,14 @@ fn setup() {
     }
 }
 
-fn import_and_export() -> () {
-    let filename = "polaris.jpg";
-    let input_fp = get_input_fp(filename);
-    let img = read_image(input_fp.to_str().unwrap());
-    let output_fp = get_output_fp(filename);
-    write_image(output_fp.to_str().unwrap(), &img);
+fn import_and_export() {
+    let filenames = vec!["polaris.jpg", "beach.jpg", "orchid.jpg", "tree.jpg"];
+    for filename in filenames {
+        let input_fp = get_input_fp(filename);
+        let img = read_image(input_fp.to_str().unwrap());
+        let output_fp = get_output_fp(filename);
+        write_image(output_fp.to_str().unwrap(), &img);
+    }
 }
 
 fn mat_methods() {
@@ -211,7 +227,7 @@ fn resizing() {
 }
 
 /// Add padding around an image (in place).
-fn add_padding(img: &mut Mat) -> () {
+fn add_padding(img: &mut Mat) {
     // Other angles
     let Size { height, width } = img.size().unwrap();
     let (pad_x, pad_y) = (height / 2, width / 2);
@@ -227,7 +243,7 @@ fn add_padding(img: &mut Mat) -> () {
     .unwrap();
 }
 
-fn rotate_by_angle(img: &mut Mat, angle: f64, scale: f64) -> () {
+fn rotate_by_angle(img: &mut Mat, angle: f64, scale: f64) {
     let Size { height, width } = img.size().unwrap();
     let center = ((height / 2) as f32, (width / 2) as f32);
     let rm = get_rotation_matrix_2d(center.into(), angle, scale).unwrap();
@@ -274,7 +290,7 @@ fn adjust_contrast(
     img: &mut Mat,
     contrast: f64,  // 0.0 to 1.0
     brightness: i8, // -255 to 255
-) -> () {
+) {
     let gamma = brightness as f64 + (255.0 * (1.0 - contrast) / 2.0);
     add_weighted(
         &img.clone(),
@@ -321,7 +337,7 @@ fn thresholding() {
     write_image(output_fp2.to_str().unwrap(), &img2);
 }
 
-fn gamma_correct(img: &mut Mat, gamma: f64) -> () {
+fn gamma_correct(img: &mut Mat, gamma: f64) {
     // brighter: `0 < γ < 1`; darker: `γ > 1`
     // let img = Mat::ones(img.shape().unwrap()).unwrap();
 
@@ -406,7 +422,6 @@ fn gradients() {
     let filename = "polaris.jpg";
     let input_fp = get_input_fp(filename);
     let src_img = read_image_with_options(input_fp.to_str().unwrap(), IMREAD_GRAYSCALE);
-    // let src_img = read_image(input_fp.to_str().unwrap());
 
     // Sobel X
     (|| {
@@ -431,4 +446,221 @@ fn gradients() {
         let output_fp = get_output_fp("polaris-gradients-laplacian.jpg");
         write_image(output_fp.to_str().unwrap(), &img);
     })();
+}
+
+fn equalize_histogram(img: &mut Mat) {
+    cvt_color_def(&img.clone(), img, COLOR_BGR2HSV).unwrap();
+    let mut channels: Vector<Mat> = Vector::new();
+    split(&img.clone(), &mut channels).unwrap();
+    let mut channel = channels.get(2).unwrap();
+    equalize_hist(&channel.clone(), &mut channel).unwrap();
+    channels.set(2, channel).unwrap();
+    cvt_color_def(&img.clone(), img, COLOR_HSV2BGR).unwrap();
+}
+
+fn histogram_equalization() {
+    let filename = "beach.jpg";
+    let input_fp = get_input_fp(filename);
+    let mut img = read_image(input_fp.to_str().unwrap());
+    equalize_histogram(&mut img);
+    let output_fp = get_output_fp("beach-histogram-equalization-color.jpg");
+    write_image(output_fp.to_str().unwrap(), &img);
+}
+
+fn corner_detection() {
+    let filename = "tree.jpg";
+    let input_fp = get_input_fp(filename);
+    let src_img = read_image(input_fp.to_str().unwrap());
+    let img_gray = (|| {
+        let mut img = src_img.clone();
+        cvt_color_def(&img.clone(), &mut img, COLOR_BGR2GRAY).unwrap();
+        let output_fp = get_output_fp("tree-gray.jpg");
+        write_image(output_fp.to_str().unwrap(), &img);
+        img
+    })();
+
+    let img_corners = (|| {
+        let mut img = img_gray.clone();
+        img.clone().convert_to_def(&mut img, CV_32F).unwrap();
+        corner_harris_def(&img.clone(), &mut img, 2, 3, 0.04).unwrap();
+        let dilate_kernel = Mat::ones(5, 5, CV_8U).unwrap().to_mat().unwrap();
+        dilate_def(&img.clone(), &mut img, &dilate_kernel).unwrap();
+        normalize(
+            &img.clone(),
+            &mut img,
+            0.0,
+            255.0,
+            NORM_MINMAX,
+            -1,
+            &no_array(),
+        )
+        .unwrap();
+        // Threshold at 15
+        threshold(&img.clone(), &mut img, 15.0, 255.0, THRESH_BINARY).unwrap();
+        img.clone().convert_to_def(&mut img, CV_8U).unwrap();
+        let output_fp = get_output_fp("tree-corners-harris.jpg");
+        write_image(output_fp.to_str().unwrap(), &img);
+        img
+    })();
+
+    let _img_highlighted = (|| {
+        let mut img = src_img.clone();
+        let Size { height, width } = img.size().unwrap();
+        for y in 0..height {
+            for x in 0..width {
+                let corners_pixel = img_corners.at_2d::<VecN<u8, 1>>(y, x).unwrap();
+                let is_corner = corners_pixel[0] > 100;
+                if is_corner {
+                    let highlighted_pixel = img.at_2d_mut::<Vec3b>(y, x).unwrap();
+                    *highlighted_pixel = Vec3b::from([0, 255, 0]);
+                }
+            }
+        }
+        let output_fp = get_output_fp("tree-corners-harris-highlighted.jpg");
+        write_image(output_fp.to_str().unwrap(), &img);
+        img
+    })();
+}
+
+fn canny_edge_detector() {
+    let filename = "tree.jpg";
+    let input_fp = get_input_fp(filename);
+    let mut src_img = read_image(input_fp.to_str().unwrap());
+    gaussian_blur_def(&src_img.clone(), &mut src_img, (5, 5).into(), 10.0).unwrap();
+
+    // Manual thresholds
+    (|| {
+        let mut img = src_img.clone();
+        canny_def(&img.clone(), &mut img, 100.0, 150.0).unwrap();
+        let output_fp = get_output_fp("tree-canny-edge-detector.jpg");
+        write_image(output_fp.to_str().unwrap(), &img);
+    })();
+
+    // Median-based thresholds
+    (|| {
+        let mut img = src_img.clone();
+        let median = (|| {
+            let mut img_gray = img.clone();
+            cvt_color_def(&img_gray.clone(), &mut img_gray, COLOR_BGR2GRAY).unwrap();
+            let vec_2d: Vec<Vec<u8>> = img_gray.to_vec_2d().unwrap();
+            let vec_flat: Vec<f64> = vec_2d.into_iter().flatten().map(|v| v as f64).collect();
+            let median = vec_flat.median();
+            median
+        })();
+        let thresh1 = clamp(f64::max(0.0, median * 0.8), 0.0, 255.0);
+        let thresh2 = clamp(f64::max(0.0, median * 1.2), 0.0, 255.0);
+
+        canny_def(&img.clone(), &mut img, thresh1, thresh2).unwrap();
+        let output_fp = get_output_fp("tree-canny-edge-detector-2.jpg");
+        write_image(output_fp.to_str().unwrap(), &img);
+    })();
+}
+
+fn feature_detection() {
+    let filename = "tree.jpg";
+    let input_fp = get_input_fp(filename);
+    let mut src_img = read_image(input_fp.to_str().unwrap());
+    gaussian_blur_def(&src_img.clone(), &mut src_img, (5, 5).into(), 10.0).unwrap();
+
+    // Orb Harris Corner
+    (|| {
+        let mut img = src_img.clone();
+        let mut orb =
+            ORB::create(5000, 1.2, 8, 15, 0, 2, ORB_ScoreType::HARRIS_SCORE, 31, 20).unwrap();
+
+        let mask = Mat::default();
+        let mut keypoints: Vector<KeyPoint> = Vector::default();
+        let mut descriptors = Mat::default();
+        orb.detect_and_compute_def(&img.clone(), &mask, &mut keypoints, &mut descriptors)
+            .unwrap();
+        draw_keypoints(
+            &img.clone(),
+            &keypoints,
+            &mut img,
+            Scalar::from_array([0.0, 255.0, 0.0, 0.0]),
+            DrawMatchesFlags::DEFAULT,
+        )
+        .unwrap();
+        let output_fp = get_output_fp("tree-feature-detection-orb-harris-corner.jpg");
+        write_image(output_fp.to_str().unwrap(), &img);
+    })();
+
+    // Kaze Blob
+    (|| {
+        let mut img = src_img.clone();
+        let mut kaze = KAZE::create_def().unwrap();
+
+        let mask = Mat::default();
+        let mut keypoints: Vector<KeyPoint> = Vector::default();
+        let mut descriptors = Mat::default();
+        kaze.detect_and_compute_def(&img.clone(), &mask, &mut keypoints, &mut descriptors)
+            .unwrap();
+        draw_keypoints(
+            &img.clone(),
+            &keypoints,
+            &mut img,
+            Scalar::from_array([0.0, 255.0, 0.0, 0.0]),
+            DrawMatchesFlags::DEFAULT,
+        )
+        .unwrap();
+        let output_fp = get_output_fp("tree-feature-detection-kaze-blob.jpg");
+        write_image(output_fp.to_str().unwrap(), &img);
+    })();
+
+    // Akaze Blob
+    (|| {
+        let mut img = src_img.clone();
+        let mut akaze = AKAZE::create_def().unwrap();
+
+        let mask = Mat::default();
+        let mut keypoints: Vector<KeyPoint> = Vector::default();
+        let mut descriptors = Mat::default();
+        akaze
+            .detect_and_compute_def(&img.clone(), &mask, &mut keypoints, &mut descriptors)
+            .unwrap();
+        draw_keypoints(
+            &img.clone(),
+            &keypoints,
+            &mut img,
+            Scalar::from_array([0.0, 255.0, 0.0, 0.0]),
+            DrawMatchesFlags::DEFAULT,
+        )
+        .unwrap();
+        let output_fp = get_output_fp("tree-feature-detection-akaze-blob.jpg");
+        write_image(output_fp.to_str().unwrap(), &img);
+    })();
+}
+
+fn feature_matching() {
+    // ...
+}
+
+fn get_superres() -> DnnSuperResImpl {
+    let mut sr = DnnSuperResImpl::default().unwrap();
+    let model_path = Path::new("models").join("FSRCNN_x2.pb");
+    sr.read_model(model_path.to_str().unwrap()).unwrap();
+    sr.set_model("fsrcnn", 2).unwrap();
+    sr
+}
+
+fn upscaling() {
+    let filename = "polaris.jpg";
+    let input_fp = get_input_fp(filename);
+    let mut img = read_image(input_fp.to_str().unwrap());
+
+    let mut sr = get_superres();
+    sr.upsample(&img.clone(), &mut img).unwrap();
+
+    let output_fp = get_output_fp("polaris-upscaled.jpg");
+    write_image(output_fp.to_str().unwrap(), &img);
+}
+
+fn denoising() {
+    let filename = "polaris.jpg";
+    let input_fp = get_input_fp(filename);
+    let mut img = read_image(input_fp.to_str().unwrap());
+
+    fast_nl_means_denoising_colored(&img.clone(), &mut img, 5.0, 5.0, 5, 5).unwrap();
+    let output_fp = get_output_fp("polaris-denoised.jpg");
+    write_image(output_fp.to_str().unwrap(), &img);
 }

@@ -2,11 +2,14 @@ dev:
 	RUST_BACKTRACE=1 cargo run
 
 check:
-	RUST_BACKTRACE=1 cargo run
+	cargo check
 
 dev-build:
 	cargo build
 
 build:
 	cargo build --release
+
+run:
+    ./target/release/opencv-notes
 
