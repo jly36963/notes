@@ -1,0 +1,8 @@
+dev:
+	dune exec main
+
+build:
+    dune build
+
+run:
+    ./_build/default/main.exe
