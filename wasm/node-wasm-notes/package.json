@@ -1,0 +1,16 @@
+{
+  "name": "node-wasm-notes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "node index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "gts": "^6.0.2"
+  }
+}

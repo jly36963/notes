@@ -1,0 +1,14 @@
+install:
+	pnpm install
+
+check:
+    cargo check
+
+build:
+    wasm-pack build --target nodejs
+
+dev:
+    pnpm start
+
+run:
+    pnpm start
