@@ -1,0 +1,14 @@
+install:
+	pnpm install
+
+check:
+    cargo check
+
+build:
+    pnpm run build
+
+dev:
+    pnpm start
+
+run:
+    pnpm start

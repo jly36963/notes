@@ -1,0 +1,28 @@
+{
+  "name": "napi-rs-notes",
+  "version": "0.0.0",
+  "main": "index.ts",
+  "type": "module",
+  "napi": {
+    "name": "napi-rs-notes",
+    "triples": {}
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@napi-rs/cli": "^2.18.4",
+    "@types/node": "^22.13.4",
+    "gts": "^6.0.2"
+  },
+  "engines": {
+    "node": ">= 23"
+  },
+  "scripts": {
+    "start": "node index.ts",
+    "artifacts": "napi artifacts",
+    "build": "napi build --platform --release pkg",
+    "build:debug": "napi build --platform",
+    "prepublishOnly": "napi prepublish -t npm",
+    "universal": "napi universal",
+    "version": "napi version"
+  }
+}

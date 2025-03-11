@@ -79,6 +79,9 @@ pub fn timed_operation(n: u32, label: Option<String>) -> u32 {
 // Receiving struct argument
 // ---
 
+// Wasm + serde
+// https://rustwasm.github.io/wasm-bindgen/reference/arbitrary-data-with-serde.html
+
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct Person {
@@ -120,3 +123,13 @@ pub fn get_person(id: String) -> Result<JsValue, JsValue> {
 // ---
 
 // https://rustwasm.github.io/wasm-bindgen/examples/fetch.html
+
+// ---
+// TODO
+// ---
+
+// Opaque objects that js can use
+// Use js closure from rs
+// Use rs closure from js
+// Promises/Futures
+// Untyped and duck-typed values
