@@ -1,4 +1,6 @@
-./target
-./node_modules
-./pkg
-./target
+target/
+node_modules/
+pkg/
+target/
+npm/
+releases/
