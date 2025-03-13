@@ -11,30 +11,32 @@ use glob::glob;
 use heck::{ToKebabCase, ToLowerCamelCase, ToSnakeCase};
 use imara_diff::intern::InternedInput;
 use imara_diff::{Algorithm, UnifiedDiffBuilder, diff};
+use itertools::Itertools;
+use jiff::civil;
+use jiff::fmt::strtime;
+use jiff::{Timestamp, Zoned};
+use num;
+use pathdiff::diff_paths;
 use rayon::prelude::*;
 use regex::Regex;
+use rustix::fs as rfs;
+use rustix::fs::Mode;
+use rustix::fs::OFlags;
 use similar::{ChangeTag, TextDiff};
 use std::fs::read_to_string;
 use std::io::{Read, Write};
+use std::path::Path;
 use std::thread;
 use std::time;
+use tokio::fs as tfs;
 use unicode_segmentation::UnicodeSegmentation;
 use url::Url;
 use uuid::Uuid;
 
 // TODO
-// rustix -- https://github.com/bytecodealliance/rustix
-// jiff -- https://docs.rs/jiff/latest/jiff/
-// itertools -- https://github.com/rust-itertools/itertools
-// path-absolutize -- https://github.com/magiclen/path-absolutize
-// zip -- https://github.com/zip-rs/zip2
-// nom -- https://github.com/rust-bakery/nom
-// jsonschema -- https://github.com/Stranger6667/jsonschema
-
-// Also
 // hashbrown, dashmap, indexmap/ordermap
 // eyre, anyhow, thiserror
-// num, rand
+// num, rand, zip, nom, jsonschema
 
 // ---
 // Main
@@ -46,6 +48,7 @@ async fn main() {
     let examples: Vec<(&str, fn() -> ())> = vec![
         ("basic_time", basic_time),
         ("basic_chrono", basic_chrono),
+        ("basic_jiff", basic_jiff),
         ("basic_regex", basic_regex),
         ("basic_gzip", basic_gzip),
         ("basic_zlib", basic_zlib),
@@ -60,6 +63,10 @@ async fn main() {
         ("basic_heck", basic_heck),
         ("basic_glob", basic_glob),
         ("basic_camino", basic_camino),
+        ("basic_rustix", basic_rustix),
+        ("basic_itertools", basic_itertools),
+        ("basic_pathdiff", basic_pathdiff),
+        ("basic_num", basic_num),
     ];
     for (title, example_func) in examples {
         print_section_header(title.into());
@@ -69,6 +76,7 @@ async fn main() {
     // Async
     let async_examples: Vec<(&str, fn() -> BoxFuture<'static, ()>)> = vec![
         ("basic_reqwest", || Box::pin(basic_reqwest())),
+        ("basic_tokio_fs", || Box::pin(basic_tokio_fs())),
         ("basic_async_func", || Box::pin(basic_async_func())),
     ];
     for (title, async_example_func) in async_examples {
@@ -197,6 +205,68 @@ fn basic_chrono() {
         let dt2 = Utc.with_ymd_and_hms(2021, 9, 15, 0, 0, 0).unwrap();
         let duration = dt2.signed_duration_since(dt1);
         assert_eq!(duration, Duration::days(112));
+    }
+}
+
+fn basic_jiff() {
+    println!("datetime now");
+    {
+        // Local
+        let now_zoned = Zoned::now();
+        println!("now_zoned: {}", now_zoned);
+
+        // UTC
+        let now = Timestamp::now();
+        println!("now: {}", now);
+    }
+    println!("date now");
+    {
+        // // No conversion from Timestamp to civil::Date?
+        // let now = Timestamp::now();
+
+        let now = Zoned::now();
+        let today = civil::Date::from(now);
+        println!("today: {}", today);
+    }
+    println!("parse date from string");
+    {
+        // Simple iso8601
+        let date: civil::Date = "2024-01-01".parse().unwrap();
+        println!("date: {}", date);
+
+        // printf-style
+        let date: civil::Date = strtime::parse("%Y-%m-%d", "2024-01-01")
+            .unwrap()
+            .to_date()
+            .unwrap();
+        println!("date: {}", date);
+    }
+    println!("format");
+    {
+        let now = Zoned::now();
+        let today = civil::Date::from(now);
+        let string = today.strftime("%Y-%m-%d").to_string();
+        println!("string: {}", string);
+    }
+    println!("custom date/datetime");
+    {
+        let date = civil::Date::new(2024, 01, 01).unwrap();
+        println!("date: {}", date);
+
+        let datetime = civil::DateTime::new(2024, 01, 01, 0, 0, 0, 0).unwrap();
+        println!("datetime: {}", datetime);
+    }
+    // shift
+    {
+        // ...
+    }
+    // select part of datetime
+    {
+        // ...
+    }
+    // override part
+    {
+        // ...
     }
 }
 
@@ -575,6 +645,132 @@ fn basic_camino() {
     results.iter().for_each(|s| println!("{}", s));
 }
 
+fn basic_rustix() {
+    let path = Path::new("./Cargo.toml");
+    let fd = rfs::open(path, OFlags::RDONLY, Mode::empty()).unwrap();
+
+    // Also: chmod, fchmod, mkdir, rename, unlink
+
+    let results = vec![
+        format!(
+            "rfs::fstat(fd).unwrap().st_size: {:?}",
+            rfs::fstat(fd).unwrap().st_size
+        ),
+        format!(
+            "rfs::stat(path).unwrap().st_size: {:?}",
+            rfs::stat(path).unwrap().st_size
+        ),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn basic_itertools() {
+    let values = vec![1, 2, 3, 4, 5];
+
+    // https://docs.rs/itertools/latest/itertools/trait.Itertools.html
+
+    // Also:
+    // batching, cartesian_product, counts, filter(_map)_ok, into_group_map(_by)
+    // k_largest(_by), k_smallest(_by), map_ok, merge, minmax, next_tuple,
+    // partition_map/partition_result, sorted_by, take/tail, tuple_windows, tuples,
+
+    let results = vec![
+        format!("values: {:?}", values),
+        format!(
+            "vec![1, 1].iter().all_equal(): {}",
+            vec![1, 1].iter().all_equal()
+        ),
+        format!("values.iter().all_unique(): {}", values.iter().all_unique()),
+        format!(
+            "values.iter().filter(|&&v| v == 3).at_most_one(): {:?}",
+            values.iter().filter(|&&v| v == 3).at_most_one()
+        ),
+        format!(
+            "values.chunks(2).collect_vec(): {:?}",
+            values.chunks(2).collect_vec()
+        ),
+        format!(
+            "values.iter().combinations(4).collect_vec(): {:?}",
+            values.iter().combinations(4).collect_vec()
+        ),
+        format!(
+            "vec![values.clone(), values.clone()].concat(): {:?}",
+            vec![values.clone(), values.clone()].concat()
+        ),
+        format!("values.iter().contains(&3): {}", values.iter().contains(&3)),
+        format!(
+            "vec![1, 1, 1, 2, 2, 3].iter().dedup().collect_vec(): {:?}",
+            vec![1, 1, 1, 2, 2, 3].iter().dedup().collect_vec()
+        ),
+        format!(
+            "vec![1, 1, 1, 2, 2, 3].iter().duplicates().collect_vec(): {:?}",
+            vec![1, 1, 1, 2, 2, 3].iter().duplicates().collect_vec()
+        ),
+        format!(
+            "values.iter().filter(|&&v| v == 3).exactly_one(): {:?}",
+            values.iter().filter(|&&v| v == 3).exactly_one()
+        ),
+        format!(
+            "values.iter().format(\", \"): {}",
+            values.iter().format(", ")
+        ),
+        format!(
+            "values.iter().get(1..=3).copied().collect_vec(): {:?}",
+            values.iter().get(1..=3).copied().collect_vec()
+        ),
+        format!("values.iter().join(\", \"): {:?}", values.iter().join(", ")),
+        format!(
+            "values.clone().into_iter().map_into::<f64>().collect_vec(): {:?}",
+            values.clone().into_iter().map_into::<f64>().collect_vec()
+        ),
+        format!(
+            "vec![1, 2, 3].iter().permutations(3).collect_vec(): {:?}",
+            vec![1, 2, 3].iter().permutations(3).collect_vec()
+        ),
+        format!(
+            "vec![1, 2, 3].iter().powerset().collect_vec(): {:?}",
+            vec![1, 2, 3].iter().powerset().collect_vec()
+        ),
+        format!(
+            "vec![3, 2, 1].iter().sorted().collect_vec(): {:?}",
+            vec![3, 2, 1].iter().sorted().collect_vec()
+        ),
+        format!(
+            "vec![1, 1, 1, 2, 2, 3].iter().unique().collect_vec(): {:?}",
+            vec![1, 1, 1, 2, 2, 3].iter().unique().collect_vec()
+        ),
+        format!(
+            "values.iter().zip_eq(&values).collect_vec(): {:?}",
+            values.iter().zip_eq(&values).collect_vec()
+        ),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn basic_pathdiff() {
+    let data_dir = Path::new("./data");
+    let input_dir = data_dir.join("input");
+    let output_dir = data_dir.join("output");
+    let fp1 = input_dir.join("file.txt");
+    let fp2 = output_dir.join("file.txt");
+
+    let res = diff_paths(fp2, fp1);
+    if let Some(p) = res {
+        println!("{:?}", p);
+    }
+}
+
+fn basic_num() {
+    let results = vec![
+        format!("num::abs(-1): {:?}", num::abs(-1)),
+        format!("num::clamp(6, 0, 5): {:?}", num::clamp(6, 0, 5)),
+        format!("num::one::<i32>(): {:?}", num::one::<i32>()),
+        format!("num::pow(2, 3): {:?}", num::pow(2, 3)),
+        format!("num::zero::<i32>(): {:?}", num::zero::<i32>()),
+    ];
+    results.iter().for_each(|s| println!("{}", s));
+}
+
 // ---
 // Async Examples
 // ---
@@ -668,6 +864,33 @@ async fn basic_reqwest() -> () {
         .unwrap();
 
     println!("Delete person result: ok");
+}
+
+async fn basic_tokio_fs() -> () {
+    let text: String = "In order to survive, we cling to all we know and understand. ".to_owned()
+        + "And label it reality. "
+        + "But knowledge and understanding are ambiguous. "
+        + "That reality could be an illusion. "
+        + "All humans live with the wrong assumptions.";
+
+    let data_dir = Path::new("./data");
+    let input_dir = data_dir.join("input");
+    let output_dir = data_dir.join("output");
+    let fp1 = input_dir.join("file.txt");
+    let fp2 = output_dir.join("file.txt");
+
+    tfs::create_dir_all(&input_dir).await.unwrap();
+    tfs::create_dir(&output_dir).await.unwrap();
+    tfs::write(&fp1, text.as_bytes()).await.unwrap();
+    tfs::try_exists(&fp1).await.unwrap();
+    tfs::copy(&fp1, &fp2).await.unwrap();
+    let contents = tfs::read_to_string(&fp2).await.unwrap();
+    println!("{}", contents);
+    tfs::remove_file(&fp2).await.unwrap();
+    tfs::remove_file(&fp1).await.unwrap();
+    tfs::remove_dir(&output_dir).await.unwrap();
+    tfs::remove_dir(&input_dir).await.unwrap();
+    tfs::remove_dir(&data_dir).await.unwrap();
 }
 
 async fn basic_async_func() -> () {
