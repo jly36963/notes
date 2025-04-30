@@ -6,73 +6,64 @@ use std::fs::File;
 use std::fs::OpenOptions;
 use std::fs::Permissions;
 use std::io::{BufReader, BufWriter, Read, Seek, Write};
+use std::mem;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::thread;
 
-// https://doc.rust-lang.org/std/
+// References and smart pointers:
+// https://doc.rust-lang.org/std/primitive.reference.html
+// https://doc.rust-lang.org/std/borrow/index.html
+// https://doc.rust-lang.org/std/boxed/index.html
+// https://doc.rust-lang.org/std/cell/index.html
+// https://doc.rust-lang.org/std/convert/index.html
+// https://doc.rust-lang.org/std/marker/index.html
+// https://doc.rust-lang.org/std/mem/index.html
+
+// Unsafe (pointers)
+// https://doc.rust-lang.org/std/primitive.pointer.html
+// https://doc.rust-lang.org/std/ffi/index.html
+// https://doc.rust-lang.org/std/ptr/index.html
 
 // ---
 // Main
 // ---
 
 fn main() {
-    print_section_header(String::from("basic hashmaps"));
-    basic_hashmaps();
-
-    print_section_header(String::from("basic hashset"));
-    basic_hashset();
-
-    print_section_header(String::from("basic fmt"));
-    basic_fmt();
-
-    print_section_header(String::from("basic path"));
-    basic_path();
-
-    print_section_header(String::from("basic path (iter)"));
-    basic_path_iter();
-
-    print_section_header(String::from("basic env"));
-    basic_env();
-
-    print_section_header(String::from("basic fs (1)"));
-    basic_fs_1();
-
-    print_section_header(String::from("basic fs (2)"));
-    basic_fs_2();
-
-    print_section_header(String::from("basic fs (3)"));
-    basic_fs_3();
-
-    print_section_header(String::from("basic prelude"));
-    basic_prelude();
-
-    print_section_header(String::from("basic process"));
-    basic_process();
-
-    print_section_header(String::from("basic box"));
-    basic_box();
-
-    print_section_header(String::from("basic pin"));
-    basic_pin();
-
-    print_section_header(String::from("basic future"));
-    basic_future();
-
-    print_section_header(String::from("basic rc"));
-    basic_rc();
-
-    print_section_header(String::from("basic cell"));
-    basic_cell();
-
-    print_section_header(String::from("basic sync"));
-    basic_sync();
-
-    print_section_header(String::from("basic panic"));
-    basic_panic();
-
-    print_section_header(String::from("basic any"));
-    basic_any();
+    let examples: Vec<(&str, fn())> = vec![
+        ("basic_hashmaps", basic_hashmaps),
+        ("basic_hashset", basic_hashset),
+        ("basic_fmt", basic_fmt),
+        ("basic_path", basic_path),
+        ("basic_path_iter", basic_path_iter),
+        ("basic_env", basic_env),
+        ("basic_fs", basic_fs),
+        ("basic_file", basic_file),
+        ("basic_fs_file_descriptor", basic_fs_file_descriptor),
+        ("basic_fs_buf", basic_fs_buf),
+        ("basic_prelude", basic_prelude),
+        ("basic_process", basic_process),
+        ("basic_box", basic_box),
+        ("basic_pin", basic_pin),
+        ("basic_future", basic_future),
+        ("basic_rc", basic_rc),
+        ("basic_arc", basic_arc),
+        ("basic_cell", basic_cell),
+        ("basic_refcell", basic_refcell),
+        ("basic_sync", basic_sync),
+        ("basic_thread", basic_thread),
+        ("basic_any", basic_any),
+        ("basic_ops", basic_ops),
+        ("basic_newtype", basic_newtype),
+        ("basic_mem", basic_mem),
+    ];
+    for (title, example_func) in examples {
+        print_section_header(title.into());
+        example_func();
+    }
 }
 
 // ---
@@ -80,7 +71,7 @@ fn main() {
 // ---
 
 /// Convert a string to uppercase and print it
-pub fn print_section_header(header: String) {
+pub fn print_section_header(header: &str) {
     println!("\n{}\n", header.to_ascii_uppercase());
 }
 
@@ -88,10 +79,10 @@ pub fn print_section_header(header: String) {
 // Examples
 // ---
 
-pub fn basic_hashset() -> () {
+fn basic_hashset() {
     let hs0: HashSet<i32> = HashSet::new();
-    let hs1 = HashSet::from([1, 2, 3, 4, 5]);
-    let hs2 = HashSet::from([1, 2, 3]);
+    let hs1: HashSet<i32> = HashSet::from([1, 2, 3, 4, 5]);
+    let hs2: HashSet<i32> = HashSet::from([1, 2, 3]);
     let hs3: HashSet<i32> = HashSet::from([0, 10]);
 
     let results = vec![
@@ -112,7 +103,7 @@ pub fn basic_hashset() -> () {
     results.iter().for_each(|s| println!("{}", s));
 }
 
-pub fn basic_hashmaps() -> () {
+fn basic_hashmaps() {
     let hm0: HashMap<String, i32> = HashMap::new();
     let mut hm1: HashMap<String, i32> = HashMap::from([
         (String::from("a"), 1),
@@ -148,7 +139,7 @@ pub fn basic_hashmaps() -> () {
     }
 }
 
-pub fn basic_fmt() -> () {
+fn basic_fmt() {
     let results = vec![
         // Uses Display trait
         format!("Hello, {}!", "world"),
@@ -165,8 +156,7 @@ pub fn basic_fmt() -> () {
     results.iter().for_each(|s| println!("{}", s));
 }
 
-/// Path: used for cross-platform path manipulation.
-pub fn basic_path() -> () {
+fn basic_path() {
     let path1 = Path::new("./a/b/c.txt");
 
     let results = vec![
@@ -200,7 +190,7 @@ pub fn basic_path() -> () {
     println!("joined: {:?}", joined2);
 }
 
-fn basic_path_iter() -> () {
+fn basic_path_iter() {
     let path1 = Path::new("./a/b/c.txt");
 
     // Components of path
@@ -219,9 +209,9 @@ fn basic_path_iter() -> () {
     }
 }
 
-/// Env: used for inspection/manipulation of the process's environment.
-pub fn basic_env() -> () {
-    #[allow(deprecated)]
+fn basic_env() {
+    // Also: join_paths, split_paths, var, vars, set_var, remove_var
+
     let results = vec![
         format!("env::args(): {:?}", env::args()),
         format!("env::args_os(): {:?}", env::args_os()),
@@ -230,16 +220,40 @@ pub fn basic_env() -> () {
         format!("env::consts::FAMILY: {}", env::consts::FAMILY),
         format!("env::current_dir(): {:?}", env::current_dir()),
         format!("env::current_exe(): {:?}", env::current_exe()),
-        format!("env::home_dir(): {:?}", env::home_dir()), // deprecated
+        // format!("env::home_dir(): {:?}", env::home_dir()), // deprecated
         format!("env::vars().count(): {:?}", env::vars().count()),
     ];
-
-    // Also: join_paths, split_paths, var, vars, set_var, remove_var
 
     results.iter().for_each(|s| println!("{}", s));
 }
 
-pub fn basic_file() -> () {
+fn basic_fs() {
+    let dirname = Path::new("./example");
+    let filename = dirname.join("file.txt");
+    let filename2 = dirname.join("file2.txt");
+    let filename3 = dirname.join("file3.txt");
+
+    fs::create_dir_all(dirname).unwrap();
+    File::create(&filename).unwrap();
+    let resolved = fs::canonicalize(&filename);
+    println!("resolved: {:?}", resolved);
+    let contents = "Change is impossible in this fog of ignorance.";
+    fs::write(&filename, &contents.as_bytes()).unwrap();
+    let metadata = fs::metadata(&filename).unwrap();
+    println!("metadata: {:?}", metadata);
+    let contents = fs::read_to_string(&filename).unwrap();
+    println!("contents: {}", contents);
+    fs::set_permissions(&filename, Permissions::from_mode(0777)).unwrap();
+    fs::copy(&filename, &filename2).unwrap();
+    fs::rename(&filename2, &filename3).unwrap();
+
+    // Cleanup
+    fs::remove_file(&filename).unwrap();
+    fs::remove_file(&filename3).unwrap();
+    fs::remove_dir(dirname).unwrap();
+}
+
+fn basic_file() {
     let filename = "README.md";
     let path = Path::new(filename);
     let fd = File::open(&path).expect("Could not open file");
@@ -261,14 +275,13 @@ pub fn basic_file() -> () {
 /// File::open() is read-only
 /// File::create() is write-only
 /// OpenOptions::new() allows for more flexibility
-/// Also see `write!` macro`
-pub fn basic_fs_1() -> () {
-    let data_dir = "./data";
-    let input_dir = Path::new(data_dir).join("input");
-    let output_dir = Path::new(data_dir).join("output");
+fn basic_fs_file_descriptor() {
+    let data_dir = Path::new("./data");
+    let input_dir = data_dir.join("input");
+    let output_dir = data_dir.join("output");
     let filename = "report.txt";
-    let file1_path = input_dir.join(Path::new(filename));
-    let file2_path = output_dir.join(Path::new(filename));
+    let file1_path = input_dir.join(&filename);
+    let file2_path = output_dir.join(&filename);
 
     let results = vec![
         format!("data_dir: {:?}", data_dir),
@@ -282,8 +295,8 @@ pub fn basic_fs_1() -> () {
     results.iter().for_each(|s| println!("{}", s));
 
     // Create dirs
-    std::fs::create_dir_all(input_dir.clone()).unwrap();
-    std::fs::create_dir(output_dir.clone()).unwrap();
+    fs::create_dir_all(input_dir.clone()).unwrap();
+    fs::create_dir(output_dir.clone()).unwrap();
     // Create file
     let mut fd1 = OpenOptions::new()
         .create(true)
@@ -330,7 +343,7 @@ pub fn basic_fs_1() -> () {
     fs::remove_dir(data_dir).unwrap();
 }
 
-pub fn basic_fs_2() -> () {
+fn basic_fs_buf() {
     let dir1 = Path::new("./example");
     let file1 = dir1.join("file.txt");
 
@@ -369,53 +382,14 @@ pub fn basic_fs_2() -> () {
     fs::remove_dir(dir1).unwrap();
 }
 
-/// Basic fs usage
-pub fn basic_fs_3() -> () {
-    let dirname = "./example";
-    let filename = "./example/file.txt";
-    let filename2 = "./example/file2.txt";
-    let filename3 = "./example/file3.txt";
-
-    // Create directory
-    fs::create_dir_all(dirname).unwrap();
-    // Create file
-    let _f = File::create(filename).unwrap();
-    // Get resolved path
-    let resolved = fs::canonicalize(filename);
-    println!("resolved: {:?}", resolved);
-    // Write to file (convenient version of io write_all)
-    let contents: &[u8] = "Change is impossible in this fog of ignorance.".as_bytes();
-    fs::write(filename, contents).unwrap();
-    // Get metadata
-    let metadata = fs::metadata(filename).unwrap();
-    println!("metadata: {:?}", metadata);
-    // Read contents (convenient version of io read_to_string)
-    let contents = fs::read_to_string(filename).unwrap();
-    println!("contents: {}", contents);
-    // Set permissions
-    let permissions = Permissions::from_mode(0777);
-    fs::set_permissions(filename, permissions).unwrap();
-    // Copy file
-    fs::copy(filename, filename2).unwrap();
-    // Rename file
-    fs::rename(filename2, filename3).unwrap();
-    // Cleanup
-    // Prefering specific deletions over potentially-dangerous `remove_dir_all`,
-    fs::remove_file(filename).unwrap();
-    fs::remove_file(filename3).unwrap();
-    fs::remove_dir(dirname).unwrap();
-}
-
-/// Basic prelude usage:
-/// prelude includes things rust automatically imports into every rust program.
-/// It reduces verbosity of imports.
-/// It is kept minimal to reduce unused imports.
-pub fn basic_prelude() -> () {
+fn basic_prelude() {
+    // prelude includes things rust automatically imports into every rust program.
+    // It reduces verbosity of imports.
+    // It is kept minimal to reduce unused imports.
     println!("...");
 }
 
-/// Basic process usage
-pub fn basic_process() -> () {
+fn basic_process() {
     // Command
     let output = Command::new("echo")
         .arg("If I had a dollar for every brain you don't have, I'd have one dollar.")
@@ -429,9 +403,8 @@ pub fn basic_process() -> () {
 /// Box is a pointer type for heap allocation.
 /// It is the simplest form of heap allocation in Rust.
 /// It has defined size.
-pub fn basic_box() -> () {
-    // Reference/dereference
-
+/// Wrapping a trait object in a box gives it a known size.
+fn basic_box() {
     // Move value from stack to heap using a Box
     let val: u8 = 5;
     let boxed: Box<u8> = Box::new(val);
@@ -440,13 +413,69 @@ pub fn basic_box() -> () {
     println!("Unboxed value: {}", val);
 }
 
+/// Basic Rc usage:
+/// Docs: https://doc.rust-lang.org/std/rc/index.html
+/// rc: single-threaded reference-counting pointers.
+/// It provides shared ownership of a value.
+/// No immutability, put Cell/RefCell inside Rc for mutability.
+/// Cloning produces a new pointer to the same allocation in the heap.
+/// When the last pointer is destroyed, the stored value is dropped.
+fn basic_rc() {
+    println!("...");
+}
+
+/// Rc: faster, no Send/Sync trait.
+/// Arc: slower, has Send/Sync trait.
+fn basic_arc() {
+    let values: Vec<i32> = vec![1, 2, 3, 4, 5];
+    println!("values: {:?}", values);
+
+    let result_values: Vec<i32> = std::iter::repeat(0_i32).take(values.len()).collect();
+    let shared_state = Arc::new(Mutex::new(result_values));
+    let mut handles: Vec<_> = Vec::new();
+
+    values.clone().into_iter().enumerate().for_each(|(i, n)| {
+        let cloned_state = shared_state.clone();
+        let join_handle = thread::spawn(move || {
+            let current_res = n.pow(2);
+            {
+                let mut locked_state = cloned_state.lock().unwrap();
+                locked_state[i] = current_res;
+            }
+        });
+        handles.push(join_handle);
+    });
+
+    for jh in handles {
+        jh.join().unwrap();
+    }
+
+    let results = shared_state.lock().unwrap();
+    println!("results: {:?}", results);
+}
+
+/// Basic cell usage
+/// Docs: https://doc.rust-lang.org/std/cell/index.html
+/// Rust memory safety: either several immutable references or a single mutable reference.
+/// Cell/RefCell: allow multiple mutable references (in a single-threaded context).
+/// For multi-threaded mutability, use sync types (Mutex, RwLock, atomic).
+/// cells provide "interior mutability", whereas typical Rust types exhibit "inherited mutability".
+/// Cell: implements interior mutability by moving values in and out of the cell.
+/// RefCell: cell with reference, requires acquiring a write lock before mutating.
+fn basic_cell() {
+    println!("...");
+}
+fn basic_refcell() {
+    println!("...");
+}
+
 /// Basic Pin usage:
 /// Docs: https://doc.rust-lang.org/std/pin/
 /// Pin pins data to its location in memory (unless type has auto-trait Unpin).
 /// It ensures that the pointee of any pointer type has a stable location in memory.
 /// Pointee of pointer type can't be moved, can't be deallocated until drop.
 /// Many types are freely moveable, Unpin auto-trait means the type doesn't care about pinning.
-pub fn basic_pin() -> () {
+fn basic_pin() {
     println!("...");
 }
 
@@ -458,56 +487,156 @@ pub fn basic_pin() -> () {
 /// Under the hood: it is polled, woken when ready, registered for wakeup if not yet available.
 /// Poll returns either Pending or Ready(val).
 /// Futures need an executor (eg: tokio), which is not part of the std library
-pub fn basic_future() -> () {
+fn basic_future() {
     println!("...");
 }
 
-/// Basic Rc usage:
-/// Docs: https://doc.rust-lang.org/std/rc/index.html
-/// rc: single-threaded reference-counting pointers.
-/// It provides shared ownership of a value.
-/// No immutability, put Cell/RefCell inside Rc for mutability.
-/// Cloning produces a new pointer to the same allocation in the heap.
-/// When the last pointer is destroyed, the stored value is dropped.
-/// Rc: faster, no Send/Sync trait.
-/// Arc: slower, has Send/Sync trait.
-pub fn basic_rc() -> () {
+fn basic_sync() {
+    // Docs: https://doc.rust-lang.org/std/sync/index.html
     println!("...");
 }
 
-/// Basic cell usage
-/// Docs: https://doc.rust-lang.org/std/cell/index.html
-/// Rust memory safety: either several immutable references or a single mutable reference.
-/// Cell/RefCell: allow multiple mutable references (in a single-threaded context).
-/// For multi-threaded mutability, use sync types (Mutex, RwLock, atomic).
-/// cells provide "interior mutability", whereas typical Rust types exhibit "inherited mutability".
-/// Cell: implements interior mutability by moving values in and out of the cell.
-/// RefCell: cell with reference, requires acquiring a write lock before mutating.
-pub fn basic_cell() -> () {
+fn basic_thread() {
+    // https://doc.rust-lang.org/std/thread/index.html
     println!("...");
 }
 
-/// Basic sync usage:
-/// Docs: https://doc.rust-lang.org/std/sync/index.html
-pub fn basic_sync() -> () {
-    println!("...");
+/// `Any` is a trait that enables dynamic typing of any 'static type through runtime reflection
+fn basic_any() {
+    // Type id
+    {
+        let boxed: Box<dyn Any> = Box::new(3_i32);
+        // Typically want this
+        let actual_id = (&*boxed).type_id();
+        // Over this
+        let boxed_id = boxed.type_id();
+        assert_eq!(actual_id, TypeId::of::<i32>());
+        assert_eq!(boxed_id, TypeId::of::<Box<dyn Any>>());
+    }
+
+    // Using Any
+    {
+        let v1 = "No one can know, not even Squidward's house";
+        let v2 = 3;
+
+        let handler = |value: Box<dyn Any>| {
+            if value.is::<&str>() {
+                println!("value is &str");
+            } else {
+                println!("value is not &str");
+            }
+        };
+        println!("Running handler on value: {:?}", v1);
+        handler(Box::new(v1));
+        println!("Running handler on value: {:?}", v2);
+        handler(Box::new(v2));
+    }
+    // Using Any (inner)
+    {
+        let v1 = "No one can know, not even Squidward's house";
+        let v2 = 3;
+
+        let handler = |value: Box<dyn Any>| {
+            println!("value: {:?}", value);
+            if let Some(&s) = value.downcast_ref::<&str>() {
+                println!("{}", s);
+            } else {
+                println!("value is not &str");
+            }
+        };
+        println!("Running handler on value: {:?}", v1);
+        handler(Box::new(v1));
+        println!("Running handler on value: {:?}", v2);
+        handler(Box::new(v2));
+    }
 }
 
-/// Basic panic usage:
-/// Docs: https://doc.rust-lang.org/std/macro.panic.html
-/// Docs2; https://doc.rust-lang.org/nomicon/unwinding.html
-pub fn basic_panic() -> () {
-    println!("...");
+/// Add two arguments of the same type (that have the Add trait)
+fn generic_add<T>(a: T, b: T) -> T
+where
+    T: std::ops::Add<T, Output = T>,
+{
+    a + b
 }
 
-/// Basic Any usage:
-/// Any is a trait that enables dynamic typing of any 'static type through runtime reflection
-pub fn basic_any() -> () {
-    let boxed: Box<dyn Any> = Box::new(3_i32);
-    // Typically want this
-    let actual_id = (&*boxed).type_id();
-    // Over this
-    let boxed_id = boxed.type_id();
-    assert_eq!(actual_id, TypeId::of::<i32>());
-    assert_eq!(boxed_id, TypeId::of::<Box<dyn Any>>());
+fn basic_ops() {
+    // Generic functions: a function with generalized types, often confined to specific trait behavior
+    let i32_sum = generic_add(1, 2);
+    let f64_sum = generic_add(1.0, 2.0);
+    println!("generic_add (i32) sum: {}", i32_sum);
+    println!("generic_add (f64) sum: {}", f64_sum);
+}
+
+mod rating {
+    /// Rating for a business/service/etc (between 0.0 and 5.0)
+    #[derive(Debug)]
+    pub struct Rating(f32);
+
+    impl Rating {
+        // Use `std::convert::TryFrom` instead?
+        pub fn from_f32(value: f32) -> Option<Self> {
+            match value {
+                v if v <= 5.0 && v >= 0.0 => Some(Self(value)),
+                _ => None,
+            }
+        }
+        pub fn get(&self) -> f32 {
+            self.0
+        }
+    }
+    impl Default for Rating {
+        fn default() -> Self {
+            Self(5.0)
+        }
+    }
+}
+
+fn basic_newtype() {
+    let rating1 = rating::Rating::from_f32(4.9).unwrap();
+    let rating2 = rating::Rating::default();
+
+    let results = vec![
+        format!("rating1: {:?}", rating1),
+        format!("rating1.get(): {:?}", rating1.get()),
+        format!("rating2.get(): {:?}", rating2.get()),
+    ];
+
+    results.iter().for_each(|s| println!("{}", s));
+}
+
+fn basic_mem() {
+    let values = vec![1, 2, 3, 4, 5];
+
+    // Also: drop, forget, replace, swap, take
+
+    let results = vec![
+        format!("values: {:?}", values),
+        format!(
+            "mem::align_of::<Vec<i32>>(): {:?}",
+            mem::align_of::<Vec<i32>>()
+        ),
+        format!(
+            "mem::align_of_val(&values): {:?}",
+            mem::align_of_val(&values)
+        ),
+        format!(
+            "mem::discriminant(&Some(2)): {:?}",
+            mem::discriminant(&Some(2))
+        ),
+        format!(
+            "mem::discriminant::<Option<i32>>(&None): {:?}",
+            mem::discriminant::<Option<i32>>(&None)
+        ),
+        format!(
+            "mem::needs_drop::<Vec<i32>>(): {:?}",
+            mem::needs_drop::<Vec<i32>>()
+        ),
+        format!(
+            "mem::size_of::<Vec<i32>>(): {:?}",
+            mem::size_of::<Vec<i32>>()
+        ),
+        format!("mem::size_of_val(&values): {:?}", mem::size_of_val(&values)),
+    ];
+
+    results.iter().for_each(|s| println!("{}", s));
 }

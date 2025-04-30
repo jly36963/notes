@@ -3,101 +3,41 @@
 // ---
 
 fn main() {
-    print_section_header(String::from("basic vars"));
-    basic_vars();
-
-    print_section_header(String::from("basic const vars"));
-    basic_const_vars();
-
-    print_section_header(String::from("basic unused variables"));
-    basic_unused_variables();
-
-    print_section_header(String::from("basic str"));
-    basic_str();
-
-    print_section_header(String::from("basic bytes"));
-    basic_bytes();
-
-    print_section_header(String::from("basic strings"));
-    basic_strings();
-
-    print_section_header(String::from("basic operators"));
-    basic_operators();
-
-    print_section_header(String::from("basic numbers"));
-    basic_numbers();
-
-    print_section_header(String::from("basic functions"));
-    basic_functions();
-
-    print_section_header(String::from("basic closures"));
-    basic_closures();
-
-    print_section_header(String::from("basic if"));
-    basic_if();
-
-    print_section_header(String::from("basic loop"));
-    basic_loop();
-
-    print_section_header(String::from("basic while"));
-    basic_while();
-
-    print_section_header(String::from("basic for loop"));
-    basic_for_loop();
-
-    print_section_header(String::from("basic ownership"));
-    basic_ownership();
-
-    print_section_header(String::from("basic referencing"));
-    basic_referencing();
-
-    print_section_header(String::from("basic options"));
-    basic_options();
-
-    print_section_header(String::from("basic options (api)"));
-    basic_option_api();
-
-    print_section_header(String::from("basic results"));
-    basic_results();
-
-    print_section_header(String::from("basic results (api)"));
-    basic_results_api();
-
-    print_section_header(String::from("basic tuples"));
-    basic_tuples();
-
-    print_section_header(String::from("basic arrays"));
-    basic_arrays();
-
-    print_section_header(String::from("basic slices"));
-    basic_slices();
-
-    print_section_header(String::from("basic structs"));
-    basic_structs();
-
-    print_section_header(String::from("basic vectors"));
-    basic_vectors();
-
-    print_section_header(String::from("basic assert"));
-    basic_assert();
-
-    print_section_header(String::from("basic traits"));
-    basic_traits();
-
-    print_section_header(String::from("basic iterators"));
-    basic_iterators();
-
-    print_section_header(String::from("basic lifetimes"));
-    basic_lifetimes();
-
-    print_section_header(String::from("basic macros"));
-    basic_macros();
-
-    print_section_header(String::from("basic reflection"));
-    basic_reflection();
-
-    print_section_header(String::from("basic generics"));
-    basic_generics();
+    let examples: Vec<(&str, fn())> = vec![
+        ("basic_vars", basic_vars),
+        ("basic_const_vars", basic_const_vars),
+        ("basic_unused_variables", basic_unused_variables),
+        ("basic_str", basic_str),
+        ("basic_strings", basic_strings),
+        ("basic_operators", basic_operators),
+        ("basic_numbers", basic_numbers),
+        ("basic_functions", basic_functions),
+        ("basic_closures", basic_closures),
+        ("basic_if", basic_if),
+        ("basic_loop", basic_loop),
+        ("basic_while", basic_while),
+        ("basic_for_loop", basic_for_loop),
+        ("basic_ownership", basic_ownership),
+        ("basic_referencing", basic_referencing),
+        ("basic_options", basic_options),
+        ("basic_option_api", basic_option_api),
+        ("basic_results", basic_results),
+        ("basic_results_api", basic_results_api),
+        ("basic_tuples", basic_tuples),
+        ("basic_arrays", basic_arrays),
+        ("basic_slices", basic_slices),
+        ("basic_structs", basic_structs),
+        ("basic_vectors", basic_vectors),
+        ("basic_iterators", basic_iterators),
+        ("basic_assert", basic_assert),
+        ("basic_traits", basic_traits),
+        ("basic_lifetimes", basic_lifetimes),
+        ("basic_macros", basic_macros),
+    ];
+    for (title, example_func) in examples {
+        print_section_header(title.into());
+        example_func();
+    }
 }
 
 // ---
@@ -105,7 +45,7 @@ fn main() {
 // ---
 
 /// Convert a string to uppercase and print it
-pub fn print_section_header(header: String) {
+pub fn print_section_header(header: &str) {
     println!("\n{}\n", header.to_ascii_uppercase());
 }
 
@@ -116,7 +56,7 @@ pub fn print_section_header(header: String) {
 /// Example variables usage:
 /// Type must be specified if not inferable.
 /// Mutability is dependent on 'mut' keyword.
-pub fn basic_vars() -> () {
+fn basic_vars() -> () {
     let mut first_name = "Kakashi";
     let mut last_name = "Hatake";
     let age: u8 = 27;
@@ -135,20 +75,20 @@ pub fn basic_vars() -> () {
 /// Constants are compile-time contants.
 /// Value/lifetime is static.
 /// Type must be specified
-pub fn basic_const_vars() -> () {
+fn basic_const_vars() -> () {
     const ID: i32 = 1234;
     println!("Id is {}", ID)
 }
 
 /// Basic unused variables usage:
 /// Variables prefixed with "_" won't trigger warnings if unused.
-pub fn basic_unused_variables() -> () {
+fn basic_unused_variables() -> () {
     let _i = 1010;
     println!("No warning here!");
 }
 
 /// &str is an immutable reference to a string slice.
-pub fn basic_str() -> () {
+fn basic_str() -> () {
     let str1 = "Quem são vocês?";
 
     let results: Vec<String> = vec![
@@ -196,17 +136,13 @@ pub fn basic_str() -> () {
     results.iter().for_each(|s| println!("{}", s));
 }
 
-pub fn basic_bytes() -> () {
-    // https://doc.rust-lang.org/std/str/struct.Bytes.html
-}
-
 /// Example Strings usage:
 /// std::string::String.
 /// Strings do not support indexing.
 /// String is a mutable string buffer.
 /// &str -> String using `s.to_string()` or `String::from(s)`.
 /// Can use most &str methods (deref)
-pub fn basic_strings() -> () {
+fn basic_strings() -> () {
     let str1 = String::from("Quem são vocês?");
     let str2 = String::from("お前をずっと愛している");
     let str3 = String::from("Finland!");
@@ -235,7 +171,7 @@ pub fn basic_strings() -> () {
 }
 
 /// Basic operator usage
-pub fn basic_operators() -> () {
+fn basic_operators() -> () {
     let results = vec![
         // Math
         format!("2 + 3: {}", 2 + 3),
@@ -260,7 +196,7 @@ pub fn basic_operators() -> () {
 }
 
 /// Basic numerics usage
-pub fn basic_numbers() -> () {
+fn basic_numbers() -> () {
     let results = vec![
         // Absolute
         format!("(-2.5 as f64).abs(): {}", (-2.5 as f64).abs()),
@@ -314,7 +250,7 @@ fn split_first_char(s: &str) -> Option<(char, &str)> {
 
 /// Basic function usage:
 /// Rust does not support default args, function overloading, or variadic args.
-pub fn basic_functions() -> () {
+fn basic_functions() -> () {
     // Params
     let a = 5;
     let b = 3;
@@ -331,7 +267,7 @@ pub fn basic_functions() -> () {
 }
 
 /// Closures: functions that can capture the enclosing environment.
-pub fn basic_closures() -> () {
+fn basic_closures() -> () {
     /*
     // Example definitions
     fn  add_one_v1   (x: u32) -> u32 { x + 1 }
@@ -346,7 +282,7 @@ pub fn basic_closures() -> () {
     println!("{} + 1 = {}", n1, n2);
 }
 
-pub fn basic_if() -> () {
+fn basic_if() -> () {
     let num1: i32 = 5;
     let res: &str;
 
@@ -360,7 +296,7 @@ pub fn basic_if() -> () {
     println!("{} is {}", num1, res)
 }
 
-pub fn basic_loop() -> () {
+fn basic_loop() -> () {
     let mut i = 0;
     loop {
         i += 1;
@@ -374,7 +310,7 @@ pub fn basic_loop() -> () {
     }
 }
 
-pub fn basic_while() -> () {
+fn basic_while() -> () {
     let n = 5;
     let mut i = 1;
     let mut result = 1;
@@ -385,7 +321,7 @@ pub fn basic_while() -> () {
     println!("{}! is {}", n, result)
 }
 
-pub fn basic_for_loop() -> () {
+fn basic_for_loop() -> () {
     let numbers: [i32; 3] = [1, 2, 3];
     for n in numbers.iter() {
         println!("n: {}", n);
@@ -395,7 +331,7 @@ pub fn basic_for_loop() -> () {
     }
 }
 
-pub fn basic_ownership() -> () {
+fn basic_ownership() -> () {
     /*
     // Copy scalar value
     let x1 = 5;
@@ -431,7 +367,7 @@ pub fn basic_ownership() -> () {
 /// Referencing: access data that is owned by another variable
 /// Borrowing: creating a reference
 /// Mutable reference: allows a function to borrow and mutate
-pub fn basic_referencing() -> () {
+fn basic_referencing() -> () {
     // Referencing (function will access value without taking ownership)
     let get_length_bytes = |s: &String| -> usize { s.len() };
     let s1 = String::from("Hello");
@@ -449,7 +385,7 @@ pub fn basic_referencing() -> () {
 
 /// Option is an enum that represents Some() or None.
 /// Using inner values requires unwrapping.
-pub fn basic_options() -> () {
+fn basic_options() -> () {
     // match (block)
     let x1: Option<i32> = Some(2);
     match x1 {
@@ -467,7 +403,7 @@ pub fn basic_options() -> () {
     let _x3 = if let Some(x) = Some(2) { x } else { 0 };
 }
 
-pub fn basic_option_api() -> () {
+fn basic_option_api() -> () {
     let opt1 = Some(2);
     let opt2 = None::<i32>;
 
@@ -513,7 +449,7 @@ pub fn basic_option_api() -> () {
 
 /// Result: a generic enum that represents Ok() or Err().
 /// Used where an operation might fail
-pub fn basic_results() -> () {
+fn basic_results() -> () {
     let fp = "./Makefile";
     let r = std::fs::read_to_string(fp);
 
@@ -524,7 +460,7 @@ pub fn basic_results() -> () {
     }
 }
 
-pub fn basic_results_api() -> () {
+fn basic_results_api() -> () {
     let res1: Result<i32, &str> = Ok(2);
     let res2: Result<i32, &str> = Err("Oops");
 
@@ -576,7 +512,7 @@ pub fn basic_results_api() -> () {
 
 /// Basic tuple usage
 /// Tuples: collections of any/multiple type(s)
-pub fn basic_tuples() -> () {
+fn basic_tuples() -> () {
     let kakashi: (String, String, i32) = (String::from("Kakashi"), String::from("Hatake"), 27);
     let (first_name, last_name, age) = kakashi;
     println!(
@@ -587,7 +523,7 @@ pub fn basic_tuples() -> () {
 
 /// Array: generic container of fixed length
 /// Can be created without keyword or explitic type (eg: `let a = [1,2,3,4,5]; // [i32; 5]`)
-pub fn basic_arrays() -> () {
+fn basic_arrays() -> () {
     // Create array (explicit type)
     let numbers: [i32; 5] = [1, 2, 3, 4, 5];
     let first = &numbers[0]; // panic if index is out of bounds
@@ -600,17 +536,49 @@ pub fn basic_arrays() -> () {
 }
 
 /// Slice: immutable ref to a subset of a collection
-pub fn basic_slices() -> () {
+fn basic_slices() -> () {
     // String slices
-    let s = String::from("Hello world!");
-    let hello = &s[0..5]; // &s[..5]
-    let world = &s[6..12]; // &s[6..]
-    println!("{} {}", hello, world);
+    {
+        let s = String::from("Hello world!");
+        let hello = &s[0..5]; // &s[..5]
+        let world = &s[6..12]; // &s[6..]
+        println!("{} {}", hello, world);
+    }
 
     // Array slices
-    let a = [1, 2, 3, 4, 5];
-    let first_three = &a[0..3];
-    assert_eq!(first_three, &[1, 2, 3]);
+    {
+        let a: [i32; 5] = [1, 2, 3, 4, 5];
+        let first_three = &a[0..3];
+        assert_eq!(first_three, &[1, 2, 3]);
+    }
+
+    // Slice methods
+    {
+        let values = vec![1, 2, 3, 4, 5];
+        let slice: &[i32] = &values[..];
+
+        // Also: `as_` methods,
+
+        let results = vec![
+            format!("values: {:?}", values),
+            format!("slice: {:?}", slice),
+            format!("slice.binary_search(&3): {:?}", slice.binary_search(&3)),
+            format!("slice.contains(&2): {:?}", slice.contains(&2)),
+            format!("slice.ends_with(&[4,5]): {:?}", slice.ends_with(&[4, 5])),
+            format!("slice.first(): {:?}", slice.first()),
+            format!("slice.get(0): {:?}", slice.get(0)),
+            format!("slice.get(0..2): {:?}", slice.get(0..2)),
+            format!("slice.is_empty(): {:?}", slice.is_empty()),
+            format!("slice.is_sorted(): {:?}", slice.is_sorted()),
+            format!(
+                "slice.iter().map(|&v| v * 2).collect::<Vec<i32>>(): {:?}",
+                slice.iter().map(|&v| v * 2).collect::<Vec<i32>>()
+            ),
+            format!("slice.last(): {:?}", slice.last()),
+            format!("slice.len(): {:?}", slice.len()),
+        ];
+        results.iter().for_each(|s| println!("{}", s));
+    }
 }
 
 #[derive(Debug)] // Debug trait: allows for println! usage
@@ -642,7 +610,7 @@ impl Ninja {
 /// Struct: custom type with user-defined properties
 /// Implementation block: where struct methods are defined
 /// Trait: shared behavior (like interfaces or abstract base classes)
-pub fn basic_structs() -> () {
+fn basic_structs() -> () {
     // Struct instantiation
     let mut kakashi = Ninja {
         first_name: String::from("Kakashi"),
@@ -676,7 +644,7 @@ pub fn basic_structs() -> () {
 }
 
 /// Vectors indicate ownership, slices indicate borrow of memory
-pub fn basic_vectors() -> () {
+fn basic_vectors() -> () {
     let vec0: Vec<i32> = Vec::new();
     let mut vec1 = vec![1, 2, 3];
     vec1.push(4);
@@ -712,7 +680,7 @@ pub fn basic_vectors() -> () {
 
 /// Iterator: implements the "Iterator" trait
 /// Has a "next" method, which returns Option<Self::Item>
-pub fn basic_iterators() -> () {
+fn basic_iterators() -> () {
     // For loop
     println!("for loop");
     let v0: Vec<i32> = vec![1, 2, 3];
@@ -776,54 +744,24 @@ pub fn basic_iterators() -> () {
     println!("{}", item8);
 }
 
-pub fn basic_traits() -> () {
-    println!("TODO");
-}
-
-pub fn basic_lifetimes() -> () {
-    println!("TODO");
-}
-
 /// Basic assert usage
-pub fn basic_assert() -> () {
+fn basic_assert() -> () {
     assert_eq!(2, 2);
     println!("Nice, no panicking here!");
+}
+
+fn basic_traits() -> () {
+    println!("...");
+}
+
+fn basic_lifetimes() -> () {
+    println!("...");
 }
 
 /// Declarative, procedural, and derive macros
 /// println! -- "!" denotes a macro
 /// macros are executed at compile time.
 /// macros expand into new code that needs further processing.
-pub fn basic_macros() -> () {
-    println!("TODO");
-}
-
-/// Get the type name of a value as a String
-pub fn type_of<T>(_: &T) -> String {
-    format!("{}", std::any::type_name::<T>())
-}
-
-/// Basic reflection
-pub fn basic_reflection() -> () {
-    let s1 = String::from("Hello!");
-    let t = type_of(&s1);
-
-    println!("type: {}", t);
-}
-
-/// generic_add adds two arguments of the same type (that have the Add trait)
-fn generic_add<T>(a: T, b: T) -> T
-where
-    T: std::ops::Add<T, Output = T>,
-{
-    a + b
-}
-
-/// Basic generics usage
-/// Generic functions: a function with generalized types, often confined to specific trait behavior
-pub fn basic_generics() -> () {
-    let i32_sum = generic_add(1, 2);
-    let f64_sum = generic_add(1.0, 2.0);
-    println!("generic_add (i32) sum: {}", i32_sum);
-    println!("generic_add (f64) sum: {}", f64_sum);
+fn basic_macros() -> () {
+    println!("...");
 }

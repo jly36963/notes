@@ -3,6 +3,7 @@ use bytes::Bytes;
 use camino::Utf8Path;
 use chrono::Duration;
 use chrono::prelude::*;
+use crossbeam::sync::WaitGroup;
 use flate2::Compression;
 use flate2::read::{GzDecoder, ZlibDecoder};
 use flate2::write::{GzEncoder, ZlibEncoder};
@@ -26,6 +27,8 @@ use similar::{ChangeTag, TextDiff};
 use std::fs::read_to_string;
 use std::io::{Read, Write};
 use std::path::Path;
+use std::sync::Arc;
+use std::sync::Mutex;
 use std::thread;
 use std::time;
 use tokio::fs as tfs;
@@ -34,8 +37,8 @@ use url::Url;
 use uuid::Uuid;
 
 // TODO
-// hashbrown, dashmap, indexmap/ordermap
 // eyre, anyhow, thiserror
+// hashbrown, dashmap, indexmap/ordermap, papaya
 // num, rand, zip, nom, jsonschema
 
 // ---
@@ -45,7 +48,7 @@ use uuid::Uuid;
 #[tokio::main]
 async fn main() {
     // Sync
-    let examples: Vec<(&str, fn() -> ())> = vec![
+    let examples: Vec<(&str, fn())> = vec![
         ("basic_time", basic_time),
         ("basic_chrono", basic_chrono),
         ("basic_jiff", basic_jiff),
@@ -55,6 +58,7 @@ async fn main() {
         ("basic_serde", basic_serde),
         ("basic_csv", basic_csv),
         ("basic_rayon", basic_rayon),
+        ("basic_crossbeam", basic_crossbeam),
         ("basic_bytes", basic_bytes),
         ("basic_unicode_segmentation", basic_unicode_segmentation),
         ("basic_url", basic_url),
@@ -77,7 +81,6 @@ async fn main() {
     let async_examples: Vec<(&str, fn() -> BoxFuture<'static, ()>)> = vec![
         ("basic_reqwest", || Box::pin(basic_reqwest())),
         ("basic_tokio_fs", || Box::pin(basic_tokio_fs())),
-        ("basic_async_func", || Box::pin(basic_async_func())),
     ];
     for (title, async_example_func) in async_examples {
         print_section_header(title.into());
@@ -536,6 +539,32 @@ fn basic_rayon() {
     println!("result: {:#?}", result);
 }
 
+fn basic_crossbeam() {
+    let wg = WaitGroup::new();
+    let values: Vec<i32> = vec![1, 2, 3, 4, 5];
+    println!("values: {:?}", values);
+
+    let result_values: Vec<i32> = std::iter::repeat(0_i32).take(values.len()).collect();
+    let shared_state = Arc::new(Mutex::new(result_values));
+
+    values.clone().into_iter().enumerate().for_each(|(i, n)| {
+        let wg = wg.clone();
+        let cloned_state = shared_state.clone();
+        thread::spawn(move || {
+            let current_res = n.pow(2);
+            {
+                let mut locked_state = cloned_state.lock().unwrap();
+                locked_state[i] = current_res;
+            }
+            drop(wg);
+        });
+    });
+    wg.wait();
+
+    let results = shared_state.lock().unwrap();
+    println!("results: {:?}", results);
+}
+
 fn basic_bytes() {
     let string = "Is mayonnaise an instrument?";
     let data = Bytes::from(string);
@@ -798,7 +827,7 @@ mod person {
     }
 }
 
-async fn basic_reqwest() -> () {
+async fn basic_reqwest() {
     // Setup
     let base_url = "https://jsonplaceholder.typicode.com";
     let client = reqwest::Client::new();
@@ -866,7 +895,7 @@ async fn basic_reqwest() -> () {
     println!("Delete person result: ok");
 }
 
-async fn basic_tokio_fs() -> () {
+async fn basic_tokio_fs() {
     let text: String = "In order to survive, we cling to all we know and understand. ".to_owned()
         + "And label it reality. "
         + "But knowledge and understanding are ambiguous. "
@@ -891,8 +920,4 @@ async fn basic_tokio_fs() -> () {
     tfs::remove_dir(&output_dir).await.unwrap();
     tfs::remove_dir(&input_dir).await.unwrap();
     tfs::remove_dir(&data_dir).await.unwrap();
-}
-
-async fn basic_async_func() -> () {
-    // ...
 }

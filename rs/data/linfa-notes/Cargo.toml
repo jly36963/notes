@@ -1,0 +1,32 @@
+[package]
+name = "linfa-notes"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.45"
+num = "0.4.3"
+rand = "0.8.5"
+statrs = "0.18.0"
+ndarray = "0.15.0"
+ndarray-stats = "0.6.0"
+ndarray-rand = "0.15.0"
+openblas-src = "0.10.11"
+ndarray-linalg = { git = "https://github.com/rust-ndarray/ndarray-linalg", features = [
+    "openblas-system",
+] }
+polars = { version = "0.23.0", features = [
+    "mode",
+    "product",
+    "round_series",
+    "describe",
+    "fmt",
+    "serde",
+    "json",
+    "strings",
+    "sort_multiple",
+] }
+linfa = "0.7.1"
+linfa-datasets = { version = "0.7.1", features = ["diabetes", "winequality"] }
+linfa-linear = "0.7.1"
+linfa-logistic = "0.7.1"
