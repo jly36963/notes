@@ -62,74 +62,35 @@ def _get_ninjas() -> list[Ninja]:
 
 def main():
     """Run pandas examples."""
-    print_section_title("series creation")
-    _series_creation()
+    examples = {
+        "series creation": _series_creation,
+        "series attributes": _series_attributes,
+        "series indexing": _series_indexing,
+        "series boolean mask": _series_boolean_mask,
+        "series serde": _series_serde,
+        "series string": _series_string,
+        "series comparison": _series_comparison,
+        "series math": _series_math,
+        "series stats": _series_stats,
+        "series discrete math": _series_discrete_math,
+        "series missing data": _series_missing_data,
+        "series type casting": _series_type_casting,
+        "series updating": _series_updating,
+        "index": _index,
+        "dataframe creation": _dataframe_creation,
+        "dataframe attributes": _dataframe_attributes,
+        "dataframe indexing": _dataframe_indexing,
+        "dataframe boolean mask": _dataframe_boolean_mask,
+        "dataframe updating": _dataframe_updating,
+        "dataframe iterating": _dataframe_iterating,
+        "dataframe merge": _dataframe_merge,
+        "dataframe concat": _dataframe_concat,
+        "dataframe groupby": _dataframe_groupby,
+    }
 
-    print_section_title("series attributes")
-    _series_attributes()
-
-    print_section_title("series indexing")
-    _series_indexing()
-
-    print_section_title("series boolean mask")
-    _series_boolean_mask()
-
-    print_section_title("series serde")
-    _series_serde()
-
-    print_section_title("series string")
-    _series_string()
-
-    print_section_title("series comparison")
-    _series_comparison()
-
-    print_section_title("series math")
-    _series_math()
-
-    print_section_title("series stats")
-    _series_stats()
-
-    print_section_title("series discrete math")
-    _series_discrete_math()
-
-    print_section_title("series missing data")
-    _series_missing_data()
-
-    print_section_title("series type casting")
-    _series_type_casting()
-
-    print_section_title("series updating")
-    _series_updating()
-
-    print_section_title("index")
-    _index()
-
-    print_section_title("dataframe creation")
-    _dataframe_creation()
-
-    print_section_title("dataframe attributes")
-    _dataframe_attributes()
-
-    print_section_title("dataframe indexing")
-    _dataframe_indexing()
-
-    print_section_title("dataframe boolean mask")
-    _dataframe_boolean_mask()
-
-    print_section_title("dataframe updating")
-    _dataframe_updating()
-
-    print_section_title("dataframe iterating")
-    _dataframe_iterating()
-
-    print_section_title("dataframe merge")
-    _dataframe_merge()
-
-    print_section_title("dataframe concat")
-    _dataframe_concat()
-
-    print_section_title("dataframe groupby")
-    _dataframe_groupby()
+    for title, example_fn in examples.items():
+        print_section_title(title)
+        example_fn()
 
 
 # ---
@@ -426,17 +387,16 @@ def _series_updating():
     s1 = pd.Series(range(1, 6))
     s2 = pd.Series(list(reversed(range(1, 6))))
 
-    # `where` vs `mask`:
-    # where: where true, keep original
-    # mask: where true, replace with fallback
-
     # TODO: map, applymap, apply
+
     pretty_print_results(
         {
             "s1": s1,
             "s2": s2,
             "s1.case_when([(s1.lt(3), s2)])": s1.case_when([(s1.lt(3), s2)]),
+            # mask: where true, replace with fallback
             "s1.mask(s1.lt(3), s2)": s1.mask(s1.lt(3), s2),
+            # where: where true, keep original
             "s1.where(s1.ge(3), s2)": s1.where(s1.ge(3), s2),
             "s2.sort_values()": s2.sort_values(),
         }

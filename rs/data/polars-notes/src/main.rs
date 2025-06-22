@@ -17,53 +17,28 @@ use std::path::Path;
 // ---
 
 fn main() {
-    print_section_header(String::from("basic series"));
-    basic_series();
-
-    print_section_header(String::from("basic series agg"));
-    basic_series_agg();
-
-    print_section_header(String::from("basic series manipulation"));
-    basic_series_manipulation();
-
-    print_section_header(String::from("basic series rounding"));
-    basic_series_rounding();
-
-    print_section_header(String::from("basic series selection"));
-    basic_series_selection();
-
-    print_section_header(String::from("basic df creation"));
-    basic_df_creation();
-
-    print_section_header(String::from("basic df details"));
-    basic_df_details();
-
-    print_section_header(String::from("basic df export"));
-    basic_df_export();
-
-    print_section_header(String::from("basic df selection"));
-    basic_df_selection();
-
-    print_section_header(String::from("basic df agg"));
-    basic_df_agg();
-
-    print_section_header(String::from("basic df mutation"));
-    basic_df_mutation();
-
-    print_section_header(String::from("basic df combine"));
-    basic_df_combine();
-
-    print_section_header(String::from("basic df add column"));
-    basic_df_add_column();
-
-    print_section_header(String::from("basic df mask"));
-    basic_df_mask();
-
-    print_section_header(String::from("basic df null"));
-    basic_df_null();
-
-    print_section_header(String::from("basic df grouping"));
-    basic_df_grouping();
+    let examples: Vec<(&str, fn())> = vec![
+        ("basic_series", basic_series),
+        ("basic_series_agg", basic_series_agg),
+        ("basic_series_manipulation", basic_series_manipulation),
+        ("basic_series_rounding", basic_series_rounding),
+        ("basic_series_selection", basic_series_selection),
+        ("basic_df_creation", basic_df_creation),
+        ("basic_df_details", basic_df_details),
+        ("basic_df_export", basic_df_export),
+        ("basic_df_selection", basic_df_selection),
+        ("basic_df_agg", basic_df_agg),
+        ("basic_df_mutation", basic_df_mutation),
+        ("basic_df_combine", basic_df_combine),
+        ("basic_df_add_column", basic_df_add_column),
+        ("basic_df_mask", basic_df_mask),
+        ("basic_df_null", basic_df_null),
+        ("basic_df_grouping", basic_df_grouping),
+    ];
+    for (title, example_func) in examples {
+        print_section_header(title.into());
+        example_func();
+    }
 }
 
 // ---
@@ -99,7 +74,6 @@ pub fn print_section_header(header: String) {
 // ---
 
 fn basic_series() {
-    // Attributes
     let s1 = Series::new("s1", 1..6);
     // let s1: Series = (1..6).collect()
 
@@ -113,7 +87,6 @@ fn basic_series() {
 }
 
 fn basic_series_agg() {
-    // Aggregations
     let s2 = Series::new("s1", 1..6).cast(&DataType::Float64).unwrap();
     let results = vec![
         format!("s2: {}", s2),
@@ -167,7 +140,7 @@ fn basic_series_manipulation() {
 
 fn basic_series_rounding() {
     // Round
-    let s4: Series = Series::new("s4", 1..10)
+    let s1: Series = Series::new("s1", 1..10)
         .cast(&DataType::Float64)
         .unwrap()
         .f64()
@@ -176,11 +149,11 @@ fn basic_series_rounding() {
         .into();
 
     let results = vec![
-        format!("s4: {}", s4),
-        format!("ceil: {}", s4.ceil().unwrap()),
-        format!("floor: {}", s4.floor().unwrap()),
-        format!("round: {}", s4.round(0).unwrap()),
-        format!("clip: {}", s4.clip(4.0, 6.0).unwrap()),
+        format!("s1: {}", s1),
+        format!("ceil: {}", s1.ceil().unwrap()),
+        format!("floor: {}", s1.floor().unwrap()),
+        format!("round: {}", s1.round(0).unwrap()),
+        format!("clip: {}", s1.clip(4.0, 6.0).unwrap()),
     ];
     results.iter().for_each(|s| println!("{}", s));
 }

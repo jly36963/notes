@@ -58,12 +58,14 @@ def main():
     """Run polars examples."""
     examples = {
         # Series
+        "series creation": _series_creation,
         "series basics": _series_basics,
         "series selection": _series_selection,
         "series rounding": _series_rounding,
         "series aggregation": _series_aggregation,
         "series string": _series_string,
         "series comparison": _series_comparison,
+        "series boolean": _series_boolean,
         "series math": _series_math,
         "series stats": _series_stats,
         "series discrete math": _series_discrete_math,
@@ -115,6 +117,20 @@ def pretty_print_results(results: dict) -> None:
 # ---
 # Examples (Series)
 # ---
+
+
+def _series_creation():
+    s1 = pl.Series("s1", range(1, 6))
+    s2 = pl.Series("s2", [1, 2, 3], dtype=pl.Float32)
+    s3 = pl.Series("s3", [1] * 5)
+
+    pretty_print_results(
+        {
+            "s1": s1,
+            "s2": s2,
+            "s3": s3,
+        }
+    )
 
 
 def _series_basics():
@@ -224,6 +240,23 @@ def _series_comparison():
             "s1.is_in(s2)": s1.is_in(s2),
             "s1.gt(s2).any()": s1.gt(s2).any(),
             "s1.gt(0).all()": s1.gt(0).all(),
+        }
+    )
+
+
+def _series_boolean():
+    s1 = pl.Series("s1", [True, True, True])
+    s2 = pl.Series("s2", [False, False, False])
+    s3 = pl.Series("s2", [True, False, True])
+
+    # math methods
+    pretty_print_results(
+        {
+            "s1": s1,
+            "s2": s2,
+            "s3": s3,
+            "s1.all()": s1.all(),
+            "s3.any()": s3.any(),
         }
     )
 

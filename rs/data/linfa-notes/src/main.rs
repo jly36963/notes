@@ -15,16 +15,12 @@ use std::hash::Hash;
 use std::iter::FromIterator;
 use std::path::Path;
 
-// use linfa_datasets::diabetes;
-
 // ---
 // Main
 // ---
 
 fn main() {
-    // Sync
     let examples: Vec<(&str, fn())> = vec![
-        ("setup", setup),
         ("setup", setup),
         ("univariate_linear", univariate_linear),
         ("multivariate_linear", multivariate_linear),
@@ -62,10 +58,6 @@ fn add_noise(values: &Vec<f64>) -> Vec<f64> {
     let noise: Vec<f64> = get_norm_vec(count).into_iter().map(|n| n / 10.0).collect();
     values.iter().zip(&noise).map(|(&v, &n)| v + n).collect()
 }
-
-// ---
-// Unused
-// ---
 
 /// Return true if all elements are equal (or vec is empty)
 fn _all_equal<T: PartialEq>(values: &Vec<T>) -> bool {
@@ -152,7 +144,7 @@ fn col_vecs_to_matrix<T: Num + Copy>(rows: &Vec<Vec<T>>) -> anyhow::Result<Array
 }
 
 /// Convert a dataframe to a flattened Vec<f64>
-fn df_to_flat_vec(df: &DataFrame) -> anyhow::Result<Vec<f64>> {
+fn df_to_f64_flat_vec(df: &DataFrame) -> anyhow::Result<Vec<f64>> {
     let mut result = Vec::with_capacity(df.height() * df.width());
     for row_idx in 0..df.height() {
         for series in df.get_columns() {
@@ -164,15 +156,15 @@ fn df_to_flat_vec(df: &DataFrame) -> anyhow::Result<Vec<f64>> {
 }
 
 /// Convert a dataframe to an Array2<f64>
-fn df_to_array2(df: &DataFrame) -> anyhow::Result<Array2<f64>> {
+fn df_to_f64_array2(df: &DataFrame) -> anyhow::Result<Array2<f64>> {
     let (nrows, ncols) = df.shape();
-    let flattened_values = df_to_flat_vec(df)?;
+    let flattened_values = df_to_f64_flat_vec(df)?;
     let matrix = Array2::from_shape_vec((nrows, ncols), flattened_values)?;
     Ok(matrix)
 }
 
 /// Convert a series to a Vec<f64>
-fn series_to_vec(series: &Series) -> anyhow::Result<Vec<f64>> {
+fn series_to_f64_vec(series: &Series) -> anyhow::Result<Vec<f64>> {
     let values = series
         .f64()?
         .into_iter()
@@ -183,7 +175,7 @@ fn series_to_vec(series: &Series) -> anyhow::Result<Vec<f64>> {
     Ok(values)
 }
 
-fn series_to_string_vec(series: &Series) -> anyhow::Result<Vec<&str>> {
+fn series_to_str_vec(series: &Series) -> anyhow::Result<Vec<&str>> {
     let values = series
         .utf8()?
         .into_iter()
@@ -254,8 +246,8 @@ fn multivariate_linear() {
     let x = df.drop("Price").unwrap();
     let y = df.column("Price").unwrap().clone();
 
-    let records = df_to_array2(&x).unwrap();
-    let targets = Array1::from(series_to_vec(&y).unwrap());
+    let records = df_to_f64_array2(&x).unwrap();
+    let targets = Array1::from(series_to_f64_vec(&y).unwrap());
     let ds = Dataset::new(records, targets);
 
     let model: FittedLinearRegression<f64> = LinearRegression::default().fit(&ds).unwrap();
@@ -291,8 +283,8 @@ fn multivariate_logistic() {
     let x = df.drop("species").unwrap();
     let y = df.column("species").unwrap().clone();
 
-    let records = df_to_array2(&x).unwrap();
-    let targets = Array1::from(series_to_string_vec(&y).unwrap());
+    let records = df_to_f64_array2(&x).unwrap();
+    let targets = Array1::from(series_to_str_vec(&y).unwrap());
     let ds = Dataset::new(records, targets.clone());
 
     let model: MultiFittedLogisticRegression<_, _> =
