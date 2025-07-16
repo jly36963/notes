@@ -1,0 +1,6 @@
+# [*.fsx]
+# fsharp_multiline_bracket_style = aligned
+
+[*.{fs,fsx,fsi}]
+fsharp_multiline_bracket_style = aligned
+max_line_length = 100
