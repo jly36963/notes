@@ -1,0 +1,2 @@
+dev:
+    dotnet fsi Main.fsx

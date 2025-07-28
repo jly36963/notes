@@ -2,7 +2,9 @@
 #r @"nuget: SqlKata"
 #r @"nuget: SqlKata.Execution"
 #r @"nuget: Npgsql"
+#r @"nuget: FSharpPlus"
 
+open FSharpPlus
 open Npgsql
 open SqlKata
 open SqlKata.Compilers
@@ -14,68 +16,6 @@ open System
 // ---
 
 let PG_URL = "postgresql://postgres:postgres@localhost:5432/practice"
-
-// ---
-// Utils
-// ---
-
-/// Get the type name of a value
-let getTypeName v : obj =
-    if v = null then "<null>" else v.GetType().Name
-
-/// Text format a (potentially-boxed) value
-let pretty value =
-    match tryUnbox value with
-    | Some unboxed -> sprintf "%A" unboxed
-    | None -> sprintf "%A" value
-
-let printResults (results: (string * obj) list) =
-    for k, v in results do
-        let typeName = getTypeName v
-        let value = pretty v
-        System.Console.WriteLine $"{k}\n{typeName}\n{value}\n"
-
-/// Throw if result is Error
-let unwrap result =
-    match result with
-    | Ok v -> v
-    | Error e -> failwithf "Unwrapped Error: %A" e
-
-/// Throw if Option T is None
-let unwrapOpt option =
-    match option with
-    | Some v -> v
-    | None -> failwith "Tried to unwrap None"
-
-/// For an optional value, only set the k/v if the value is Some
-let maybeAdd k v map =
-    match v with
-    | Some v -> Map.add k v map
-    | None -> map
-
-let convertUrlConnString url =
-    let uri = Uri(url)
-    let userInfo = uri.UserInfo.Split ':'
-
-    let username, password =
-        match userInfo with
-        | [| u; p |] -> u, p
-        | _ -> failwith "Url must have username and password."
-
-    let host = uri.Host
-    let port = uri.Port
-    let database = uri.AbsolutePath.TrimStart '/'
-
-    let mutable builder = new NpgsqlConnectionStringBuilder()
-    builder.Host <- host
-    builder.Port <- port
-    builder.Username <- username
-    builder.Password <- password
-    builder.Database <- database
-
-    builder.ConnectionString
-
-
 
 // ---
 // Types
@@ -146,6 +86,56 @@ type NinjaWithJutsus =
         updated_at: DateTime option
         jutsus: Jutsu list option
     }
+
+
+// ---
+// Utils
+// ---
+
+/// Get the type name of a value
+let getTypeName v : obj =
+    if v = null then "<null>" else v.GetType().Name
+
+/// Text format a (potentially-boxed) value
+let pretty value =
+    match tryUnbox value with
+    | Some unboxed -> sprintf "%A" unboxed
+    | None -> sprintf "%A" value
+
+let printResults (results: (string * obj) list) =
+    for k, v in results do
+        let typeName = getTypeName v
+        let value = pretty v
+        System.Console.WriteLine $"{k}\n{typeName}\n{value}\n"
+
+/// For an optional value, only set the k/v if the value is Some
+let maybeAdd k v map =
+    match v with
+    | Some v -> Map.add k v map
+    | None -> map
+
+/// Given a URL connection string, convert to dotnet format
+let convertUrlConnString url =
+    let uri = Uri(url)
+    let userInfo = uri.UserInfo.Split ':'
+
+    let username, password =
+        match userInfo with
+        | [| u; p |] -> u, p
+        | _ -> failwith "Url must have username and password."
+
+    let host = uri.Host
+    let port = uri.Port
+    let database = uri.AbsolutePath.TrimStart '/'
+
+    let mutable builder = new NpgsqlConnectionStringBuilder()
+    builder.Host <- host
+    builder.Port <- port
+    builder.Username <- username
+    builder.Password <- password
+    builder.Database <- database
+
+    builder.ConnectionString
 
 // ---
 // Providers
@@ -287,11 +277,11 @@ let main () =
                 last_name = "Hatake"
                 age = 27
             }
-        |> unwrap
+        |> Result.get
 
     printfn "inserted ninja"
 
-    let ninja = ninjaGet db ninjaId |> unwrap |> unwrapOpt
+    let ninja = ninjaGet db ninjaId |> Result.get |> Option.get
 
     printfn "got ninja"
 
@@ -302,11 +292,11 @@ let main () =
             age = None
         }
 
-    let updateNinjaCount = ninjaUpdates |> ninjaUpdate db ninjaId |> unwrap
+    let updateNinjaCount = ninjaUpdates |> ninjaUpdate db ninjaId |> Result.get
 
     printfn "updated ninja"
 
-    let updatedNinja = ninjaGet db ninjaId |> unwrap |> unwrapOpt
+    let updatedNinja = ninjaGet db ninjaId |> Result.get |> Option.get
 
     printfn "got the updated ninja"
 
@@ -318,11 +308,11 @@ let main () =
                 chakra_nature = "Lightning"
                 description = "Plover / a thousand birds"
             }
-        |> unwrap
+        |> Result.get
 
     printfn "created jutsu"
 
-    let jutsu = jutsuGet db jutsuId |> unwrap |> unwrapOpt
+    let jutsu = jutsuGet db jutsuId |> Result.get |> Option.get
 
     printfn "got jutsu"
 
@@ -333,38 +323,38 @@ let main () =
             description = Some "Lightning blade"
         }
 
-    let updateJutsuCount = jutsuUpdates |> jutsuUpdate db jutsuId |> unwrap
+    let updateJutsuCount = jutsuUpdates |> jutsuUpdate db jutsuId |> Result.get
 
     printfn "updated jutsu"
 
-    let updatedJutsu = jutsuGet db jutsuId |> unwrap |> unwrapOpt
+    let updatedJutsu = jutsuGet db jutsuId |> Result.get |> Option.get
 
     printfn "got the updated jutsu"
 
     let rawQueryResult: Ninja list =
         db.Select<Ninja> "SELECT * FROM ninjas" |> Seq.toList
 
-    ninjaJutsuAssociate db ninjaId jutsuId |> unwrap
+    ninjaJutsuAssociate db ninjaId jutsuId |> Result.get
 
     printfn "associated ninja/jutsu"
 
-    let ninjaWithJutsus = ninjaJutsusGet db ninjaId |> unwrap |> unwrapOpt
+    let ninjaWithJutsus = ninjaJutsusGet db ninjaId |> Result.get |> Option.get
 
     printfn "got ninja with jutsus (after association)"
 
-    ninjaJutsuDissociate db ninjaId jutsuId |> unwrap
+    ninjaJutsuDissociate db ninjaId jutsuId |> Result.get
 
     printfn "dissociated ninja/jutsu"
 
-    let ninjaWithJutsus2 = ninjaJutsusGet db ninjaId |> unwrap |> unwrapOpt
+    let ninjaWithJutsus2 = ninjaJutsusGet db ninjaId |> Result.get |> Option.get
 
     printfn "got ninja with jutsus (after dissociation)"
 
-    let jutsuDeleteCount = jutsuDelete db jutsuId |> unwrap
+    let jutsuDeleteCount = jutsuDelete db jutsuId |> Result.get
 
     printfn "deleted the jutsu"
 
-    let ninjaDeleteCount = ninjaDelete db ninjaId |> unwrap
+    let ninjaDeleteCount = ninjaDelete db ninjaId |> Result.get
 
     printfn "deleted the ninja"
 
@@ -401,3 +391,16 @@ main ()
 // #r @"nuget: Microsoft.Data.SqlClient"
 // open Microsoft.Data.SqlClient
 // let connection = new SqlConnection(PG_URL)
+
+
+// /// Throw if result is Error
+// let unwrap result =
+//     match result with
+//     | Ok v -> v
+//     | Error e -> failwithf "Unwrapped Error: %A" e
+
+// /// Throw if Option T is None
+// let unwrapOpt option =
+//     match option with
+//     | Some v -> v
+//     | None -> failwith "Tried to unwrap None"
