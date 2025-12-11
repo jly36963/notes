@@ -383,24 +383,3 @@ let main () =
 
 
 main ()
-
-// ---
-// Notes
-// ---
-
-// #r @"nuget: Microsoft.Data.SqlClient"
-// open Microsoft.Data.SqlClient
-// let connection = new SqlConnection(PG_URL)
-
-
-// /// Throw if result is Error
-// let unwrap result =
-//     match result with
-//     | Ok v -> v
-//     | Error e -> failwithf "Unwrapped Error: %A" e
-
-// /// Throw if Option T is None
-// let unwrapOpt option =
-//     match option with
-//     | Some v -> v
-//     | None -> failwith "Tried to unwrap None"

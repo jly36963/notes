@@ -382,6 +382,7 @@ let basicDenoising () =
     Cv2.FastNlMeansDenoisingColored(imgSrc, imgDst, float32 5.0, float32 5.0, 5, 5)
     let outputFp = getOutputFp "polaris-denoised.jpg"
     Cv2.ImWrite(outputFp, imgDst) |> ignore
+
 // ---
 // Main
 // ---

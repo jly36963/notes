@@ -1,0 +1,23 @@
+install:
+	uv venv .venv
+	uv sync
+
+upgrade-mojo:
+  uv sync --upgrade-package mojo
+
+format:
+	uv run mojo format .
+
+dev:
+  uv run mojo main.mojo
+
+build:
+  mkdir -p ./build
+  uv run mojo build main.mojo -o build/main
+
+run:
+  build/main
+
+test:
+  uv run mojo run tests.mojo
+

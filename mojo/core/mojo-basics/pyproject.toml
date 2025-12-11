@@ -1,0 +1,32 @@
+[project]
+name = 'mojo-notes'
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["mojo>=0.25.7.0", "numpy==1.26.4"]
+
+tool.uv.dev-dependencies = ["ruff", "pylint"]
+
+[tool.ruff.lint]
+extend-select = [
+    "I",
+    "W",
+    "E",
+    "D",
+    "UP",
+    "B",
+    "SIM",
+    "F",
+    "S",
+    "A",
+    "C4",
+    "ISC",
+    "TCH",
+    "PTH",
+    "PL",
+    "PERF",
+    "FURB",
+    # "RUF",
+]
+
+[tool.pyright]
+typeCheckingMode = "basic"

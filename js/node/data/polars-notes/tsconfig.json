@@ -10,7 +10,7 @@
     "noEmit": false,
     "outDir": "build",
     "rootDir": ".",
-    "skipLibCheck": true, // tsc breaks on node_modules
+    "skipLibCheck": true,
     "typeRoots": ["./types/declarations/"],
     "lib": ["ESNext", "DOM"]
   },
