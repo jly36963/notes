@@ -1,0 +1,11 @@
+dev:
+  # Fucking stop
+  c3c run
+
+build:
+  # Fucking stop
+  c3c compile
+
+run:
+  # Fucking stop
+  c3c run

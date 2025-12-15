@@ -1,0 +1,18 @@
+BasedOnStyle: LLVM
+
+# Force wrapping instead of bin-packing
+BinPackArguments: false
+BinPackParameters: false
+
+# Always break after '(' when wrapping
+AlignAfterOpenBracket: DontAlign
+
+# Indent wrapped arguments only once
+ContinuationIndentWidth: 2 # or 4, pick your style
+
+# Encourage breaking when lines get long
+ColumnLimit: 80
+
+# Optional but helpful
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
