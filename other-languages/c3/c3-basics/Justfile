@@ -1,0 +1,9 @@
+dev:
+    c3c run
+
+build:
+    c3c compile
+
+run:
+    c3c run
+

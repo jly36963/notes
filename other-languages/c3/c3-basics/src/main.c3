@@ -1,3 +1,5 @@
+module main;
+
 import std::io;
 import std::collections::list;
 import std::collections::map;
