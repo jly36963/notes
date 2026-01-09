@@ -3,3 +3,6 @@ dev:
 
 format:
     scala-cli fmt
+
+clean:
+    scala-cli clean .

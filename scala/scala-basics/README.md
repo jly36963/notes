@@ -18,3 +18,8 @@ brew install coursier && coursier setup
   - [spark](https://spark.apache.org/docs/latest/quick-start.html)
   - [spark mllib](https://spark.apache.org/mllib/)
 - [circe](https://circe.github.io/circe/)
+
+## Cleanup
+
+- After moving directory, running project will generate build files in old location
+  - remove `.bsp` directory, which points to the old location
