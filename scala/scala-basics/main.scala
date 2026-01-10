@@ -11,12 +11,15 @@ import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.parser.*
 
-import scala.util.chaining.scalaUtilChainingOps
-import scala.util.{Try, Using, Success, Failure}
 import scala.io.Source
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
+import scala.util.Using
+import scala.util.chaining.scalaUtilChainingOps
 
 @main
-def hello(): Unit = {
+def examples(): Unit = {
   val scenarios: List[(String, () => Unit)] = List(
     ("booleans", booleans),
     ("ints", ints),
@@ -29,11 +32,14 @@ def hello(): Unit = {
     ("options", options),
     ("tryAndEither", tryAndEither),
     ("patternMatching", patternMatching),
-    ("functions", functions),
-    ("piping", piping),
     ("controlFlow", controlFlow),
+    ("functionCurrying", functionCurrying),
+    ("functionShorthand", functionShorthand),
+    ("functionRecursion", functionRecursion),
+    ("functionPiping", functionPiping),
+    ("functionPartial", functionPartial),
     ("caseClasses", caseClasses),
-    ("json", json)
+    ("json", json),
   )
 
   scenarios.foreach((s) => {
@@ -59,7 +65,7 @@ def booleans(): Unit = {
     s"t || t: ${t || t}",
     s"f || f: ${f || f}",
     s"t ^ f: ${t ^ f}",
-    s"t == t: ${t == t}"
+    s"t == t: ${t == t}",
   )
   results.foreach(println)
 }
@@ -81,7 +87,7 @@ def ints(): Unit = {
     s"n1 > n2: ${n1 > n2}",
     s"n1 >= n2: ${n1 >= n2}",
     s"n1 == n2: ${n1 == n2}",
-    s"n1 != n2: ${n1 != n2}"
+    s"n1 != n2: ${n1 != n2}",
   )
   results.foreach(println)
 }
@@ -105,7 +111,7 @@ def floats(): Unit = {
     s"n1 == n2: ${n1 == n2}",
     s"n1 != n2: ${n1 != n2}",
     s"math.pow(n1, 2): ${math.pow(n1, 2)}",
-    s"math.sqrt(n1): ${math.sqrt(n1)}"
+    s"math.sqrt(n1): ${math.sqrt(n1)}",
   )
   results.foreach(println)
 }
@@ -150,7 +156,7 @@ def strings(): Unit = {
     s"ceiling: ${ceiling}",
     s"""ceiling.split(" "): ${ceiling.split(" ").mkString(", ")}""",
     s"time: ${time}",
-    s"""time.startsWith("It"): ${time.startsWith("It")}"""
+    s"""time.startsWith("It"): ${time.startsWith("It")}""",
   )
   results.foreach(println)
 }
@@ -343,11 +349,65 @@ def patternMatching(): Unit = {
   }
 }
 
-def functions(): Unit = {
-  println("...")
+def controlFlow(): Unit = {
+  // TODO: if/else, while, try/catch/finally
+  val a = 1
+  val b = 2
+  val greater = if a > b then a else b
+  val results = List(
+    s"a: ${a}",
+    s"b: ${b}",
+    s"greater: ${greater}",
+  )
+  results.foreach(println)
 }
 
-def piping(): Unit = {
+def functionCurrying(): Unit = {
+  val add = (a: Int) => (b: Int) => a + b
+  val a = 1
+  val b = 2
+  val addResult = add(a)(b)
+
+  val results = List(
+    s"a: ${a}",
+    s"b: ${b}",
+    s"addResult: ${addResult}",
+  )
+  results.foreach(println)
+}
+
+def functionShorthand(): Unit = {
+  val numbers = List(1, 2, 3, 4, 5)
+  val evens = numbers.map(_ * 2)
+
+  val results = List(
+    s"numbers: ${numbers}",
+    s"evens: ${evens}",
+  )
+  results.foreach(println)
+}
+
+def find[T](values: List[T])(fn: T => Boolean): Option[T] = {
+  values match {
+    case h :: t => {
+      if (fn(h)) Some(h) else find(t)(fn)
+    }
+    case _ => None
+  }
+}
+
+def functionRecursion(): Unit = {
+  val numbers = List(1, 2, 3, 4, 5)
+  val result = find(numbers)(n => n >= 3)
+
+  val results = List(
+    s"numbers: ${numbers}",
+    s"result: ${result}",
+  )
+  results.foreach(println)
+}
+
+def functionPiping(): Unit = {
   val values = List(1, 2, 3, 4, 5)
 
   // Chaining ops (standard)
@@ -372,8 +432,34 @@ def piping(): Unit = {
   results.foreach(println)
 }
 
-def controlFlow(): Unit = {
-  println("...")
+def functionPartial(): Unit = {
+  case class Ninja(firstName: String, lastName: String)
+  val values = List(
+    ("Kakashi", "Hatake"),
+    ("Itachi", "Uchiha"),
+    ("Shisui", "Uchiha"),
+  )
+  // Partial function literal
+  val ninjas = values.map({ case (f, l) => Ninja(f, l) })
+  val results = List(
+    s"values: ${values}",
+    s"ninjas: ${ninjas}",
+  )
+  results.foreach(println)
+
+  // // Similar version using destructure
+  // val ninjas = values.map(v => {
+  //   val (f, l) = v
+  //   Ninja(f, l)
+  // })
+
+  // // Similar version using single-case match
+  // val ninjas = values.map(v =>
+  //   v match {
+  //     case (f, l) => Ninja(f, l)
+  //   }
+  // )
+
 }
 
 def caseClasses(): Unit = {
