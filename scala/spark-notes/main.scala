@@ -488,14 +488,12 @@ def dfGroupby(df: DataFrame): Unit = {
 def dfParallelize(spark: SparkSession): Unit = {
   val sc = spark.sparkContext
   val values = Seq(1, 2, 3, 4, 5)
-  val rdd = sc.parallelize((values))
   val fn = (n: Int) => n * 2
-  val result = rdd.map(fn).collect().toList
+  val result = sc.parallelize(values).map(fn).collect().toList
 
   val results = List(
     s"values: ${values}",
     s"result: ${result}",
   )
   results.foreach(println)
-
 }
