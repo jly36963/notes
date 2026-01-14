@@ -1,0 +1,8 @@
+dev:
+    scala ./main.scala
+
+format:
+    scala-cli fmt
+
+clean:
+    scala-cli clean .
