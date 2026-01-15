@@ -9,6 +9,7 @@ import io.circe.*
 import io.circe.generic.auto.*
 import io.circe.parser.*
 import tech.tablesaw.api.*
+import tech.tablesaw.api.Table
 import tech.tablesaw.io.Destination
 import tech.tablesaw.io.csv.*
 import tech.tablesaw.io.json.*
@@ -41,6 +42,16 @@ def runExamples(): Unit = {
     ("dfIoJson", dfIoJson),
     ("dfFromColumns", dfFromColumns),
     ("dfFromRows", dfFromRows),
+    ("dfInspect", dfInspect),
+    ("dfColumn", dfColumn),
+    ("dfSelect", dfSelect),
+    ("dfFilter", dfFilter),
+    ("dfAddColumns", dfAddColumns),
+    ("dfDropColumns", dfDropColumns),
+    ("dfSort", dfSort),
+    ("dfGroupby", dfGroupby),
+    ("dfJoin", dfJoin),
+    ("dfConcat", dfConcat),
   )
 
   scenarios.foreach((s) => {
@@ -126,13 +137,6 @@ def dfFromColumns(): Unit = {
     IntColumn.create("age", Seq(27, 26, 25, 21)*),
   )
 
-  // // Filter rows
-  // val adultsDf = df.where(df.intColumn("age").isGreaterThan(18))
-
-  // // Add a derived column
-  // val adultMask = df.intColumn("age").isGreaterThanOrEqualTo(18)
-  // df.addColumns(adultMask.setName("is_adult"))
-
   val results = List(
     s"df:\n${df}",
   )
@@ -177,12 +181,126 @@ def dfInspect(): Unit = {
 
   val results = List(
     s"df:\n${df}",
-    s"df.rowCount: ${df.rowCount}",
     s"df.columnNames: ${df.columnNames}",
+    s"df.rowCount: ${df.rowCount}",
+    s"df.shape:\n${df.shape}",
+    s"df.isEmpty:\n${df.isEmpty}",
+    s"df.types:\n${df.types}",
+    s"df.structure:\n${df.structure}",
+    // s"df.typeArray:\n${df.typeArray}",
+    // s"df.summary:\n${df.summary}",
   )
   results.foreach(println)
 }
 
-def dfSelect(): Unit = {}
-def dfFilter(): Unit = {}
-def dfAddColumns(): Unit = {}
+def dfColumn(): Unit = {
+  val inputPath = Paths.get("./data/input/ninjas.csv")
+  val df = readCsv(inputPath).get
+  val col = df.column("first_name")
+
+  val results = List(
+    s"df:\n${df}",
+    s"col:\n${col}",
+  )
+  results.foreach(println)
+}
+
+def dfSelect(): Unit = {
+  val inputPath = Paths.get("./data/input/ninjas.csv")
+  val df = readCsv(inputPath).get
+
+  val df2 = df.selectColumns("first_name", "last_name", "age")
+  val results = List(
+    s"df:\n${df}",
+    s"df2:\n${df2}",
+  )
+  results.foreach(println)
+}
+
+def dfFilter(): Unit = {
+  val inputPath = Paths.get("./data/input/ninjas.csv")
+  val df = readCsv(inputPath).get
+
+  val df2 = df.where(df.intColumn("age").isGreaterThanOrEqualTo(25))
+  val results = List(
+    s"df:\n${df}",
+    s"df2:\n${df2}",
+  )
+  results.foreach(println)
+
+}
+
+def dfAddColumns(): Unit = {
+  val inputPath = Paths.get("./data/input/ninjas.csv")
+  val df = readCsv(inputPath).get
+
+  val age_plus_10 = df.intColumn("age").map(v => v + 10).setName("age_plus_10")
+  val df2 = df.copy().addColumns(age_plus_10) // NOTE: mutates in-place
+  val results = List(
+    s"df:\n${df}",
+    s"df2:\n${df2}",
+  )
+  results.foreach(println)
+}
+
+def dfDropColumns(): Unit = {
+  val inputPath = Paths.get("./data/input/ninjas.csv")
+  val df = readCsv(inputPath).get
+
+  val df2 = df.copy().removeColumns("id") // NOTE: mutates in-place
+  val results = List(
+    s"df:\n${df}",
+    s"df2:\n${df2}",
+  )
+  results.foreach(println)
+}
+
+def dfSort(): Unit = {
+  val inputPath = Paths.get("./data/input/ninjas.csv")
+  val df = readCsv(inputPath).get
+
+  val df2 = df.sortOn("first_name")
+  val results = List(
+    s"df:\n${df}",
+    s"df2:\n${df2}",
+  )
+  results.foreach(println)
+}
+
+def dfGroupby(): Unit = {
+  println("...")
+}
+
+def dfJoin(): Unit = {
+  val inputPath = Paths.get("./data/input/ninjas.csv")
+  val df = readCsv(inputPath).get
+
+  val left_df = df.selectColumns("id", "first_name")
+  val right_df = df.selectColumns("id", "last_name")
+  val joined_df = left_df.joinOn("id").inner(right_df)
+
+  val results = List(
+    s"df:\n${df}",
+    s"left_df:\n${left_df}",
+    s"right_df:\n${right_df}",
+    s"joined_df:\n${joined_df}",
+  )
+  results.foreach(println)
+}
+
+def dfConcat(): Unit = {
+  val inputPath = Paths.get("./data/input/ninjas.csv")
+  val df = readCsv(inputPath).get
+
+  val df1 = df.first(2)
+  val df2 = df.last(2)
+  val df3 = df1.copy().append(df2) // NOTE: mutates in-place
+
+  val results = List(
+    s"df:\n${df}",
+    s"df1:\n${df1}",
+    s"df2:\n${df2}",
+    s"df3:\n${df3}",
+  )
+  results.foreach(println)
+}

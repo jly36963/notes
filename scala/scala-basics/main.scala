@@ -1,16 +1,9 @@
 //> using scala 3.7.4
 //> using dep "com.lihaoyi::os-lib:0.11.6"
-//> using dep "io.circe::circe-core:0.14.15"
-//> using dep "io.circe::circe-parser:0.14.15"
-//> using dep "io.circe::circe-generic:0.14.15"
-//> using dep "dev.zio::zio:2.1.24"
-//> using dep "dev.zio::zio-streams:2.1.24"
-//> using dep "dev.zio::zio-json:0.8.0"
 
-import io.circe.*
-import io.circe.generic.auto.*
-import io.circe.parser.*
-
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 import scala.io.Source
 import scala.util.Failure
 import scala.util.Success
@@ -18,9 +11,13 @@ import scala.util.Try
 import scala.util.Using
 import scala.util.chaining.scalaUtilChainingOps
 
+// ---
+// Main
+// ---
+
 @main
-def examples(): Unit = {
-  val scenarios: List[(String, () => Unit)] = List(
+def runExamples(): Unit = {
+  val examples: List[(String, () => Unit)] = List(
     ("booleans", booleans),
     ("ints", ints),
     ("floats", floats),
@@ -30,24 +27,39 @@ def examples(): Unit = {
     ("comprehensions", comprehensions),
     ("enums", enums),
     ("options", options),
-    ("tryAndEither", tryAndEither),
-    ("patternMatching", patternMatching),
-    ("controlFlow", controlFlow),
-    ("functionCurrying", functionCurrying),
-    ("functionShorthand", functionShorthand),
-    ("functionRecursion", functionRecursion),
-    ("functionPiping", functionPiping),
-    ("functionPartial", functionPartial),
-    ("caseClasses", caseClasses),
-    ("json", json),
+    ("try-and-either", tryAndEither),
+    ("pattern-matching", patternMatching),
+    ("control-flow", controlFlow),
+    ("function-currying", functionCurrying),
+    ("function-shorthand", functionShorthand),
+    ("function-recursion", functionRecursion),
+    ("function-piping", functionPiping),
+    ("function-partial", functionPartial),
+    ("case-classes", caseClasses),
+    ("source", source),
+    ("sys-env", sysEnv),
+    ("os-lib", osLib),
+    ("java-std-lib", javaStdLib),
   )
 
-  scenarios.foreach((s) => {
+  examples.foreach((s) => {
     val (title, fn) = s
     println(s"\n${title.toUpperCase()}\n")
     fn()
   })
 }
+
+// ---
+// Utils
+// ---
+
+def readFile(path: Path): Try[String] = {
+  Using(Source.fromFile(path.toString)) { s => s.mkString }
+}
+
+// ---
+// Examples
+// ---
 
 def booleans(): Unit = {
   val t = true
@@ -331,19 +343,16 @@ def tryAndEither(): Unit = {
   results.foreach(println)
 }
 
-def readFile(filepath: String): Try[String] = {
-  Using(Source.fromFile(filepath)) { s => s.mkString }
-}
-
 def patternMatching(): Unit = {
-  val filepath = "./Justfile"
-  val result = readFile(filepath)
+  val path = Paths.get("./Justfile")
+  val result = readFile(path)
   result match {
     case Success(contents) => {
-      println(s"The file ${filepath} has ${contents.length} characters")
+      val len = contents.length
+      println(s"The file ${path} has ${len} characters")
     }
     case Failure(error) => {
-      println(s"Could not read file ${filepath}")
+      println(s"Could not read file ${path}")
       println(error)
     }
   }
@@ -463,13 +472,45 @@ def functionPartial(): Unit = {
 }
 
 def caseClasses(): Unit = {
+  case class Ninja(name: String, age: Int, village: String)
+
+  val ninja = Ninja("Kakashi", 30, "Leaf")
+  println(ninja)
+}
+
+def source(): Unit = {
+  val path = Paths.get("./Justfile")
+  val file = readFile(path).map(s => s"File has ${s.length} chars")
+
+  val results = List(
+    s"path: ${path}",
+    s"file: ${file}",
+  )
+  results.foreach(println)
+}
+
+def sysEnv(): Unit = {
+  val env = scala.sys.env
+  val home = env.get("HOME")
+  val term = env.get("TERM")
+
+  val results = List(
+    s"""home: ${home}""",
+    s"""term: ${term}""",
+  )
+  results.foreach(println)
+}
+
+def osLib(): Unit = {
+  // https://github.com/com-lihaoyi/os-lib
   println("...")
 }
 
-case class Person(name: String, age: Int)
-
-def json(): Unit = {
-  val json = """{ "name": "Alice", "age": 30 }"""
-  val person = decode[Person](json)
-  println(person)
+def javaStdLib(): Unit = {
+  // java.crypto
+  // java.lang.reflect
+  // java.nio
+  // java.time
+  // java.util
+  println("...")
 }
