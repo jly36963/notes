@@ -28,6 +28,7 @@ def runExamples(): Unit = {
     ("enums", enums),
     ("options", options),
     ("try-and-either", tryAndEither),
+    ("either-comprehension", eitherComprehension),
     ("pattern-matching", patternMatching),
     ("control-flow", controlFlow),
     ("function-currying", functionCurrying),
@@ -341,6 +342,67 @@ def tryAndEither(): Unit = {
     s"eitherDivideFailure: ${eitherDivideFailure}",
   )
   results.foreach(println)
+}
+
+def eitherComprehension(): Unit = {
+  val n1 = 1.0
+  val n2 = 0.0
+  val n3 = 2.0
+
+  val result1 = for {
+    r1 <- safeDivide(n1, n3).toEither.left.map(e => e.getMessage)
+    r2 <- eitherDivide(n1, n3)
+    r3 <- safeDivide(n2, n3).toEither.left.map(e => e.getMessage)
+    // This will fail
+    r4 <- eitherDivide(n1, n2)
+    output <- Right(r1 + r2 + r3 + r4)
+  } yield output
+
+  val result2 = for {
+    r1 <- safeDivide(n1, n3).toEither.left.map(e => e.getMessage)
+    r2 <- eitherDivide(n1, n3)
+    r3 <- safeDivide(n2, n3).toEither.left.map(e => e.getMessage)
+    r4 <- eitherDivide(n2, n3)
+    output <- Right(r1 + r2 + r3 + r4)
+  } yield output
+
+  val handleDivideResult = (res: Either[String, Double]) =>
+    res match {
+      case Right(v)  => Success(v)
+      case Left(msg) => {
+        println(msg)
+        Failure(new RuntimeException("Failed to divide"))
+      }
+    }
+
+  val result3 = for {
+    r1 <- safeDivide(n1, n3)
+    r2 <- eitherDivide(n1, n3) pipe handleDivideResult
+    r3 <- safeDivide(n2, n3)
+    // This will fail
+    r4 <- eitherDivide(n1, n2) pipe handleDivideResult
+    output <- Success(r1 + r2 + r3 + r4)
+  } yield output
+
+  val result4 = for {
+    r1 <- safeDivide(n1, n3)
+    r2 <- eitherDivide(n1, n3) pipe handleDivideResult
+    r3 <- safeDivide(n2, n3)
+    r4 <- eitherDivide(n2, n3) pipe handleDivideResult
+    output <- Success(r1 + r2 + r3 + r4)
+  } yield output
+
+  val results = List(
+    s"n1: ${n1}",
+    s"n2: ${n2}",
+    s"n3: ${n3}",
+    s"result1: ${result1}",
+    s"result2: ${result2}",
+    s"result3: ${result3}",
+    s"result4: ${result4}",
+  )
+  results.foreach(println)
+
 }
 
 def patternMatching(): Unit = {
