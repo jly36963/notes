@@ -1,15 +1,9 @@
 //> using scala 3.7.4
-//> using dep "io.circe::circe-core:0.14.15"
-//> using dep "io.circe::circe-parser:0.14.15"
-//> using dep "io.circe::circe-generic:0.14.15"
 //> using dep "dev.zio::zio:2.1.24"
 //> using dep "dev.zio::zio-streams:2.1.24"
 //> using dep "dev.zio::zio-json:0.9.0"
 //> using dep "dev.zio::zio-http:3.8.1"
 
-import io.circe.*
-import io.circe.generic.auto.*
-import io.circe.parser.*
 import zio.*
 import zio.http.*
 import zio.json.*
