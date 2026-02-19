@@ -176,6 +176,9 @@ def strings(): Unit = {
 
 def lists(): Unit = {
   val l1 = List(1, 2, 3, 4, 5)
+
+  val l2 = l1.filter((n) => n > 3)
+
   val results = List(
     s"l1: ${l1}",
     s"0 :: l1: ${0 :: l1}",
