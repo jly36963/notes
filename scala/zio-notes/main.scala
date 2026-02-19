@@ -193,7 +193,7 @@ final case class User(id: Int, name: String, phone: String, address: Address) de
 final case class Address(street: String, suite: String, city: String, zipcode: String)
     derives JsonDecoder
 
-def getUser(id: Int): ZIO[zio.http.Client & zio.Scope, Throwable, User] = {
+def getUser(id: Int) = {
   for {
     url <- ZIO.succeed { s"https://jsonplaceholder.typicode.com/users/${id}" }
     headers <- ZIO.succeed {
@@ -223,7 +223,7 @@ def httpGet(): Task[Unit] = {
   )
 }
 
-def createUser(newUser: NewUser): ZIO[zio.http.Client & zio.Scope, Throwable, NewUser] = {
+def createUser(newUser: NewUser) = {
   implicit val encoder: JsonEncoder[NewUser] = DeriveJsonEncoder.gen[NewUser]
   for {
     url <- ZIO.succeed { s"https://jsonplaceholder.typicode.com/users" }
