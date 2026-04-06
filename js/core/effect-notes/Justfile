@@ -1,0 +1,17 @@
+install:
+    pnpm install
+
+dev:
+    pnpm run start
+
+run:
+    pnpm start
+
+format:
+    pnpm run fmt
+
+lint:
+    pnpm run lint
+
+check-types:
+    pnpm tsgo
