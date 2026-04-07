@@ -15,6 +15,7 @@ import org.bytedeco.opencv.global.opencv_core.SORT_ASCENDING
 import org.bytedeco.opencv.global.opencv_core.addWeighted
 import org.bytedeco.opencv.global.opencv_core.convertScaleAbs
 import org.bytedeco.opencv.global.opencv_core.flip
+import org.bytedeco.opencv.global.opencv_core.merge
 import org.bytedeco.opencv.global.opencv_core.minMaxLoc
 import org.bytedeco.opencv.global.opencv_core.multiply
 import org.bytedeco.opencv.global.opencv_core.noArray
@@ -506,7 +507,9 @@ def equalizeHistogram(img: Mat): Mat = {
   val channel = channels.get(2)
   equalizeHist(channel.clone(), channel)
   channels.put(2, channel)
-  val dst = convertColor(imgHsv, COLOR_HSV2BGR)
+  val merged = new Mat()
+  merge(channels, merged)
+  val dst = convertColor(merged, COLOR_HSV2BGR)
   dst
 }
 

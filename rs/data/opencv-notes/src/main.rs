@@ -1,9 +1,9 @@
 use num::clamp;
 use opencv::core::{
-    add_def, add_weighted, convert_scale_abs, copy_make_border_def, flip, max, min, multiply_def,
-    no_array, normalize, pow, rotate, split, subtract_def, KeyPoint, Mat, MatExprTraitConst,
-    MatTrait, ModifyInplace, Scalar, Size, Vec3b, VecN, Vector, BORDER_CONSTANT, BORDER_DEFAULT,
-    CV_32F, CV_64F, CV_8U, NORM_MINMAX, ROTATE_180,
+    add_def, add_weighted, convert_scale_abs, copy_make_border_def, flip, max, merge, min,
+    multiply_def, no_array, normalize, pow, rotate, split, subtract_def, KeyPoint, Mat,
+    MatExprTraitConst, MatTrait, ModifyInplace, Scalar, Size, Vec3b, VecN, Vector, BORDER_CONSTANT,
+    BORDER_DEFAULT, CV_32F, CV_64F, CV_8U, NORM_MINMAX, ROTATE_180,
 };
 use opencv::dnn_superres::DnnSuperResImpl;
 use opencv::features2d::{draw_keypoints, DrawMatchesFlags, ORB_ScoreType, AKAZE, KAZE, ORB};
@@ -455,7 +455,9 @@ fn equalize_histogram(img: &mut Mat) {
     let mut channel = channels.get(2).unwrap();
     equalize_hist(&channel.clone(), &mut channel).unwrap();
     channels.set(2, channel).unwrap();
-    cvt_color_def(&img.clone(), img, COLOR_HSV2BGR).unwrap();
+    let mut merged = Mat::default();
+    merge(&channels, &mut merged).unwrap();
+    cvt_color_def(&merged, img, COLOR_HSV2BGR).unwrap();
 }
 
 fn histogram_equalization() {
