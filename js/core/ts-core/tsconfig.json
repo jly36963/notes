@@ -1,18 +1,19 @@
 {
-  "extends": "./node_modules/gts/tsconfig-google.json",
   "compilerOptions": {
+    "strict": true,
     "target": "ESNext",
     "module": "es2020",
-    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "removeComments": true,
     "sourceMap": true,
-    "noEmit": false,
+    "noEmit": true,
     "outDir": "build",
     "rootDir": ".",
     "skipLibCheck": true, // tsc breaks node_modules (node-fetch)
-    "typeRoots": ["./types/declarations/"],
-    "lib": ["ESNext", "DOM"]
+    "typeRoots": ["./types/declarations/", "./node_modules/@types/"],
+    "lib": ["ESNext", "DOM"],
+    "types": ["node"],
+    "allowImportingTsExtensions": true
   },
   "exclude": ["node_modules", "build", "tests"]
 }

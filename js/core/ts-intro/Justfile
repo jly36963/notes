@@ -1,9 +1,6 @@
 install:
     pnpm install
 
-upgrade:
-    pnpm up --latest
-
 dev:
     pnpm run start
 

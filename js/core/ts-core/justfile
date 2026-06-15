@@ -1,8 +1,20 @@
 install:
-	pnpm install
+    pnpm install
+
+upgrade:
+    pnpm up --latest
 
 dev:
-	pnpm dev
+    pnpm run start
 
 run:
-	pnpm start
+    pnpm start
+
+format:
+    pnpm run fmt
+
+lint:
+    pnpm run lint
+
+check-types:
+    pnpm tsgo

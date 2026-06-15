@@ -1,19 +1,24 @@
 {
-	"name": "ts-notes",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.ts",
-	"type": "module",
-	"scripts": {
-		"start": "node --experimental-strip-types index.ts ",
-		"dev": "node --experimental-strip-types index.ts "
-	},
-	"author": "",
-	"license": "ISC",
-	"devDependencies": {
-		"@biomejs/biome": "^1.9.4",
-		"@types/node": "^22.10.1",
-		"gts": "^6.0.2",
-		"typescript": "^5.7.2"
-	}
+  "name": "ts-notes",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.ts",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node index.ts",
+    "fmt": "oxfmt",
+    "lint": "oxlint"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@typescript/native-preview": "7.0.0-dev.20260521.1",
+    "oxfmt": "^0.51.0",
+    "oxlint": "^1.66.0",
+    "typescript": "^6.0.3"
+  }
 }

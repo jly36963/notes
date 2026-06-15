@@ -4,10 +4,10 @@
     {
       "name": "frontend",
       "children": [
-        {"name": "react", "size": 100},
-        {"name": "solid", "size": 50},
-        {"name": "leptos", "size": 40},
-        {"name": "astro", "size": 30}
+        { "name": "react", "size": 100 },
+        { "name": "solid", "size": 50 },
+        { "name": "leptos", "size": 40 },
+        { "name": "astro", "size": 30 }
       ]
     },
     {
@@ -16,51 +16,51 @@
         {
           "name": "node",
           "children": [
-            {"name": "express", "size": 50},
-            {"name": "koa", "size": 50}
+            { "name": "express", "size": 50 },
+            { "name": "koa", "size": 50 }
           ]
         },
         {
           "name": "python",
           "children": [
-            {"name": "fastapi", "size": 40},
-            {"name": "sanic", "size": 25},
-            {"name": "quart", "size": 25}
+            { "name": "fastapi", "size": 40 },
+            { "name": "sanic", "size": 25 },
+            { "name": "quart", "size": 25 }
           ]
         },
         {
           "name": "go",
           "children": [
-            {"name": "chi", "size": 40},
-            {"name": "fiber", "size": 40},
-            {"name": "gin", "size": 25}
+            { "name": "chi", "size": 40 },
+            { "name": "fiber", "size": 40 },
+            { "name": "gin", "size": 25 }
           ]
         },
         {
           "name": "rust",
           "children": [
-            {"name": "axum", "size": 50},
-            {"name": "actix", "size": 50}
+            { "name": "axum", "size": 50 },
+            { "name": "actix", "size": 50 }
           ]
         },
-        {"name": "gleam", "children": [{"name": "wisp", "size": 50}]}
+        { "name": "gleam", "children": [{ "name": "wisp", "size": 50 }] }
       ]
     },
     {
       "name": "database",
       "children": [
-        {"name": "postgres", "size": 200},
-        {"name": "redis", "size": 50},
-        {"name": "mongo", "size": 40}
+        { "name": "postgres", "size": 200 },
+        { "name": "redis", "size": 50 },
+        { "name": "mongo", "size": 40 }
       ]
     },
     {
       "name": "cli",
       "children": [
-        {"name": "yargs (node)", "size": 50},
-        {"name": "typer (python)", "size": 30},
-        {"name": "cobra (go)", "size": 30},
-        {"name": "clap (rust)", "size": 30}
+        { "name": "yargs (node)", "size": 50 },
+        { "name": "typer (python)", "size": 30 },
+        { "name": "cobra (go)", "size": 30 },
+        { "name": "clap (rust)", "size": 30 }
       ]
     },
     {
@@ -69,17 +69,17 @@
         {
           "name": "pipelines",
           "children": [
-            {"name": "polars", "size": 50},
-            {"name": "pandas", "size": 50},
-            {"name": "airflow", "size": 30},
-            {"name": "spark", "size": 20}
+            { "name": "polars", "size": 50 },
+            { "name": "pandas", "size": 50 },
+            { "name": "airflow", "size": 30 },
+            { "name": "spark", "size": 20 }
           ]
         },
         {
           "name": "visualization",
           "children": [
-            {"name": "d3", "size": 20},
-            {"name": "matplotlib", "size": 20}
+            { "name": "d3", "size": 20 },
+            { "name": "matplotlib", "size": 20 }
           ]
         }
       ]
@@ -87,9 +87,9 @@
     {
       "name": "OSS",
       "children": [
-        {"name": "yargs", "size": 100},
-        {"name": "string-ts", "size": 80},
-        {"name": "ruff", "size": 20}
+        { "name": "yargs", "size": 100 },
+        { "name": "string-ts", "size": 80 },
+        { "name": "ruff", "size": 20 }
       ]
     }
   ]
