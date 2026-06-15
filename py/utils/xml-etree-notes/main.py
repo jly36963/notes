@@ -12,6 +12,8 @@ from pydantic_xml import BaseXmlModel, attr, element
 
 
 class Address(BaseXmlModel):
+    """TODO."""
+
     street: str = element()
     city: str | None = element(default=None)
     state: str = element()
@@ -19,12 +21,16 @@ class Address(BaseXmlModel):
 
 
 class Customer(BaseXmlModel):
+    """TODO."""
+
     id: str = attr()
     name: str = element()
     address: list[Address] = element()
 
 
 class Customers(BaseXmlModel, tag="customers"):
+    """TODO."""
+
     customer: list[Customer] = element()
 
 
@@ -99,11 +105,11 @@ def print_section_title(string: str) -> None:
 
 def _simple_std():
     cust_xml = _get_customers_xml()
-    customers = et.fromstring(cust_xml)
+    customers = et.fromstring(cust_xml)  # noqa: S314
     results = {
         "name": customers.findall("customer")[0].find("name").text,  # type: ignore
         "names": [n.text for n in customers.findall("customer//name")],
-        "zips": [a.text for a in customers.findall("customer//address//zip")],
+        "zips": [z.text for z in customers.findall("customer//address//zip")],
     }
     print(results)
 
@@ -114,7 +120,7 @@ def _simple_intro():
     results = {
         "name": customers.findall("customer")[0].find("name").text,  # type: ignore
         "names": [n.text for n in customers.findall("customer//name")],
-        "zips": [a.text for a in customers.findall("customer//address//zip")],
+        "zips": [z.text for z in customers.findall("customer//address//zip")],
     }
     print(results)
 
@@ -125,9 +131,9 @@ def _simple_objectify():
 
     results = {
         "name": customers.customer[0].name,  # type: ignore
+        "zip": customers.customer.address[0].zip,  # type: ignore
         "names": [n.text for n in customers.findall("customer//name")],
         "zips": [a.text for a in customers.findall("customer//address//zip")],
-        "customers.customer.address[0].zip": customers.customer.address[0].zip,  # type: ignore
     }
     print(results)
 
@@ -139,7 +145,7 @@ def _simple_pydantic():
     results = {
         "name": customers.customer[0].name,
         "names": [n.name for n in customers.customer],
-        "zips": [z.zip for n in customers.customer for z in n.address],
+        "zips": [a.zip for c in customers.customer for a in c.address],
     }
     print(results)
 
